@@ -26,6 +26,7 @@ function Home() {
   return (
     <>
       <Hero />
+      <InstituteLogos />
       <HomeCarousel />
       <StatsStrip />
       <CollegesSection />
