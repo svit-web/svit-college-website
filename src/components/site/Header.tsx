@@ -1,0 +1,169 @@
+import { useState } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
+import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
+import { Logo } from "./Logo";
+import { primaryNav, site, topNav, courses } from "@/data/site";
+import { cn } from "@/lib/utils";
+
+export function Header() {
+  const [open, setOpen] = useState(false);
+  const [coursesOpen, setCoursesOpen] = useState(false);
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  return (
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
+      {/* Top strip */}
+      <div className="bg-navy-deep text-white/85 text-xs">
+        <div className="container-page flex h-9 items-center justify-between">
+          <div className="flex items-center gap-4">
+            <a href={`mailto:${site.email}`} className="hidden items-center gap-1.5 hover:text-gold sm:inline-flex">
+              <Mail className="h-3 w-3" /> {site.email}
+            </a>
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 hover:text-gold">
+              <Phone className="h-3 w-3" /> {site.phone}
+            </a>
+          </div>
+          <nav className="hidden items-center gap-4 md:flex">
+            {topNav.map((n) => (
+              <Link key={n.to} to={n.to} className="hover:text-gold transition-colors">
+                {n.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {/* Main nav */}
+      <div className="container-page flex h-20 items-center justify-between">
+        <Logo />
+        <nav className="hidden items-center gap-1 lg:flex">
+          {primaryNav.map((n) => {
+            const active = n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
+            if (n.label === "Courses") {
+              return (
+                <div
+                  key={n.to}
+                  className="relative"
+                  onMouseEnter={() => setCoursesOpen(true)}
+                  onMouseLeave={() => setCoursesOpen(false)}
+                >
+                  <Link
+                    to={n.to}
+                    className={cn(
+                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      active ? "text-navy" : "text-ink/80 hover:text-navy"
+                    )}
+                  >
+                    {n.label} <ChevronDown className="h-3 w-3" />
+                  </Link>
+                  <AnimatePresence>
+                    {coursesOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 rounded-2xl border border-border bg-white p-4 shadow-xl"
+                      >
+                        <div className="grid grid-cols-2 gap-2">
+                          {courses.map((c) => (
+                            <Link
+                              key={c.slug}
+                              to="/courses/$course"
+                              params={{ course: c.slug }}
+                              className="flex items-start gap-3 rounded-md p-3 hover:bg-secondary transition-colors"
+                            >
+                              <div className={cn("h-9 w-9 shrink-0 rounded-md text-white flex items-center justify-center font-bold text-xs", c.color)}>
+                                {c.short}
+                              </div>
+                              <div className="min-w-0">
+                                <div className="font-semibold text-sm text-navy">{c.name}</div>
+                                <div className="text-xs text-muted-foreground truncate">{c.tagline}</div>
+                              </div>
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+            return (
+              <Link
+                key={n.to}
+                to={n.to}
+                className={cn(
+                  "link-underline px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                  active ? "text-navy" : "text-ink/80 hover:text-navy"
+                )}
+              >
+                {n.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="flex items-center gap-3">
+          <Link
+            to="/admissions/inquiry"
+            className="hidden rounded-md bg-gold px-5 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors md:inline-flex"
+          >
+            Apply Now
+          </Link>
+          <button
+            onClick={() => setOpen((o) => !o)}
+            className="rounded-md border border-border p-2 lg:hidden"
+            aria-label="Toggle menu"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <AnimatePresence>
+        {open && (
+          <motion.nav
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-t border-border bg-white lg:hidden"
+          >
+            <div className="container-page flex flex-col gap-1 py-4">
+              {primaryNav.map((n) => (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  onClick={() => setOpen(false)}
+                  className="rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                >
+                  {n.label}
+                </Link>
+              ))}
+              <div className="my-2 border-t border-border" />
+              {topNav.map((n) => (
+                <Link
+                  key={n.to}
+                  to={n.to}
+                  onClick={() => setOpen(false)}
+                  className="rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-secondary"
+                >
+                  {n.label}
+                </Link>
+              ))}
+              <Link
+                to="/admissions/inquiry"
+                onClick={() => setOpen(false)}
+                className="mt-3 rounded-md bg-gold px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.08em] text-navy-deep"
+              >
+                Apply Now
+              </Link>
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
+    </header>
+  );
+}

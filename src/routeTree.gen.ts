@@ -9,38 +9,392 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as StudentLoginRouteImport } from './routes/student-login'
+import { Route as PlacementRouteImport } from './routes/placement'
+import { Route as ParentsRouteImport } from './routes/parents'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as GrievanceRouteImport } from './routes/grievance'
+import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CampusLifeRouteImport } from './routes/campus-life'
+import { Route as CampusRouteImport } from './routes/campus'
+import { Route as AntiRaggingRouteImport } from './routes/anti-ragging'
+import { Route as AlumniRouteImport } from './routes/alumni'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
+import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
+import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
+import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
+import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
+import { Route as CoursesEngineeringDeptFacultyRouteImport } from './routes/courses.engineering.$dept.faculty'
 
+const StudentLoginRoute = StudentLoginRouteImport.update({
+  id: '/student-login',
+  path: '/student-login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlacementRoute = PlacementRouteImport.update({
+  id: '/placement',
+  path: '/placement',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ParentsRoute = ParentsRouteImport.update({
+  id: '/parents',
+  path: '/parents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrievanceRoute = GrievanceRouteImport.update({
+  id: '/grievance',
+  path: '/grievance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadsRoute = DownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampusLifeRoute = CampusLifeRouteImport.update({
+  id: '/campus-life',
+  path: '/campus-life',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampusRoute = CampusRouteImport.update({
+  id: '/campus',
+  path: '/campus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AntiRaggingRoute = AntiRaggingRouteImport.update({
+  id: '/anti-ragging',
+  path: '/anti-ragging',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniRoute = AlumniRouteImport.update({
+  id: '/alumni',
+  path: '/alumni',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesIndexRoute = CoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
+  id: '/admissions/',
+  path: '/admissions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseRoute = CoursesCourseRouteImport.update({
+  id: '/courses/$course',
+  path: '/courses/$course',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
+  id: '/admissions/inquiry',
+  path: '/admissions/inquiry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesEngineeringDeptRoute = CoursesEngineeringDeptRouteImport.update({
+  id: '/courses/engineering/$dept',
+  path: '/courses/engineering/$dept',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseFacultyRoute = CoursesCourseFacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => CoursesCourseRoute,
+} as any)
+const CoursesEngineeringDeptFacultyRoute =
+  CoursesEngineeringDeptFacultyRouteImport.update({
+    id: '/faculty',
+    path: '/faculty',
+    getParentRoute: () => CoursesEngineeringDeptRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/alumni': typeof AlumniRoute
+  '/anti-ragging': typeof AntiRaggingRoute
+  '/campus': typeof CampusRoute
+  '/campus-life': typeof CampusLifeRoute
+  '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
+  '/downloads': typeof DownloadsRoute
+  '/grievance': typeof GrievanceRoute
+  '/news': typeof NewsRoute
+  '/parents': typeof ParentsRoute
+  '/placement': typeof PlacementRoute
+  '/student-login': typeof StudentLoginRoute
+  '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/courses/$course': typeof CoursesCourseRouteWithChildren
+  '/admissions/': typeof AdmissionsIndexRoute
+  '/courses/': typeof CoursesIndexRoute
+  '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
+  '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/alumni': typeof AlumniRoute
+  '/anti-ragging': typeof AntiRaggingRoute
+  '/campus': typeof CampusRoute
+  '/campus-life': typeof CampusLifeRoute
+  '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
+  '/downloads': typeof DownloadsRoute
+  '/grievance': typeof GrievanceRoute
+  '/news': typeof NewsRoute
+  '/parents': typeof ParentsRoute
+  '/placement': typeof PlacementRoute
+  '/student-login': typeof StudentLoginRoute
+  '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/courses/$course': typeof CoursesCourseRouteWithChildren
+  '/admissions': typeof AdmissionsIndexRoute
+  '/courses': typeof CoursesIndexRoute
+  '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
+  '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/alumni': typeof AlumniRoute
+  '/anti-ragging': typeof AntiRaggingRoute
+  '/campus': typeof CampusRoute
+  '/campus-life': typeof CampusLifeRoute
+  '/careers': typeof CareersRoute
+  '/contact': typeof ContactRoute
+  '/downloads': typeof DownloadsRoute
+  '/grievance': typeof GrievanceRoute
+  '/news': typeof NewsRoute
+  '/parents': typeof ParentsRoute
+  '/placement': typeof PlacementRoute
+  '/student-login': typeof StudentLoginRoute
+  '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/courses/$course': typeof CoursesCourseRouteWithChildren
+  '/admissions/': typeof AdmissionsIndexRoute
+  '/courses/': typeof CoursesIndexRoute
+  '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
+  '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/alumni'
+    | '/anti-ragging'
+    | '/campus'
+    | '/campus-life'
+    | '/careers'
+    | '/contact'
+    | '/downloads'
+    | '/grievance'
+    | '/news'
+    | '/parents'
+    | '/placement'
+    | '/student-login'
+    | '/admissions/inquiry'
+    | '/courses/$course'
+    | '/admissions/'
+    | '/courses/'
+    | '/courses/$course/faculty'
+    | '/courses/engineering/$dept'
+    | '/courses/engineering/$dept/faculty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/alumni'
+    | '/anti-ragging'
+    | '/campus'
+    | '/campus-life'
+    | '/careers'
+    | '/contact'
+    | '/downloads'
+    | '/grievance'
+    | '/news'
+    | '/parents'
+    | '/placement'
+    | '/student-login'
+    | '/admissions/inquiry'
+    | '/courses/$course'
+    | '/admissions'
+    | '/courses'
+    | '/courses/$course/faculty'
+    | '/courses/engineering/$dept'
+    | '/courses/engineering/$dept/faculty'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/alumni'
+    | '/anti-ragging'
+    | '/campus'
+    | '/campus-life'
+    | '/careers'
+    | '/contact'
+    | '/downloads'
+    | '/grievance'
+    | '/news'
+    | '/parents'
+    | '/placement'
+    | '/student-login'
+    | '/admissions/inquiry'
+    | '/courses/$course'
+    | '/admissions/'
+    | '/courses/'
+    | '/courses/$course/faculty'
+    | '/courses/engineering/$dept'
+    | '/courses/engineering/$dept/faculty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AlumniRoute: typeof AlumniRoute
+  AntiRaggingRoute: typeof AntiRaggingRoute
+  CampusRoute: typeof CampusRoute
+  CampusLifeRoute: typeof CampusLifeRoute
+  CareersRoute: typeof CareersRoute
+  ContactRoute: typeof ContactRoute
+  DownloadsRoute: typeof DownloadsRoute
+  GrievanceRoute: typeof GrievanceRoute
+  NewsRoute: typeof NewsRoute
+  ParentsRoute: typeof ParentsRoute
+  PlacementRoute: typeof PlacementRoute
+  StudentLoginRoute: typeof StudentLoginRoute
+  AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
+  CoursesCourseRoute: typeof CoursesCourseRouteWithChildren
+  AdmissionsIndexRoute: typeof AdmissionsIndexRoute
+  CoursesIndexRoute: typeof CoursesIndexRoute
+  CoursesEngineeringDeptRoute: typeof CoursesEngineeringDeptRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/student-login': {
+      id: '/student-login'
+      path: '/student-login'
+      fullPath: '/student-login'
+      preLoaderRoute: typeof StudentLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/placement': {
+      id: '/placement'
+      path: '/placement'
+      fullPath: '/placement'
+      preLoaderRoute: typeof PlacementRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/parents': {
+      id: '/parents'
+      path: '/parents'
+      fullPath: '/parents'
+      preLoaderRoute: typeof ParentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grievance': {
+      id: '/grievance'
+      path: '/grievance'
+      fullPath: '/grievance'
+      preLoaderRoute: typeof GrievanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/downloads': {
+      id: '/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof DownloadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campus-life': {
+      id: '/campus-life'
+      path: '/campus-life'
+      fullPath: '/campus-life'
+      preLoaderRoute: typeof CampusLifeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campus': {
+      id: '/campus'
+      path: '/campus'
+      fullPath: '/campus'
+      preLoaderRoute: typeof CampusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anti-ragging': {
+      id: '/anti-ragging'
+      path: '/anti-ragging'
+      fullPath: '/anti-ragging'
+      preLoaderRoute: typeof AntiRaggingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni': {
+      id: '/alumni'
+      path: '/alumni'
+      fullPath: '/alumni'
+      preLoaderRoute: typeof AlumniRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +402,104 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/': {
+      id: '/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof CoursesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admissions/': {
+      id: '/admissions/'
+      path: '/admissions'
+      fullPath: '/admissions/'
+      preLoaderRoute: typeof AdmissionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$course': {
+      id: '/courses/$course'
+      path: '/courses/$course'
+      fullPath: '/courses/$course'
+      preLoaderRoute: typeof CoursesCourseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admissions/inquiry': {
+      id: '/admissions/inquiry'
+      path: '/admissions/inquiry'
+      fullPath: '/admissions/inquiry'
+      preLoaderRoute: typeof AdmissionsInquiryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/engineering/$dept': {
+      id: '/courses/engineering/$dept'
+      path: '/courses/engineering/$dept'
+      fullPath: '/courses/engineering/$dept'
+      preLoaderRoute: typeof CoursesEngineeringDeptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$course/faculty': {
+      id: '/courses/$course/faculty'
+      path: '/faculty'
+      fullPath: '/courses/$course/faculty'
+      preLoaderRoute: typeof CoursesCourseFacultyRouteImport
+      parentRoute: typeof CoursesCourseRoute
+    }
+    '/courses/engineering/$dept/faculty': {
+      id: '/courses/engineering/$dept/faculty'
+      path: '/faculty'
+      fullPath: '/courses/engineering/$dept/faculty'
+      preLoaderRoute: typeof CoursesEngineeringDeptFacultyRouteImport
+      parentRoute: typeof CoursesEngineeringDeptRoute
+    }
   }
 }
 
+interface CoursesCourseRouteChildren {
+  CoursesCourseFacultyRoute: typeof CoursesCourseFacultyRoute
+}
+
+const CoursesCourseRouteChildren: CoursesCourseRouteChildren = {
+  CoursesCourseFacultyRoute: CoursesCourseFacultyRoute,
+}
+
+const CoursesCourseRouteWithChildren = CoursesCourseRoute._addFileChildren(
+  CoursesCourseRouteChildren,
+)
+
+interface CoursesEngineeringDeptRouteChildren {
+  CoursesEngineeringDeptFacultyRoute: typeof CoursesEngineeringDeptFacultyRoute
+}
+
+const CoursesEngineeringDeptRouteChildren: CoursesEngineeringDeptRouteChildren =
+  {
+    CoursesEngineeringDeptFacultyRoute: CoursesEngineeringDeptFacultyRoute,
+  }
+
+const CoursesEngineeringDeptRouteWithChildren =
+  CoursesEngineeringDeptRoute._addFileChildren(
+    CoursesEngineeringDeptRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AlumniRoute: AlumniRoute,
+  AntiRaggingRoute: AntiRaggingRoute,
+  CampusRoute: CampusRoute,
+  CampusLifeRoute: CampusLifeRoute,
+  CareersRoute: CareersRoute,
+  ContactRoute: ContactRoute,
+  DownloadsRoute: DownloadsRoute,
+  GrievanceRoute: GrievanceRoute,
+  NewsRoute: NewsRoute,
+  ParentsRoute: ParentsRoute,
+  PlacementRoute: PlacementRoute,
+  StudentLoginRoute: StudentLoginRoute,
+  AdmissionsInquiryRoute: AdmissionsInquiryRoute,
+  CoursesCourseRoute: CoursesCourseRouteWithChildren,
+  AdmissionsIndexRoute: AdmissionsIndexRoute,
+  CoursesIndexRoute: CoursesIndexRoute,
+  CoursesEngineeringDeptRoute: CoursesEngineeringDeptRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
