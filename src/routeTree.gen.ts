@@ -11,8 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
+import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
+import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
+import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
+import { Route as CoursesEngineeringDeptFacultyRouteImport } from './routes/courses.engineering.$dept.faculty'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
@@ -24,9 +29,19 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesIndexRoute = CoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
   id: '/admissions/',
   path: '/admissions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseRoute = CoursesCourseRouteImport.update({
+  id: '/courses/$course',
+  path: '/courses/$course',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
@@ -34,39 +49,101 @@ const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
   path: '/admissions/inquiry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CoursesEngineeringDeptRoute = CoursesEngineeringDeptRouteImport.update({
+  id: '/courses/engineering/$dept',
+  path: '/courses/engineering/$dept',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseFacultyRoute = CoursesCourseFacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => CoursesCourseRoute,
+} as any)
+const CoursesEngineeringDeptFacultyRoute =
+  CoursesEngineeringDeptFacultyRouteImport.update({
+    id: '/faculty',
+    path: '/faculty',
+    getParentRoute: () => CoursesEngineeringDeptRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions/': typeof AdmissionsIndexRoute
+  '/courses/': typeof CoursesIndexRoute
+  '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
+  '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions': typeof AdmissionsIndexRoute
+  '/courses': typeof CoursesIndexRoute
+  '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
+  '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions/': typeof AdmissionsIndexRoute
+  '/courses/': typeof CoursesIndexRoute
+  '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
+  '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/admissions/inquiry' | '/admissions/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/admissions/inquiry'
+    | '/courses/$course'
+    | '/admissions/'
+    | '/courses/'
+    | '/courses/$course/faculty'
+    | '/courses/engineering/$dept'
+    | '/courses/engineering/$dept/faculty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/admissions/inquiry' | '/admissions'
-  id: '__root__' | '/' | '/about' | '/admissions/inquiry' | '/admissions/'
+  to:
+    | '/'
+    | '/about'
+    | '/admissions/inquiry'
+    | '/courses/$course'
+    | '/admissions'
+    | '/courses'
+    | '/courses/$course/faculty'
+    | '/courses/engineering/$dept'
+    | '/courses/engineering/$dept/faculty'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/admissions/inquiry'
+    | '/courses/$course'
+    | '/admissions/'
+    | '/courses/'
+    | '/courses/$course/faculty'
+    | '/courses/engineering/$dept'
+    | '/courses/engineering/$dept/faculty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
+  CoursesCourseRoute: typeof CoursesCourseRouteWithChildren
   AdmissionsIndexRoute: typeof AdmissionsIndexRoute
+  CoursesIndexRoute: typeof CoursesIndexRoute
+  CoursesEngineeringDeptRoute: typeof CoursesEngineeringDeptRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -85,11 +162,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/': {
+      id: '/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof CoursesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admissions/': {
       id: '/admissions/'
       path: '/admissions'
       fullPath: '/admissions/'
       preLoaderRoute: typeof AdmissionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$course': {
+      id: '/courses/$course'
+      path: '/courses/$course'
+      fullPath: '/courses/$course'
+      preLoaderRoute: typeof CoursesCourseRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admissions/inquiry': {
@@ -99,14 +190,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdmissionsInquiryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/courses/engineering/$dept': {
+      id: '/courses/engineering/$dept'
+      path: '/courses/engineering/$dept'
+      fullPath: '/courses/engineering/$dept'
+      preLoaderRoute: typeof CoursesEngineeringDeptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$course/faculty': {
+      id: '/courses/$course/faculty'
+      path: '/faculty'
+      fullPath: '/courses/$course/faculty'
+      preLoaderRoute: typeof CoursesCourseFacultyRouteImport
+      parentRoute: typeof CoursesCourseRoute
+    }
+    '/courses/engineering/$dept/faculty': {
+      id: '/courses/engineering/$dept/faculty'
+      path: '/faculty'
+      fullPath: '/courses/engineering/$dept/faculty'
+      preLoaderRoute: typeof CoursesEngineeringDeptFacultyRouteImport
+      parentRoute: typeof CoursesEngineeringDeptRoute
+    }
   }
 }
+
+interface CoursesCourseRouteChildren {
+  CoursesCourseFacultyRoute: typeof CoursesCourseFacultyRoute
+}
+
+const CoursesCourseRouteChildren: CoursesCourseRouteChildren = {
+  CoursesCourseFacultyRoute: CoursesCourseFacultyRoute,
+}
+
+const CoursesCourseRouteWithChildren = CoursesCourseRoute._addFileChildren(
+  CoursesCourseRouteChildren,
+)
+
+interface CoursesEngineeringDeptRouteChildren {
+  CoursesEngineeringDeptFacultyRoute: typeof CoursesEngineeringDeptFacultyRoute
+}
+
+const CoursesEngineeringDeptRouteChildren: CoursesEngineeringDeptRouteChildren =
+  {
+    CoursesEngineeringDeptFacultyRoute: CoursesEngineeringDeptFacultyRoute,
+  }
+
+const CoursesEngineeringDeptRouteWithChildren =
+  CoursesEngineeringDeptRoute._addFileChildren(
+    CoursesEngineeringDeptRouteChildren,
+  )
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   AdmissionsInquiryRoute: AdmissionsInquiryRoute,
+  CoursesCourseRoute: CoursesCourseRouteWithChildren,
   AdmissionsIndexRoute: AdmissionsIndexRoute,
+  CoursesIndexRoute: CoursesIndexRoute,
+  CoursesEngineeringDeptRoute: CoursesEngineeringDeptRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

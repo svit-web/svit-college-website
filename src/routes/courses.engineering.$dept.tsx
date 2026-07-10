@@ -23,14 +23,14 @@ function DeptPage() {
   const others = engDepts.filter((d) => d.slug !== dept.slug);
   return (
     <>
-      <PageHero title={dept.name} accent={`Engineering · ${dept.short}`} subtitle={dept.overview} crumbs={[{ label: "Home", to: "/" }, { label: "Engineering", to: "/courses/$course", params: { course: "engineering" } as any }, { label: dept.name }]} />
+      <PageHero title={dept.name} accent={`Engineering · ${dept.short}`} subtitle={dept.overview} crumbs={[{ label: "Home", to: "/" }, { label: "Engineering", to: "/courses/engineering" as any }, { label: dept.name }]} />
 
       <section className="container-page py-20">
         <div className="grid gap-8 md:grid-cols-2">
           <div>
             <SectionHeading eyebrow="Facilities" title="Labs & Facilities" />
             <ul className="mt-6 space-y-3">
-              {dept.labs.map((l) => (
+              {dept.labs.map((l: string) => (
                 <li key={l} className="flex items-start gap-3 rounded-md border border-border bg-white p-4">
                   <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-gold" />
                   <span className="text-sm">{l}</span>
@@ -41,7 +41,7 @@ function DeptPage() {
           <div>
             <SectionHeading eyebrow="Careers" title="Career Pathways" />
             <ul className="mt-6 space-y-3">
-              {dept.careers.map((c) => (
+              {dept.careers.map((c: string) => (
                 <li key={c} className="flex items-start gap-3 rounded-md border border-border bg-white p-4">
                   <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson" />
                   <span className="text-sm">{c}</span>

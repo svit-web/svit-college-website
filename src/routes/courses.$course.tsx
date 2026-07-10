@@ -37,7 +37,7 @@ function CoursePage() {
             <div>
               <SectionHeading eyebrow="Programme Highlights" title="What makes it different" />
               <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-                {course.highlights.map((h) => (
+                {course.highlights.map((h: string) => (
                   <li key={h} className="flex items-start gap-3 rounded-md border border-border bg-white p-4">
                     <Check className="mt-0.5 h-4 w-4 text-gold shrink-0" />
                     <span className="text-sm">{h}</span>
@@ -48,7 +48,7 @@ function CoursePage() {
             <div>
               <SectionHeading eyebrow="Outcomes" title="Learning outcomes" />
               <ul className="mt-8 space-y-3">
-                {course.outcomes.map((o) => (
+                {course.outcomes.map((o: string) => (
                   <li key={o} className="flex items-start gap-3">
                     <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson shrink-0" />
                     <span className="text-sm text-muted-foreground">{o}</span>
