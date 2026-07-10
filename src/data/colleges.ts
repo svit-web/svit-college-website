@@ -48,7 +48,7 @@ export const colleges: College[] = [
     shortCode: "SVIT",
     // TODO: confirm final tagline copy
     tagline: "Engineering Tomorrow's Innovators",
-    logo: "/assets/logos/svit-logo.png",
+    logo: svitLogo.url,
     route: "/colleges/svit",
     hero: {
       kicker: "Est. 2005 · Vasad, Gujarat",
@@ -91,7 +91,7 @@ export const colleges: College[] = [
     shortCode: "SVICA",
     // TODO: confirm final tagline copy
     tagline: "Shaping Careers in Computer Applications",
-    logo: "/assets/logos/svica-logo.png",
+    logo: svicaLogo.url,
     route: "/colleges/svica",
     hero: {
       kicker: "Computer Applications · SVIT Group",
@@ -117,7 +117,7 @@ export const colleges: College[] = [
     shortCode: "SVION",
     // TODO: confirm final tagline copy
     tagline: "Nursing Excellence, Compassion in Care",
-    logo: "/assets/logos/svion-logo.png",
+    logo: svionLogo.url,
     route: "/colleges/svion",
     hero: {
       kicker: "Nursing · SVIT Group",
@@ -145,7 +145,7 @@ export const colleges: College[] = [
     shortCode: "SVIT COA",
     // TODO: confirm final tagline copy
     tagline: "Designing Spaces, Building Futures",
-    logo: "/assets/logos/svit-coa-logo.png",
+    logo: coaLogo.url,
     route: "/colleges/svit-coa",
     hero: {
       kicker: "Architecture · SVIT Group",
