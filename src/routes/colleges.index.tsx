@@ -21,10 +21,10 @@ function CollegesIndex() {
   return (
     <>
       <PageHero
-        eyebrow="SVIT Group"
+        accent="SVIT Group"
         title="Our Colleges"
         subtitle="Four constituent institutes under one campus — engineering, computer applications, nursing, and architecture."
-        breadcrumbs={[{ label: "Home", to: "/" }, { label: "Colleges" }]}
+        crumbs={[{ label: "Home", to: "/" }, { label: "Colleges" }]}
       />
       <section className="container-page py-20">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
