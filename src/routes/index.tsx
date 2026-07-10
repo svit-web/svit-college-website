@@ -25,7 +25,7 @@ function Home() {
       <Hero />
       <HomeCarousel />
       <StatsStrip />
-      <CoursesSection />
+      <CollegesSection />
       <WhySection />
       <TrustBand />
       <EventsAndEnquiry />
