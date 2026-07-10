@@ -1,5 +1,9 @@
 // College configs for the SVIT Group umbrella site.
 // Kept as a single data source so pages can later be driven from a CMS/db.
+import svitLogo from "@/assets/svit-logo.jpg.asset.json";
+import svicaLogo from "@/assets/svica-logo.jpg.asset.json";
+import svionLogo from "@/assets/svion-logo.png.asset.json";
+import coaLogo from "@/assets/coa-svit-logo.png.asset.json";
 
 export type CollegeSlug = "svit" | "svica" | "svion" | "svit-coa";
 
