@@ -103,31 +103,36 @@ function StatsStrip() {
   );
 }
 
-function CoursesSection() {
+function CollegesSection() {
   return (
     <section className="container-page py-20">
       <SectionHeading
         center
-        eyebrow="What We Offer"
-        title="Programmes Designed for Impact"
-        subtitle="Seven undergraduate and postgraduate streams — each built with rigour, mentorship, and industry alignment."
+        eyebrow="SVIT Group"
+        title="Our Colleges"
+        subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
       />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {courses.map((c, i) => (
-          <Reveal key={c.slug} delay={i * 0.05}>
+      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-2">
+        {colleges.map((c, i) => (
+          <Reveal key={c.id} delay={i * 0.05}>
             <Link
-              to="/courses/$course"
-              params={{ course: c.slug }}
-              className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6"
+              to="/colleges/$college"
+              params={{ college: c.id }}
+              className="card-lift group flex h-full items-start gap-5 rounded-2xl border border-border bg-white p-6"
             >
-              <div className={cn("mb-4 flex h-12 w-12 items-center justify-center rounded-md text-white font-display font-bold", c.color)}>
-                {c.short}
-              </div>
-              <h3 className="font-display text-xl font-bold text-navy">{c.name}</h3>
-              <div className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-crimson">{c.tagline}</div>
-              <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{c.description}</p>
-              <div className="mt-5 flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-gold">
-                Learn more <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+              <CollegeLogo
+                shortCode={c.shortCode}
+                src={c.logo}
+                className="h-16 w-16 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
+              />
+              <div className="min-w-0">
+                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.shortCode}</div>
+                <h3 className="mt-1 font-display text-lg font-bold text-navy leading-tight">{c.name}</h3>
+                {/* TODO: confirm final tagline copy */}
+                <p className="mt-2 text-sm text-muted-foreground italic line-clamp-2">{c.tagline}</p>
+                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-gold">
+                  Explore {c.shortCode} <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+                </div>
               </div>
             </Link>
           </Reveal>
