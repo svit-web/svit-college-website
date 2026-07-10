@@ -1,15 +1,15 @@
 import { Link } from "@tanstack/react-router";
+import svitBrand from "@/assets/svit-brand.jpg.asset.json";
 import { cn } from "@/lib/utils";
 
 export function Logo({ light = false }: { light?: boolean }) {
   return (
     <Link to="/" className="flex items-center gap-3 group">
-      <div className="relative">
-        <div className="flex h-11 w-11 items-center justify-center rounded-md bg-navy text-white font-display font-bold text-lg tracking-tight shadow-sm">
-          SV
-        </div>
-        <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-gold ring-2 ring-white" />
-      </div>
+      <img
+        src={svitBrand.url}
+        alt="SVIT Vasad logo"
+        className="h-12 w-12 object-contain"
+      />
       <div className="leading-tight">
         <div className={cn("font-display font-bold text-base", light ? "text-white" : "text-navy")}>
           SVIT Vasad
@@ -21,3 +21,4 @@ export function Logo({ light = false }: { light?: boolean }) {
     </Link>
   );
 }
+
