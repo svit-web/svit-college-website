@@ -26,6 +26,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
+import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
 import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
 import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
@@ -116,6 +117,11 @@ const CoursesCourseRoute = CoursesCourseRouteImport.update({
   path: '/courses/$course',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollegesCollegeRoute = CollegesCollegeRouteImport.update({
+  id: '/colleges/$college',
+  path: '/colleges/$college',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
   id: '/admissions/inquiry',
   path: '/admissions/inquiry',
@@ -154,6 +160,7 @@ export interface FileRoutesByFullPath {
   '/placement': typeof PlacementRoute
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions/': typeof AdmissionsIndexRoute
   '/courses/': typeof CoursesIndexRoute
@@ -177,6 +184,7 @@ export interface FileRoutesByTo {
   '/placement': typeof PlacementRoute
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions': typeof AdmissionsIndexRoute
   '/courses': typeof CoursesIndexRoute
@@ -201,6 +209,7 @@ export interface FileRoutesById {
   '/placement': typeof PlacementRoute
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions/': typeof AdmissionsIndexRoute
   '/courses/': typeof CoursesIndexRoute
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/placement'
     | '/student-login'
     | '/admissions/inquiry'
+    | '/colleges/$college'
     | '/courses/$course'
     | '/admissions/'
     | '/courses/'
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/placement'
     | '/student-login'
     | '/admissions/inquiry'
+    | '/colleges/$college'
     | '/courses/$course'
     | '/admissions'
     | '/courses'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/placement'
     | '/student-login'
     | '/admissions/inquiry'
+    | '/colleges/$college'
     | '/courses/$course'
     | '/admissions/'
     | '/courses/'
@@ -296,6 +308,7 @@ export interface RootRouteChildren {
   PlacementRoute: typeof PlacementRoute
   StudentLoginRoute: typeof StudentLoginRoute
   AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
+  CollegesCollegeRoute: typeof CollegesCollegeRoute
   CoursesCourseRoute: typeof CoursesCourseRouteWithChildren
   AdmissionsIndexRoute: typeof AdmissionsIndexRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
@@ -423,6 +436,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesCourseRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/colleges/$college': {
+      id: '/colleges/$college'
+      path: '/colleges/$college'
+      fullPath: '/colleges/$college'
+      preLoaderRoute: typeof CollegesCollegeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admissions/inquiry': {
       id: '/admissions/inquiry'
       path: '/admissions/inquiry'
@@ -496,6 +516,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlacementRoute: PlacementRoute,
   StudentLoginRoute: StudentLoginRoute,
   AdmissionsInquiryRoute: AdmissionsInquiryRoute,
+  CollegesCollegeRoute: CollegesCollegeRoute,
   CoursesCourseRoute: CoursesCourseRouteWithChildren,
   AdmissionsIndexRoute: AdmissionsIndexRoute,
   CoursesIndexRoute: CoursesIndexRoute,
