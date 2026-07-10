@@ -1,42 +1,64 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
-import { ArrowRight, Award, BadgeCheck, Briefcase, Building2, GraduationCap, Lightbulb, Trees, Users } from "lucide-react";
-import { HomeCarousel } from "@/components/site/Carousel";
+import {
+  ArrowRight,
+  Award,
+  BadgeCheck,
+  Briefcase,
+  Building2,
+  GraduationCap,
+  Lightbulb,
+  Trees,
+  Users,
+} from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import campusHero from "@/assets/campus-hero.jpg";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { courses, events, recruiters, stats, whyChoose } from "@/data/site";
-import { colleges } from "@/data/colleges";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
+import type { College } from "@/data/colleges";
+import { events, recruiters, stats, whyChoose } from "@/data/site";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { useState } from "react";
-import campusHero from "@/assets/campus-hero.jpg";
-
-export const Route = createFileRoute("/")({
-  component: Home,
-});
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
-  BadgeCheck, GraduationCap, Briefcase, Building2, Users, Lightbulb, Award, Trees,
+  BadgeCheck,
+  GraduationCap,
+  Briefcase,
+  Building2,
+  Users,
+  Lightbulb,
+  Award,
+  Trees,
 };
 
-function Home() {
+/**
+ * Shared landing page template for every college under the SVIT Group.
+ * Reuses the exact section order, components, and design tokens from the
+ * homepage — only text/logo/links change per college.
+ */
+export function CollegeLandingPage({ college }: { college: College }) {
+  // TODO: swap in college-specific stats/whyChoose/recruiters when supplied.
+  const displayStats = college.stats ?? stats;
+  const displayWhy = college.whyChoose ?? whyChoose;
+  const displayRecruiters = college.recruiters ?? recruiters;
+
   return (
     <>
-      <Hero />
-      <HomeCarousel />
-      <StatsStrip />
-      <CollegesSection />
-      <WhySection />
+      <Hero college={college} />
+      <StatsStrip data={displayStats} />
+      <ProgramsSection college={college} />
+      <WhySection college={college} data={displayWhy} />
       <TrustBand />
-      <EventsAndEnquiry />
+      <EventsAndEnquiry college={college} />
+      <RecruitersStrip data={displayRecruiters} />
       <CTABanner />
     </>
   );
 }
 
-function Hero() {
+function Hero({ college }: { college: College }) {
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
       <img src={campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
@@ -48,28 +70,23 @@ function Hero() {
           transition={{ duration: 0.8 }}
           className="max-w-3xl"
         >
-          <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-            Est. 2005 · Vasad, Gujarat
+          <div className="mb-6 flex items-center gap-4">
+            <CollegeLogo
+              shortCode={college.shortCode}
+              src={college.logo}
+              className="h-16 w-16 rounded-md bg-white/5 p-2"
+            />
+            <div className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+              {college.hero.kicker}
+            </div>
           </div>
           <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.02]">
-            Build Your Future. <br />
-            <span className="text-gold">Shape The World.</span>
+            {college.name} <br />
+            <span className="text-gold">({college.shortCode})</span>
           </h1>
-          <p className="mt-6 text-lg text-white/85 max-w-2xl">
-            SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with 95%+ placement across 200+ recruiting partners.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2 text-xs">
-            {courses.slice(0, 7).map((c) => (
-              <Link
-                key={c.slug}
-                to="/courses/$course"
-                params={{ course: c.slug }}
-                className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-white/85 hover:border-gold hover:text-gold transition-colors"
-              >
-                {c.name}
-              </Link>
-            ))}
-          </div>
+          {/* TODO: confirm final tagline copy */}
+          <p className="mt-5 font-display text-2xl text-gold/90 italic">{college.tagline}</p>
+          <p className="mt-4 text-lg text-white/85 max-w-2xl">{college.hero.subhead}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               to="/admissions/inquiry"
@@ -77,12 +94,12 @@ function Hero() {
             >
               Apply Now <ArrowRight className="h-4 w-4" />
             </Link>
-            <Link
-              to="/courses"
+            <a
+              href="#programmes"
               className="inline-flex items-center gap-2 rounded-md border border-white/25 px-6 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
             >
-              Explore Courses
-            </Link>
+              Explore Programmes
+            </a>
           </div>
         </motion.div>
       </div>
@@ -90,11 +107,11 @@ function Hero() {
   );
 }
 
-function StatsStrip() {
+function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
   return (
     <section className="bg-navy text-white">
       <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
-        {stats.map((s) => (
+        {data.map((s) => (
           <div key={s.label} className="text-center">
             <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.value}</div>
             <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.label}</div>
@@ -105,57 +122,73 @@ function StatsStrip() {
   );
 }
 
-function CollegesSection() {
+function ProgramsSection({ college }: { college: College }) {
   return (
-    <section className="container-page py-20">
+    <section id="programmes" className="container-page py-20">
       <SectionHeading
         center
-        eyebrow="SVIT Group"
-        title="Our Colleges"
-        subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
+        eyebrow="What We Offer"
+        title={`Programmes at ${college.shortCode}`}
+        subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-2">
-        {colleges.map((c, i) => (
-          <Reveal key={c.id} delay={i * 0.05}>
-            <Link
-              to="/colleges/$college"
-              params={{ college: c.id }}
-              className="card-lift group flex h-full items-start gap-5 rounded-2xl border border-border bg-white p-6"
-            >
-              <CollegeLogo
-                shortCode={c.shortCode}
-                src={c.logo}
-                className="h-16 w-16 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
-              />
-              <div className="min-w-0">
-                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.shortCode}</div>
-                <h3 className="mt-1 font-display text-lg font-bold text-navy leading-tight">{c.name}</h3>
-                {/* TODO: confirm final tagline copy */}
-                <p className="mt-2 text-sm text-muted-foreground italic line-clamp-2">{c.tagline}</p>
-                <div className="mt-4 flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-gold">
-                  Explore {c.shortCode} <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
-                </div>
-              </div>
-            </Link>
-          </Reveal>
+      <div className="mt-12 space-y-14">
+        {college.programGroups.map((group) => (
+          <div key={group.group}>
+            {college.programGroups.length > 1 && (
+              <h3 className="mb-6 font-display text-2xl font-bold text-navy">
+                <span className="accent-underline">{group.group}</span>
+              </h3>
+            )}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {group.programs.map((p, i) => (
+                <Reveal key={p.name} delay={i * 0.05}>
+                  <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
+                    <div
+                      className={cn(
+                        "mb-4 flex h-12 w-12 items-center justify-center rounded-md text-white font-display font-bold",
+                        p.color ?? "bg-navy",
+                      )}
+                    >
+                      {p.short ?? p.name.slice(0, 2)}
+                    </div>
+                    <h4 className="font-display text-xl font-bold text-navy">{p.name}</h4>
+                    {p.duration && (
+                      <div className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-crimson">
+                        {p.duration}
+                      </div>
+                    )}
+                    {p.eligibility && (
+                      <p className="mt-3 text-sm text-muted-foreground">{p.eligibility}</p>
+                    )}
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </section>
   );
 }
 
-function WhySection() {
+function WhySection({
+  college,
+  data,
+}: {
+  college: College;
+  data: { title: string; desc: string; icon: string }[];
+}) {
   return (
     <section className="bg-secondary/50 py-20">
       <div className="container-page">
         <SectionHeading
           center
-          eyebrow="Why SVIT"
+          eyebrow={`Why ${college.shortCode}`}
           title="A Place to Grow, Not Just Study"
-          subtitle="What sets SVIT Vasad apart — from faculty and infrastructure to research culture and industry linkages."
+          subtitle={`What sets ${college.shortCode} apart — from faculty and infrastructure to research culture and industry linkages.`}
         />
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {whyChoose.map((w, i) => {
+          {data.map((w, i) => {
             const Icon = iconMap[w.icon] ?? BadgeCheck;
             return (
               <Reveal key={w.title} delay={i * 0.05}>
@@ -191,7 +224,7 @@ function TrustBand() {
   );
 }
 
-function EventsAndEnquiry() {
+function EventsAndEnquiry({ college }: { college: College }) {
   return (
     <section className="container-page py-20">
       <div className="grid gap-8 lg:grid-cols-3">
@@ -209,19 +242,36 @@ function EventsAndEnquiry() {
         </div>
         <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-navy to-navy-light p-8 text-white">
           <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">Admissions Open</div>
-          <h3 className="font-display text-2xl font-bold">Your future starts here</h3>
-          <p className="mt-3 text-sm text-white/80">Join 5000+ students building careers with SVIT. Merit-based scholarships, hostel accommodation, and dedicated placement support.</p>
-          <Link to="/admissions" className="mt-6 inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft">
+          <h3 className="font-display text-2xl font-bold">Join {college.shortCode}</h3>
+          <p className="mt-3 text-sm text-white/80">
+            Merit-based scholarships, hostel accommodation, and dedicated placement support — start your journey with{" "}
+            {college.shortCode} today.
+          </p>
+          <Link
+            to="/admissions"
+            className="mt-6 inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft"
+          >
             View Admissions <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <EnquiryForm />
+        <EnquiryForm college={college} />
       </div>
-      <Reveal className="mt-14">
-        <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">Our Recruiters</div>
+    </section>
+  );
+}
+
+function RecruitersStrip({ data }: { data: string[] }) {
+  return (
+    <section className="container-page pb-20">
+      <Reveal>
+        <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Our Recruiters
+        </div>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {recruiters.map((r) => (
-            <span key={r} className="font-display text-lg font-bold text-navy/50 hover:text-navy transition-colors">{r}</span>
+          {data.map((r) => (
+            <span key={r} className="font-display text-lg font-bold text-navy/50 hover:text-navy transition-colors">
+              {r}
+            </span>
           ))}
         </div>
       </Reveal>
@@ -229,8 +279,9 @@ function EventsAndEnquiry() {
   );
 }
 
-function EnquiryForm() {
+function EnquiryForm({ college }: { college: College }) {
   const [sent, setSent] = useState(false);
+  const allPrograms = college.programGroups.flatMap((g) => g.programs);
   return (
     <form
       onSubmit={(e) => {
@@ -241,7 +292,7 @@ function EnquiryForm() {
       className="rounded-2xl border border-border bg-white p-6"
     >
       <div className="text-xs font-semibold uppercase tracking-widest text-crimson">Quick Enquiry</div>
-      <h3 className="mt-1 font-display text-xl font-bold text-navy">Talk to us</h3>
+      <h3 className="mt-1 font-display text-xl font-bold text-navy">Talk to {college.shortCode}</h3>
       {sent ? (
         <div className="mt-6 rounded-md bg-secondary p-5 text-sm">Thank you! We'll respond within 24 hours.</div>
       ) : (
@@ -251,7 +302,9 @@ function EnquiryForm() {
           <input required placeholder="Mobile" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           <select className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm">
             <option>Interested Programme</option>
-            {courses.map((c) => <option key={c.slug}>{c.name}</option>)}
+            {allPrograms.map((p) => (
+              <option key={p.name}>{p.name}</option>
+            ))}
           </select>
           <button className="w-full rounded-md bg-navy px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light transition-colors">
             Submit Enquiry

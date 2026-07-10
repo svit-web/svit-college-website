@@ -3,7 +3,9 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
 import { Logo } from "./Logo";
-import { primaryNav, site, topNav, courses } from "@/data/site";
+import { primaryNav, site, topNav } from "@/data/site";
+import { colleges } from "@/data/colleges";
+import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -40,7 +42,7 @@ export function Header() {
         <nav className="hidden items-center gap-1 lg:flex">
           {primaryNav.map((n) => {
             const active = n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
-            if (n.label === "Courses") {
+            if (n.label === "Colleges") {
               return (
                 <div
                   key={n.to}
@@ -66,20 +68,22 @@ export function Header() {
                         transition={{ duration: 0.18 }}
                         className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 rounded-2xl border border-border bg-white p-4 shadow-xl"
                       >
-                        <div className="grid grid-cols-2 gap-2">
-                          {courses.map((c) => (
+                        <div className="grid grid-cols-1 gap-2">
+                          {colleges.map((c) => (
                             <Link
-                              key={c.slug}
-                              to="/courses/$course"
-                              params={{ course: c.slug }}
+                              key={c.id}
+                              to="/colleges/$college"
+                              params={{ college: c.id }}
                               className="flex items-start gap-3 rounded-md p-3 hover:bg-secondary transition-colors"
                             >
-                              <div className={cn("h-9 w-9 shrink-0 rounded-md text-white flex items-center justify-center font-bold text-xs", c.color)}>
-                                {c.short}
-                              </div>
+                              <CollegeLogo
+                                shortCode={c.shortCode}
+                                src={c.logo}
+                                className="h-10 w-10 shrink-0 rounded-md border border-border bg-secondary/50 p-1 text-navy"
+                              />
                               <div className="min-w-0">
-                                <div className="font-semibold text-sm text-navy">{c.name}</div>
-                                <div className="text-xs text-muted-foreground truncate">{c.tagline}</div>
+                                <div className="font-semibold text-sm text-navy truncate">{c.name}</div>
+                                <div className="text-xs text-muted-foreground truncate">{c.shortCode} — {c.tagline}</div>
                               </div>
                             </Link>
                           ))}

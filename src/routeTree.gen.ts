@@ -24,8 +24,10 @@ import { Route as AlumniRouteImport } from './routes/alumni'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
+import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
 import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
 import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
@@ -106,6 +108,11 @@ const CoursesIndexRoute = CoursesIndexRouteImport.update({
   path: '/courses/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CollegesIndexRoute = CollegesIndexRouteImport.update({
+  id: '/colleges/',
+  path: '/colleges/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
   id: '/admissions/',
   path: '/admissions/',
@@ -114,6 +121,11 @@ const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
 const CoursesCourseRoute = CoursesCourseRouteImport.update({
   id: '/courses/$course',
   path: '/courses/$course',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollegesCollegeRoute = CollegesCollegeRouteImport.update({
+  id: '/colleges/$college',
+  path: '/colleges/$college',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
@@ -154,8 +166,10 @@ export interface FileRoutesByFullPath {
   '/placement': typeof PlacementRoute
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions/': typeof AdmissionsIndexRoute
+  '/colleges/': typeof CollegesIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
@@ -177,8 +191,10 @@ export interface FileRoutesByTo {
   '/placement': typeof PlacementRoute
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions': typeof AdmissionsIndexRoute
+  '/colleges': typeof CollegesIndexRoute
   '/courses': typeof CoursesIndexRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
@@ -201,8 +217,10 @@ export interface FileRoutesById {
   '/placement': typeof PlacementRoute
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/admissions/': typeof AdmissionsIndexRoute
+  '/colleges/': typeof CollegesIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
@@ -226,8 +244,10 @@ export interface FileRouteTypes {
     | '/placement'
     | '/student-login'
     | '/admissions/inquiry'
+    | '/colleges/$college'
     | '/courses/$course'
     | '/admissions/'
+    | '/colleges/'
     | '/courses/'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
@@ -249,8 +269,10 @@ export interface FileRouteTypes {
     | '/placement'
     | '/student-login'
     | '/admissions/inquiry'
+    | '/colleges/$college'
     | '/courses/$course'
     | '/admissions'
+    | '/colleges'
     | '/courses'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
@@ -272,8 +294,10 @@ export interface FileRouteTypes {
     | '/placement'
     | '/student-login'
     | '/admissions/inquiry'
+    | '/colleges/$college'
     | '/courses/$course'
     | '/admissions/'
+    | '/colleges/'
     | '/courses/'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
@@ -296,8 +320,10 @@ export interface RootRouteChildren {
   PlacementRoute: typeof PlacementRoute
   StudentLoginRoute: typeof StudentLoginRoute
   AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
+  CollegesCollegeRoute: typeof CollegesCollegeRoute
   CoursesCourseRoute: typeof CoursesCourseRouteWithChildren
   AdmissionsIndexRoute: typeof AdmissionsIndexRoute
+  CollegesIndexRoute: typeof CollegesIndexRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
   CoursesEngineeringDeptRoute: typeof CoursesEngineeringDeptRouteWithChildren
 }
@@ -409,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/colleges/': {
+      id: '/colleges/'
+      path: '/colleges'
+      fullPath: '/colleges/'
+      preLoaderRoute: typeof CollegesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admissions/': {
       id: '/admissions/'
       path: '/admissions'
@@ -421,6 +454,13 @@ declare module '@tanstack/react-router' {
       path: '/courses/$course'
       fullPath: '/courses/$course'
       preLoaderRoute: typeof CoursesCourseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colleges/$college': {
+      id: '/colleges/$college'
+      path: '/colleges/$college'
+      fullPath: '/colleges/$college'
+      preLoaderRoute: typeof CollegesCollegeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admissions/inquiry': {
@@ -496,21 +536,13 @@ const rootRouteChildren: RootRouteChildren = {
   PlacementRoute: PlacementRoute,
   StudentLoginRoute: StudentLoginRoute,
   AdmissionsInquiryRoute: AdmissionsInquiryRoute,
+  CollegesCollegeRoute: CollegesCollegeRoute,
   CoursesCourseRoute: CoursesCourseRouteWithChildren,
   AdmissionsIndexRoute: AdmissionsIndexRoute,
+  CollegesIndexRoute: CollegesIndexRoute,
   CoursesIndexRoute: CoursesIndexRoute,
   CoursesEngineeringDeptRoute: CoursesEngineeringDeptRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

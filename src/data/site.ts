@@ -10,7 +10,7 @@ export const site = {
 export const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
-  { label: "Courses", to: "/courses" },
+  { label: "Colleges", to: "/colleges" },
   { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
   { label: "Placement", to: "/placement" },
