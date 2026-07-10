@@ -128,7 +128,7 @@ function ProgramsSection({ college }: { college: College }) {
       <SectionHeading
         center
         eyebrow="What We Offer"
-        title="Programmes at " + ""
+        title={`Programmes at ${college.shortCode}`}
         subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
       <div className="mt-12 space-y-14">
