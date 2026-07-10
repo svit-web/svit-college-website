@@ -3,7 +3,9 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
 import { Logo } from "./Logo";
-import { primaryNav, site, topNav, courses } from "@/data/site";
+import { primaryNav, site, topNav } from "@/data/site";
+import { colleges } from "@/data/colleges";
+import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 
 export function Header() {
