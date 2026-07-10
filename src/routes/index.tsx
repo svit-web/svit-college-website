@@ -6,6 +6,8 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { courses, events, recruiters, stats, whyChoose } from "@/data/site";
+import { colleges } from "@/data/colleges";
+import { CollegeLogo } from "@/components/site/CollegeLogo";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { useState } from "react";
