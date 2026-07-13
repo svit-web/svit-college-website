@@ -157,11 +157,11 @@ function ProgramsSection({ college }: { college: College }) {
                 <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                   {dept.programs.map((p, i) => (
                     <Reveal key={p.id} delay={i * 0.05}>
-                      <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
+                      <div className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">
                         {/* TODO: replace with real program icon file when available. */}
                         <div
                           aria-hidden
-                          className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-border bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                          className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
                         >
                           {initials(dept.departmentName)}
                         </div>
