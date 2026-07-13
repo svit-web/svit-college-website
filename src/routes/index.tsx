@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Award, BadgeCheck, Briefcase, Building2, GraduationCap, Lightbulb, Trees, Users } from "lucide-react";
 import { HomeCarousel } from "@/components/site/Carousel";
-import { InstituteLogos } from "@/components/site/InstituteLogos";
+
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
