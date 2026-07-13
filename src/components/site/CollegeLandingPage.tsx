@@ -139,46 +139,41 @@ function ProgramsSection({ college }: { college: College }) {
         subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
       <div className="mt-12 space-y-14">
-        {view.map((group) => (
-          <div key={group.group}>
-            {showGroupHeading && (
-              <h3 className="mb-6 font-display text-2xl font-bold text-navy">
-                <span className="accent-underline">{group.group}</span>
-              </h3>
-            )}
-            {group.items.map((dept) => (
-              <div key={dept.departmentId} className="mb-8 last:mb-0">
-                {/* Show department subheading only when multiple departments exist in the group */}
-                {group.items.length > 1 && (
-                  <h4 className="mb-4 text-sm font-bold uppercase tracking-widest text-crimson">
-                    {dept.departmentName}
-                  </h4>
-                )}
-                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                  {dept.programs.map((p, i) => (
-                    <Reveal key={p.id} delay={i * 0.05}>
-                      <div className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">
-                        {/* TODO: replace with real program icon file when available. */}
-                        <div
-                          aria-hidden
-                          className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-                        >
-                          {initials(dept.departmentName)}
-                        </div>
-                        <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                          {dept.departmentName}
-                        </div>
-                        <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
-                          {p.name}
-                        </h5>
+        {view.map((group) => {
+          const allPrograms = group.items.flatMap((dept) =>
+            dept.programs.map((p) => ({ ...p, departmentName: dept.departmentName })),
+          );
+          return (
+            <div key={group.group}>
+              {showGroupHeading && (
+                <h3 className="mb-6 font-display text-2xl font-bold text-navy">
+                  <span className="accent-underline">{group.group}</span>
+                </h3>
+              )}
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {allPrograms.map((p, i) => (
+                  <Reveal key={p.id} delay={i * 0.05}>
+                    <div className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">
+                      {/* TODO: replace with real program icon file when available. */}
+                      <div
+                        aria-hidden
+                        className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                      >
+                        {initials(p.departmentName)}
                       </div>
-                    </Reveal>
-                  ))}
-                </div>
+                      <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                        {p.departmentName}
+                      </div>
+                      <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
+                        {p.name}
+                      </h5>
+                    </div>
+                  </Reveal>
+                ))}
               </div>
-            ))}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </section>
   );
