@@ -304,7 +304,9 @@ function RecruitersStrip({ data }: { data: string[] }) {
 
 function EnquiryForm({ college }: { college: College }) {
   const [sent, setSent] = useState(false);
-  const allPrograms = college.programGroups.flatMap((g) => g.programs);
+  const allPrograms = getDepartmentsForCollege(college.id).flatMap((d) =>
+    getProgramsForDepartment(d.id),
+  );
   return (
     <form
       onSubmit={(e) => {
