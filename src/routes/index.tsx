@@ -26,10 +26,9 @@ function Home() {
   return (
     <>
       <Hero />
-      <InstituteLogos />
+      <CollegesSection />
       <HomeCarousel />
       <StatsStrip />
-      <CollegesSection />
       <WhySection />
       <TrustBand />
       <EventsAndEnquiry />
