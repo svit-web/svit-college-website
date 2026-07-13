@@ -19,8 +19,13 @@ import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 import type { College } from "@/data/colleges";
+import {
+  getCollegeProgramView,
+  getDepartmentsForCollege,
+  getProgramsForDepartment,
+  type CollegeProgramView,
+} from "@/data/academics";
 import { events, recruiters, stats, whyChoose } from "@/data/site";
-import { cn } from "@/lib/utils";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BadgeCheck,
