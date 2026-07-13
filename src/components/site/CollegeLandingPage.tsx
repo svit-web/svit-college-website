@@ -128,6 +128,8 @@ function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
 }
 
 function ProgramsSection({ college }: { college: College }) {
+  const view: CollegeProgramView[] = getCollegeProgramView(college.id);
+  const showGroupHeading = view.length > 1;
   return (
     <section id="programmes" className="container-page py-20">
       <SectionHeading
@@ -137,44 +139,60 @@ function ProgramsSection({ college }: { college: College }) {
         subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
       <div className="mt-12 space-y-14">
-        {college.programGroups.map((group) => (
+        {view.map((group) => (
           <div key={group.group}>
-            {college.programGroups.length > 1 && (
+            {showGroupHeading && (
               <h3 className="mb-6 font-display text-2xl font-bold text-navy">
                 <span className="accent-underline">{group.group}</span>
               </h3>
             )}
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {group.programs.map((p, i) => (
-                <Reveal key={p.name} delay={i * 0.05}>
-                  <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
-                    <div
-                      className={cn(
-                        "mb-4 flex h-12 w-12 items-center justify-center rounded-md text-white font-display font-bold",
-                        p.color ?? "bg-navy",
-                      )}
-                    >
-                      {p.short ?? p.name.slice(0, 2)}
-                    </div>
-                    <h4 className="font-display text-xl font-bold text-navy">{p.name}</h4>
-                    {p.duration && (
-                      <div className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-crimson">
-                        {p.duration}
+            {group.items.map((dept) => (
+              <div key={dept.departmentId} className="mb-8 last:mb-0">
+                {/* Show department subheading only when multiple departments exist in the group */}
+                {group.items.length > 1 && (
+                  <h4 className="mb-4 text-sm font-bold uppercase tracking-widest text-crimson">
+                    {dept.departmentName}
+                  </h4>
+                )}
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  {dept.programs.map((p, i) => (
+                    <Reveal key={p.id} delay={i * 0.05}>
+                      <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
+                        {/* TODO: replace with real program icon file when available. */}
+                        <div
+                          aria-hidden
+                          className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border border-dashed border-border bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                        >
+                          {initials(dept.departmentName)}
+                        </div>
+                        <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                          {dept.departmentName}
+                        </div>
+                        <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
+                          {p.name}
+                        </h5>
                       </div>
-                    )}
-                    {p.eligibility && (
-                      <p className="mt-3 text-sm text-muted-foreground">{p.eligibility}</p>
-                    )}
-                  </div>
-                </Reveal>
-              ))}
-            </div>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         ))}
       </div>
     </section>
   );
 }
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]?.toUpperCase() ?? "")
+    .join("");
+}
+
 
 function WhySection({
   college,
