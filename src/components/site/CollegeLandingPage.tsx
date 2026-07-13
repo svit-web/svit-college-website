@@ -328,7 +328,7 @@ function EnquiryForm({ college }: { college: College }) {
           <select className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm">
             <option>Interested Programme</option>
             {allPrograms.map((p) => (
-              <option key={p.name}>{p.name}</option>
+              <option key={p.id}>{p.name}</option>
             ))}
           </select>
           <button className="w-full rounded-md bg-navy px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light transition-colors">
