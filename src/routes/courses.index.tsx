@@ -23,7 +23,7 @@ function CoursesIndex() {
               <Link
                 to="/courses/$course"
                 params={{ course: c.slug }}
-                className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-7"
+                className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-7 hover:border-gold"
               >
                 <div className="flex items-center gap-4">
                   <div className={cn("flex h-14 w-14 items-center justify-center rounded-md text-white font-display font-bold text-sm", c.color)}>
