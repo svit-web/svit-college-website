@@ -26,7 +26,7 @@ export const Route = createFileRoute("/programs/$program")({
 function ProgramPage() {
   const { program, department } = Route.useLoaderData();
   const detail = getProgramDetail(program.id);
-  const college = department ? collegeMap[department.collegeId] : null;
+  const college = department ? collegeMap[department.collegeId as keyof typeof collegeMap] : null;
   return (
     <>
       <PageHero

@@ -501,7 +501,7 @@ function IndustrySection({ department }: Props) {
 }
 
 export function DepartmentPage({ department }: Props) {
-  const college = collegeMap[department.collegeId];
+  const college = collegeMap[department.collegeId as keyof typeof collegeMap];
   return (
     <>
       <PageHero

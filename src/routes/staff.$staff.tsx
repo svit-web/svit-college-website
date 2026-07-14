@@ -31,7 +31,7 @@ function initials(name: string) {
 
 function StaffProfile() {
   const { member, department } = Route.useLoaderData();
-  const college = department ? collegeMap[department.collegeId] : null;
+  const college = department ? collegeMap[department.collegeId as keyof typeof collegeMap] : null;
   return (
     <>
       <PageHero
