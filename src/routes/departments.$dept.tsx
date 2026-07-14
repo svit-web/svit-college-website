@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
-import { DepartmentPage } from "@/components/site/DepartmentPage";
+import { DepartmentLayout } from "@/components/site/DepartmentLayout";
 import { departments } from "@/data/academics";
 
 export const Route = createFileRoute("/departments/$dept")({
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/departments/$dept")({
 
 function DeptRoute() {
   const { department } = Route.useLoaderData();
-  return <DepartmentPage department={department} />;
+  return <DepartmentLayout department={department} />;
 }
 
 function DeptNotFound() {
