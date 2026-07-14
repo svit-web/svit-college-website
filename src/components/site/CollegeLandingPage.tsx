@@ -141,7 +141,7 @@ function ProgramsSection({ college }: { college: College }) {
       <div className="mt-12 space-y-14">
         {view.map((group) => {
           const allPrograms = group.items.flatMap((dept) =>
-            dept.programs.map((p) => ({ ...p, departmentName: dept.departmentName })),
+            dept.programs.map((p) => ({ ...p, departmentName: dept.departmentName, departmentId: dept.departmentId })),
           );
           return (
             <div key={group.group}>
@@ -153,7 +153,11 @@ function ProgramsSection({ college }: { college: College }) {
               <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {allPrograms.map((p, i) => (
                   <Reveal key={p.id} delay={i * 0.05}>
-                    <div className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">
+                    <Link
+                      to="/departments/$dept"
+                      params={{ dept: p.departmentId }}
+                      className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
+                    >
                       {/* TODO: replace with real program icon file when available. */}
                       <div
                         aria-hidden
@@ -167,7 +171,10 @@ function ProgramsSection({ college }: { college: College }) {
                       <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
                         {p.name}
                       </h5>
-                    </div>
+                      <div className="mt-3 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
+                        View department →
+                      </div>
+                    </Link>
                   </Reveal>
                 ))}
               </div>
