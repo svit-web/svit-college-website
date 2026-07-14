@@ -516,7 +516,7 @@ export function DepartmentPage({ department }: Props) {
       >
         {college && (
           <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
-            <CollegeLogo college={college} className="h-8 w-8 rounded-full bg-white p-0.5" />
+            <CollegeLogo shortCode={college.shortCode} src={college.logo} className="h-8 w-8 rounded-full bg-white p-0.5" />
             <span className="text-xs font-semibold uppercase tracking-widest text-white/90">{college.name}</span>
           </div>
         )}
