@@ -69,68 +69,32 @@ export function DeptAboutView({ department }: Props) {
     <div className="space-y-12">
       <section>
         <SectionHeading eyebrow="About Us" title={`About the Department of ${department.name}`} />
-        <div className="mt-6 grid gap-6 lg:grid-cols-3">
-          <div className="lg:col-span-2 space-y-6">
-            <Reveal>
-              <p className="text-base leading-relaxed text-ink">
-                {content.about ??
-                  `The Department of ${department.name} is committed to delivering quality education, cultivating research aptitude and preparing students for meaningful careers in industry and academia.`}
-              </p>
-            </Reveal>
-            {(content.vision || content.mission) && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {content.vision && (
-                  <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
-                    <div className="text-xs font-bold uppercase tracking-widest text-crimson">Vision</div>
-                    <p className="mt-2 text-sm leading-relaxed text-ink">{content.vision}</p>
-                  </div>
-                )}
-                {content.mission && (
-                  <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
-                    <div className="text-xs font-bold uppercase tracking-widest text-crimson">Mission</div>
-                    <p className="mt-2 text-sm leading-relaxed text-ink">{content.mission}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-          <div>
-            <div className="rounded-2xl border-2 border-navy/15 bg-white p-5">
-              <div className="text-xs font-bold uppercase tracking-widest text-crimson">Programs Offered</div>
-              <div className="mt-3 overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-navy/15 text-navy">
-                      <th className="py-2 pr-3 font-semibold">Program</th>
-                      <th className="py-2 pr-3 font-semibold">Level</th>
-                      <th className="py-2 pr-3 font-semibold">Intake</th>
-                      <th className="py-2 font-semibold">Duration</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {programs.map((p) => {
-                      const d = getProgramDetail(p.id);
-                      return (
-                        <tr key={p.id} className="border-b border-navy/5 last:border-0 align-top">
-                          <td className="py-2 pr-3 text-ink">{p.name}</td>
-                          <td className="py-2 pr-3 text-muted-foreground">{d.degreeLevel}</td>
-                          <td className="py-2 pr-3 text-muted-foreground">{d.intake ?? "—"}</td>
-                          <td className="py-2 text-muted-foreground">{d.durationYears ? `${d.durationYears} yrs` : "—"}</td>
-                        </tr>
-                      );
-                    })}
-                    {programs.length === 0 && (
-                      <tr>
-                        <td colSpan={4} className="py-3 text-center text-muted-foreground">No programs listed.</td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+        <div className="mt-6 space-y-6">
+          <Reveal>
+            <p className="text-base leading-relaxed text-ink">
+              {content.about ??
+                `The Department of ${department.name} is committed to delivering quality education, cultivating research aptitude and preparing students for meaningful careers in industry and academia.`}
+            </p>
+          </Reveal>
+          {(content.vision || content.mission) && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {content.vision && (
+                <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
+                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">Vision</div>
+                  <p className="mt-2 text-sm leading-relaxed text-ink">{content.vision}</p>
+                </div>
+              )}
+              {content.mission && (
+                <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
+                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">Mission</div>
+                  <p className="mt-2 text-sm leading-relaxed text-ink">{content.mission}</p>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
       </section>
+
 
       <section>
         <SectionHeading eyebrow="Programs" title="Programs Offered" />
