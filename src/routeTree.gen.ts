@@ -32,6 +32,10 @@ import { Route as DepartmentsDeptRouteImport } from './routes/departments.$dept'
 import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
 import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
+import { Route as DepartmentsDeptIndexRouteImport } from './routes/departments.$dept.index'
+import { Route as DepartmentsDeptStaffRouteImport } from './routes/departments.$dept.staff'
+import { Route as DepartmentsDeptActivitiesRouteImport } from './routes/departments.$dept.activities'
+import { Route as DepartmentsDeptAchievementsRouteImport } from './routes/departments.$dept.achievements'
 import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
 import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
 import { Route as CoursesEngineeringDeptFacultyRouteImport } from './routes/courses.engineering.$dept.faculty'
@@ -151,6 +155,28 @@ const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
   path: '/admissions/inquiry',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DepartmentsDeptIndexRoute = DepartmentsDeptIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DepartmentsDeptRoute,
+} as any)
+const DepartmentsDeptStaffRoute = DepartmentsDeptStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
+  getParentRoute: () => DepartmentsDeptRoute,
+} as any)
+const DepartmentsDeptActivitiesRoute =
+  DepartmentsDeptActivitiesRouteImport.update({
+    id: '/activities',
+    path: '/activities',
+    getParentRoute: () => DepartmentsDeptRoute,
+  } as any)
+const DepartmentsDeptAchievementsRoute =
+  DepartmentsDeptAchievementsRouteImport.update({
+    id: '/achievements',
+    path: '/achievements',
+    getParentRoute: () => DepartmentsDeptRoute,
+  } as any)
 const CoursesEngineeringDeptRoute = CoursesEngineeringDeptRouteImport.update({
   id: '/courses/engineering/$dept',
   path: '/courses/engineering/$dept',
@@ -186,7 +212,7 @@ export interface FileRoutesByFullPath {
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
-  '/departments/$dept': typeof DepartmentsDeptRoute
+  '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions/': typeof AdmissionsIndexRoute
@@ -194,6 +220,10 @@ export interface FileRoutesByFullPath {
   '/courses/': typeof CoursesIndexRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
+  '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
+  '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
+  '/departments/$dept/': typeof DepartmentsDeptIndexRoute
   '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRoutesByTo {
@@ -214,7 +244,6 @@ export interface FileRoutesByTo {
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
-  '/departments/$dept': typeof DepartmentsDeptRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions': typeof AdmissionsIndexRoute
@@ -222,6 +251,10 @@ export interface FileRoutesByTo {
   '/courses': typeof CoursesIndexRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
+  '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
+  '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
+  '/departments/$dept': typeof DepartmentsDeptIndexRoute
   '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRoutesById {
@@ -243,7 +276,7 @@ export interface FileRoutesById {
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
-  '/departments/$dept': typeof DepartmentsDeptRoute
+  '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions/': typeof AdmissionsIndexRoute
@@ -251,6 +284,10 @@ export interface FileRoutesById {
   '/courses/': typeof CoursesIndexRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
+  '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
+  '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
+  '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
+  '/departments/$dept/': typeof DepartmentsDeptIndexRoute
   '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
 export interface FileRouteTypes {
@@ -281,6 +318,10 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
+    | '/departments/$dept/achievements'
+    | '/departments/$dept/activities'
+    | '/departments/$dept/staff'
+    | '/departments/$dept/'
     | '/courses/engineering/$dept/faculty'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -301,7 +342,6 @@ export interface FileRouteTypes {
     | '/admissions/inquiry'
     | '/colleges/$college'
     | '/courses/$course'
-    | '/departments/$dept'
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions'
@@ -309,6 +349,10 @@ export interface FileRouteTypes {
     | '/courses'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
+    | '/departments/$dept/achievements'
+    | '/departments/$dept/activities'
+    | '/departments/$dept/staff'
+    | '/departments/$dept'
     | '/courses/engineering/$dept/faculty'
   id:
     | '__root__'
@@ -337,6 +381,10 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
+    | '/departments/$dept/achievements'
+    | '/departments/$dept/activities'
+    | '/departments/$dept/staff'
+    | '/departments/$dept/'
     | '/courses/engineering/$dept/faculty'
   fileRoutesById: FileRoutesById
 }
@@ -358,7 +406,7 @@ export interface RootRouteChildren {
   AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
   CollegesCollegeRoute: typeof CollegesCollegeRoute
   CoursesCourseRoute: typeof CoursesCourseRouteWithChildren
-  DepartmentsDeptRoute: typeof DepartmentsDeptRoute
+  DepartmentsDeptRoute: typeof DepartmentsDeptRouteWithChildren
   ProgramsProgramRoute: typeof ProgramsProgramRoute
   StaffStaffRoute: typeof StaffStaffRoute
   AdmissionsIndexRoute: typeof AdmissionsIndexRoute
@@ -530,6 +578,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdmissionsInquiryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/departments/$dept/': {
+      id: '/departments/$dept/'
+      path: '/'
+      fullPath: '/departments/$dept/'
+      preLoaderRoute: typeof DepartmentsDeptIndexRouteImport
+      parentRoute: typeof DepartmentsDeptRoute
+    }
+    '/departments/$dept/staff': {
+      id: '/departments/$dept/staff'
+      path: '/staff'
+      fullPath: '/departments/$dept/staff'
+      preLoaderRoute: typeof DepartmentsDeptStaffRouteImport
+      parentRoute: typeof DepartmentsDeptRoute
+    }
+    '/departments/$dept/activities': {
+      id: '/departments/$dept/activities'
+      path: '/activities'
+      fullPath: '/departments/$dept/activities'
+      preLoaderRoute: typeof DepartmentsDeptActivitiesRouteImport
+      parentRoute: typeof DepartmentsDeptRoute
+    }
+    '/departments/$dept/achievements': {
+      id: '/departments/$dept/achievements'
+      path: '/achievements'
+      fullPath: '/departments/$dept/achievements'
+      preLoaderRoute: typeof DepartmentsDeptAchievementsRouteImport
+      parentRoute: typeof DepartmentsDeptRoute
+    }
     '/courses/engineering/$dept': {
       id: '/courses/engineering/$dept'
       path: '/courses/engineering/$dept'
@@ -566,6 +642,24 @@ const CoursesCourseRouteWithChildren = CoursesCourseRoute._addFileChildren(
   CoursesCourseRouteChildren,
 )
 
+interface DepartmentsDeptRouteChildren {
+  DepartmentsDeptAchievementsRoute: typeof DepartmentsDeptAchievementsRoute
+  DepartmentsDeptActivitiesRoute: typeof DepartmentsDeptActivitiesRoute
+  DepartmentsDeptStaffRoute: typeof DepartmentsDeptStaffRoute
+  DepartmentsDeptIndexRoute: typeof DepartmentsDeptIndexRoute
+}
+
+const DepartmentsDeptRouteChildren: DepartmentsDeptRouteChildren = {
+  DepartmentsDeptAchievementsRoute: DepartmentsDeptAchievementsRoute,
+  DepartmentsDeptActivitiesRoute: DepartmentsDeptActivitiesRoute,
+  DepartmentsDeptStaffRoute: DepartmentsDeptStaffRoute,
+  DepartmentsDeptIndexRoute: DepartmentsDeptIndexRoute,
+}
+
+const DepartmentsDeptRouteWithChildren = DepartmentsDeptRoute._addFileChildren(
+  DepartmentsDeptRouteChildren,
+)
+
 interface CoursesEngineeringDeptRouteChildren {
   CoursesEngineeringDeptFacultyRoute: typeof CoursesEngineeringDeptFacultyRoute
 }
@@ -598,7 +692,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdmissionsInquiryRoute: AdmissionsInquiryRoute,
   CollegesCollegeRoute: CollegesCollegeRoute,
   CoursesCourseRoute: CoursesCourseRouteWithChildren,
-  DepartmentsDeptRoute: DepartmentsDeptRoute,
+  DepartmentsDeptRoute: DepartmentsDeptRouteWithChildren,
   ProgramsProgramRoute: ProgramsProgramRoute,
   StaffStaffRoute: StaffStaffRoute,
   AdmissionsIndexRoute: AdmissionsIndexRoute,
