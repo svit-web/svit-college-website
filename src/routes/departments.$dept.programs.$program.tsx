@@ -40,7 +40,7 @@ export const Route = createFileRoute("/departments/$dept/programs/$program")({
 
 function ProgramPage() {
   const { dept, program } = Route.useLoaderData();
-  const college = collegeMap[dept.collegeId];
+  const college = collegeMap[dept.collegeId as keyof typeof collegeMap];
   const degreeType = dept.degreeTypeId
     ? degreeTypes.find((d) => d.id === dept.degreeTypeId)
     : null;

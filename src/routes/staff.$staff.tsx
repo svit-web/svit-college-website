@@ -38,7 +38,7 @@ export const Route = createFileRoute("/staff/$staff")({
 
 function StaffProfile() {
   const { member, dept } = Route.useLoaderData();
-  const college = dept ? collegeMap[dept.collegeId] : null;
+  const college = dept ? collegeMap[dept.collegeId as keyof typeof collegeMap] : null;
 
   return (
     <>
