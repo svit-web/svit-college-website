@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { ArrowRight, Award, BadgeCheck, Briefcase, Building2, GraduationCap, Lightbulb, Trees, Users } from "lucide-react";
 import { HomeCarousel } from "@/components/site/Carousel";
+import { HeroCardSlider } from "@/components/site/HeroCardSlider";
 
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
@@ -42,50 +43,59 @@ function Hero() {
     <section className="relative overflow-hidden bg-navy-deep text-white">
       <img src={campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
       <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/70 via-navy-deep/85 to-navy" />
-      <div className="container-page relative py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          className="max-w-3xl"
-        >
-          <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-            Est. 2005 · Vasad, Gujarat
-          </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.02]">
-            Build Your Future. <br />
-            <span className="text-gold">Shape The World.</span>
-          </h1>
-          <p className="mt-6 text-lg text-white/85 max-w-2xl">
-            SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with 95%+ placement across 200+ recruiting partners.
-          </p>
-          <div className="mt-6 flex flex-wrap gap-2 text-xs">
-            {courses.slice(0, 7).map((c) => (
+      <div className="container-page relative py-20 md:py-28">
+        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+              Est. 2005 · Vasad, Gujarat
+            </div>
+            <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.02]">
+              Build Your Future. <br />
+              <span className="text-gold">Shape The World.</span>
+            </h1>
+            <p className="mt-6 text-lg text-white/85 max-w-2xl">
+              SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with 95%+ placement across 200+ recruiting partners.
+            </p>
+            <div className="mt-6 flex flex-wrap gap-2 text-xs">
+              {courses.slice(0, 7).map((c) => (
+                <Link
+                  key={c.slug}
+                  to="/courses/$course"
+                  params={{ course: c.slug }}
+                  className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-white/85 hover:border-gold hover:text-gold transition-colors"
+                >
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+            <div className="mt-8 flex flex-wrap gap-3">
               <Link
-                key={c.slug}
-                to="/courses/$course"
-                params={{ course: c.slug }}
-                className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-white/85 hover:border-gold hover:text-gold transition-colors"
+                to="/admissions/inquiry"
+                className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
               >
-                {c.name}
+                Apply Now <ArrowRight className="h-4 w-4" />
               </Link>
-            ))}
-          </div>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              to="/admissions/inquiry"
-              className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
-            >
-              Apply Now <ArrowRight className="h-4 w-4" />
-            </Link>
-            <Link
-              to="/courses"
-              className="inline-flex items-center gap-2 rounded-md border border-white/25 px-6 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
-            >
-              Explore Courses
-            </Link>
-          </div>
-        </motion.div>
+              <Link
+                to="/courses"
+                className="inline-flex items-center gap-2 rounded-md border border-white/25 px-6 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
+              >
+                Explore Courses
+              </Link>
+            </div>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 32 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.15 }}
+            className="w-full"
+          >
+            <HeroCardSlider />
+          </motion.div>
+        </div>
       </div>
     </section>
   );
