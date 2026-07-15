@@ -67,33 +67,90 @@ function SectionShell({
   );
 }
 
+const sectionLinks = [
+  { id: "history", label: "History" },
+  { id: "vision-mission", label: "Vision & Mission" },
+  { id: "leadership", label: "Leadership" },
+  { id: "accreditation", label: "Accreditation" },
+  { id: "committees", label: "Committees" },
+  { id: "facilities", label: "Facilities" },
+  { id: "media", label: "Media" },
+  { id: "contact", label: "Contact" },
+];
+
 function AboutPage() {
   return (
     <>
-      <PageHero
-        accent={c.hero.accent}
-        title={c.hero.title}
-        subtitle={c.hero.introText}
-        crumbs={[{ label: "Home", to: "/" }, { label: "About" }]}
-      />
-
-      {/* 2. Quick Facts */}
-      <SectionShell id="quick-facts">
-        <SectionHeading eyebrow="At a glance" title="Quick Facts" variant="eyebrow" />
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {c.quickFacts.map((f) => (
-            <div
-              key={f.label}
-              className="flex items-start justify-between gap-4 rounded-xl border-2 border-navy/15 bg-white p-4 hover:border-gold transition-colors"
-            >
-              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {f.label}
+      {/* Hero: portrait left, brief on right */}
+      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep text-white">
+        <div className="container-page py-14 md:py-20">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+            {/* Portrait placeholder */}
+            <div className="mx-auto w-full max-w-sm lg:mx-0">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-gold/40 bg-white/5 shadow-2xl">
+                {/* TODO: Replace with real portrait photo */}
+                <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
+                  <ImageIcon className="h-14 w-14" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.25em]">
+                    Portrait Photo
+                  </span>
+                </div>
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
               </div>
-              <div className="text-right text-sm font-medium text-navy">{f.value}</div>
             </div>
-          ))}
+
+            {/* Brief about */}
+            <div className="min-w-0">
+              <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+                {c.hero.accent}
+              </div>
+              <h1 className="mt-3 font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                {c.hero.title}
+              </h1>
+              <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed">
+                {c.hero.introText}
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wider text-white/70">
+                <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
+                  Est. 1997
+                </span>
+                <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
+                  AICTE Approved
+                </span>
+                <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
+                  NBA Accredited
+                </span>
+                <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
+                  GTU Affiliated
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
-      </SectionShell>
+      </section>
+
+      {/* Horizontal section navbar */}
+      <nav
+        aria-label="About sections"
+        className="sticky top-16 z-30 border-b border-navy/10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80"
+      >
+        <div className="container-page">
+          <ul className="flex items-center gap-1 overflow-x-auto py-2 lg:justify-end">
+            {sectionLinks.map((s) => (
+              <li key={s.id} className="shrink-0">
+                <a
+                  href={`#${s.id}`}
+                  className="inline-block whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold text-navy/80 transition-colors hover:bg-navy hover:text-white"
+                >
+                  {s.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </nav>
+
+
 
       {/* 3. History */}
       <section id="history" className="bg-secondary/50 py-16 md:py-20">
