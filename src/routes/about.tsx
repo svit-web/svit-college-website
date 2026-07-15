@@ -84,22 +84,8 @@ function AboutPage() {
       {/* Hero: portrait left, brief on right */}
       <section className="bg-gradient-to-br from-navy via-navy to-navy-deep text-white">
         <div className="container-page py-14 md:py-20">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
-            {/* Portrait placeholder */}
-            <div className="mx-auto w-full max-w-sm lg:mx-0">
-              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-gold/40 bg-white/5 shadow-2xl">
-                {/* TODO: Replace with real portrait photo */}
-                <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
-                  <ImageIcon className="h-14 w-14" />
-                  <span className="text-xs font-semibold uppercase tracking-[0.25em]">
-                    Portrait Photo
-                  </span>
-                </div>
-                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
-              </div>
-            </div>
-
-            {/* Brief about */}
+          <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
+            {/* Brief about (left) */}
             <div className="min-w-0">
               <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
                 {c.hero.accent}
@@ -123,6 +109,20 @@ function AboutPage() {
                 <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
                   GTU Affiliated
                 </span>
+              </div>
+            </div>
+
+            {/* Portrait placeholder (right) */}
+            <div className="mx-auto w-full max-w-sm lg:mx-0 lg:ml-auto">
+              <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-gold/40 bg-white/5 shadow-2xl">
+                {/* TODO: Replace with real portrait photo */}
+                <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
+                  <ImageIcon className="h-14 w-14" />
+                  <span className="text-xs font-semibold uppercase tracking-[0.25em]">
+                    Portrait Photo
+                  </span>
+                </div>
+                <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
               </div>
             </div>
           </div>
