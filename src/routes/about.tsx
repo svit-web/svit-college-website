@@ -129,26 +129,35 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* Horizontal section navbar */}
-      <nav
-        aria-label="About sections"
-        className="sticky top-16 z-30 border-b border-navy/10 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80"
-      >
-        <div className="container-page">
-          <ul className="flex items-center gap-1 overflow-x-auto py-2 lg:justify-end">
-            {sectionLinks.map((s) => (
-              <li key={s.id} className="shrink-0">
-                <a
-                  href={`#${s.id}`}
-                  className="inline-block whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold text-navy/80 transition-colors hover:bg-navy hover:text-white"
-                >
-                  {s.label}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </nav>
+      {/* Vertical sidebar + content */}
+      <div className="bg-secondary/30">
+        <div className="container-page py-10">
+          <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+            <aside className="lg:sticky lg:top-24 lg:self-start">
+              <nav
+                aria-label="About sections"
+                className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
+              >
+                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                  On this page
+                </div>
+                <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+                  {sectionLinks.map((s) => (
+                    <li key={s.id} className="shrink-0 lg:shrink">
+                      <a
+                        href={`#${s.id}`}
+                        className="flex items-center gap-2.5 rounded-xl border-2 border-transparent px-3 py-2.5 text-sm font-semibold text-navy transition-all hover:border-navy/15 hover:bg-secondary/60"
+                      >
+                        <span className="whitespace-nowrap lg:whitespace-normal">{s.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </aside>
+
+            <div className="min-w-0 space-y-8 [&>section]:scroll-mt-24">
+
 
 
 
@@ -654,7 +663,13 @@ function AboutPage() {
         </div>
       </section>
 
+            </div>
+          </div>
+        </div>
+      </div>
+
       <CTABanner />
     </>
   );
 }
+
