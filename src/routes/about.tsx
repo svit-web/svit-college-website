@@ -3,90 +3,596 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { CTABanner } from "@/components/site/CTABanner";
-import { stats } from "@/data/site";
-import campusAerial from "@/assets/campus-aerial.jpg";
-import { Eye, Target, Heart } from "lucide-react";
+import { aboutPageContent as c } from "@/data/aboutPage";
+import {
+  Quote,
+  FileText,
+  ShieldCheck,
+  Users,
+  BookOpen,
+  Trophy,
+  Bus,
+  Wifi,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Twitter,
+  MapPin,
+  Phone,
+  Mail,
+  Globe,
+  ExternalLink,
+} from "lucide-react";
+import type { ComponentType } from "react";
 
 export const Route = createFileRoute("/about")({
-  head: () => ({ meta: [{ title: "About SVIT Vasad — Legacy, Vision & Values" }, { name: "description", content: "Two decades of academic excellence — the story, vision, mission and values of SVIT Vasad." }] }),
-  component: About,
+  head: () => ({
+    meta: [
+      { title: "About SVIT Vasad — Legacy, Vision, Leadership & Campus" },
+      {
+        name: "description",
+        content:
+          "Established 1997 by NEST — SVIT Vasad's story, quick facts, leadership, accreditation, committees, campus facilities and contact.",
+      },
+      { property: "og:title", content: "About SVIT Vasad" },
+      { property: "og:description", content: "Legacy, vision, mission and campus of SVIT Vasad." },
+    ],
+  }),
+  component: AboutPage,
 });
 
-const timeline = [
-  { year: "2005", title: "Founded", desc: "SVIT established with 3 engineering branches and 240 seats." },
-  { year: "2010", title: "MBA & MCA launched", desc: "Postgraduate programmes added to expand horizons." },
-  { year: "2016", title: "Research centre", desc: "Institute-wide research and innovation hub established." },
-  { year: "2021", title: "AI & Data Science", desc: "New-age branches added: AI-DS, AI-ML, Cyber Security." },
-  { year: "2026", title: "20 Years of Excellence", desc: "Celebrating two decades and 20,000+ alumni impact." },
-];
+const socialIcons: Record<string, ComponentType<{ className?: string }>> = {
+  Facebook,
+  Instagram,
+  LinkedIn: Linkedin,
+  Linkedin,
+  Twitter,
+  X: Twitter,
+};
 
-function About() {
+function SectionShell({
+  id,
+  className = "",
+  children,
+}: {
+  id?: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section id={id} className={`container-page py-16 md:py-20 ${className}`}>
+      {children}
+    </section>
+  );
+}
+
+function AboutPage() {
   return (
     <>
-      <PageHero title="About SVIT" accent="Our Story" subtitle="A legacy of academic excellence, innovation and community impact since 2005." crumbs={[{ label: "Home", to: "/" }, { label: "About" }]} />
+      <PageHero
+        accent={c.hero.accent}
+        title={c.hero.title}
+        subtitle={c.hero.introText}
+        crumbs={[{ label: "Home", to: "/" }, { label: "About" }]}
+      />
 
-      <section className="container-page py-20">
-        <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
-          <Reveal>
-            <div className="overflow-hidden rounded-2xl">
-              <img src={campusAerial} alt="Campus aerial" className="w-full" loading="lazy" />
+      {/* 2. Quick Facts */}
+      <SectionShell id="quick-facts">
+        <SectionHeading eyebrow="At a glance" title="Quick Facts" variant="eyebrow" />
+        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {c.quickFacts.map((f) => (
+            <div
+              key={f.label}
+              className="flex items-start justify-between gap-4 rounded-xl border-2 border-navy/15 bg-white p-4 hover:border-gold transition-colors"
+            >
+              <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {f.label}
+              </div>
+              <div className="text-right text-sm font-medium text-navy">{f.value}</div>
             </div>
-          </Reveal>
-          <Reveal delay={0.1}>
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">Our Story</div>
-            <h2 className="mt-3 font-display text-3xl md:text-4xl font-bold text-navy">Building futures for two decades</h2>
-            <p className="mt-4 text-muted-foreground leading-relaxed">Sardar Vallabhbhai Institute of Technology, Vasad, was founded in 2005 with a simple mission — deliver world-class technical education rooted in Indian values. Today, we're a 5000-student, 15-acre institution with 12 engineering branches and postgraduate programmes in management and applied sciences.</p>
-            <p className="mt-3 text-muted-foreground leading-relaxed">Our graduates lead engineering teams, launch startups and shape policy across India and beyond — carrying forward SVIT's culture of rigour, integrity and curiosity.</p>
-          </Reveal>
+          ))}
+        </div>
+      </SectionShell>
+
+      {/* 3. History */}
+      <section id="history" className="bg-secondary/50 py-16 md:py-20">
+        <div className="container-page">
+          <SectionHeading eyebrow="Our journey" title="History & Milestones" variant="eyebrow" />
+          <p className="mt-6 max-w-4xl text-muted-foreground leading-relaxed">
+            {c.history.introText}
+          </p>
+          <ol className="mt-10 space-y-4">
+            {c.history.milestones.map((m, i) => (
+              <Reveal key={`${m.year}-${i}`} delay={i * 0.04}>
+                <li className="grid grid-cols-[110px_1fr] gap-4 rounded-xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
+                  <div className="font-display text-2xl font-bold text-gold">{m.year}</div>
+                  <div className="text-sm text-navy leading-relaxed">{m.milestone}</div>
+                </li>
+              </Reveal>
+            ))}
+          </ol>
+          {c.history.closingText && (
+            <p className="mt-8 max-w-4xl text-muted-foreground leading-relaxed italic">
+              {c.history.closingText}
+            </p>
+          )}
         </div>
       </section>
 
-      <section className="bg-secondary/50 py-20">
-        <div className="container-page grid gap-6 md:grid-cols-3">
-          {[
-            { icon: Eye, title: "Vision", body: "To be a globally respected institute nurturing engineers, leaders and citizens who advance human wellbeing." },
-            { icon: Target, title: "Mission", body: "Deliver outcome-based education, invest in research, and build partnerships that translate learning into real-world impact." },
-            { icon: Heart, title: "Values", body: "Integrity, curiosity, inclusion, service. These four values guide every classroom, lab and hallway." },
-          ].map((c, i) => (
-            <Reveal key={c.title} delay={i * 0.08}>
-              <div className="card-lift h-full rounded-2xl border border-border bg-white p-8">
-                <div className="flex h-11 w-11 items-center justify-center rounded-md bg-navy/5 text-navy"><c.icon className="h-5 w-5" /></div>
-                <h3 className="mt-4 font-display text-xl font-bold text-navy">{c.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{c.body}</p>
+      {/* 4 + 5. Vision & Mission */}
+      <SectionShell id="vision-mission">
+        <div className="grid gap-6 lg:grid-cols-2">
+          <div className="rounded-2xl border-2 border-navy/15 bg-white p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
+              Vision
+            </div>
+            <blockquote className="mt-4 font-display text-xl md:text-2xl text-navy leading-snug">
+              “{c.vision.visionText}”
+            </blockquote>
+          </div>
+          <div className="rounded-2xl border-2 border-navy/15 bg-white p-8">
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
+              Mission
+            </div>
+            <ol className="mt-4 space-y-3">
+              {c.mission.missionPoints.map((p, i) => (
+                <li key={i} className="flex gap-3 text-sm text-muted-foreground leading-relaxed">
+                  <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xs font-bold text-gold">
+                    {i + 1}
+                  </span>
+                  <span>{p}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* 6. Core Values */}
+      <section className="bg-navy py-14 text-white">
+        <div className="container-page text-center">
+          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+            Core Values
+          </div>
+          <div className="mt-5 flex flex-wrap justify-center gap-3">
+            {c.coreValues.map((v) => (
+              <span
+                key={v}
+                className="rounded-full border border-white/25 bg-white/5 px-5 py-2 text-sm font-medium tracking-wide"
+              >
+                {v}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 7. Leadership */}
+      <SectionShell id="leadership">
+        <SectionHeading eyebrow="Guiding SVIT" title="Leadership" variant="eyebrow" />
+        <p className="mt-4 max-w-3xl text-muted-foreground">{c.leadership.intro}</p>
+
+        <div className="mt-10 grid gap-6 lg:grid-cols-2">
+          {/* Chairman */}
+          <div className="rounded-2xl border-2 border-navy/15 bg-white p-8">
+            <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
+              <Quote className="h-4 w-4" /> Chairman&rsquo;s Message
+            </div>
+            <blockquote className="text-navy leading-relaxed italic">
+              “{c.leadership.chairman.quote}”
+            </blockquote>
+            <div className="mt-4 text-sm font-semibold text-navy">
+              {c.leadership.chairman.name}
+            </div>
+            <div className="text-xs text-muted-foreground">{c.leadership.chairman.title}</div>
+
+            {c.leadership.chairman.strategicPlanText && (
+              <div className="mt-6 border-t border-border pt-6">
+                <div className="text-xs font-semibold uppercase tracking-wider text-navy">
+                  Strategic Plan
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {c.leadership.chairman.strategicPlanText}
+                </p>
+              </div>
+            )}
+
+            {c.leadership.chairman.corePrinciples &&
+              c.leadership.chairman.corePrinciples.length > 0 && (
+                <div className="mt-6">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-navy">
+                    Core Principles
+                  </div>
+                  <ul className="mt-3 space-y-2">
+                    {c.leadership.chairman.corePrinciples.map((p, i) => (
+                      <li key={i} className="flex gap-2 text-sm text-muted-foreground">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+          </div>
+
+          {/* Principal */}
+          <div className="rounded-2xl border-2 border-navy/15 bg-white p-8">
+            <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
+              <Quote className="h-4 w-4" /> Principal&rsquo;s Message
+            </div>
+            <blockquote className="text-navy leading-relaxed italic">
+              “{c.leadership.principal.quote}”
+            </blockquote>
+            <div className="mt-4 text-sm font-semibold text-navy">
+              {c.leadership.principal.name}
+            </div>
+            <div className="text-xs text-muted-foreground">{c.leadership.principal.title}</div>
+            {c.leadership.principal.bodyText && (
+              <p className="mt-6 border-t border-border pt-6 text-sm text-muted-foreground leading-relaxed">
+                {c.leadership.principal.bodyText}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Board of Management */}
+        <div className="mt-10">
+          <h3 className="font-display text-2xl font-bold text-navy flex items-center gap-2">
+            <Users className="h-5 w-5 text-gold" /> Board of Management
+          </h3>
+          <div className="mt-4 overflow-hidden rounded-xl border-2 border-navy/15 bg-white">
+            <table className="w-full text-sm">
+              <thead className="bg-navy text-white">
+                <tr>
+                  <th className="px-4 py-3 text-left w-16">Sr.</th>
+                  <th className="px-4 py-3 text-left">Name</th>
+                  <th className="px-4 py-3 text-left">Designation</th>
+                </tr>
+              </thead>
+              <tbody>
+                {c.leadership.boardOfManagement.map((b) => (
+                  <tr key={b.srNo} className="border-t border-border">
+                    <td className="px-4 py-3 text-muted-foreground">{b.srNo}</td>
+                    <td className="px-4 py-3 font-medium text-navy">{b.name}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{b.designation}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* 8. Accreditation */}
+      <section id="accreditation" className="bg-secondary/50 py-16 md:py-20">
+        <div className="container-page">
+          <SectionHeading
+            eyebrow="Standards & Compliance"
+            title="Accreditation & Compliance"
+            variant="eyebrow"
+          />
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-xl border-2 border-navy/15 bg-white overflow-hidden">
+              <div className="px-5 py-3 bg-navy text-white text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4" /> Recognitions
+              </div>
+              <table className="w-full text-sm">
+                <tbody>
+                  {c.accreditation.recognitions.map((r) => (
+                    <tr key={r.body} className="border-t border-border first:border-t-0">
+                      <td className="px-4 py-3 text-navy">{r.body}</td>
+                      <td className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gold">
+                        {r.status}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                { title: "NBA Accreditation", body: c.accreditation.nbaText },
+                { title: "NIRF Ranking", body: c.accreditation.nirfText },
+                { title: "AICTE Approval", body: c.accreditation.aicteText },
+              ].map((b) => (
+                <div key={b.title} className="rounded-xl border-2 border-navy/15 bg-white p-5">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                    {b.title}
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{b.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="mt-6 grid gap-6 lg:grid-cols-2">
+            <div className="rounded-xl border-2 border-navy/15 bg-white p-6">
+              <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                Academic Regulations (GTU)
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {c.accreditation.academicRegulationsText}
+              </p>
+              <ul className="mt-4 space-y-2">
+                {c.accreditation.regulationPoints.map((p, i) => (
+                  <li key={i} className="flex gap-2 text-sm text-navy">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-xl border-2 border-navy/15 bg-white p-6">
+              <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                Mandatory Disclosure &amp; Code of Conduct
+              </div>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {c.accreditation.mandatoryDisclosureText}
+              </p>
+              <ul className="mt-4 space-y-2">
+                {c.accreditation.codeOfConductPoints.map((p, i) => (
+                  <li key={i} className="flex gap-2 text-sm text-navy">
+                    <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-crimson" />
+                    {p}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* Related documents */}
+          <div className="mt-8">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-navy">
+              Related Documents
+            </h3>
+            <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {c.accreditation.relatedDocuments.map((d) => (
+                <li key={d.label}>
+                  <a
+                    href={d.fileUrl}
+                    className="group flex items-center justify-between gap-3 rounded-xl border-2 border-navy/15 bg-white p-4 hover:border-gold transition-colors"
+                  >
+                    <span className="flex items-center gap-3 text-sm font-medium text-navy">
+                      <FileText className="h-4 w-4 text-gold" />
+                      {d.label}
+                    </span>
+                    <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-gold" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* 9. Committees */}
+      <SectionShell id="committees">
+        <SectionHeading eyebrow="Governance" title="SVIT Committees" variant="eyebrow" />
+        <div className="mt-10 grid gap-6 md:grid-cols-2">
+          {c.committees.map((cm, i) => (
+            <Reveal key={cm.name} delay={i * 0.05}>
+              <div className="h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold transition-colors">
+                <h3 className="font-display text-lg font-bold text-navy">{cm.name}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {cm.description}
+                </p>
+                {cm.vision && (
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    <span className="font-semibold text-navy">Vision: </span>
+                    {cm.vision}
+                  </p>
+                )}
+                {cm.mission && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    <span className="font-semibold text-navy">Mission: </span>
+                    {cm.mission}
+                  </p>
+                )}
+                {cm.keyActivities.length > 0 && (
+                  <div className="mt-4">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                      Key Activities
+                    </div>
+                    <ul className="mt-2 space-y-1.5">
+                      {cm.keyActivities.map((a, j) => (
+                        <li key={j} className="flex gap-2 text-sm text-muted-foreground">
+                          <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                          {a}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </Reveal>
           ))}
         </div>
-      </section>
+      </SectionShell>
 
-      <section className="container-page py-20">
-        <SectionHeading center eyebrow="Milestones" title="Our Journey" variant="eyebrow" />
-        <div className="mt-14 relative">
-          <div className="absolute left-1/2 top-0 hidden h-full w-px bg-border md:block" />
-          <ul className="space-y-10">
-            {timeline.map((t, i) => (
-              <Reveal key={t.year} delay={i * 0.05}>
-                <li className={`md:grid md:grid-cols-2 md:gap-12 ${i % 2 === 1 ? "md:[&>*:first-child]:col-start-2" : ""}`}>
-                  <div className={`md:${i % 2 === 1 ? "text-left" : "text-right"} relative`}>
-                    <div className="font-display text-4xl font-bold text-gold">{t.year}</div>
-                    <div className="mt-1 font-display text-lg font-bold text-navy">{t.title}</div>
-                    <p className="mt-2 text-sm text-muted-foreground">{t.desc}</p>
+      {/* 10. Facilities */}
+      <section id="facilities" className="bg-secondary/50 py-16 md:py-20">
+        <div className="container-page">
+          <SectionHeading eyebrow="Life on campus" title="Campus Facilities" variant="eyebrow" />
+          <p className="mt-4 max-w-3xl text-muted-foreground">{c.facilities.intro}</p>
+
+          {/* Library */}
+          <div className="mt-10 rounded-2xl border-2 border-navy/15 bg-white p-6">
+            <h3 className="flex items-center gap-2 font-display text-xl font-bold text-navy">
+              <BookOpen className="h-5 w-5 text-gold" /> Library
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              {c.facilities.library.text}
+            </p>
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {c.facilities.library.stats.map((s) => (
+                <div key={s.label} className="rounded-lg border border-border bg-secondary/40 p-4">
+                  <div className="font-display text-xl font-bold text-navy">{s.value}</div>
+                  <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Scholarships */}
+          <div className="mt-6 rounded-2xl border-2 border-navy/15 bg-white overflow-hidden">
+            <div className="px-6 py-4 border-b border-border">
+              <h3 className="font-display text-xl font-bold text-navy">Scholarships</h3>
+            </div>
+            <table className="w-full text-sm">
+              <thead className="bg-navy/5 text-navy">
+                <tr>
+                  <th className="px-4 py-3 text-left">Scholarship</th>
+                  <th className="px-4 py-3 text-left">Amount</th>
+                  <th className="px-4 py-3 text-left">Eligibility</th>
+                </tr>
+              </thead>
+              <tbody>
+                {c.facilities.scholarships.map((s) => (
+                  <tr key={s.name} className="border-t border-border align-top">
+                    <td className="px-4 py-3 font-medium text-navy">{s.name}</td>
+                    <td className="px-4 py-3 text-navy">{s.amount}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{s.eligibility}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Sports */}
+          <div className="mt-6 rounded-2xl border-2 border-navy/15 bg-white p-6">
+            <h3 className="flex items-center gap-2 font-display text-xl font-bold text-navy">
+              <Trophy className="h-5 w-5 text-gold" /> Sports &amp; Recreation
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              {c.facilities.sports.text}
+            </p>
+            <div className="mt-4 space-y-3">
+              {c.facilities.sports.activities.map((a) => (
+                <div key={a.label} className="rounded-lg border border-border p-4">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                    {a.label}
                   </div>
-                </li>
-              </Reveal>
+                  <div className="mt-1 text-sm text-navy">{a.value}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* NSS / NCC */}
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            {c.facilities.nssNcc.map((n) => (
+              <div key={n.name} className="rounded-2xl border-2 border-navy/15 bg-white p-6">
+                <h3 className="font-display text-lg font-bold text-navy">{n.name}</h3>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {n.description}
+                </p>
+              </div>
             ))}
-          </ul>
+          </div>
+
+          {/* Hostels & Transport */}
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <div className="rounded-2xl border-2 border-navy/15 bg-white p-6">
+              <h3 className="flex items-center gap-2 font-display text-lg font-bold text-navy">
+                <Users className="h-5 w-5 text-gold" /> Hostels
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {c.facilities.hostelsTransport.hostelText}
+              </p>
+            </div>
+            <div className="rounded-2xl border-2 border-navy/15 bg-white p-6">
+              <h3 className="flex items-center gap-2 font-display text-lg font-bold text-navy">
+                <Bus className="h-5 w-5 text-gold" /> Transport
+              </h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                {c.facilities.hostelsTransport.transportText}
+              </p>
+            </div>
+          </div>
+
+          {/* IT & Medical */}
+          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {c.facilities.itMedical.map((it) => (
+              <div key={it.label} className="rounded-2xl border-2 border-navy/15 bg-white p-5">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
+                  <Wifi className="h-4 w-4" /> {it.label}
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {it.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="bg-navy text-white py-14">
-        <div className="container-page grid grid-cols-2 gap-6 md:grid-cols-4">
-          {stats.slice(0, 4).map((s) => (
-            <div key={s.label} className="text-center">
-              <div className="font-display text-4xl font-bold text-gold">{s.value}</div>
-              <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.label}</div>
+      {/* 11. Media */}
+      <SectionShell id="media">
+        <SectionHeading eyebrow="Stay connected" title="SVIT Media" variant="eyebrow" />
+        <p className="mt-4 max-w-3xl text-muted-foreground">{c.media.intro}</p>
+
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {c.media.publications.map((p) => (
+            <div key={p.name} className="rounded-2xl border-2 border-navy/15 bg-white p-6">
+              <h3 className="font-display text-lg font-bold text-navy">{p.name}</h3>
+              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{p.description}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8">
+          <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+            Follow us
+          </div>
+          <div className="mt-4 flex flex-wrap gap-3">
+            {c.media.socialMedia.map((s) => {
+              const Icon = socialIcons[s.platform] ?? ExternalLink;
+              return (
+                <a
+                  key={s.platform}
+                  href={s.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-navy/15 bg-white px-4 py-2 text-sm font-medium text-navy hover:border-gold hover:text-gold transition-colors"
+                >
+                  <Icon className="h-4 w-4" /> {s.platform}
+                </a>
+              );
+            })}
+          </div>
+        </div>
+      </SectionShell>
+
+      {/* 12. Contact */}
+      <section id="contact" className="bg-navy py-16 text-white">
+        <div className="container-page">
+          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+            Get in touch
+          </div>
+          <h2 className="mt-2 font-display text-3xl md:text-4xl font-bold">Contact Us</h2>
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              { icon: MapPin, label: "Address", value: c.contact.address, href: undefined },
+              { icon: Phone, label: "Phone", value: c.contact.phone, href: `tel:${c.contact.phone.replace(/\s+/g, "")}` },
+              { icon: Mail, label: "Email", value: c.contact.email, href: `mailto:${c.contact.email}` },
+              { icon: Globe, label: "Website", value: c.contact.website.replace(/^https?:\/\//, ""), href: c.contact.website },
+            ].map((cc) => (
+              <div key={cc.label} className="rounded-2xl border border-white/15 bg-white/5 p-5">
+                <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold">
+                  <cc.icon className="h-4 w-4" /> {cc.label}
+                </div>
+                {cc.href ? (
+                  <a href={cc.href} className="mt-2 block text-sm text-white/90 hover:text-gold break-words">
+                    {cc.value}
+                  </a>
+                ) : (
+                  <div className="mt-2 text-sm text-white/90">{cc.value}</div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
