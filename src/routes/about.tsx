@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { CTABanner } from "@/components/site/CTABanner";
 import { aboutPageContent as c } from "@/data/aboutPage";
+import { ImageIcon } from "lucide-react";
+
 import {
   Quote,
   FileText,
