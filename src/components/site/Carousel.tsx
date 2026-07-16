@@ -26,7 +26,7 @@ const slides = [
     eyebrow: "95% Placement Record",
     title: "Careers That Take Off",
     subtitle: "200+ recruiting partners including TCS, Infosys, L&T, Adani and Reliance.",
-    cta: { label: "See Placements", to: "/placement" },
+    cta: { label: "See Placements", to: "/placement/engineering" },
   },
 ];
 
