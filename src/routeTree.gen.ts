@@ -28,6 +28,7 @@ import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as StaffStaffRouteImport } from './routes/staff.$staff'
 import { Route as ProgramsProgramRouteImport } from './routes/programs.$program'
+import { Route as PlacementCollegeRouteImport } from './routes/placement.$college'
 import { Route as DepartmentsDeptRouteImport } from './routes/departments.$dept'
 import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
 import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
@@ -135,6 +136,11 @@ const ProgramsProgramRoute = ProgramsProgramRouteImport.update({
   path: '/programs/$program',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlacementCollegeRoute = PlacementCollegeRouteImport.update({
+  id: '/$college',
+  path: '/$college',
+  getParentRoute: () => PlacementRoute,
+} as any)
 const DepartmentsDeptRoute = DepartmentsDeptRouteImport.update({
   id: '/departments/$dept',
   path: '/departments/$dept',
@@ -207,12 +213,13 @@ export interface FileRoutesByFullPath {
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
-  '/placement': typeof PlacementRoute
+  '/placement': typeof PlacementRouteWithChildren
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
+  '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions/': typeof AdmissionsIndexRoute
@@ -239,11 +246,12 @@ export interface FileRoutesByTo {
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
-  '/placement': typeof PlacementRoute
+  '/placement': typeof PlacementRouteWithChildren
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
+  '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions': typeof AdmissionsIndexRoute
@@ -271,12 +279,13 @@ export interface FileRoutesById {
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
-  '/placement': typeof PlacementRoute
+  '/placement': typeof PlacementRouteWithChildren
   '/student-login': typeof StudentLoginRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
+  '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions/': typeof AdmissionsIndexRoute
@@ -311,6 +320,7 @@ export interface FileRouteTypes {
     | '/colleges/$college'
     | '/courses/$course'
     | '/departments/$dept'
+    | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions/'
@@ -342,6 +352,7 @@ export interface FileRouteTypes {
     | '/admissions/inquiry'
     | '/colleges/$college'
     | '/courses/$course'
+    | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions'
@@ -374,6 +385,7 @@ export interface FileRouteTypes {
     | '/colleges/$college'
     | '/courses/$course'
     | '/departments/$dept'
+    | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions/'
@@ -401,7 +413,7 @@ export interface RootRouteChildren {
   GrievanceRoute: typeof GrievanceRoute
   NewsRoute: typeof NewsRoute
   ParentsRoute: typeof ParentsRoute
-  PlacementRoute: typeof PlacementRoute
+  PlacementRoute: typeof PlacementRouteWithChildren
   StudentLoginRoute: typeof StudentLoginRoute
   AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
   CollegesCollegeRoute: typeof CollegesCollegeRoute
@@ -550,6 +562,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramsProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/placement/$college': {
+      id: '/placement/$college'
+      path: '/$college'
+      fullPath: '/placement/$college'
+      preLoaderRoute: typeof PlacementCollegeRouteImport
+      parentRoute: typeof PlacementRoute
+    }
     '/departments/$dept': {
       id: '/departments/$dept'
       path: '/departments/$dept'
@@ -630,6 +649,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface PlacementRouteChildren {
+  PlacementCollegeRoute: typeof PlacementCollegeRoute
+}
+
+const PlacementRouteChildren: PlacementRouteChildren = {
+  PlacementCollegeRoute: PlacementCollegeRoute,
+}
+
+const PlacementRouteWithChildren = PlacementRoute._addFileChildren(
+  PlacementRouteChildren,
+)
+
 interface CoursesCourseRouteChildren {
   CoursesCourseFacultyRoute: typeof CoursesCourseFacultyRoute
 }
@@ -687,7 +718,7 @@ const rootRouteChildren: RootRouteChildren = {
   GrievanceRoute: GrievanceRoute,
   NewsRoute: NewsRoute,
   ParentsRoute: ParentsRoute,
-  PlacementRoute: PlacementRoute,
+  PlacementRoute: PlacementRouteWithChildren,
   StudentLoginRoute: StudentLoginRoute,
   AdmissionsInquiryRoute: AdmissionsInquiryRoute,
   CollegesCollegeRoute: CollegesCollegeRoute,
