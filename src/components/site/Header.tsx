@@ -96,6 +96,54 @@ export function Header() {
                 </div>
               );
             }
+            if (n.label === "Placement") {
+              return (
+                <div
+                  key={n.to}
+                  className="relative"
+                  onMouseEnter={() => setPlacementOpen(true)}
+                  onMouseLeave={() => setPlacementOpen(false)}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setPlacementOpen((o) => !o)}
+                    className={cn(
+                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      active ? "text-navy" : "text-ink/80 hover:text-navy"
+                    )}
+                    aria-haspopup="menu"
+                    aria-expanded={placementOpen}
+                  >
+                    {n.label} <ChevronDown className="h-3 w-3" />
+                  </button>
+                  <AnimatePresence>
+                    {placementOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute left-1/2 top-full z-50 w-56 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                      >
+                        <div className="grid grid-cols-1 gap-1">
+                          {placementDivisions.map((d) => (
+                            <Link
+                              key={d.slug}
+                              to="/placement/$college"
+                              params={{ college: d.slug }}
+                              onClick={() => setPlacementOpen(false)}
+                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
+                            >
+                              {d.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
             return (
               <Link
                 key={n.to}
