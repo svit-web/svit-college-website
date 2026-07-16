@@ -5,12 +5,14 @@ import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
 import { colleges } from "@/data/colleges";
+import { placementDivisions } from "@/data/placement";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
+  const [placementOpen, setPlacementOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
