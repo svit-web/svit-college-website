@@ -280,3 +280,31 @@ export function Header() {
     </header>
   );
 }
+
+function MegaColumn({
+  title,
+  heading,
+  items,
+}: {
+  title: string;
+  heading: { label: string; to: string };
+  items: { label: string; to: string }[];
+}) {
+  return (
+    <div>
+      <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-crimson">{title}</div>
+      <Link to={heading.to} className="block text-sm font-bold text-navy hover:text-crimson">
+        {heading.label} →
+      </Link>
+      <ul className="mt-3 space-y-1.5">
+        {items.map((it) => (
+          <li key={it.to}>
+            <Link to={it.to} className="block text-xs text-ink/75 hover:text-navy">
+              {it.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
