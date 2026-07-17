@@ -6,6 +6,7 @@ import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
 import { colleges } from "@/data/colleges";
 import { placementDivisions } from "@/data/placement";
+import { academicFacilities, sportsFacilities, centreDetails, clubDetails, eventDetails } from "@/data/campus-rfe";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +14,7 @@ export function Header() {
   const [open, setOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [placementOpen, setPlacementOpen] = useState(false);
+  const [campusOpen, setCampusOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   return (
@@ -144,6 +146,63 @@ export function Header() {
                 </div>
               );
             }
+            if (n.label === "Campus Life") {
+              return (
+                <div
+                  key={n.to}
+                  className="relative"
+                  onMouseEnter={() => setCampusOpen(true)}
+                  onMouseLeave={() => setCampusOpen(false)}
+                >
+                  <Link
+                    to={n.to}
+                    className={cn(
+                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      active ? "text-navy" : "text-ink/80 hover:text-navy"
+                    )}
+                  >
+                    {n.label} <ChevronDown className="h-3 w-3" />
+                  </Link>
+                  <AnimatePresence>
+                    {campusOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute right-0 top-full z-50 w-[900px] max-w-[92vw] rounded-2xl border border-border bg-white p-6 shadow-xl"
+                      >
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+                          <MegaColumn
+                            title="Facilities"
+                            heading={{ label: "All facilities", to: "/campus-life/facilities" }}
+                            items={[
+                              ...academicFacilities.slice(0, 3).map((f) => ({ label: f.title, to: `/campus-life/facilities/academic/${f.slug}` })),
+                              ...sportsFacilities.slice(0, 4).map((f) => ({ label: f.title, to: `/campus-life/facilities/co-curriculum/${f.slug}` })),
+                            ]}
+                          />
+                          <MegaColumn
+                            title="Co-curricular"
+                            heading={{ label: "All centres", to: "/campus-life/centre" }}
+                            items={centreDetails.slice(0, 8).map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
+                          />
+                          <MegaColumn
+                            title="Clubs"
+                            heading={{ label: "All clubs", to: "/campus-life/clubs" }}
+                            items={clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
+                          />
+                          <MegaColumn
+                            title="Events"
+                            heading={{ label: "All events", to: "/campus-life/events" }}
+                            items={eventDetails.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` }))}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
             return (
               <Link
                 key={n.to}
@@ -219,5 +278,33 @@ export function Header() {
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function MegaColumn({
+  title,
+  heading,
+  items,
+}: {
+  title: string;
+  heading: { label: string; to: string };
+  items: { label: string; to: string }[];
+}) {
+  return (
+    <div>
+      <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-crimson">{title}</div>
+      <Link to={heading.to} className="block text-sm font-bold text-navy hover:text-crimson">
+        {heading.label} →
+      </Link>
+      <ul className="mt-3 space-y-1.5">
+        {items.map((it) => (
+          <li key={it.to}>
+            <Link to={it.to} className="block text-xs text-ink/75 hover:text-navy">
+              {it.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

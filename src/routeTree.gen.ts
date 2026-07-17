@@ -25,6 +25,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlacementIndexRouteImport } from './routes/placement.index'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
+import { Route as CampusLifeIndexRouteImport } from './routes/campus-life.index'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as StaffStaffRouteImport } from './routes/staff.$staff'
 import { Route as ProgramsProgramRouteImport } from './routes/programs.$program'
@@ -34,11 +35,19 @@ import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
 import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
 import { Route as DepartmentsDeptIndexRouteImport } from './routes/departments.$dept.index'
+import { Route as CampusLifeFacilitiesIndexRouteImport } from './routes/campus-life.facilities.index'
+import { Route as CampusLifeEventsIndexRouteImport } from './routes/campus-life.events.index'
+import { Route as CampusLifeClubsIndexRouteImport } from './routes/campus-life.clubs.index'
+import { Route as CampusLifeCentreIndexRouteImport } from './routes/campus-life.centre.index'
 import { Route as DepartmentsDeptStaffRouteImport } from './routes/departments.$dept.staff'
 import { Route as DepartmentsDeptActivitiesRouteImport } from './routes/departments.$dept.activities'
 import { Route as DepartmentsDeptAchievementsRouteImport } from './routes/departments.$dept.achievements'
 import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
 import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
+import { Route as CampusLifeFacilitiesSplatRouteImport } from './routes/campus-life.facilities.$'
+import { Route as CampusLifeEventsSlugRouteImport } from './routes/campus-life.events.$slug'
+import { Route as CampusLifeClubsSlugRouteImport } from './routes/campus-life.clubs.$slug'
+import { Route as CampusLifeCentreSlugRouteImport } from './routes/campus-life.centre.$slug'
 import { Route as CoursesEngineeringDeptFacultyRouteImport } from './routes/courses.engineering.$dept.faculty'
 
 const StudentLoginRoute = StudentLoginRouteImport.update({
@@ -121,6 +130,11 @@ const CollegesIndexRoute = CollegesIndexRouteImport.update({
   path: '/colleges/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CampusLifeIndexRoute = CampusLifeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
 const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
   id: '/admissions/',
   path: '/admissions/',
@@ -166,6 +180,27 @@ const DepartmentsDeptIndexRoute = DepartmentsDeptIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DepartmentsDeptRoute,
 } as any)
+const CampusLifeFacilitiesIndexRoute =
+  CampusLifeFacilitiesIndexRouteImport.update({
+    id: '/facilities/',
+    path: '/facilities/',
+    getParentRoute: () => CampusLifeRoute,
+  } as any)
+const CampusLifeEventsIndexRoute = CampusLifeEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const CampusLifeClubsIndexRoute = CampusLifeClubsIndexRouteImport.update({
+  id: '/clubs/',
+  path: '/clubs/',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const CampusLifeCentreIndexRoute = CampusLifeCentreIndexRouteImport.update({
+  id: '/centre/',
+  path: '/centre/',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
 const DepartmentsDeptStaffRoute = DepartmentsDeptStaffRouteImport.update({
   id: '/staff',
   path: '/staff',
@@ -193,6 +228,27 @@ const CoursesCourseFacultyRoute = CoursesCourseFacultyRouteImport.update({
   path: '/faculty',
   getParentRoute: () => CoursesCourseRoute,
 } as any)
+const CampusLifeFacilitiesSplatRoute =
+  CampusLifeFacilitiesSplatRouteImport.update({
+    id: '/facilities/$',
+    path: '/facilities/$',
+    getParentRoute: () => CampusLifeRoute,
+  } as any)
+const CampusLifeEventsSlugRoute = CampusLifeEventsSlugRouteImport.update({
+  id: '/events/$slug',
+  path: '/events/$slug',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const CampusLifeClubsSlugRoute = CampusLifeClubsSlugRouteImport.update({
+  id: '/clubs/$slug',
+  path: '/clubs/$slug',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const CampusLifeCentreSlugRoute = CampusLifeCentreSlugRouteImport.update({
+  id: '/centre/$slug',
+  path: '/centre/$slug',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
 const CoursesEngineeringDeptFacultyRoute =
   CoursesEngineeringDeptFacultyRouteImport.update({
     id: '/faculty',
@@ -206,7 +262,7 @@ export interface FileRoutesByFullPath {
   '/alumni': typeof AlumniRoute
   '/anti-ragging': typeof AntiRaggingRoute
   '/campus': typeof CampusRoute
-  '/campus-life': typeof CampusLifeRoute
+  '/campus-life': typeof CampusLifeRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
@@ -222,14 +278,23 @@ export interface FileRoutesByFullPath {
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions/': typeof AdmissionsIndexRoute
+  '/campus-life/': typeof CampusLifeIndexRoute
   '/colleges/': typeof CollegesIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/placement/': typeof PlacementIndexRoute
+  '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
+  '/campus-life/clubs/$slug': typeof CampusLifeClubsSlugRoute
+  '/campus-life/events/$slug': typeof CampusLifeEventsSlugRoute
+  '/campus-life/facilities/$': typeof CampusLifeFacilitiesSplatRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
   '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
+  '/campus-life/centre/': typeof CampusLifeCentreIndexRoute
+  '/campus-life/clubs/': typeof CampusLifeClubsIndexRoute
+  '/campus-life/events/': typeof CampusLifeEventsIndexRoute
+  '/campus-life/facilities/': typeof CampusLifeFacilitiesIndexRoute
   '/departments/$dept/': typeof DepartmentsDeptIndexRoute
   '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
@@ -239,7 +304,6 @@ export interface FileRoutesByTo {
   '/alumni': typeof AlumniRoute
   '/anti-ragging': typeof AntiRaggingRoute
   '/campus': typeof CampusRoute
-  '/campus-life': typeof CampusLifeRoute
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
@@ -254,14 +318,23 @@ export interface FileRoutesByTo {
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions': typeof AdmissionsIndexRoute
+  '/campus-life': typeof CampusLifeIndexRoute
   '/colleges': typeof CollegesIndexRoute
   '/courses': typeof CoursesIndexRoute
   '/placement': typeof PlacementIndexRoute
+  '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
+  '/campus-life/clubs/$slug': typeof CampusLifeClubsSlugRoute
+  '/campus-life/events/$slug': typeof CampusLifeEventsSlugRoute
+  '/campus-life/facilities/$': typeof CampusLifeFacilitiesSplatRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
   '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
+  '/campus-life/centre': typeof CampusLifeCentreIndexRoute
+  '/campus-life/clubs': typeof CampusLifeClubsIndexRoute
+  '/campus-life/events': typeof CampusLifeEventsIndexRoute
+  '/campus-life/facilities': typeof CampusLifeFacilitiesIndexRoute
   '/departments/$dept': typeof DepartmentsDeptIndexRoute
   '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
@@ -272,7 +345,7 @@ export interface FileRoutesById {
   '/alumni': typeof AlumniRoute
   '/anti-ragging': typeof AntiRaggingRoute
   '/campus': typeof CampusRoute
-  '/campus-life': typeof CampusLifeRoute
+  '/campus-life': typeof CampusLifeRouteWithChildren
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
@@ -288,14 +361,23 @@ export interface FileRoutesById {
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
   '/admissions/': typeof AdmissionsIndexRoute
+  '/campus-life/': typeof CampusLifeIndexRoute
   '/colleges/': typeof CollegesIndexRoute
   '/courses/': typeof CoursesIndexRoute
   '/placement/': typeof PlacementIndexRoute
+  '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
+  '/campus-life/clubs/$slug': typeof CampusLifeClubsSlugRoute
+  '/campus-life/events/$slug': typeof CampusLifeEventsSlugRoute
+  '/campus-life/facilities/$': typeof CampusLifeFacilitiesSplatRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
   '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
+  '/campus-life/centre/': typeof CampusLifeCentreIndexRoute
+  '/campus-life/clubs/': typeof CampusLifeClubsIndexRoute
+  '/campus-life/events/': typeof CampusLifeEventsIndexRoute
+  '/campus-life/facilities/': typeof CampusLifeFacilitiesIndexRoute
   '/departments/$dept/': typeof DepartmentsDeptIndexRoute
   '/courses/engineering/$dept/faculty': typeof CoursesEngineeringDeptFacultyRoute
 }
@@ -323,14 +405,23 @@ export interface FileRouteTypes {
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions/'
+    | '/campus-life/'
     | '/colleges/'
     | '/courses/'
     | '/placement/'
+    | '/campus-life/centre/$slug'
+    | '/campus-life/clubs/$slug'
+    | '/campus-life/events/$slug'
+    | '/campus-life/facilities/$'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
     | '/departments/$dept/achievements'
     | '/departments/$dept/activities'
     | '/departments/$dept/staff'
+    | '/campus-life/centre/'
+    | '/campus-life/clubs/'
+    | '/campus-life/events/'
+    | '/campus-life/facilities/'
     | '/departments/$dept/'
     | '/courses/engineering/$dept/faculty'
   fileRoutesByTo: FileRoutesByTo
@@ -340,7 +431,6 @@ export interface FileRouteTypes {
     | '/alumni'
     | '/anti-ragging'
     | '/campus'
-    | '/campus-life'
     | '/careers'
     | '/contact'
     | '/downloads'
@@ -355,14 +445,23 @@ export interface FileRouteTypes {
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions'
+    | '/campus-life'
     | '/colleges'
     | '/courses'
     | '/placement'
+    | '/campus-life/centre/$slug'
+    | '/campus-life/clubs/$slug'
+    | '/campus-life/events/$slug'
+    | '/campus-life/facilities/$'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
     | '/departments/$dept/achievements'
     | '/departments/$dept/activities'
     | '/departments/$dept/staff'
+    | '/campus-life/centre'
+    | '/campus-life/clubs'
+    | '/campus-life/events'
+    | '/campus-life/facilities'
     | '/departments/$dept'
     | '/courses/engineering/$dept/faculty'
   id:
@@ -388,14 +487,23 @@ export interface FileRouteTypes {
     | '/programs/$program'
     | '/staff/$staff'
     | '/admissions/'
+    | '/campus-life/'
     | '/colleges/'
     | '/courses/'
     | '/placement/'
+    | '/campus-life/centre/$slug'
+    | '/campus-life/clubs/$slug'
+    | '/campus-life/events/$slug'
+    | '/campus-life/facilities/$'
     | '/courses/$course/faculty'
     | '/courses/engineering/$dept'
     | '/departments/$dept/achievements'
     | '/departments/$dept/activities'
     | '/departments/$dept/staff'
+    | '/campus-life/centre/'
+    | '/campus-life/clubs/'
+    | '/campus-life/events/'
+    | '/campus-life/facilities/'
     | '/departments/$dept/'
     | '/courses/engineering/$dept/faculty'
   fileRoutesById: FileRoutesById
@@ -406,7 +514,7 @@ export interface RootRouteChildren {
   AlumniRoute: typeof AlumniRoute
   AntiRaggingRoute: typeof AntiRaggingRoute
   CampusRoute: typeof CampusRoute
-  CampusLifeRoute: typeof CampusLifeRoute
+  CampusLifeRoute: typeof CampusLifeRouteWithChildren
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   DownloadsRoute: typeof DownloadsRoute
@@ -542,6 +650,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CollegesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/campus-life/': {
+      id: '/campus-life/'
+      path: '/'
+      fullPath: '/campus-life/'
+      preLoaderRoute: typeof CampusLifeIndexRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
     '/admissions/': {
       id: '/admissions/'
       path: '/admissions'
@@ -605,6 +720,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepartmentsDeptIndexRouteImport
       parentRoute: typeof DepartmentsDeptRoute
     }
+    '/campus-life/facilities/': {
+      id: '/campus-life/facilities/'
+      path: '/facilities'
+      fullPath: '/campus-life/facilities/'
+      preLoaderRoute: typeof CampusLifeFacilitiesIndexRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/events/': {
+      id: '/campus-life/events/'
+      path: '/events'
+      fullPath: '/campus-life/events/'
+      preLoaderRoute: typeof CampusLifeEventsIndexRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/clubs/': {
+      id: '/campus-life/clubs/'
+      path: '/clubs'
+      fullPath: '/campus-life/clubs/'
+      preLoaderRoute: typeof CampusLifeClubsIndexRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/centre/': {
+      id: '/campus-life/centre/'
+      path: '/centre'
+      fullPath: '/campus-life/centre/'
+      preLoaderRoute: typeof CampusLifeCentreIndexRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
     '/departments/$dept/staff': {
       id: '/departments/$dept/staff'
       path: '/staff'
@@ -640,6 +783,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesCourseFacultyRouteImport
       parentRoute: typeof CoursesCourseRoute
     }
+    '/campus-life/facilities/$': {
+      id: '/campus-life/facilities/$'
+      path: '/facilities/$'
+      fullPath: '/campus-life/facilities/$'
+      preLoaderRoute: typeof CampusLifeFacilitiesSplatRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/events/$slug': {
+      id: '/campus-life/events/$slug'
+      path: '/events/$slug'
+      fullPath: '/campus-life/events/$slug'
+      preLoaderRoute: typeof CampusLifeEventsSlugRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/clubs/$slug': {
+      id: '/campus-life/clubs/$slug'
+      path: '/clubs/$slug'
+      fullPath: '/campus-life/clubs/$slug'
+      preLoaderRoute: typeof CampusLifeClubsSlugRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/centre/$slug': {
+      id: '/campus-life/centre/$slug'
+      path: '/centre/$slug'
+      fullPath: '/campus-life/centre/$slug'
+      preLoaderRoute: typeof CampusLifeCentreSlugRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
     '/courses/engineering/$dept/faculty': {
       id: '/courses/engineering/$dept/faculty'
       path: '/faculty'
@@ -649,6 +820,34 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface CampusLifeRouteChildren {
+  CampusLifeIndexRoute: typeof CampusLifeIndexRoute
+  CampusLifeCentreSlugRoute: typeof CampusLifeCentreSlugRoute
+  CampusLifeClubsSlugRoute: typeof CampusLifeClubsSlugRoute
+  CampusLifeEventsSlugRoute: typeof CampusLifeEventsSlugRoute
+  CampusLifeFacilitiesSplatRoute: typeof CampusLifeFacilitiesSplatRoute
+  CampusLifeCentreIndexRoute: typeof CampusLifeCentreIndexRoute
+  CampusLifeClubsIndexRoute: typeof CampusLifeClubsIndexRoute
+  CampusLifeEventsIndexRoute: typeof CampusLifeEventsIndexRoute
+  CampusLifeFacilitiesIndexRoute: typeof CampusLifeFacilitiesIndexRoute
+}
+
+const CampusLifeRouteChildren: CampusLifeRouteChildren = {
+  CampusLifeIndexRoute: CampusLifeIndexRoute,
+  CampusLifeCentreSlugRoute: CampusLifeCentreSlugRoute,
+  CampusLifeClubsSlugRoute: CampusLifeClubsSlugRoute,
+  CampusLifeEventsSlugRoute: CampusLifeEventsSlugRoute,
+  CampusLifeFacilitiesSplatRoute: CampusLifeFacilitiesSplatRoute,
+  CampusLifeCentreIndexRoute: CampusLifeCentreIndexRoute,
+  CampusLifeClubsIndexRoute: CampusLifeClubsIndexRoute,
+  CampusLifeEventsIndexRoute: CampusLifeEventsIndexRoute,
+  CampusLifeFacilitiesIndexRoute: CampusLifeFacilitiesIndexRoute,
+}
+
+const CampusLifeRouteWithChildren = CampusLifeRoute._addFileChildren(
+  CampusLifeRouteChildren,
+)
 
 interface CoursesCourseRouteChildren {
   CoursesCourseFacultyRoute: typeof CoursesCourseFacultyRoute
@@ -700,7 +899,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlumniRoute: AlumniRoute,
   AntiRaggingRoute: AntiRaggingRoute,
   CampusRoute: CampusRoute,
-  CampusLifeRoute: CampusLifeRoute,
+  CampusLifeRoute: CampusLifeRouteWithChildren,
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   DownloadsRoute: DownloadsRoute,
