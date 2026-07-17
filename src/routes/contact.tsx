@@ -63,7 +63,7 @@ function Contact() {
         </div>
 
         <div className="mt-12 overflow-hidden rounded-2xl border border-border">
-          <iframe title="map" src="https://www.google.com/maps?q=Vasad,Gujarat&output=embed" className="h-96 w-full" loading="lazy" />
+          <iframe title="SVIT Vasad location — satellite view" src="https://www.google.com/maps?q=22.470529860861355,73.07582292938241&t=k&z=18&output=embed" className="h-96 w-full" loading="lazy" />
         </div>
       </section>
       <style>{`.input{width:100%;border-radius:0.375rem;border:1px solid var(--input);background:transparent;padding:0.625rem 0.75rem;font-size:0.875rem}.input:focus{outline:none;box-shadow:0 0 0 2px var(--ring)}`}</style>
