@@ -44,8 +44,8 @@ export function PlacementPage({ content }: Props) {
 
       <div className="bg-secondary/30">
         <div className="container-page py-10">
-          <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="lg:sticky lg:top-24 lg:self-start">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
               <nav
                 aria-label="Placement sections"
                 className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
