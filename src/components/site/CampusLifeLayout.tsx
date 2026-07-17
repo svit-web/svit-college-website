@@ -26,16 +26,16 @@ export function CampusLifeLayout() {
 
       <div className="bg-secondary/30">
         <div className="container-page py-10">
-          <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="lg:sticky lg:top-24 lg:self-start">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
               <nav
                 aria-label="Campus Life sections"
-                className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
+                className="min-w-0 rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
               >
                 <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
                   Campus Life
                 </div>
-                <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+                <ul className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">
                   {NAV.map((item) => {
                     const isActive = item.exact
                       ? pathname === item.to
