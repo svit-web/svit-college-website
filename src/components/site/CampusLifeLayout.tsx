@@ -4,13 +4,13 @@ import { PageHero } from "./PageHero";
 import { CTABanner } from "./CTABanner";
 import { cn } from "@/lib/utils";
 
-const NAV = [
+const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
   { to: "/campus-life", label: "Overview", icon: Home, exact: true },
   { to: "/campus-life/facilities", label: "Facilities", icon: Building2 },
   { to: "/campus-life/centre", label: "Co-curricular", icon: Sparkles },
   { to: "/campus-life/clubs", label: "Clubs", icon: Users },
   { to: "/campus-life/events", label: "Events", icon: CalendarDays },
-] as const;
+];
 
 export function CampusLifeLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
