@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
 import { colleges } from "@/data/colleges";
@@ -170,33 +170,9 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute right-0 top-full z-50 w-[900px] max-w-[92vw] rounded-2xl border border-border bg-white p-6 shadow-xl"
+                        className="absolute right-0 top-full z-50 w-[720px] max-w-[92vw] overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
                       >
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-                          <MegaColumn
-                            title="Facilities"
-                            heading={{ label: "All facilities", to: "/campus-life/facilities" }}
-                            items={[
-                              ...academicFacilities.slice(0, 3).map((f) => ({ label: f.title, to: `/campus-life/facilities/academic/${f.slug}` })),
-                              ...sportsFacilities.slice(0, 4).map((f) => ({ label: f.title, to: `/campus-life/facilities/co-curriculum/${f.slug}` })),
-                            ]}
-                          />
-                          <MegaColumn
-                            title="Co-curricular"
-                            heading={{ label: "All centres", to: "/campus-life/centre" }}
-                            items={centreDetails.slice(0, 8).map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
-                          />
-                          <MegaColumn
-                            title="Clubs"
-                            heading={{ label: "All clubs", to: "/campus-life/clubs" }}
-                            items={clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
-                          />
-                          <MegaColumn
-                            title="Events"
-                            heading={{ label: "All events", to: "/campus-life/events" }}
-                            items={eventDetails.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` }))}
-                          />
-                        </div>
+                        <CampusMega onNavigate={() => setCampusOpen(false)} />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -217,6 +193,7 @@ export function Header() {
             );
           })}
         </nav>
+
 
         <div className="flex items-center gap-3">
           <Link
@@ -284,6 +261,7 @@ export function Header() {
                       ))}
                     </div>
                   )}
+                  {n.label === "Campus Life" && <MobileCampusAccordion onNavigate={() => setOpen(false)} />}
                 </div>
               ))}
               <div className="my-2 border-t border-border" />
@@ -312,30 +290,185 @@ export function Header() {
   );
 }
 
-function MegaColumn({
-  title,
-  heading,
-  items,
-}: {
+type MegaItem = { label: string; to: string };
+type MegaCategory = {
+  key: string;
   title: string;
-  heading: { label: string; to: string };
-  items: { label: string; to: string }[];
-}) {
+  icon: typeof Building2;
+  allLabel: string;
+  allTo: string;
+  items: MegaItem[];
+};
+
+function useCampusCategories(): MegaCategory[] {
+  return [
+    {
+      key: "facilities",
+      title: "Facilities",
+      icon: Building2,
+      allLabel: "All facilities",
+      allTo: "/campus-life/facilities",
+      items: [
+        ...academicFacilities.map((f) => ({ label: f.title, to: `/campus-life/facilities/academic/${f.slug}` })),
+        ...sportsFacilities.map((f) => ({ label: f.title, to: `/campus-life/facilities/co-curriculum/${f.slug}` })),
+      ],
+    },
+    {
+      key: "co-curricular",
+      title: "Co-curricular",
+      icon: Sparkles,
+      allLabel: "All centres",
+      allTo: "/campus-life/centre",
+      items: centreDetails.map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` })),
+    },
+    {
+      key: "clubs",
+      title: "Clubs",
+      icon: Users,
+      allLabel: "All clubs",
+      allTo: "/campus-life/clubs",
+      items: clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` })),
+    },
+    {
+      key: "events",
+      title: "Events",
+      icon: CalendarDays,
+      allLabel: "All events",
+      allTo: "/campus-life/events",
+      items: eventDetails.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
+    },
+  ];
+}
+
+function CampusMega({ onNavigate }: { onNavigate: () => void }) {
+  const categories = useCampusCategories();
+  const [activeKey, setActiveKey] = useState(categories[0].key);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleActivate = (key: string) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveKey(key), 120);
+  };
+  const cancelSchedule = () => {
+    if (hoverTimer.current) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+  };
+
+  const active = categories.find((c) => c.key === activeKey) ?? categories[0];
+
   return (
-    <div>
-      <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-crimson">{title}</div>
-      <Link to={heading.to} className="block text-sm font-bold text-navy hover:text-crimson">
-        {heading.label} →
-      </Link>
-      <ul className="mt-3 space-y-1.5">
-        {items.map((it) => (
-          <li key={it.to}>
-            <Link to={it.to} className="block text-xs text-ink/75 hover:text-navy">
-              {it.label}
-            </Link>
-          </li>
-        ))}
+    <div className="grid grid-cols-[220px_minmax(0,1fr)]">
+      <ul className="border-r border-border bg-secondary/40 py-3" role="menu">
+        {categories.map((c) => {
+          const isActive = c.key === activeKey;
+          const Icon = c.icon;
+          return (
+            <li key={c.key}>
+              <button
+                type="button"
+                onMouseEnter={() => scheduleActivate(c.key)}
+                onMouseLeave={cancelSchedule}
+                onFocus={() => setActiveKey(c.key)}
+                onClick={() => setActiveKey(c.key)}
+                aria-current={isActive ? "true" : undefined}
+                className={cn(
+                  "flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold transition-colors",
+                  isActive
+                    ? "bg-white text-navy border-l-4 border-crimson"
+                    : "border-l-4 border-transparent text-ink/70 hover:bg-white/60 hover:text-navy"
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="flex-1 truncate">{c.title}</span>
+                <ChevronRight className={cn("h-3.5 w-3.5 transition-opacity", isActive ? "opacity-100 text-crimson" : "opacity-0")} />
+              </button>
+            </li>
+          );
+        })}
       </ul>
+      <div className="min-h-[280px] p-5">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active.key}
+            initial={{ opacity: 0, x: 6 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -6 }}
+            transition={{ duration: 0.15 }}
+          >
+            <Link
+              to={active.allTo}
+              onClick={onNavigate}
+              className="inline-flex items-center gap-1 text-sm font-bold text-navy hover:text-crimson"
+            >
+              {active.allLabel} <ChevronRight className="h-3.5 w-3.5" />
+            </Link>
+            <ul className="mt-4 grid grid-cols-2 gap-x-6 gap-y-1.5">
+              {active.items.map((it) => (
+                <li key={it.to}>
+                  <Link
+                    to={it.to}
+                    onClick={onNavigate}
+                    className="block rounded px-2 py-1.5 text-sm text-ink/75 hover:bg-secondary hover:text-navy"
+                  >
+                    {it.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
+
+function MobileCampusAccordion({ onNavigate }: { onNavigate: () => void }) {
+  const categories = useCampusCategories();
+  const [openKey, setOpenKey] = useState<string | null>(null);
+  return (
+    <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+      {categories.map((c) => {
+        const isOpen = openKey === c.key;
+        const Icon = c.icon;
+        return (
+          <div key={c.key}>
+            <button
+              type="button"
+              onClick={() => setOpenKey(isOpen ? null : c.key)}
+              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+              aria-expanded={isOpen}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              <span className="flex-1 text-left">{c.title}</span>
+              <ChevronDown className={cn("h-3 w-3 transition-transform", isOpen && "rotate-180")} />
+            </button>
+            {isOpen && (
+              <div className="ml-5 mt-0.5 flex flex-col gap-0.5 border-l border-navy/10 pl-3">
+                <Link
+                  to={c.allTo}
+                  onClick={onNavigate}
+                  className="rounded-md px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson hover:bg-secondary"
+                >
+                  {c.allLabel}
+                </Link>
+                {c.items.map((it) => (
+                  <Link
+                    key={it.to}
+                    to={it.to}
+                    onClick={onNavigate}
+                    className="rounded-md px-2 py-1.5 text-xs text-ink/70 hover:bg-secondary hover:text-navy"
+                  >
+                    {it.label}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
