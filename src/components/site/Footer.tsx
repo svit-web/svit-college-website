@@ -8,7 +8,7 @@ export function Footer() {
     { label: "About Us", to: "/about" },
     { label: "Admissions", to: "/admissions" },
     { label: "Campus Life", to: "/campus-life" },
-    { label: "Placement", to: "/placement/engineering" },
+    { label: "Placement", to: "/placement/svit" },
     { label: "News & Events", to: "/news" },
     { label: "Contact", to: "/contact" },
   ];
