@@ -1,0 +1,79 @@
+import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
+import type { Database } from "@/integrations/supabase/types";
+
+function serverClient() {
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient<Database>(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        if (
+          (key.startsWith("sb_publishable_") || key.startsWith("sb_secret_")) &&
+          headers.get("Authorization") === `Bearer ${key}`
+        ) {
+          headers.delete("Authorization");
+        }
+        headers.set("apikey", key);
+        return fetch(input, { ...init, headers });
+      },
+    },
+  });
+}
+
+export const getGlobalHomepageItems = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from("homepage_items")
+      .select(
+        "id, item_type, eyebrow, title, title_accent, subtitle, body, image_url, icon_name, link_href, link_label, secondary_link_href, secondary_link_label, sort_order, metadata",
+      )
+      .eq("scope_type", "global")
+      .eq("is_active", true)
+      .eq("status", "published")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+);
+
+export const getCollegesGrid = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from("colleges")
+      .select("slug, short_code, name, tagline, logo_url, sort_order")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+);
+
+export const getRecruiterLogos = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from("recruiters")
+      .select("name, logo_url, sort_order")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+);
+
+export const getLatestEvents = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from("events")
+      .select("title, tag, start_date, description, registration_link, sort_order")
+      .eq("status", "published")
+      .order("sort_order", { ascending: true })
+      .limit(4);
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+);
