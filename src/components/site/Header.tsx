@@ -260,6 +260,7 @@ export function Header() {
                         </Link>
                       ))}
                     </div>
+                  )}
                   {n.label === "Campus Life" && <MobileCampusAccordion onNavigate={() => setOpen(false)} />}
                 </div>
               ))}
