@@ -3,7 +3,31 @@ import { motion } from "framer-motion";
 import { ArrowRight, Download, ImageIcon } from "lucide-react";
 import { Reveal } from "./Reveal";
 
-export function CTABanner() {
+interface Promo {
+  eyebrow?: string | null;
+  title?: string | null;
+  body?: string | null;
+  link_label?: string | null;
+  link_href?: string | null;
+  secondary_link_label?: string | null;
+  secondary_link_href?: string | null;
+}
+
+interface Props {
+  promo?: Promo | null;
+}
+
+export function CTABanner({ promo }: Props = {}) {
+  const eyebrow = promo?.eyebrow ?? "Admissions Open 2026-27";
+  const title = promo?.title ?? "Begin your journey at SVIT Vasad";
+  const body =
+    promo?.body ??
+    "Join 5000+ students shaping careers in engineering, management and applied sciences. Applications now open across all programmes.";
+  const primaryLabel = promo?.link_label ?? "Apply Now";
+  const primaryHref = promo?.link_href ?? "/admissions/inquiry";
+  const secondaryLabel = promo?.secondary_link_label ?? "Download Brochure";
+  const secondaryHref = promo?.secondary_link_href ?? "/downloads";
+
   return (
     <section className="container-page py-16 md:py-20">
       <Reveal>
@@ -11,17 +35,14 @@ export function CTABanner() {
           <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-gold/25 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-crimson/25 blur-3xl" />
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
-            {/* Content (left) */}
             <div>
               <div className="mb-3 inline-block rounded-full bg-gold/15 border border-gold/40 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-gold">
-                Admissions Open 2026-27
+                {eyebrow}
               </div>
               <h3 className="font-display text-3xl md:text-4xl font-bold leading-tight">
-                Begin your journey at SVIT Vasad
+                {title}
               </h3>
-              <p className="mt-3 text-white/80 max-w-lg">
-                Join 5000+ students shaping careers in engineering, management and applied sciences. Applications now open across all programmes.
-              </p>
+              <p className="mt-3 text-white/80 max-w-lg">{body}</p>
               <ul className="mt-4 grid gap-2 text-sm text-white/85 sm:grid-cols-2">
                 <li>• 7 undergraduate & postgraduate streams</li>
                 <li>• Merit & need-based scholarships</li>
@@ -30,24 +51,22 @@ export function CTABanner() {
               </ul>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
-                  to="/admissions/inquiry"
+                  to={primaryHref}
                   className="inline-flex items-center justify-center gap-2 rounded-md bg-gold px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
                 >
-                  Apply Now <ArrowRight className="h-4 w-4" />
+                  {primaryLabel} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <Link
-                  to="/downloads"
+                  to={secondaryHref}
                   className="inline-flex items-center justify-center gap-2 rounded-md border border-white/25 px-6 py-3.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
                 >
-                  <Download className="h-4 w-4" /> Download Brochure
+                  <Download className="h-4 w-4" /> {secondaryLabel}
                 </Link>
               </div>
             </div>
 
-            {/* Hero photo (right) */}
             <div className="mx-auto w-full max-w-sm lg:mx-0 lg:ml-auto">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-gold/40 bg-white/5 shadow-2xl">
-                {/* TODO: Replace with real hero photo */}
                 <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
                   <ImageIcon className="h-14 w-14" />
                   <span className="text-xs font-semibold uppercase tracking-[0.25em]">
