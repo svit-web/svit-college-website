@@ -6,7 +6,15 @@ import campusHero from "@/assets/campus-hero.jpg";
 import campusAerial from "@/assets/campus-aerial.jpg";
 import students from "@/assets/students.jpg";
 
-const slides = [
+export interface CarouselSlide {
+  image: string;
+  eyebrow: string;
+  title: string;
+  subtitle: string;
+  cta: { label: string; to: string };
+}
+
+const defaultSlides: CarouselSlide[] = [
   {
     image: campusHero,
     eyebrow: "Admissions 2026-27",
@@ -26,11 +34,16 @@ const slides = [
     eyebrow: "95% Placement Record",
     title: "Careers That Take Off",
     subtitle: "200+ recruiting partners including TCS, Infosys, L&T, Adani and Reliance.",
-    cta: { label: "See Placements", to: "/placement/engineering" },
+    cta: { label: "See Placements", to: "/placement/svit" },
   },
 ];
 
-export function HomeCarousel() {
+interface Props {
+  slides?: CarouselSlide[];
+}
+
+export function HomeCarousel({ slides: slidesProp }: Props = {}) {
+  const slides = slidesProp && slidesProp.length > 0 ? slidesProp : defaultSlides;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -38,9 +51,9 @@ export function HomeCarousel() {
     if (paused) return;
     const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5500);
     return () => clearInterval(t);
-  }, [paused]);
+  }, [paused, slides.length]);
 
-  const s = slides[index];
+  const s = slides[index] ?? slides[0];
   return (
     <section
       className="relative overflow-hidden bg-navy-deep"
