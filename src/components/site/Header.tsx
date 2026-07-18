@@ -260,7 +260,7 @@ export function Header() {
                         </Link>
                       ))}
                     </div>
-                  )}
+                  {n.label === "Campus Life" && <MobileCampusAccordion onNavigate={() => setOpen(false)} />}
                 </div>
               ))}
               <div className="my-2 border-t border-border" />
