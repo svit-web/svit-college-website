@@ -248,13 +248,17 @@ export function PlacementPageNotFound() {
     <div className="container-page py-24 text-center">
       <h1 className="font-display text-3xl font-bold text-navy">Placement division not found</h1>
       <p className="mt-3 text-muted-foreground">Choose one of the available divisions:</p>
-      <div className="mt-6 flex justify-center gap-3">
-        <Link to="/placement/$college" params={{ college: "engineering" }} className="rounded-md bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-light">
-          Engineering
-        </Link>
-        <Link to="/placement/$college" params={{ college: "architecture" }} className="rounded-md bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-light">
-          Architecture
-        </Link>
+      <div className="mt-6 flex flex-wrap justify-center gap-3">
+        {(["svit", "svion", "svica", "coa"] as const).map((slug) => (
+          <Link
+            key={slug}
+            to="/placement/$college"
+            params={{ college: slug }}
+            className="rounded-md bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy-light"
+          >
+            {slug.toUpperCase()}
+          </Link>
+        ))}
       </div>
     </div>
   );
