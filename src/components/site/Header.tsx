@@ -170,33 +170,9 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute right-0 top-full z-50 w-[900px] max-w-[92vw] rounded-2xl border border-border bg-white p-6 shadow-xl"
+                        className="absolute right-0 top-full z-50 w-[720px] max-w-[92vw] overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
                       >
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
-                          <MegaColumn
-                            title="Facilities"
-                            heading={{ label: "All facilities", to: "/campus-life/facilities" }}
-                            items={[
-                              ...academicFacilities.slice(0, 3).map((f) => ({ label: f.title, to: `/campus-life/facilities/academic/${f.slug}` })),
-                              ...sportsFacilities.slice(0, 4).map((f) => ({ label: f.title, to: `/campus-life/facilities/co-curriculum/${f.slug}` })),
-                            ]}
-                          />
-                          <MegaColumn
-                            title="Co-curricular"
-                            heading={{ label: "All centres", to: "/campus-life/centre" }}
-                            items={centreDetails.slice(0, 8).map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
-                          />
-                          <MegaColumn
-                            title="Clubs"
-                            heading={{ label: "All clubs", to: "/campus-life/clubs" }}
-                            items={clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
-                          />
-                          <MegaColumn
-                            title="Events"
-                            heading={{ label: "All events", to: "/campus-life/events" }}
-                            items={eventDetails.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` }))}
-                          />
-                        </div>
+                        <CampusMega onNavigate={() => setCampusOpen(false)} />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -217,6 +193,7 @@ export function Header() {
             );
           })}
         </nav>
+
 
         <div className="flex items-center gap-3">
           <Link
