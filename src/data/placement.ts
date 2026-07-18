@@ -1,10 +1,10 @@
 // Placement content model.
-// One `placementPageContent` object per college division. The shared
-// `PlacementPage` template just receives the object matching the current
-// route slug — treat every array here as fully admin-editable (add /
-// remove / edit rows without page rebuilds).
+// One `placementPageContent` object per college. The shared `PlacementPage`
+// template just receives the object matching the current route slug — treat
+// every array here as fully admin-editable (add / remove / edit rows without
+// page rebuilds).
 
-export type PlacementSlug = "engineering" | "architecture";
+export type PlacementSlug = "svit" | "svion" | "svica" | "coa";
 
 export interface PlacementYearPoint {
   year: string;
@@ -53,14 +53,22 @@ export interface PlacementPageContent {
   placementOfficer: PlacementOfficer;
 }
 
+const emptyOfficer: PlacementOfficer = {
+  name: "",
+  designation: "Training & Placement Officer",
+  phone: "",
+  email: "",
+  photo: null,
+};
+
 export const placementPages: Record<PlacementSlug, PlacementPageContent> = {
-  engineering: {
-    slug: "engineering",
+  svit: {
+    slug: "svit",
     collegeId: "svit",
     collegeName: "Sardar Vallabhbhai Patel Institute of Technology",
     shortCode: "SVIT",
     aboutText:
-      "The Training & Placement (T&P) Cell at SVIT Engineering bridges academic learning with industry practice. From day one, students engage with structured aptitude training, coding bootcamps, mock interviews, communication workshops and industry mentorship. The cell works year-round with 200+ recruiting partners across IT services, product engineering, core engineering, manufacturing and consulting to deliver strong on-campus and off-campus placement outcomes for every engineering branch.",
+      "The Training & Placement (T&P) Cell at SVIT bridges academic learning with industry practice. From day one, students engage with structured aptitude training, coding bootcamps, mock interviews, communication workshops and industry mentorship. The cell works year-round with 200+ recruiting partners across IT services, product engineering, core engineering, manufacturing and consulting to deliver strong on-campus and off-campus placement outcomes for every engineering branch.",
     details: {
       graphicalData: [
         { year: "2020", studentsPlaced: 152, placementPercentage: 82 },
@@ -98,16 +106,84 @@ export const placementPages: Record<PlacementSlug, PlacementPageContent> = {
       { companyName: "Capgemini", logo: null },
       { companyName: "IBM", logo: null },
     ],
-    placementOfficer: {
-      name: "",
-      designation: "Training & Placement Officer",
-      phone: "",
-      email: "",
-      photo: null,
-    },
+    placementOfficer: { ...emptyOfficer },
   },
-  architecture: {
-    slug: "architecture",
+  svion: {
+    slug: "svion",
+    collegeId: "svion",
+    collegeName: "SVIT Institute of Nursing",
+    shortCode: "SVION",
+    aboutText:
+      "The Training & Placement Cell at SVION connects nursing graduates with leading hospitals, healthcare networks and community health organisations. Clinical rotations, skill labs, soft-skills training and licensure preparation ensure students are ready for roles across in-patient care, specialty units and public health.",
+    details: {
+      graphicalData: [
+        { year: "2022", studentsPlaced: 40, placementPercentage: 84 },
+        { year: "2023", studentsPlaced: 48, placementPercentage: 87 },
+        { year: "2024", studentsPlaced: 55, placementPercentage: 90 },
+        { year: "2025", studentsPlaced: 62, placementPercentage: 92 },
+      ],
+      statHighlights: [
+        { label: "Students Placed", value: "62+" },
+        { label: "Highest Package", value: "₹6 LPA" },
+        { label: "Average Package", value: "₹3.2 LPA" },
+        { label: "Hospitals Visited", value: "40+" },
+      ],
+    },
+    summary: {
+      placedStudents: [
+        { studentName: "Sample Student A", companyName: "Apollo Hospitals", photo: null },
+        { studentName: "Sample Student B", companyName: "Zydus Hospitals", photo: null },
+      ],
+    },
+    recruiters: [
+      { companyName: "Apollo Hospitals", logo: null },
+      { companyName: "Zydus Hospitals", logo: null },
+      { companyName: "Sterling Hospitals", logo: null },
+      { companyName: "HCG Cancer Centre", logo: null },
+      { companyName: "Narayana Health", logo: null },
+      { companyName: "Fortis Healthcare", logo: null },
+    ],
+    placementOfficer: { ...emptyOfficer },
+  },
+  svica: {
+    slug: "svica",
+    collegeId: "svica",
+    collegeName: "SVIT College of Applied Sciences",
+    shortCode: "SVICA",
+    aboutText:
+      "The Training & Placement Cell at SVICA prepares applied sciences and computer applications graduates for careers in IT services, analytics, EdTech and research. Industry-led electives, live projects, certifications and mentorship drive strong placement outcomes across product and services companies.",
+    details: {
+      graphicalData: [
+        { year: "2022", studentsPlaced: 55, placementPercentage: 80 },
+        { year: "2023", studentsPlaced: 62, placementPercentage: 83 },
+        { year: "2024", studentsPlaced: 70, placementPercentage: 87 },
+        { year: "2025", studentsPlaced: 78, placementPercentage: 90 },
+      ],
+      statHighlights: [
+        { label: "Students Placed", value: "78+" },
+        { label: "Highest Package", value: "₹12 LPA" },
+        { label: "Average Package", value: "₹3.9 LPA" },
+        { label: "Companies Visited", value: "60+" },
+      ],
+    },
+    summary: {
+      placedStudents: [
+        { studentName: "Sample Student A", companyName: "TCS", photo: null },
+        { studentName: "Sample Student B", companyName: "Cognizant", photo: null },
+      ],
+    },
+    recruiters: [
+      { companyName: "TCS", logo: null },
+      { companyName: "Infosys", logo: null },
+      { companyName: "Cognizant", logo: null },
+      { companyName: "Accenture", logo: null },
+      { companyName: "Capgemini", logo: null },
+      { companyName: "Wipro", logo: null },
+    ],
+    placementOfficer: { ...emptyOfficer },
+  },
+  coa: {
+    slug: "coa",
     collegeId: "svit-coa",
     collegeName: "SVIT College of Architecture",
     shortCode: "COA",
@@ -141,17 +217,13 @@ export const placementPages: Record<PlacementSlug, PlacementPageContent> = {
       { companyName: "L&T Realty", logo: null },
       { companyName: "Adani Realty", logo: null },
     ],
-    placementOfficer: {
-      name: "",
-      designation: "Training & Placement Officer",
-      phone: "",
-      email: "",
-      photo: null,
-    },
+    placementOfficer: { ...emptyOfficer },
   },
 };
 
 export const placementDivisions: { slug: PlacementSlug; label: string }[] = [
-  { slug: "engineering", label: "Engineering" },
-  { slug: "architecture", label: "Architecture" },
+  { slug: "svit", label: "SVIT" },
+  { slug: "svion", label: "SVION" },
+  { slug: "svica", label: "SVICA" },
+  { slug: "coa", label: "COA" },
 ];
