@@ -14,7 +14,207 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      colleges: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          short_code: string
+          slug: string
+          sort_order: number
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          short_code: string
+          slug: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          short_code?: string
+          slug?: string
+          sort_order?: number
+          tagline?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          registration_link: string | null
+          sort_order: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          tag: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          registration_link?: string | null
+          sort_order?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          tag?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          registration_link?: string | null
+          sort_order?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          tag?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      homepage_items: {
+        Row: {
+          body: string | null
+          created_at: string
+          department_id: string | null
+          eyebrow: string | null
+          icon_name: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          item_type: string
+          link_href: string | null
+          link_label: string | null
+          metadata: Json
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          secondary_link_href: string | null
+          secondary_link_label: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          subtitle: string | null
+          title: string
+          title_accent: string | null
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          department_id?: string | null
+          eyebrow?: string | null
+          icon_name?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          item_type: string
+          link_href?: string | null
+          link_label?: string | null
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          secondary_link_href?: string | null
+          secondary_link_label?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
+          title: string
+          title_accent?: string | null
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          department_id?: string | null
+          eyebrow?: string | null
+          icon_name?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          item_type?: string
+          link_href?: string | null
+          link_label?: string | null
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          secondary_link_href?: string | null
+          secondary_link_label?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
+          title?: string
+          title_accent?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      posts: {
+        Row: {
+          created_at: string
+          featured_image_url: string | null
+          id: string
+          published_at: string | null
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          summary: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          featured_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          summary?: string | null
+          title: string
+        }
+        Update: {
+          created_at?: string
+          featured_image_url?: string | null
+          id?: string
+          published_at?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          summary?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      recruiters: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +223,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      content_status: "draft" | "published" | "archived"
+      scope_level: "global" | "trust" | "institute" | "college" | "department"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +351,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      content_status: ["draft", "published", "archived"],
+      scope_level: ["global", "trust", "institute", "college", "department"],
+    },
   },
 } as const
