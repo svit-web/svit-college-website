@@ -1,51 +1,58 @@
-# Homepage → Database Schema Plan
+# Homepage → Lovable Cloud (Dynamic Content)
 
-Goal: make every section of the homepage (`src/routes/index.tsx`) editable from Lovable Cloud instead of hard-coded in `src/data/*.ts`. Below is the recommended set of tables, mapped 1:1 to the sections currently rendered on `/`.
+Wire `src/routes/index.tsx` to fetch content from the DB per the uploaded integration guide, keeping current `src/data/*.ts` values as seed + fallback.
 
-## Sections on the homepage today
-1. **Hero** — eyebrow, headline, highlighted phrase, subtitle, quick-link chips, primary/secondary CTAs, background image
-2. **Hero Card Slider** — right-side auto-advancing photo cards
-3. **Our Colleges** grid — 4 constituent colleges
-4. **Home Carousel** — full-width rotating banners
-5. **Stats Strip** — 6 numeric stats
-6. **Why SVIT** — feature cards with icon + title + description
-7. **Trust Band** — badges (AICTE, NAAC, etc.)
-8. **Events & News** — latest items list
-9. **Admissions Open** promo card
-10. **Quick Enquiry** form (writes to DB)
-11. **Recruiters** logo/text strip
-12. **CTA Banner** ("Begin Your Journey")
+## 1. Enable Lovable Cloud
+Turn on Cloud so we get the Supabase-backed DB, generated client, and types.
 
-## Proposed tables
+## 2. Schema (single migration)
 
-| # | Table | Purpose | Key columns |
-|---|-------|---------|-------------|
-| 1 | `home_hero` | Singleton row for the hero block | `eyebrow`, `title`, `title_accent`, `subtitle`, `bg_image_url`, `primary_cta_label`, `primary_cta_href`, `secondary_cta_label`, `secondary_cta_href` |
-| 2 | `hero_quick_links` | Chips under hero subtitle | `label`, `href`, `sort_order`, `is_active` |
-| 3 | `hero_highlights` | Right-column slider cards | `image_url`, `eyebrow`, `title`, `subtitle`, `sort_order`, `is_active` |
-| 4 | `home_carousel_slides` | Full-width rotating banner | `image_url`, `eyebrow`, `title`, `subtitle`, `cta_label`, `cta_href`, `sort_order`, `is_active` |
-| 5 | `colleges` | The 4 constituent colleges | `slug`, `short_code`, `name`, `tagline`, `logo_url`, `sort_order` |
-| 6 | `site_stats` | Stats strip numbers | `label`, `value`, `sort_order` |
-| 7 | `why_choose_items` | "Why SVIT" cards | `icon_name` (lucide key), `title`, `description`, `sort_order` |
-| 8 | `trust_badges` | AICTE / NAAC etc. | `label`, `icon_name`, `sort_order` |
-| 9 | `events` | Events & news list | `title`, `tag`, `event_date`, `body`, `link_href`, `is_published`, `sort_order` |
-| 10 | `promo_cards` | Reusable side promos (Admissions Open, CTA banner) | `slot` (enum: `home_admissions`, `home_cta_banner`), `eyebrow`, `title`, `body`, `cta_label`, `cta_href`, `image_url` |
-| 11 | `recruiters` | Recruiter names/logos | `name`, `logo_url` (optional), `sort_order` |
-| 12 | `enquiries` | Form submissions (write-only from site) | `full_name`, `email`, `mobile`, `programme_interest`, `created_at`, `status` |
+Unified `homepage_items` + shared lists. All tables get `GRANT SELECT TO anon, authenticated`; writes to `service_role` only. RLS enabled with a public read policy filtered by `is_active` / `status = 'published'`.
 
-## Access model
-- Public read (`TO anon SELECT`) on tables 1–11 with `is_active = true` / `is_published = true` filters.
-- `enquiries`: `INSERT` allowed to `anon`; `SELECT`/`UPDATE` restricted to admin role only.
-- All admin writes gated by a `has_role(auth.uid(), 'admin')` policy backed by the standard `user_roles` table.
+Tables:
+- `homepage_items` — unified content table (see guide §1). Columns: `id uuid pk`, `scope_type scope_level default 'global'`, `department_id uuid null`, `item_type text`, `eyebrow`, `title`, `title_accent`, `subtitle`, `body`, `image_url`, `icon_name`, `link_href`, `link_label`, `secondary_link_href`, `secondary_link_label`, `sort_order int default 0`, `is_active bool default true`, `status content_status default 'published'`, `metadata jsonb default '{}'`, timestamps. Enums: `scope_level`, `content_status`. Index on `(scope_type, item_type, is_active, sort_order)`.
+- `colleges` — `id, slug unique, name, tagline, logo_url, sort_order`.
+- `recruiters` — `id, name, logo_url, sort_order`.
+- `events` — `id, title, tag, start_date, description, registration_link, status, sort_order`.
+- `posts` — `id, slug unique, title, summary, featured_image_url, published_at, status`.
 
-## Frontend integration pattern
-- One server function per section (`getHomeHero`, `listColleges`, `listEvents`, …) using the server publishable client for public data.
-- Route loader calls `queryClient.ensureQueryData(...)` for each section in parallel; components read via `useSuspenseQuery`.
-- Existing `src/data/*.ts` files become fallback seed data only; new migrations seed the tables with the current hard-coded values so the site looks identical on first load.
+## 3. Seed data
+Same migration inserts current values from:
+- `src/data/site.ts` → stats, whyChoose, events, recruiters, trust badges, hero copy.
+- `src/data/heroHighlights.ts` → highlight_card rows.
+- `src/data/colleges.ts` → colleges rows (using existing CDN logo URLs).
+- Carousel slides from `Carousel.tsx` data.
+- Two `promo_card` rows tagged with `metadata->>'slot'` = `home_admissions` and `home_cta_banner`.
 
-## Questions before I build
-1. Do you want **all 12** sections DB-backed, or only a subset (e.g. hero + events + colleges) for now?
-2. Should there be an **admin dashboard route** (`/admin`) to edit these, or will you edit rows directly via the Cloud table view for now?
-3. `enquiries` — send email notification on submit, or just store in DB?
+## 4. Data layer
 
-Once you confirm, I'll enable Lovable Cloud, write the migrations (with seed data from the current files), and wire the loader + components.
+New files:
+- `src/lib/homepage.functions.ts` — server functions using the server publishable client:
+  - `getGlobalHomepageItems()`
+  - `getCollegesGrid()`
+  - `getRecruiterLogos()`
+  - `getLatestEvents(limit=4)`
+  - `getLatestPosts(limit=4)`
+- `src/lib/homepage.ts` — query options + `groupHomepageItems(items)` helper that buckets by `item_type` and extracts the singleton `hero`, plus a `promoBySlot(items, slot)` lookup.
+
+## 5. Refactor `src/routes/index.tsx`
+- Loader primes all 5 queries via `queryClient.ensureQueryData` in parallel.
+- Sections consume `useSuspenseQuery` and read from the grouped map.
+- Each section falls back to the existing static data if the query returns empty or throws (per guide §4). Keeps site looking identical on first paint even before DB is populated.
+- `CollegesSection` uses `colleges` table (falls back to `src/data/colleges.ts` for logo mapping if `logo_url` is null).
+- `HeroCardSlider` accepts a `highlights` prop; homepage passes DB rows and it falls back to `heroHighlights` static list.
+- `HomeCarousel` accepts a `slides` prop with the same fallback pattern.
+- `CTABanner` reads the `home_cta_banner` promo row.
+
+Icons: `icon_name` is looked up against a small whitelist map (`BadgeCheck`, `GraduationCap`, `Briefcase`, `Building2`, `Users`, `Lightbulb`, `Award`, `Trees`, `ShieldCheck`) — unknown names fall back to `BadgeCheck`.
+
+## 6. Out of scope (this pass)
+- `important_link` / `popup_announcement` modals — schema included and seeded empty; UI not wired yet.
+- Admin editing UI — edits happen via Cloud table view.
+- `enquiries` table / form persistence — form stays local-only (toast).
+- Other pages (About, Placement, Departments, Campus Life) stay static.
+
+## Technical notes
+- Server functions use the `sb_`-key `fetch` shim from the server-fn knowledge (opaque publishable keys aren't JWTs).
+- Only safe/public columns are selected; `homepage_items` public read policy requires `is_active AND status='published'`.
+- Loader is on a public route (`/`), so no auth middleware — all fns are unauthenticated public reads.
