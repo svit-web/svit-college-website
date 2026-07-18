@@ -246,14 +246,45 @@ export function Header() {
           >
             <div className="container-page flex flex-col gap-1 py-4">
               {primaryNav.map((n) => (
-                <Link
-                  key={n.to}
-                  to={n.to}
-                  onClick={() => setOpen(false)}
-                  className="rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                >
-                  {n.label}
-                </Link>
+                <div key={n.to}>
+                  <Link
+                    to={n.to}
+                    onClick={() => setOpen(false)}
+                    className="block rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                  >
+                    {n.label}
+                  </Link>
+                  {n.label === "Placement" && (
+                    <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+                      {placementDivisions.map((d) => (
+                        <Link
+                          key={d.slug}
+                          to="/placement/$college"
+                          params={{ college: d.slug }}
+                          onClick={() => setOpen(false)}
+                          className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+                        >
+                          {d.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                  {n.label === "Colleges" && (
+                    <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+                      {colleges.map((c) => (
+                        <Link
+                          key={c.id}
+                          to="/colleges/$college"
+                          params={{ college: c.id }}
+                          onClick={() => setOpen(false)}
+                          className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+                        >
+                          {c.shortCode} — {c.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="my-2 border-t border-border" />
               {topNav.map((n) => (
