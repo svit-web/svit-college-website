@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { ChevronDown, Mail, Menu, Phone, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
 import { colleges } from "@/data/colleges";
