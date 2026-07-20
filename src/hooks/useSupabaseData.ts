@@ -500,3 +500,165 @@ export function useSupabasePlacementStats(collegeId?: string) {
     staleTime: 5_000,
   });
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 8 — CAMPUS LIFE & DOWNLOADS
+// ─────────────────────────────────────────────────────────────────────────────
+
+import {
+  academicFacilities as staticAcademicFacilities,
+  sportsFacilities as staticSportsFacilities,
+  centreDetails as staticCentreDetails,
+  clubDetails as staticClubDetails,
+  type CampusItem,
+} from "@/data/campus-rfe";
+
+/** Map a Supabase `facilities` row → CampusItem shape */
+function rowToCampusItem(row: any): CampusItem {
+  const meta = typeof row.metadata === "object" && row.metadata ? row.metadata : {};
+  return {
+    slug: row.slug || (row.name as string).toLowerCase().replace(/\s+/g, "-"),
+    title: row.name || "",
+    subtitle: meta.subtitle || "",
+    accent: meta.accent || row.facility_type || "Facility",
+    description: meta.description || row.name || "",
+    highlights: Array.isArray(meta.highlights) ? meta.highlights : [],
+    image: row.image_url || meta.image || null,
+  };
+}
+
+/** Map a Supabase `student_clubs` / `centers` row → CampusItem shape */
+function rowToClubItem(row: any): CampusItem {
+  const meta = typeof row.metadata === "object" && row.metadata ? row.metadata : {};
+  return {
+    slug: row.slug || (row.name as string).toLowerCase().replace(/\s+/g, "-"),
+    title: row.name || "",
+    subtitle: meta.subtitle || "",
+    accent: meta.accent || "Club",
+    description: meta.description || row.name || "",
+    highlights: Array.isArray(meta.highlights) ? meta.highlights : [],
+    image: row.logo_url || meta.image || null,
+  };
+}
+
+// Custom Hook: Fetch Campus Facilities from Supabase
+export function useSupabaseFacilities(type?: "campus" | "building" | "laboratory") {
+  return useQuery({
+    queryKey: ["supabase", "facilities", type],
+    queryFn: async () => {
+      try {
+        let query = supabase
+          .from("facilities")
+          .select("id, name, slug, facility_type, description, image_url, sort_order, status, metadata")
+          .order("sort_order", { ascending: true });
+
+        if (type) {
+          query = query.eq("facility_type", type);
+        }
+
+        const { data, error } = await query;
+
+        if (error || !data || data.length === 0) {
+          return {
+            academic: staticAcademicFacilities,
+            sports: staticSportsFacilities,
+          };
+        }
+
+        const mapped = data.map(rowToCampusItem);
+        // Partition by accent keyword for backward-compat rendering
+        const academic = mapped.filter((f) =>
+          ["academic facility", "academic", "laboratory"].includes(f.accent.toLowerCase())
+        );
+        const sports = mapped.filter((f) =>
+          ["outdoor", "indoor", "sports"].includes(f.accent.toLowerCase())
+        );
+
+        return {
+          academic: academic.length > 0 ? academic : staticAcademicFacilities,
+          sports: sports.length > 0 ? sports : staticSportsFacilities,
+        };
+      } catch (err: any) {
+        console.error("[Supabase Facilities Catch]:", err);
+        return { academic: staticAcademicFacilities, sports: staticSportsFacilities };
+      }
+    },
+    placeholderData: { academic: staticAcademicFacilities, sports: staticSportsFacilities },
+    staleTime: 5_000,
+  });
+}
+
+// Custom Hook: Fetch Student Clubs from Supabase
+export function useSupabaseStudentClubs() {
+  return useQuery({
+    queryKey: ["supabase", "student_clubs"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from("student_clubs")
+          .select("id, name, slug, logo_url, sort_order, status, metadata")
+          .order("sort_order", { ascending: true });
+
+        if (error || !data || data.length === 0) return staticClubDetails;
+
+        return data.map(rowToClubItem);
+      } catch (err: any) {
+        console.error("[Supabase Student Clubs Catch]:", err);
+        return staticClubDetails;
+      }
+    },
+    placeholderData: staticClubDetails,
+    staleTime: 5_000,
+  });
+}
+
+// Custom Hook: Fetch Centers (co-curricular) from Supabase
+export function useSupabaseCenters() {
+  return useQuery({
+    queryKey: ["supabase", "centers"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from("centers")
+          .select("id, name, slug, logo_url, sort_order, status, metadata")
+          .order("sort_order", { ascending: true });
+
+        if (error || !data || data.length === 0) return staticCentreDetails;
+
+        return data.map(rowToClubItem);
+      } catch (err: any) {
+        console.error("[Supabase Centers Catch]:", err);
+        return staticCentreDetails;
+      }
+    },
+    placeholderData: staticCentreDetails,
+    staleTime: 5_000,
+  });
+}
+
+// Custom Hook: Fetch Downloads from Supabase
+export function useSupabaseDownloads() {
+  return useQuery({
+    queryKey: ["supabase", "downloads"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from("downloads")
+          .select("id, title, file_url, sort_order, status, metadata")
+          .order("sort_order", { ascending: true });
+
+        if (error || !data || data.length === 0) return null;
+
+        return data.map((d: any) => ({
+          id: d.id,
+          title: d.title || "",
+          fileUrl: d.file_url || "#",
+        }));
+      } catch (err: any) {
+        console.error("[Supabase Downloads Catch]:", err);
+        return null;
+      }
+    },
+    staleTime: 5_000,
+  });
+}

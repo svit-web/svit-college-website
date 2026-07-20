@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PillTabs } from "@/components/site/PillTabs";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { clubDetails } from "@/data/campus-rfe";
+import { clubDetails as staticClubDetails } from "@/data/campus-rfe";
+import { useSupabaseStudentClubs } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/campus-life/clubs/")({
   head: () => ({
@@ -15,15 +16,18 @@ export const Route = createFileRoute("/campus-life/clubs/")({
 });
 
 function ClubsIndex() {
+  const { data: clubs } = useSupabaseStudentClubs();
+  const list = clubs && clubs.length > 0 ? clubs : staticClubDetails;
+
   return (
     <div>
       <PillTabs
         ariaLabel="Clubs"
-        items={clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
+        items={list.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
       />
       <SectionHeading eyebrow="Clubs" title="Find your tribe" />
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {clubDetails.map((c, i) => (
+        {list.map((c, i) => (
           <Reveal key={c.slug} delay={i * 0.03}>
             <Link
               to="/campus-life/clubs/$slug"

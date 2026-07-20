@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { academicFacilities, sportsFacilities, type CampusItem } from "@/data/campus-rfe";
+import { academicFacilities as staticAcademic, sportsFacilities as staticSports, type CampusItem } from "@/data/campus-rfe";
 import { ImageIcon, ArrowRight } from "lucide-react";
+import { useSupabaseFacilities } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/campus-life/facilities/")({
   head: () => ({
@@ -16,8 +17,6 @@ export const Route = createFileRoute("/campus-life/facilities/")({
 
 function pathFor(top: "academic" | "sports", slug: string) {
   if (top === "academic") return `/campus-life/facilities/academic/${slug}`;
-  // Sports items keep richer nested URLs in the mega menu; the leaf resolver
-  // accepts both flat and nested paths, so the shorter form is fine here.
   return `/campus-life/facilities/co-curriculum/${slug}`;
 }
 
@@ -49,12 +48,16 @@ function Card({ item, href, i }: { item: CampusItem; href: string; i: number }) 
 }
 
 function FacilitiesIndex() {
+  const { data: facilities } = useSupabaseFacilities();
+  const academic = facilities?.academic && facilities.academic.length > 0 ? facilities.academic : staticAcademic;
+  const sports = facilities?.sports && facilities.sports.length > 0 ? facilities.sports : staticSports;
+
   return (
     <div className="space-y-12">
       <section>
         <SectionHeading eyebrow="Academic" title="Academic Facilities" />
         <div className="mt-6 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {academicFacilities.map((f, i) => (
+          {academic.map((f, i) => (
             <Card key={f.slug} item={f} href={pathFor("academic", f.slug)} i={i} />
           ))}
         </div>
@@ -63,7 +66,7 @@ function FacilitiesIndex() {
       <section>
         <SectionHeading eyebrow="Sports" title="Sports Facilities" />
         <div className="mt-6 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-          {sportsFacilities.map((f, i) => (
+          {sports.map((f, i) => (
             <Card key={f.slug} item={f} href={pathFor("sports", f.slug)} i={i} />
           ))}
         </div>

@@ -1,11 +1,13 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CampusLeafPage } from "@/components/site/CampusLeafPage";
 import { PillTabs } from "@/components/site/PillTabs";
-import { clubDetails, clubMap } from "@/data/campus-rfe";
+import { clubDetails as staticClubDetails, clubMap as staticClubMap } from "@/data/campus-rfe";
+import { useSupabaseStudentClubs } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/campus-life/clubs/$slug")({
   loader: ({ params }) => {
-    const item = clubMap[params.slug];
+    // Prefer static map for SSR loader; Supabase data hydrates on client
+    const item = staticClubMap[params.slug];
     if (!item) throw notFound();
     return { item };
   },
@@ -19,11 +21,14 @@ export const Route = createFileRoute("/campus-life/clubs/$slug")({
 
 function ClubLeaf() {
   const { item } = Route.useLoaderData();
+  const { data: clubs } = useSupabaseStudentClubs();
+  const list = clubs && clubs.length > 0 ? clubs : staticClubDetails;
+
   return (
     <div>
       <PillTabs
         ariaLabel="Clubs"
-        items={clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
+        items={list.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` }))}
       />
       <CampusLeafPage item={item} />
     </div>

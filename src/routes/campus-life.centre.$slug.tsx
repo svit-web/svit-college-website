@@ -1,11 +1,12 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CampusLeafPage } from "@/components/site/CampusLeafPage";
 import { PillTabs } from "@/components/site/PillTabs";
-import { centreDetails, centreMap } from "@/data/campus-rfe";
+import { centreDetails as staticCentreDetails, centreMap as staticCentreMap } from "@/data/campus-rfe";
+import { useSupabaseCenters } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/campus-life/centre/$slug")({
   loader: ({ params }) => {
-    const item = centreMap[params.slug];
+    const item = staticCentreMap[params.slug];
     if (!item) throw notFound();
     return { item };
   },
@@ -19,11 +20,14 @@ export const Route = createFileRoute("/campus-life/centre/$slug")({
 
 function CentreLeaf() {
   const { item } = Route.useLoaderData();
+  const { data: centers } = useSupabaseCenters();
+  const list = centers && centers.length > 0 ? centers : staticCentreDetails;
+
   return (
     <div>
       <PillTabs
         ariaLabel="Centres"
-        items={centreDetails.map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
+        items={list.map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
       />
       <CampusLeafPage item={item} />
     </div>

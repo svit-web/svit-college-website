@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PillTabs } from "@/components/site/PillTabs";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { centreDetails } from "@/data/campus-rfe";
+import { centreDetails as staticCentreDetails } from "@/data/campus-rfe";
+import { useSupabaseCenters } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/campus-life/centre/")({
   head: () => ({
@@ -15,15 +16,18 @@ export const Route = createFileRoute("/campus-life/centre/")({
 });
 
 function CentresIndex() {
+  const { data: centers } = useSupabaseCenters();
+  const list = centers && centers.length > 0 ? centers : staticCentreDetails;
+
   return (
     <div>
       <PillTabs
         ariaLabel="Centres"
-        items={centreDetails.map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
+        items={list.map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` }))}
       />
       <SectionHeading eyebrow="Centres" title="Where students grow beyond the syllabus" />
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {centreDetails.map((c, i) => (
+        {list.map((c, i) => (
           <Reveal key={c.slug} delay={i * 0.03}>
             <Link
               to="/campus-life/centre/$slug"
