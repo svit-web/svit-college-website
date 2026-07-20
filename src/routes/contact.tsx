@@ -4,6 +4,7 @@ import { site } from "@/data/site";
 import { CheckCircle2, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useSubmitInquiry } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({ meta: [{ title: "Contact — SVIT Vasad" }] }),
@@ -12,6 +13,23 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const [sent, setSent] = useState(false);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const submitInquiry = useSubmitInquiry();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitInquiry.mutate({
+      form_name: "General Contact Form",
+      submitted_data: { name, email, phone, subject, message },
+    });
+    setSent(true);
+    toast.success("Message sent");
+  };
+
   return (
     <>
       <PageHero title="Contact Us" accent="Get In Touch" subtitle="Have a question? Our team is happy to help." crumbs={[{ label: "Home", to: "/" }, { label: "Contact" }]} />
@@ -40,14 +58,14 @@ function Contact() {
                 <p className="mt-2 text-sm text-muted-foreground">We'll reply within 1-2 business days.</p>
               </div>
             ) : (
-              <form onSubmit={(e) => { e.preventDefault(); setSent(true); toast.success("Message sent"); }} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input required placeholder="Name" className="input" />
-                  <input required type="email" placeholder="Email" className="input" />
-                  <input placeholder="Phone" className="input" />
-                  <input placeholder="Subject" className="input" />
+                  <input required value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="input" />
+                  <input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" className="input" />
+                  <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Phone" className="input" />
+                  <input value={subject} onChange={(e) => setSubject(e.target.value)} placeholder="Subject" className="input" />
                 </div>
-                <textarea required rows={5} placeholder="Message" className="input" />
+                <textarea required rows={5} value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Message" className="input" />
                 <button className="w-full rounded-md bg-navy px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Send Message</button>
               </form>
             )}

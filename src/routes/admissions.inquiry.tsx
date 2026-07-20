@@ -4,6 +4,7 @@ import { courses } from "@/data/site";
 import { useState } from "react";
 import { CheckCircle2, Phone } from "lucide-react";
 import { toast } from "sonner";
+import { useSubmitInquiry } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/admissions/inquiry")({
   head: () => ({ meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: "Submit an admission enquiry for 2026-27 at SVIT Vasad." }] }),
@@ -21,31 +22,24 @@ function Inquiry() {
   const [programme, setProgramme] = useState("");
   const [year, setYear] = useState("2026-27");
   const [message, setMessage] = useState("");
+  const submitInquiry = useSubmitInquiry();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const { supabase } = await import("@/integrations/supabase/client");
-      await supabase.from("inquiry_submissions").insert([
-        {
-          form_name: "Admissions Inquiry",
-          submitted_data: {
-            firstName,
-            lastName,
-            email,
-            mobile,
-            city,
-            state,
-            programme,
-            year,
-            message,
-          },
-          status: "unread",
-        },
-      ]);
-    } catch (err) {
-      console.warn("[Admissions Inquiry submission error]:", err);
-    }
+    submitInquiry.mutate({
+      form_name: "Admissions Inquiry",
+      submitted_data: {
+        firstName,
+        lastName,
+        email,
+        mobile,
+        city,
+        state,
+        programme,
+        year,
+        message,
+      },
+    });
     setSent(true);
     toast.success("Inquiry submitted!");
   };
