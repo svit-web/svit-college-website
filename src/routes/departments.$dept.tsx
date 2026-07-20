@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { DepartmentLayout } from "@/components/site/DepartmentLayout";
 import { departments } from "@/data/academics";
+import { useSupabaseDepartments } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/departments/$dept")({
   loader: ({ params }) => {
@@ -29,7 +30,11 @@ export const Route = createFileRoute("/departments/$dept")({
 });
 
 function DeptRoute() {
-  const { department } = Route.useLoaderData();
+  const { department: loaderDept } = Route.useLoaderData();
+  const { data: depts } = useSupabaseDepartments();
+  const dynamicDept = depts?.find((d) => d.id === loaderDept.id || d.name === loaderDept.name);
+  const department = dynamicDept ? { ...loaderDept, ...dynamicDept } : loaderDept;
+
   return <DepartmentLayout department={department} />;
 }
 

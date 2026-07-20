@@ -2,7 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { colleges as staticColleges } from "@/data/colleges";
 import { heroHighlights as staticHeroHighlights } from "@/data/heroHighlights";
-import { recruiters as staticRecruiters } from "@/data/site";
+import { recruiters as staticRecruiters, courses as staticCourses } from "@/data/site";
+import { departments as staticDepartments } from "@/data/academics";
 
 // Custom Hook: Fetch Navigation Menu from Supabase
 export function useSupabaseMenu(menuCode: string, options?: { featuredOnly?: boolean }) {
@@ -87,7 +88,7 @@ export function useSupabaseInstitutes() {
   });
 }
 
-// Custom Hook: Fetch Colleges from Supabase using exact migration1.sql columns
+// Custom Hook: Fetch Colleges from Supabase
 export function useSupabaseColleges(options?: { featuredOnly?: boolean }) {
   return useQuery({
     queryKey: ["supabase", "colleges", options],
@@ -150,6 +151,100 @@ export function useSupabaseColleges(options?: { featuredOnly?: boolean }) {
   });
 }
 
+// Custom Hook: Fetch Academic Departments from Supabase
+export function useSupabaseDepartments() {
+  return useQuery({
+    queryKey: ["supabase", "departments"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from("departments")
+          .select("id, college_id, name, slug, code, status, metadata")
+          .order("name", { ascending: true });
+
+        if (error || !data || data.length === 0) {
+          return staticDepartments;
+        }
+
+        return data.map((dept: any) => {
+          const staticMatch = staticDepartments.find((s) => s.id === dept.slug || s.name === dept.name);
+          const meta = typeof dept.metadata === "object" && dept.metadata ? dept.metadata : {};
+
+          return {
+            id: dept.slug || staticMatch?.id || dept.id,
+            name: dept.name || staticMatch?.name || "",
+            code: dept.code || staticMatch?.code || "",
+            shortName: staticMatch?.shortName || dept.code || dept.name,
+            kicker: meta.kicker || staticMatch?.kicker || "Department of Engineering",
+            subhead: meta.subhead || staticMatch?.subhead || `Welcome to Department of ${dept.name}`,
+            introText: meta.introText || staticMatch?.introText || "",
+            establishedYear: meta.establishedYear || staticMatch?.establishedYear || "1997",
+            intake: meta.intake || staticMatch?.intake || "60",
+            hodMessage: staticMatch?.hodMessage || null,
+            vision: meta.vision || staticMatch?.vision || "",
+            missionPoints: meta.missionPoints || staticMatch?.missionPoints || [],
+            peos: meta.peos || staticMatch?.peos || [],
+            psos: meta.psos || staticMatch?.psos || [],
+            labs: staticMatch?.labs || [],
+            outcomes: staticMatch?.outcomes || null,
+            curriculum: staticMatch?.curriculum || null,
+            activities: staticMatch?.activities || null,
+          };
+        });
+      } catch (err: any) {
+        console.error("[Supabase Departments Catch]:", err);
+        return staticDepartments;
+      }
+    },
+    placeholderData: staticDepartments,
+    staleTime: 5_000,
+  });
+}
+
+// Custom Hook: Fetch Academic Courses from Supabase
+export function useSupabaseCourses() {
+  return useQuery({
+    queryKey: ["supabase", "courses"],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from("courses")
+          .select("id, department_id, name, code, degree_level, status, metadata")
+          .order("name", { ascending: true });
+
+        if (error || !data || data.length === 0) {
+          return staticCourses;
+        }
+
+        return data.map((course: any) => {
+          const slugKey = (course.code || course.name).toLowerCase().replace(/[^a-z0-9]/g, "-");
+          const staticMatch = staticCourses.find((s) => s.slug === slugKey || s.short === course.code);
+          const meta = typeof course.metadata === "object" && course.metadata ? course.metadata : {};
+
+          return {
+            slug: slugKey || staticMatch?.slug || "btech",
+            name: course.name || staticMatch?.name || "",
+            short: course.code || staticMatch?.short || "",
+            fullName: meta.fullName || staticMatch?.fullName || course.name,
+            tagline: meta.tagline || staticMatch?.tagline || "Degree Programme",
+            description: meta.description || staticMatch?.description || "",
+            duration: meta.duration || staticMatch?.duration || "4 Years",
+            intake: meta.intake || staticMatch?.intake || "60",
+            eligibility: meta.eligibility || staticMatch?.eligibility || "10+2 with Physics, Chemistry, Maths",
+            degreeLevel: course.degree_level || staticMatch?.degreeLevel || "undergraduate",
+            color: staticMatch?.color || "bg-navy",
+          };
+        });
+      } catch (err: any) {
+        console.error("[Supabase Courses Catch]:", err);
+        return staticCourses;
+      }
+    },
+    placeholderData: staticCourses,
+    staleTime: 5_000,
+  });
+}
+
 // Custom Hook: Fetch Homepage Items
 export function useSupabaseHomepageItems(itemType?: string) {
   return useQuery({
@@ -192,7 +287,7 @@ export function useSupabaseHomepageItems(itemType?: string) {
   });
 }
 
-// Custom Hook: Fetch Recruiters (guaranteed to return string[])
+// Custom Hook: Fetch Recruiters
 export function useSupabaseRecruiters() {
   return useQuery({
     queryKey: ["supabase", "recruiters"],

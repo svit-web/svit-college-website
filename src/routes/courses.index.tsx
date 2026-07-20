@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
-import { courses } from "@/data/site";
+import { courses as staticCourses } from "@/data/site";
+import { useSupabaseCourses } from "@/hooks/useSupabaseData";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -12,13 +13,16 @@ export const Route = createFileRoute("/courses/")({
 });
 
 function CoursesIndex() {
+  const { data: coursesData } = useSupabaseCourses();
+  const courseList = coursesData && coursesData.length > 0 ? coursesData : staticCourses;
+
   return (
     <>
       <PageHero title="Our Courses" accent="Programmes" subtitle="Seven programmes designed to build careers, from undergraduate engineering to postgraduate management." crumbs={[{ label: "Home", to: "/" }, { label: "Courses" }]} />
 
       <section className="container-page py-20">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {courses.map((c, i) => (
+          {courseList.map((c, i) => (
             <Reveal key={c.slug} delay={i * 0.05}>
               <Link
                 to="/courses/$course"
