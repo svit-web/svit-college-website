@@ -2,8 +2,12 @@ import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import { Logo } from "./Logo";
 import { courses, site } from "@/data/site";
+import { useSupabaseInstitutes } from "@/hooks/useSupabaseData";
 
 export function Footer() {
+  const { data: institutes } = useSupabaseInstitutes();
+  const instituteName = institutes?.[0]?.name || site.fullName;
+
   const quick = [
     { label: "About Us", to: "/about" },
     { label: "Admissions", to: "/admissions" },
@@ -28,7 +32,7 @@ export function Footer() {
           <div className="lg:col-span-2">
             <Logo light />
             <p className="mt-4 text-sm text-white/70 max-w-sm">
-              {site.fullName} — a premier institute committed to excellence in education, research and community impact since 2005.
+              {instituteName} — a premier institute committed to excellence in education, research and community impact since 2005.
             </p>
             <div className="mt-5 space-y-2 text-sm">
               <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-gold shrink-0" /><span>{site.address}</span></div>
@@ -51,7 +55,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-white/60 md:flex-row">
-          <div>© {new Date().getFullYear()} {site.fullName}. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} {instituteName}. All rights reserved.</div>
           <div>Vasad, Gujarat • India</div>
         </div>
       </div>

@@ -4,11 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
-import { colleges } from "@/data/colleges";
+import { colleges as staticColleges } from "@/data/colleges";
 import { placementDivisions } from "@/data/placement";
 import { academicFacilities, sportsFacilities, centreDetails, clubDetails, eventDetails } from "@/data/campus-rfe";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
+import { useSupabaseColleges, useSupabaseMenu } from "@/hooks/useSupabaseData";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -16,6 +17,13 @@ export function Header() {
   const [placementOpen, setPlacementOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: collegesData } = useSupabaseColleges();
+  const { data: dbMainNav } = useSupabaseMenu("main_navigation");
+  const { data: dbTopNav } = useSupabaseMenu("top_navigation");
+
+  const collegesList = collegesData && collegesData.length > 0 ? collegesData : staticColleges;
+  const mainNavItems = dbMainNav && dbMainNav.length > 0 ? dbMainNav : primaryNav;
+  const topNavItems = dbTopNav && dbTopNav.length > 0 ? dbTopNav : topNav;
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
@@ -31,7 +39,7 @@ export function Header() {
             </a>
           </div>
           <nav className="hidden items-center gap-4 md:flex">
-            {topNav.map((n) => (
+            {topNavItems.map((n) => (
               <Link key={n.to} to={n.to} className="hover:text-gold transition-colors">
                 {n.label}
               </Link>
@@ -44,7 +52,7 @@ export function Header() {
       <div className="container-page flex h-20 items-center justify-between">
         <Logo />
         <nav className="hidden items-center gap-1 lg:flex">
-          {primaryNav.map((n) => {
+          {mainNavItems.map((n) => {
             const active = n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
             if (n.label === "Colleges") {
               return (
@@ -66,6 +74,7 @@ export function Header() {
                   <AnimatePresence>
                     {coursesOpen && (
                       <motion.div
+                        suppressHydrationWarning
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
@@ -73,7 +82,7 @@ export function Header() {
                         className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 rounded-2xl border border-border bg-white p-4 shadow-xl"
                       >
                         <div className="grid grid-cols-1 gap-2">
-                          {colleges.map((c) => (
+                          {collegesList.map((c) => (
                             <Link
                               key={c.id}
                               to="/colleges/$college"
@@ -121,6 +130,7 @@ export function Header() {
                   <AnimatePresence>
                     {placementOpen && (
                       <motion.div
+                        suppressHydrationWarning
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
@@ -166,6 +176,7 @@ export function Header() {
                   <AnimatePresence>
                     {campusOpen && (
                       <motion.div
+                        suppressHydrationWarning
                         initial={{ opacity: 0, y: 8 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
@@ -222,7 +233,7 @@ export function Header() {
             className="overflow-hidden border-t border-border bg-white lg:hidden"
           >
             <div className="container-page flex flex-col gap-1 py-4">
-              {primaryNav.map((n) => (
+              {mainNavItems.map((n) => (
                 <div key={n.to}>
                   <Link
                     to={n.to}
@@ -248,7 +259,7 @@ export function Header() {
                   )}
                   {n.label === "Colleges" && (
                     <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                      {colleges.map((c) => (
+                      {collegesList.map((c) => (
                         <Link
                           key={c.id}
                           to="/colleges/$college"
@@ -265,7 +276,7 @@ export function Header() {
                 </div>
               ))}
               <div className="my-2 border-t border-border" />
-              {topNav.map((n) => (
+              {topNavItems.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
@@ -342,7 +353,7 @@ function useCampusCategories(): MegaCategory[] {
 
 function CampusMega({ onNavigate }: { onNavigate: () => void }) {
   const categories = useCampusCategories();
-  const [activeKey, setActiveKey] = useState(categories[0].key);
+  const [activeKey, setActiveKey] = useState(categories[0]?.key || "facilities");
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scheduleActivate = (key: string) => {

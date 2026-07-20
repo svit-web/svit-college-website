@@ -12,6 +12,44 @@ export const Route = createFileRoute("/admissions/inquiry")({
 
 function Inquiry() {
   const [sent, setSent] = useState(false);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [city, setCity] = useState("");
+  const [state, setState] = useState("");
+  const [programme, setProgramme] = useState("");
+  const [year, setYear] = useState("2026-27");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const { supabase } = await import("@/integrations/supabase/client");
+      await supabase.from("inquiry_submissions").insert([
+        {
+          form_name: "Admissions Inquiry",
+          submitted_data: {
+            firstName,
+            lastName,
+            email,
+            mobile,
+            city,
+            state,
+            programme,
+            year,
+            message,
+          },
+          status: "unread",
+        },
+      ]);
+    } catch (err) {
+      console.warn("[Admissions Inquiry submission error]:", err);
+    }
+    setSent(true);
+    toast.success("Inquiry submitted!");
+  };
+
   return (
     <>
       <PageHero title="Admission Inquiry" accent="2026-27" subtitle="Share your details — our admissions team will guide you within 24 hours." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions", to: "/admissions" }, { label: "Inquiry" }]} />
@@ -26,31 +64,28 @@ function Inquiry() {
                 <p className="mt-2 max-w-md text-sm text-muted-foreground">Your inquiry has been received. Our admissions counsellor will reach out shortly.</p>
               </div>
             ) : (
-              <form
-                onSubmit={(e) => { e.preventDefault(); setSent(true); toast.success("Inquiry submitted!"); }}
-                className="space-y-4"
-              >
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <Field label="First Name *"><input required className="input" /></Field>
-                  <Field label="Last Name *"><input required className="input" /></Field>
-                  <Field label="Email *"><input required type="email" className="input" /></Field>
-                  <Field label="Mobile *"><input required className="input" /></Field>
-                  <Field label="City"><input className="input" /></Field>
-                  <Field label="State"><input className="input" /></Field>
+                  <Field label="First Name *"><input required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="input" /></Field>
+                  <Field label="Last Name *"><input required value={lastName} onChange={(e) => setLastName(e.target.value)} className="input" /></Field>
+                  <Field label="Email *"><input required type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="input" /></Field>
+                  <Field label="Mobile *"><input required value={mobile} onChange={(e) => setMobile(e.target.value)} className="input" /></Field>
+                  <Field label="City"><input value={city} onChange={(e) => setCity(e.target.value)} className="input" /></Field>
+                  <Field label="State"><input value={state} onChange={(e) => setState(e.target.value)} className="input" /></Field>
                   <Field label="Programme *">
-                    <select required className="input">
+                    <select required value={programme} onChange={(e) => setProgramme(e.target.value)} className="input">
                       <option value="">Select programme</option>
                       {courses.map((c) => <option key={c.slug}>{c.name}</option>)}
                     </select>
                   </Field>
                   <Field label="Year *">
-                    <select required className="input">
+                    <select required value={year} onChange={(e) => setYear(e.target.value)} className="input">
                       <option>2026-27</option>
                       <option>2027-28</option>
                     </select>
                   </Field>
                 </div>
-                <Field label="Message"><textarea rows={4} className="input" /></Field>
+                <Field label="Message"><textarea rows={4} value={message} onChange={(e) => setMessage(e.target.value)} className="input" /></Field>
                 <label className="flex items-start gap-2 text-xs text-muted-foreground">
                   <input type="checkbox" required className="mt-0.5" />
                   I agree to be contacted by SVIT admissions team.

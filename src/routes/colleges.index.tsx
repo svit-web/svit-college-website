@@ -3,7 +3,8 @@ import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 import { Reveal } from "@/components/site/Reveal";
-import { colleges } from "@/data/colleges";
+import { LoadingIndicator } from "@/components/site/LoadingIndicator";
+import { useSupabaseColleges } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/colleges/")({
   head: () => ({
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/colleges/")({
 });
 
 function CollegesIndex() {
+  const { data: colleges, isFetching } = useSupabaseColleges();
+
   return (
     <>
       <PageHero
@@ -25,10 +28,12 @@ function CollegesIndex() {
         title="Our Colleges"
         subtitle="Four constituent institutes under one campus — engineering, computer applications, nursing, and architecture."
         crumbs={[{ label: "Home", to: "/" }, { label: "Colleges" }]}
-      />
+      >
+        <LoadingIndicator isFetching={isFetching} label="Syncing colleges from database..." className="mt-4" />
+      </PageHero>
       <section className="container-page py-20">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {colleges.map((c, i) => (
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2" suppressHydrationWarning>
+          {colleges?.map((c, i) => (
             <Reveal key={c.id} delay={i * 0.05}>
               <Link
                 to="/colleges/$college"

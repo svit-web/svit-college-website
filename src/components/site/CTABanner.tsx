@@ -31,7 +31,7 @@ export function CTABanner({ promo }: Props = {}) {
   return (
     <section className="container-page py-16 md:py-20">
       <Reveal>
-        <motion.div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-deep via-navy to-navy-light p-8 md:p-14 text-white">
+        <motion.div suppressHydrationWarning className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-navy-deep via-navy to-navy-light p-8 md:p-14 text-white">
           <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-gold/25 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-crimson/25 blur-3xl" />
           <div className="relative grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">

@@ -3,26 +3,24 @@ import { useState } from "react";
 
 interface Props {
   shortCode: string;
-  src: string;
+  src?: string | null;
   alt?: string;
   className?: string;
 }
 
 /**
- * Renders the college's real logo when the file is present in /public/assets/logos/,
- * otherwise falls back to a neutral gray placeholder with the college short code.
- *
- * No AI-generated / stock imagery is ever produced — the site owner drops the
- * real file into /public/assets/logos/ and it appears automatically.
+ * Renders the college's logo when present,
+ * otherwise falls back to a neutral styled placeholder badge with the college short code.
  */
 export function CollegeLogo({ shortCode, src, alt, className }: Props) {
   const [errored, setErrored] = useState(false);
-  if (errored) {
+
+  if (errored || !src || src.startsWith("/__l5e")) {
     return (
       <div
         className={cn(
-          "flex items-center justify-center rounded-md border-2 border-dashed border-white/40 bg-white/5 text-white/80 font-display font-bold uppercase tracking-widest",
-          className,
+          "flex items-center justify-center rounded-md border border-navy/20 bg-secondary/80 text-navy font-display font-bold uppercase tracking-widest text-xs p-1 select-none",
+          className
         )}
         aria-label={alt ?? `${shortCode} logo placeholder`}
       >
@@ -30,10 +28,13 @@ export function CollegeLogo({ shortCode, src, alt, className }: Props) {
       </div>
     );
   }
+
   return (
     <img
       src={src}
       alt={alt ?? `${shortCode} logo`}
+      loading="lazy"
+      decoding="async"
       onError={() => setErrored(true)}
       className={cn("object-contain", className)}
     />

@@ -1,3 +1,4 @@
+// SSR-safe Framer Motion Reveal Component
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
@@ -12,9 +13,11 @@ export function Reveal({
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const reduce = useReducedMotion();
 
   useEffect(() => {
+    setMounted(true);
     const el = ref.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -32,9 +35,18 @@ export function Reveal({
     return () => io.disconnect();
   }, []);
 
+  if (!mounted) {
+    return (
+      <div ref={ref} className={className} suppressHydrationWarning>
+        {children}
+      </div>
+    );
+  }
+
   return (
     <motion.div
       ref={ref}
+      suppressHydrationWarning
       initial={reduce ? undefined : { opacity: 0, y: 24 }}
       animate={visible || reduce ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}

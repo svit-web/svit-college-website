@@ -7,211 +7,974 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instantiate createClient with right options
-  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
   public: {
     Tables: {
-      colleges: {
+      trusts: {
         Row: {
-          created_at: string
           id: string
-          logo_url: string | null
           name: string
-          short_code: string
           slug: string
+          logo_url: string | null
+          website_url: string | null
           sort_order: number
-          tagline: string | null
+          created_at: string
           updated_at: string
+          created_by: string | null
+          updated_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
         }
         Insert: {
-          created_at?: string
           id?: string
-          logo_url?: string | null
           name: string
-          short_code: string
           slug: string
+          logo_url?: string | null
+          website_url?: string | null
           sort_order?: number
-          tagline?: string | null
+          created_at?: string
           updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Update: {
-          created_at?: string
           id?: string
-          logo_url?: string | null
           name?: string
-          short_code?: string
           slug?: string
+          logo_url?: string | null
+          website_url?: string | null
           sort_order?: number
-          tagline?: string | null
+          created_at?: string
           updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Relationships: []
       }
-      events: {
+      institutes: {
         Row: {
-          created_at: string
-          description: string | null
           id: string
-          registration_link: string | null
+          trust_id: string
+          name: string
+          slug: string
+          logo_url: string | null
+          website_url: string | null
           sort_order: number
-          start_date: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+          updated_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           status: Database["public"]["Enums"]["content_status"]
-          tag: string | null
-          title: string
+          metadata: Json
         }
         Insert: {
-          created_at?: string
-          description?: string | null
           id?: string
-          registration_link?: string | null
+          trust_id: string
+          name: string
+          slug: string
+          logo_url?: string | null
+          website_url?: string | null
           sort_order?: number
-          start_date?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           status?: Database["public"]["Enums"]["content_status"]
-          tag?: string | null
-          title: string
+          metadata?: Json
         }
         Update: {
-          created_at?: string
-          description?: string | null
           id?: string
-          registration_link?: string | null
+          trust_id?: string
+          name?: string
+          slug?: string
+          logo_url?: string | null
+          website_url?: string | null
           sort_order?: number
-          start_date?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           status?: Database["public"]["Enums"]["content_status"]
-          tag?: string | null
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      colleges: {
+        Row: {
+          id: string
+          institute_id: string | null
+          name: string
+          slug: string
+          code: string | null
+          short_code: string | null
+          tagline: string | null
+          logo_url: string | null
+          website_url: string | null
+          sort_order: number
+          created_at: string
+          updated_at: string
+          created_by: string | null
+          updated_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          institute_id?: string | null
+          name: string
+          slug: string
+          code?: string | null
+          short_code?: string | null
+          tagline?: string | null
+          logo_url?: string | null
+          website_url?: string | null
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          institute_id?: string | null
+          name?: string
+          slug?: string
+          code?: string | null
+          short_code?: string | null
+          tagline?: string | null
+          logo_url?: string | null
+          website_url?: string | null
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      departments: {
+        Row: {
+          id: string
+          college_id: string
+          name: string
+          slug: string
+          code: string
+          head_of_department_id: string | null
+          created_at: string
+          updated_at: string
+          created_by: string | null
+          updated_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          college_id: string
+          name: string
+          slug: string
+          code: string
+          head_of_department_id?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          college_id?: string
+          name?: string
+          slug?: string
+          code?: string
+          head_of_department_id?: string | null
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      courses: {
+        Row: {
+          id: string
+          department_id: string | null
+          name: string
+          code: string
+          degree_level: Database["public"]["Enums"]["degree_level"]
+          created_at: string
+          updated_at: string
+          created_by: string | null
+          updated_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          department_id?: string | null
+          name: string
+          code: string
+          degree_level: Database["public"]["Enums"]["degree_level"]
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          department_id?: string | null
+          name?: string
+          code?: string
+          degree_level?: Database["public"]["Enums"]["degree_level"]
+          created_at?: string
+          updated_at?: string
+          created_by?: string | null
+          updated_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      branches: {
+        Row: {
+          id: string
+          course_id: string
+          name: string
+          code: string
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          course_id: string
+          name: string
+          code: string
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          course_id?: string
+          name?: string
+          code?: string
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          id: string
+          first_name: string | null
+          last_name: string | null
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id: string
+          first_name?: string | null
+          last_name?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          first_name?: string | null
+          last_name?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      staff_profiles: {
+        Row: {
+          id: string
+          user_id: string | null
+          title: string | null
+          first_name: string
+          last_name: string
+          email: string
+          phone: string | null
+          avatar_url: string | null
+          bio: string | null
+          office_hours: Json
+          social_links: Json
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          title?: string | null
+          first_name: string
+          last_name: string
+          email: string
+          phone?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          office_hours?: Json
+          social_links?: Json
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          title?: string | null
+          first_name?: string
+          last_name?: string
+          email?: string
+          phone?: string | null
+          avatar_url?: string | null
+          bio?: string | null
+          office_hours?: Json
+          social_links?: Json
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      designations: {
+        Row: {
+          id: string
+          title: string
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          title: string
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
           title?: string
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      staff_department_assignments: {
+        Row: {
+          id: string
+          staff_id: string
+          department_id: string
+          designation_id: string | null
+          is_primary: boolean
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          staff_id: string
+          department_id: string
+          designation_id?: string | null
+          is_primary?: boolean
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          staff_id?: string
+          department_id?: string
+          designation_id?: string | null
+          is_primary?: boolean
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Relationships: []
       }
       homepage_items: {
         Row: {
-          body: string | null
-          created_at: string
-          department_id: string | null
-          eyebrow: string | null
-          icon_name: string | null
           id: string
-          image_url: string | null
-          is_active: boolean
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          department_id: string | null
           item_type: string
+          eyebrow: string | null
+          title: string
+          title_accent: string | null
+          subtitle: string | null
+          body: string | null
+          image_url: string | null
+          icon_name: string | null
           link_href: string | null
           link_label: string | null
-          metadata: Json
-          scope_type: Database["public"]["Enums"]["scope_level"]
           secondary_link_href: string | null
           secondary_link_label: string | null
           sort_order: number
-          status: Database["public"]["Enums"]["content_status"]
-          subtitle: string | null
-          title: string
-          title_accent: string | null
+          is_active: boolean
+          created_at: string
           updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
         }
         Insert: {
-          body?: string | null
-          created_at?: string
-          department_id?: string | null
-          eyebrow?: string | null
-          icon_name?: string | null
           id?: string
-          image_url?: string | null
-          is_active?: boolean
-          item_type: string
-          link_href?: string | null
-          link_label?: string | null
-          metadata?: Json
           scope_type?: Database["public"]["Enums"]["scope_level"]
-          secondary_link_href?: string | null
-          secondary_link_label?: string | null
-          sort_order?: number
-          status?: Database["public"]["Enums"]["content_status"]
-          subtitle?: string | null
+          department_id?: string | null
+          item_type: string
+          eyebrow?: string | null
           title: string
           title_accent?: string | null
-          updated_at?: string
-        }
-        Update: {
+          subtitle?: string | null
           body?: string | null
-          created_at?: string
-          department_id?: string | null
-          eyebrow?: string | null
-          icon_name?: string | null
-          id?: string
           image_url?: string | null
-          is_active?: boolean
-          item_type?: string
+          icon_name?: string | null
           link_href?: string | null
           link_label?: string | null
-          metadata?: Json
-          scope_type?: Database["public"]["Enums"]["scope_level"]
           secondary_link_href?: string | null
           secondary_link_label?: string | null
           sort_order?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
           status?: Database["public"]["Enums"]["content_status"]
-          subtitle?: string | null
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
+          item_type?: string
+          eyebrow?: string | null
           title?: string
           title_accent?: string | null
+          subtitle?: string | null
+          body?: string | null
+          image_url?: string | null
+          icon_name?: string | null
+          link_href?: string | null
+          link_label?: string | null
+          secondary_link_href?: string | null
+          secondary_link_label?: string | null
+          sort_order?: number
+          is_active?: boolean
+          created_at?: string
           updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      homepage_sections: {
+        Row: {
+          id: string
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          department_id: string | null
+          title: string | null
+          section_type: string
+          sort_order: number
+          is_active: boolean
+          config: Json
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
+          title?: string | null
+          section_type: string
+          sort_order?: number
+          is_active?: boolean
+          config?: Json
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
+          title?: string | null
+          section_type?: string
+          sort_order?: number
+          is_active?: boolean
+          config?: Json
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      homepage_widgets: {
+        Row: {
+          id: string
+          section_id: string
+          title: string | null
+          widget_type: string
+          config: Json
+          sort_order: number
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          section_id: string
+          title?: string | null
+          widget_type: string
+          config?: Json
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          section_id?: string
+          title?: string | null
+          widget_type?: string
+          config?: Json
+          sort_order?: number
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Relationships: []
       }
       posts: {
         Row: {
-          created_at: string
-          featured_image_url: string | null
           id: string
-          published_at: string | null
-          slug: string
-          status: Database["public"]["Enums"]["content_status"]
-          summary: string | null
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          department_id: string | null
           title: string
+          slug: string
+          summary: string | null
+          content: string | null
+          featured_image_url: string | null
+          category_id: string | null
+          is_featured: boolean
+          published_at: string | null
+          expires_at: string | null
+          seo_id: string | null
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
         }
         Insert: {
-          created_at?: string
-          featured_image_url?: string | null
           id?: string
-          published_at?: string | null
-          slug: string
-          status?: Database["public"]["Enums"]["content_status"]
-          summary?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
           title: string
+          slug: string
+          summary?: string | null
+          content?: string | null
+          featured_image_url?: string | null
+          category_id?: string | null
+          is_featured?: boolean
+          published_at?: string | null
+          expires_at?: string | null
+          seo_id?: string | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Update: {
-          created_at?: string
-          featured_image_url?: string | null
           id?: string
-          published_at?: string | null
-          slug?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          summary?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
           title?: string
+          slug?: string
+          summary?: string | null
+          content?: string | null
+          featured_image_url?: string | null
+          category_id?: string | null
+          is_featured?: boolean
+          published_at?: string | null
+          expires_at?: string | null
+          seo_id?: string | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          id: string
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          department_id: string | null
+          title: string
+          slug: string | null
+          description: string | null
+          tag: string | null
+          start_date: string | null
+          end_date: string | null
+          location: string | null
+          map_url: string | null
+          registration_link: string | null
+          featured_image_url: string | null
+          sort_order: number
+          seo_id: string | null
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["event_status"] | Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
+          title: string
+          slug?: string | null
+          description?: string | null
+          tag?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          location?: string | null
+          map_url?: string | null
+          registration_link?: string | null
+          featured_image_url?: string | null
+          sort_order?: number
+          seo_id?: string | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["event_status"] | Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          department_id?: string | null
+          title?: string
+          slug?: string | null
+          description?: string | null
+          tag?: string | null
+          start_date?: string | null
+          end_date?: string | null
+          location?: string | null
+          map_url?: string | null
+          registration_link?: string | null
+          featured_image_url?: string | null
+          sort_order?: number
+          seo_id?: string | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["event_status"] | Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Relationships: []
       }
       recruiters: {
         Row: {
-          created_at: string
           id: string
+          company_name: string | null
+          name: string | null
           logo_url: string | null
-          name: string
+          website_url: string | null
           sort_order: number
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
         }
         Insert: {
-          created_at?: string
           id?: string
+          company_name?: string | null
+          name?: string | null
           logo_url?: string | null
-          name: string
+          website_url?: string | null
           sort_order?: number
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
         }
         Update: {
-          created_at?: string
           id?: string
+          company_name?: string | null
+          name?: string | null
           logo_url?: string | null
-          name?: string
+          website_url?: string | null
           sort_order?: number
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      placement_statistics: {
+        Row: {
+          id: string
+          academic_year: string
+          total_students: number
+          placed_students: number
+          highest_package: number | null
+          average_package: number | null
+          recruiters_count: number | null
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          academic_year: string
+          total_students: number
+          placed_students: number
+          highest_package?: number | null
+          average_package?: number | null
+          recruiters_count?: number | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          academic_year?: string
+          total_students?: number
+          placed_students?: number
+          highest_package?: number | null
+          average_package?: number | null
+          recruiters_count?: number | null
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      downloads: {
+        Row: {
+          id: string
+          title: string
+          file_url: string
+          file_type: string | null
+          file_size: number | null
+          category: string
+          publish_date: string
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          title: string
+          file_url: string
+          file_type?: string | null
+          file_size?: number | null
+          category: string
+          publish_date?: string
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          title?: string
+          file_url?: string
+          file_type?: string | null
+          file_size?: number | null
+          category?: string
+          publish_date?: string
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      inquiry_forms: {
+        Row: {
+          id: string
+          form_name: string
+          fields_config: Json
+          recipient_emails: string[]
+          created_at: string
+          updated_at: string
+          status: Database["public"]["Enums"]["content_status"]
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          form_name: string
+          fields_config?: Json
+          recipient_emails?: string[]
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          form_name?: string
+          fields_config?: Json
+          recipient_emails?: string[]
+          created_at?: string
+          updated_at?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      inquiry_submissions: {
+        Row: {
+          id: string
+          form_id: string | null
+          form_name: string | null
+          submitted_data: Json
+          status: Database["public"]["Enums"]["submission_status"]
+          notes: string | null
+          created_at: string
+          updated_at: string
+          metadata: Json
+        }
+        Insert: {
+          id?: string
+          form_id?: string | null
+          form_name?: string | null
+          submitted_data: Json
+          status?: Database["public"]["Enums"]["submission_status"]
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+          metadata?: Json
+        }
+        Update: {
+          id?: string
+          form_id?: string | null
+          form_name?: string | null
+          submitted_data?: Json
+          status?: Database["public"]["Enums"]["submission_status"]
+          notes?: string | null
+          created_at?: string
+          updated_at?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      audit_logs: {
+        Row: {
+          id: string
+          user_id: string | null
+          action: string
+          table_name: string
+          record_id: string
+          old_values: Json | null
+          new_values: Json | null
+          client_ip: string | null
+          user_agent: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          user_id?: string | null
+          action: string
+          table_name: string
+          record_id: string
+          old_values?: Json | null
+          new_values?: Json | null
+          client_ip?: string | null
+          user_agent?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string | null
+          action?: string
+          table_name?: string
+          record_id?: string
+          old_values?: Json | null
+          new_values?: Json | null
+          client_ip?: string | null
+          user_agent?: string | null
+          created_at?: string
         }
         Relationships: []
       }
@@ -224,7 +987,13 @@ export type Database = {
     }
     Enums: {
       content_status: "draft" | "published" | "archived"
+      degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
+      event_status: "draft" | "published" | "cancelled"
+      facility_type: "campus" | "building" | "laboratory"
+      link_type: "internal" | "external"
       scope_level: "global" | "trust" | "institute" | "college" | "department"
+      staff_type: "faculty" | "office_staff"
+      submission_status: "unread" | "read" | "replied"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -332,28 +1101,17 @@ export type Enums<
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
     : never
 
-export type CompositeTypes<
-  PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema["CompositeTypes"]
-    | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
-  }
-    ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
-> = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
-}
-  ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
-    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
-
 export const Constants = {
   public: {
     Enums: {
       content_status: ["draft", "published", "archived"],
+      degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
+      event_status: ["draft", "published", "cancelled"],
+      facility_type: ["campus", "building", "laboratory"],
+      link_type: ["internal", "external"],
       scope_level: ["global", "trust", "institute", "college", "department"],
+      staff_type: ["faculty", "office_staff"],
+      submission_status: ["unread", "read", "replied"],
     },
   },
 } as const

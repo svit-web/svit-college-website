@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { heroHighlights, type HeroHighlight } from "@/data/heroHighlights";
+import { ImageWithFallback } from "./ImageWithFallback";
 
 interface Props {
   items?: HeroHighlight[];
@@ -9,11 +10,6 @@ interface Props {
 
 /**
  * Hero-side photo card slider.
- * - Desktop: shows up to 2 cards side-by-side (active + peek of next).
- * - Mobile/tablet: shows 1 card at a time.
- * - Auto-advances; pauses on hover.
- * - Data-driven via `heroHighlights` (or `items` prop) so a future backend
- *   can populate it without touching this component.
  */
 export function HeroCardSlider({ items = heroHighlights }: Props) {
   const [index, setIndex] = useState(0);
@@ -34,6 +30,7 @@ export function HeroCardSlider({ items = heroHighlights }: Props) {
   return (
     <div
       className="relative w-full"
+      suppressHydrationWarning
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
@@ -48,10 +45,15 @@ export function HeroCardSlider({ items = heroHighlights }: Props) {
             transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
             className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-2xl backdrop-blur"
           >
-            <div className="aspect-[4/5] w-full">
-              <img src={current.image} alt={current.title} className="h-full w-full object-cover" />
+            <div className="aspect-[4/5] w-full bg-navy/20">
+              <ImageWithFallback
+                src={current.image}
+                alt={current.title}
+                placeholderLabel="Campus Photo"
+                className="h-full w-full object-cover"
+              />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent pointer-events-none" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
               {current.eyebrow && (
                 <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
@@ -76,10 +78,15 @@ export function HeroCardSlider({ items = heroHighlights }: Props) {
             transition={{ duration: 0.5, delay: 0.05 }}
             className="relative hidden overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl backdrop-blur sm:block"
           >
-            <div className="aspect-[4/5] w-full">
-              <img src={next.image} alt={next.title} className="h-full w-full object-cover opacity-90" />
+            <div className="aspect-[4/5] w-full bg-navy/20">
+              <ImageWithFallback
+                src={next.image}
+                alt={next.title}
+                placeholderLabel="Campus Photo"
+                className="h-full w-full object-cover opacity-90"
+              />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/30 to-transparent pointer-events-none" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
               {next.eyebrow && (
                 <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold/90">

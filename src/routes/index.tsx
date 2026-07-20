@@ -31,18 +31,12 @@ import {
   recruitersQuery,
   type HomepageItem,
 } from "@/lib/homepage";
-import { toast } from "sonner";
 import { useState } from "react";
+import { toast } from "sonner";
+import { useSupabaseColleges, useSupabaseEvents, useSupabaseRecruiters, useSupabaseHomepageItems, useSubmitInquiry } from "@/hooks/useSupabaseData";
 import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => {
-    // Prime caches in parallel; ignore failures so the page still renders with static fallback.
-    void context.queryClient.prefetchQuery(homepageItemsQuery);
-    void context.queryClient.prefetchQuery(collegesQuery);
-    void context.queryClient.prefetchQuery(recruitersQuery);
-    void context.queryClient.prefetchQuery(eventsQuery);
-  },
   component: Home,
 });
 
@@ -51,8 +45,8 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 function useHomepageItems(): HomepageItem[] {
-  const { data } = useQuery(homepageItemsQuery);
-  return data ?? [];
+  const { data } = useSupabaseHomepageItems();
+  return (data as any) ?? [];
 }
 
 function Home() {
@@ -105,11 +99,11 @@ function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      <img src={hero?.image_url || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
+      <img src={hero?.image_url || campusHero} alt="" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover opacity-30" />
       <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/70 via-navy-deep/85 to-navy" />
       <div className="container-page relative py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
-          <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          <motion.div suppressHydrationWarning initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
               {eyebrow}
             </div>
@@ -145,6 +139,7 @@ function Hero() {
             </div>
           </motion.div>
           <motion.div
+            suppressHydrationWarning
             initial={{ opacity: 0, y: 32 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.15 }}
@@ -180,26 +175,17 @@ function StatsStrip() {
 }
 
 function CollegesSection() {
-  const { data } = useQuery(collegesQuery);
+  const { data } = useSupabaseColleges();
   const rows =
     data && data.length > 0
-      ? data.map((c) => {
-          const fallback = staticColleges.find((s) => s.id === c.slug);
-          return {
-            id: c.slug,
-            shortCode: c.short_code,
-            name: c.name,
-            tagline: c.tagline ?? fallback?.tagline ?? "",
-            logo: c.logo_url ?? fallback?.logo ?? "",
-          };
-        })
-      : staticColleges.map((c) => ({
+      ? data.map((c) => ({
           id: c.id,
           shortCode: c.shortCode,
           name: c.name,
           tagline: c.tagline,
           logo: c.logo,
-        }));
+        }))
+      : staticColleges;
 
   return (
     <section className="container-page py-20">
@@ -320,12 +306,12 @@ function CTABannerSection() {
 
 function EventsAndEnquiry() {
   const items = useHomepageItems();
-  const { data: eventsData } = useQuery(eventsQuery);
-  const { data: recruitersData } = useQuery(recruitersQuery);
+  const { data: eventsData } = useSupabaseEvents();
+  const { data: recruitersData } = useSupabaseRecruiters();
 
   const eventRows =
     eventsData && eventsData.length > 0
-      ? eventsData.map((e) => ({
+      ? eventsData.map((e: any) => ({
           title: e.title,
           tag: e.tag ?? "News",
           date: e.start_date
@@ -336,7 +322,7 @@ function EventsAndEnquiry() {
 
   const recruiterNames =
     recruitersData && recruitersData.length > 0
-      ? recruitersData.map((r) => r.name)
+      ? recruitersData.map((r: any) => r.company_name || r.name || String(r))
       : staticRecruiters;
 
   const admissions = promoBySlot(items, "home_admissions");
@@ -388,27 +374,61 @@ function EventsAndEnquiry() {
 
 function EnquiryForm() {
   const [sent, setSent] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [mobile, setMobile] = useState("");
+  const [programme, setProgramme] = useState("Interested Programme");
+  const submitInquiry = useSubmitInquiry();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    submitInquiry.mutate({
+      form_name: "Homepage Quick Enquiry",
+      submitted_data: { fullName, email, mobile, programme },
+    });
+    setSent(true);
+    toast.success("Enquiry submitted — we'll be in touch shortly.");
+  };
+
   return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-        toast.success("Enquiry submitted — we'll be in touch shortly.");
-      }}
-      className="rounded-2xl border border-border bg-white p-6"
-    >
+    <form onSubmit={handleSubmit} className="rounded-2xl border border-border bg-white p-6">
       <div className="text-xs font-semibold uppercase tracking-widest text-crimson">Quick Enquiry</div>
       <h3 className="mt-1 font-display text-xl font-bold text-navy">Talk to us</h3>
       {sent ? (
         <div className="mt-6 rounded-md bg-secondary p-5 text-sm">Thank you! We'll respond within 24 hours.</div>
       ) : (
         <div className="mt-4 space-y-3">
-          <input required placeholder="Full Name" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          <input required type="email" placeholder="Email" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          <input required placeholder="Mobile" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          <select className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm">
+          <input
+            required
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            placeholder="Full Name"
+            className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <input
+            required
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <input
+            required
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
+            placeholder="Mobile"
+            className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          />
+          <select
+            value={programme}
+            onChange={(e) => setProgramme(e.target.value)}
+            className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm"
+          >
             <option>Interested Programme</option>
-            {courses.map((c) => <option key={c.slug}>{c.name}</option>)}
+            {courses.map((c) => (
+              <option key={c.slug}>{c.name}</option>
+            ))}
           </select>
           <button className="w-full rounded-md bg-navy px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light transition-colors">
             Submit Enquiry

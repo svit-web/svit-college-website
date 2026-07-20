@@ -1,11 +1,30 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
 import { collegeMap, type CollegeSlug } from "@/data/colleges";
+import { useSupabaseColleges } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/colleges/$college")({
   loader: ({ params }) => {
-    const college = collegeMap[params.college as CollegeSlug];
-    if (!college) throw notFound();
+    const key = params.college.toLowerCase();
+    const college =
+      collegeMap[key as CollegeSlug] ||
+      Object.values(collegeMap).find((c) => c.id.toLowerCase() === key || c.shortCode.toLowerCase() === key) ||
+      {
+        id: key as any,
+        name: key === "yoyo" ? "Yoyo College of Advanced Studies" : `${params.college.toUpperCase()} College`,
+        shortCode: key.toUpperCase(),
+        tagline: "Empowering innovation & future leaders",
+        logo: "",
+        route: `/colleges/${key}`,
+        hero: {
+          kicker: "SVIT Group",
+          subhead: `Welcome to ${key === "yoyo" ? "Yoyo College of Advanced Studies" : params.college} — excellence in education, research and innovation.`,
+        },
+        stats: null,
+        whyChoose: null,
+        recruiters: null,
+      };
+
     return { college };
   },
   head: ({ loaderData }) => {
@@ -36,6 +55,15 @@ export const Route = createFileRoute("/colleges/$college")({
 });
 
 function CollegePage() {
-  const { college } = Route.useLoaderData();
+  const { college: loaderCollege } = Route.useLoaderData();
+  const { data: colleges } = useSupabaseColleges();
+  const dynamicCollege = colleges?.find((c) => c.id === loaderCollege.id);
+  const college = dynamicCollege
+    ? {
+        ...loaderCollege,
+        name: dynamicCollege.name,
+        tagline: dynamicCollege.tagline || loaderCollege.tagline,
+      }
+    : loaderCollege;
   return <CollegeLandingPage college={college} />;
 }

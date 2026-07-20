@@ -70,6 +70,7 @@ function Hero({ college }: { college: College }) {
       <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/70 via-navy-deep/85 to-navy" />
       <div className="container-page relative py-24 md:py-32">
         <motion.div
+          suppressHydrationWarning
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
