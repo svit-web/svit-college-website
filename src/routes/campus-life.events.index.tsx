@@ -2,7 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PillTabs } from "@/components/site/PillTabs";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { eventDetails } from "@/data/campus-rfe";
+import { eventDetails as staticEventDetails } from "@/data/campus-rfe";
+import { useSupabaseEvents } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/campus-life/events/")({
   head: () => ({
@@ -15,15 +16,26 @@ export const Route = createFileRoute("/campus-life/events/")({
 });
 
 function EventsIndex() {
+  const { data: dbEvents } = useSupabaseEvents();
+  const eventList =
+    dbEvents && dbEvents.length > 0
+      ? dbEvents.map((e: any) => ({
+          slug: e.slug || e.title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+          accent: e.tag || "Event",
+          title: e.title,
+          subtitle: e.description || "Campus event at SVIT Vasad.",
+        }))
+      : staticEventDetails;
+
   return (
     <div>
       <PillTabs
         ariaLabel="Events"
-        items={eventDetails.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` }))}
+        items={eventList.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` }))}
       />
       <SectionHeading eyebrow="Events" title="Signature moments on campus" />
       <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {eventDetails.map((c, i) => (
+        {eventList.map((c, i) => (
           <Reveal key={c.slug} delay={i * 0.03}>
             <Link
               to="/campus-life/events/$slug"
