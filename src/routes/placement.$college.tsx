@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
 import { placementPages, type PlacementSlug } from "@/data/placement";
+import { useSupabasePlacementStats, useSupabaseRecruiters } from "@/hooks/useSupabaseData";
 
 export const Route = createFileRoute("/placement/$college")({
   head: ({ params }) => {
@@ -31,6 +32,14 @@ export const Route = createFileRoute("/placement/$college")({
 });
 
 function PlacementRouteComponent() {
-  const { content } = Route.useLoaderData();
+  const { content: loaderContent } = Route.useLoaderData();
+  const { data: recruitersData } = useSupabaseRecruiters();
+  const { data: statsData } = useSupabasePlacementStats();
+
+  const content = {
+    ...loaderContent,
+    recruiters: recruitersData && recruitersData.length > 0 ? recruitersData : loaderContent.recruiters,
+  };
+
   return <PlacementPage content={content} />;
 }

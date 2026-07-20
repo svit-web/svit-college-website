@@ -473,3 +473,30 @@ export function useSupabaseStaffProfiles(departmentId?: string) {
     staleTime: 5_000,
   });
 }
+
+// Custom Hook: Fetch Placement Statistics from Supabase
+export function useSupabasePlacementStats(collegeId?: string) {
+  return useQuery({
+    queryKey: ["supabase", "placement_statistics", collegeId],
+    queryFn: async () => {
+      try {
+        let query = supabase
+          .from("placement_statistics")
+          .select("id, college_id, academic_year, total_offers, highest_package, average_package, placement_percentage, metadata")
+          .order("academic_year", { ascending: false });
+
+        if (collegeId) {
+          query = query.eq("college_id", collegeId);
+        }
+
+        const { data, error } = await query;
+        if (error || !data || data.length === 0) return null;
+        return data;
+      } catch (err: any) {
+        console.error("[Supabase Placement Stats Catch]:", err);
+        return null;
+      }
+    },
+    staleTime: 5_000,
+  });
+}
