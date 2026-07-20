@@ -4,6 +4,7 @@ import { colleges as staticColleges } from "@/data/colleges";
 import { heroHighlights as staticHeroHighlights } from "@/data/heroHighlights";
 import { recruiters as staticRecruiters, courses as staticCourses } from "@/data/site";
 import { departments as staticDepartments } from "@/data/academics";
+import { staff as staticStaff } from "@/data/staff";
 
 // Custom Hook: Fetch Navigation Menu from Supabase
 export function useSupabaseMenu(menuCode: string, options?: { featuredOnly?: boolean }) {
@@ -424,5 +425,51 @@ export function useSubmitInquiry() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["supabase", "inquiry_submissions"] });
     },
+  });
+}
+
+// Custom Hook: Fetch Staff Profiles from Supabase
+export function useSupabaseStaffProfiles(departmentId?: string) {
+  return useQuery({
+    queryKey: ["supabase", "staff_profiles", departmentId],
+    queryFn: async () => {
+      try {
+        let query = supabase
+          .from("staff_profiles")
+          .select("id, title, first_name, last_name, email, phone, bio, profile_image_url, office_location, status, metadata")
+          .order("first_name", { ascending: true });
+
+        const { data, error } = await query;
+        if (error || !data || data.length === 0) {
+          if (departmentId) {
+            return staticStaff.filter((s) => s.departmentId === departmentId);
+          }
+          return staticStaff;
+        }
+
+        return data.map((sp: any) => {
+          const fullName = `${sp.title ? sp.title + " " : ""}${sp.first_name} ${sp.last_name}`.trim();
+          const meta = typeof sp.metadata === "object" && sp.metadata ? sp.metadata : {};
+          return {
+            id: sp.id,
+            employeeCode: meta.employeeCode || sp.id,
+            name: fullName,
+            designation: meta.designation || "Faculty Member",
+            rankGroup: (meta.rankGroup || "Faculty") as "HOD" | "Faculty" | "Support",
+            qualification: meta.qualification || null,
+            experienceYears: meta.experienceYears || null,
+            gender: meta.gender || null,
+            status: "Working" as const,
+            departmentId: meta.departmentId || departmentId || "dept-ce",
+            photo: sp.profile_image_url || null,
+          };
+        });
+      } catch (err: any) {
+        console.error("[Supabase Staff Profiles Catch]:", err);
+        return staticStaff;
+      }
+    },
+    placeholderData: staticStaff,
+    staleTime: 5_000,
   });
 }

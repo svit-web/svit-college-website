@@ -3,6 +3,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { getStaffById } from "@/data/staff";
 import { departments } from "@/data/academics";
 import { collegeMap } from "@/data/colleges";
+import { useSupabaseStaffProfiles } from "@/hooks/useSupabaseData";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/staff/$staff")({
@@ -30,7 +31,10 @@ function initials(name: string) {
 }
 
 function StaffProfile() {
-  const { member, department } = Route.useLoaderData();
+  const { member: loaderMember, department } = Route.useLoaderData();
+  const { data: staffList } = useSupabaseStaffProfiles();
+  const dynamicMember = staffList?.find((s) => s.id === loaderMember.id || s.employeeCode === loaderMember.employeeCode);
+  const member = dynamicMember ? { ...loaderMember, ...dynamicMember } : loaderMember;
   const college = department ? collegeMap[department.collegeId as keyof typeof collegeMap] : null;
   return (
     <>
