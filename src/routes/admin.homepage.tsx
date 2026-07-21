@@ -127,8 +127,12 @@ function AdminHomepageLayoutPage() {
     const targetSection = sections[targetIdx];
 
     try {
-      await supabase.from("homepage_sections").update({ sort_order: targetSection.sort_order }).eq("id", section.id);
-      await supabase.from("homepage_sections").update({ sort_order: section.sort_order }).eq("id", targetSection.id);
+      const [r1, r2] = await Promise.all([
+        supabase.from("homepage_sections").update({ sort_order: targetSection.sort_order }).eq("id", section.id),
+        supabase.from("homepage_sections").update({ sort_order: section.sort_order }).eq("id", targetSection.id)
+      ]);
+      if (r1.error) throw r1.error;
+      if (r2.error) throw r2.error;
       
       toast.success("Sections rearranged.");
       loadSections();

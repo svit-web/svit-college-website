@@ -2,7 +2,7 @@ import { useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { BookOpen, Lock, Mail, Loader2, Sparkles, User } from "lucide-react";
+import { BookOpen, Lock, Mail, Loader2, Eye, EyeOff } from "lucide-react";
 
 export const Route = createFileRoute("/admin/login")({
   component: AdminLogin,
@@ -10,54 +10,34 @@ export const Route = createFileRoute("/admin/login")({
 
 function AdminLogin() {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetMode, setResetMode] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        // Sign up logic
-        const { data, error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              first_name: firstName,
-              last_name: lastName,
-            },
-          },
+      if (resetMode) {
+        // Password reset via email
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/admin/login`,
         });
-
         if (error) throw error;
-
-        if (data.user) {
-          toast.success(
-            "Registration successful! Please check your email for confirmation or try logging in."
-          );
-          setIsSignUp(false);
-        }
+        toast.success("Password reset email sent! Check your inbox.");
+        setResetMode(false);
       } else {
-        // Log in logic
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
+        // Sign in
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
-
         toast.success("Welcome back to SVIT Admin Portal!");
         navigate({ to: "/admin" });
       }
     } catch (error: any) {
-      console.error("Authentication error:", error);
-      toast.error(error.message || "An error occurred during authentication.");
+      toast.error(error.message || "Authentication failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
@@ -80,43 +60,16 @@ function AdminLogin() {
             SVIT Vasad
           </h2>
           <p className="mt-2 text-sm text-slate-400">
-            {isSignUp ? "Create admin/editor portal access" : "Sign in to administrative dashboard"}
+            {resetMode ? "Reset your portal password" : "Sign in to administrative dashboard"}
           </p>
         </div>
 
         {/* Card */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-8 backdrop-blur-xl shadow-2xl">
           <form onSubmit={handleSubmit} className="space-y-4">
-            {isSignUp && (
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-400">First Name</label>
-                  <div className="relative">
-                    <User className="absolute top-3 left-3 h-4 w-4 text-slate-500" />
-                    <input
-                      required
-                      type="text"
-                      placeholder="John"
-                      value={firstName}
-                      onChange={(e) => setFirstName(e.target.value)}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-950/50 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-slate-400">Last Name</label>
-                  <div className="relative">
-                    <User className="absolute top-3 left-3 h-4 w-4 text-slate-500" />
-                    <input
-                      required
-                      type="text"
-                      placeholder="Doe"
-                      value={lastName}
-                      onChange={(e) => setLastName(e.target.value)}
-                      className="w-full rounded-lg border border-slate-800 bg-slate-950/50 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                    />
-                  </div>
-                </div>
+            {resetMode && (
+              <div className="rounded-lg border border-indigo-500/20 bg-indigo-500/5 px-4 py-3 text-xs text-indigo-300">
+                Enter your email address and we'll send you a password reset link.
               </div>
             )}
 
@@ -135,31 +88,39 @@ function AdminLogin() {
               </div>
             </div>
 
-            <div className="space-y-1.5">
-              <div className="flex justify-between items-center">
-                <label className="text-xs font-semibold text-slate-400">Password</label>
-                {!isSignUp && (
+            {!resetMode && (
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center">
+                  <label className="text-xs font-semibold text-slate-400">Password</label>
                   <button
                     type="button"
-                    onClick={() => toast.info("Password reset must be initiated via Supabase.")}
+                    onClick={() => setResetMode(true)}
                     className="text-xs font-medium text-indigo-400 hover:text-indigo-300 transition"
                   >
-                    Forgot?
+                    Forgot password?
                   </button>
-                )}
+                </div>
+                <div className="relative">
+                  <Lock className="absolute top-3 left-3 h-4 w-4 text-slate-500" />
+                  <input
+                    required
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    minLength={8}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full rounded-lg border border-slate-800 bg-slate-950/50 py-2.5 pl-9 pr-10 text-sm text-white placeholder-slate-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="absolute top-2.5 right-3 text-slate-500 hover:text-slate-300 transition"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
               </div>
-              <div className="relative">
-                <Lock className="absolute top-3 left-3 h-4 w-4 text-slate-500" />
-                <input
-                  required
-                  type="password"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-slate-800 bg-slate-950/50 py-2.5 pl-9 pr-4 text-sm text-white placeholder-slate-600 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                />
-              </div>
-            </div>
+            )}
 
             <button
               type="submit"
@@ -172,24 +133,26 @@ function AdminLogin() {
                   <span>Processing...</span>
                 </>
               ) : (
-                <>
-                  {isSignUp ? <Sparkles className="h-4 w-4" /> : null}
-                  <span>{isSignUp ? "Create Account" : "Access Portal"}</span>
-                </>
+                <span>{resetMode ? "Send Reset Email" : "Access Portal"}</span>
               )}
             </button>
           </form>
 
-          {/* Toggle Tab */}
+          {/* Toggle to reset mode / back */}
           <div className="mt-6 text-center">
-            <button
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-xs font-semibold text-slate-400 hover:text-indigo-400 transition"
-            >
-              {isSignUp
-                ? "Already have portal access? Sign In"
-                : "Need access? Register here (First user becomes Admin)"}
-            </button>
+            {resetMode ? (
+              <button
+                type="button"
+                onClick={() => setResetMode(false)}
+                className="text-xs font-semibold text-slate-400 hover:text-indigo-400 transition"
+              >
+                ← Back to sign in
+              </button>
+            ) : (
+              <p className="text-xs text-slate-600">
+                New admin accounts must be created by a system administrator.
+              </p>
+            )}
           </div>
         </div>
       </div>

@@ -49,6 +49,13 @@ const HIDDEN_GRID_COLUMNS = [
   "content"
 ];
 
+// Status badge styles — module-level constant to avoid recreation per render
+const STATUS_STYLES: Record<string, string> = {
+  published: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+  draft: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+  archived: "bg-rose-500/10 text-rose-400 border-rose-500/20"
+};
+
 interface AdminCrudManagerProps {
   tableId: string;
 }
@@ -544,15 +551,10 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
           // Format status enums
           if (col.name === "status") {
-            const statusStyles: Record<string, string> = {
-              published: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-              draft: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-              archived: "bg-rose-500/10 text-rose-400 border-rose-500/20"
-            };
             return (
               <span
                 className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold border ${
-                  statusStyles[val] || "bg-slate-500/10 text-slate-400 border-slate-500/20"
+                  STATUS_STYLES[val] || "bg-slate-500/10 text-slate-400 border-slate-500/20"
                 }`}
               >
                 {val}
@@ -584,6 +586,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
       rowSelection
     },
     onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -1022,9 +1025,16 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         .in(schema.primary_key, selectedIds);
                       if (error) throw error;
                       toast.success(`Successfully published ${selectedIds.length} records!`);
-                      for (const row of selectedRows) {
-                        await logAuditAction("UPDATE", row[schema.primary_key], row, { status: "published", updated_by: user?.id });
-                      }
+                      // Batch audit log as a single INSERT with multiple rows
+                      const auditRows = selectedRows.map((row: any) => ({
+                        user_id: user?.id || null,
+                        action: "UPDATE" as const,
+                        table_name: tableId,
+                        record_id: row[schema.primary_key],
+                        old_values: row,
+                        new_values: { status: "published", updated_by: user?.id }
+                      }));
+                      try { await supabase.from("audit_logs").insert(auditRows as any); } catch {}
                       setRowSelection({});
                       loadData();
                     } catch (err: any) {
@@ -1051,9 +1061,16 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         .in(schema.primary_key, selectedIds);
                       if (error) throw error;
                       toast.success(`Successfully set ${selectedIds.length} records to Draft!`);
-                      for (const row of selectedRows) {
-                        await logAuditAction("UPDATE", row[schema.primary_key], row, { status: "draft", updated_by: user?.id });
-                      }
+                      // Batch audit log
+                      const auditRows = selectedRows.map((row: any) => ({
+                        user_id: user?.id || null,
+                        action: "UPDATE" as const,
+                        table_name: tableId,
+                        record_id: row[schema.primary_key],
+                        old_values: row,
+                        new_values: { status: "draft", updated_by: user?.id }
+                      }));
+                      try { await supabase.from("audit_logs").insert(auditRows as any); } catch {}
                       setRowSelection({});
                       loadData();
                     } catch (err: any) {
@@ -1094,9 +1111,16 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                       .in(schema.primary_key, selectedIds);
                     if (error) throw error;
                     toast.success(`Successfully soft-deleted ${selectedIds.length} records!`);
-                    for (const row of selectedRows) {
-                      await logAuditAction("DELETE", row[schema.primary_key], row, { deleted_at: new Date().toISOString() });
-                    }
+                    const deletedAt = new Date().toISOString();
+                    const auditRows = selectedRows.map((row: any) => ({
+                      user_id: user?.id || null,
+                      action: "DELETE" as const,
+                      table_name: tableId,
+                      record_id: row[schema.primary_key],
+                      old_values: row,
+                      new_values: { deleted_at: deletedAt }
+                    }));
+                    try { await supabase.from("audit_logs").insert(auditRows as any); } catch {}
                   } else {
                     const { error } = await supabaseAdmin
                       .from(tableId)
@@ -1104,9 +1128,15 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                       .in(schema.primary_key, selectedIds);
                     if (error) throw error;
                     toast.success(`Successfully permanently deleted ${selectedIds.length} records!`);
-                    for (const row of selectedRows) {
-                      await logAuditAction("DELETE", row[schema.primary_key], row, null);
-                    }
+                    const auditRows = selectedRows.map((row: any) => ({
+                      user_id: user?.id || null,
+                      action: "DELETE" as const,
+                      table_name: tableId,
+                      record_id: row[schema.primary_key],
+                      old_values: row,
+                      new_values: null
+                    }));
+                    try { await supabase.from("audit_logs").insert(auditRows as any); } catch {}
                   }
                   setRowSelection({});
                   loadData();

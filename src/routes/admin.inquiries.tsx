@@ -262,6 +262,8 @@ function AdminInquiriesPage() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    // Revoke blob URL to free memory
+    URL.revokeObjectURL(url);
     
     toast.success("CSV export download started!");
   };
@@ -412,7 +414,7 @@ function AdminInquiriesPage() {
                           </th>
                         ))}
                         <th className="px-6 py-4 text-xs font-bold uppercase text-slate-400">Staff Notes</th>
-                        <th className="px-6 py-4 text-right text-xs font-bold uppercase text-slate-400">Action Actions</th>
+                        <th className="px-6 py-4 text-right text-xs font-bold uppercase text-slate-400">Actions</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-850">

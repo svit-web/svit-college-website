@@ -253,7 +253,7 @@ function AdminMenusPage() {
     setIsItemModalOpen(true);
   };
 
-  // Delete Menu Item (soft delete)
+  // Delete Menu Item (soft delete) — recursively deletes all nested children at any depth
   const handleDeleteItem = async (node: MenuItemNode) => {
     const hasChildren = node.children && node.children.length > 0;
     const msg = hasChildren
@@ -263,28 +263,36 @@ function AdminMenusPage() {
     const confirmed = window.confirm(msg);
     if (!confirmed) return;
 
+    const now = new Date().toISOString();
+    const softDeletePayload = { deleted_at: now, deleted_by: user?.id };
+
+    // Collect all descendant IDs recursively
+    const collectIds = (nodes: MenuItemNode[]): string[] => {
+      return nodes.flatMap((n) => [
+        n.id,
+        ...(n.children ? collectIds(n.children) : [])
+      ]);
+    };
+
+    const descendantIds = hasChildren && node.children
+      ? collectIds(node.children)
+      : [];
+
     try {
-      // If has children, we need to delete children too
-      if (hasChildren && node.children) {
-        await Promise.all(
-          node.children.map(async (child) => {
-            await supabase.from("menu_items").update({
-              deleted_at: new Date().toISOString(),
-              deleted_by: user?.id
-            }).eq("id", child.id);
-          })
-        );
+      // Soft-delete the parent node
+      const { error: parentErr } = await supabase.from("menu_items")
+        .update(softDeletePayload)
+        .eq("id", node.id);
+      if (parentErr) throw parentErr;
+
+      // Batch soft-delete all descendants in one query (if any)
+      if (descendantIds.length > 0) {
+        const { error: childErr } = await supabase.from("menu_items")
+          .update(softDeletePayload)
+          .in("id", descendantIds);
+        if (childErr) throw childErr;
       }
 
-      const { error } = await supabase
-        .from("menu_items")
-        .update({
-          deleted_at: new Date().toISOString(),
-          deleted_by: user?.id
-        })
-        .eq("id", node.id);
-
-      if (error) throw error;
       toast.success("Menu item removed successfully.");
       loadMenuItems(selectedMenuId);
     } catch (err: any) {
@@ -321,10 +329,14 @@ function AdminMenusPage() {
 
     const targetItem = siblings[targetIdx];
     
-    // Swap sort orders in database
+    // Swap sort orders in database in parallel
     try {
-      await supabase.from("menu_items").update({ sort_order: targetItem.sort_order }).eq("id", item.id);
-      await supabase.from("menu_items").update({ sort_order: item.sort_order }).eq("id", targetItem.id);
+      const [r1, r2] = await Promise.all([
+        supabase.from("menu_items").update({ sort_order: targetItem.sort_order }).eq("id", item.id),
+        supabase.from("menu_items").update({ sort_order: item.sort_order }).eq("id", targetItem.id)
+      ]);
+      if (r1.error) throw r1.error;
+      if (r2.error) throw r2.error;
       
       toast.success("Order rearranged.");
       loadMenuItems(selectedMenuId);
