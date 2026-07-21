@@ -45,7 +45,7 @@ export const getCollegesGrid = createServerFn({ method: "GET" }).handler(
     const supabase = serverClient();
     const { data, error } = await supabase
       .from("colleges")
-      .select("slug, short_code, name, tagline, logo_url, sort_order")
+      .select("slug, code, name, logo_url, sort_order")
       .order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];
@@ -57,7 +57,7 @@ export const getRecruiterLogos = createServerFn({ method: "GET" }).handler(
     const supabase = serverClient();
     const { data, error } = await supabase
       .from("recruiters")
-      .select("name, logo_url, sort_order")
+      .select("company_name, logo_url, sort_order")
       .order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];

@@ -1,12 +1,27 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
 import { collegeMap, type CollegeSlug } from "@/data/colleges";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/colleges/$college")({
-  loader: ({ params }) => {
-    const college = collegeMap[params.college as CollegeSlug];
-    if (!college) throw notFound();
-    return { college };
+  loader: async ({ params }) => {
+    const staticCollege = collegeMap[params.college as CollegeSlug];
+    if (!staticCollege) throw notFound();
+
+    // Query Supabase for dynamic updates (name, logo, website_url, etc.)
+    const { data: dbCollege } = await supabase
+      .from("colleges")
+      .select("*")
+      .eq("slug", params.college)
+      .maybeSingle();
+
+    return {
+      college: {
+        ...staticCollege,
+        name: dbCollege?.name || staticCollege.name,
+        logo: dbCollege?.logo_url || staticCollege.logo,
+      },
+    };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {

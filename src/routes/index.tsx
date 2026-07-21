@@ -187,9 +187,9 @@ function CollegesSection() {
           const fallback = staticColleges.find((s) => s.id === c.slug);
           return {
             id: c.slug,
-            shortCode: c.short_code,
+            shortCode: c.code,
             name: c.name,
-            tagline: c.tagline ?? fallback?.tagline ?? "",
+            tagline: fallback?.tagline ?? "",
             logo: c.logo_url ?? fallback?.logo ?? "",
           };
         })
@@ -336,7 +336,7 @@ function EventsAndEnquiry() {
 
   const recruiterNames =
     recruitersData && recruitersData.length > 0
-      ? recruitersData.map((r) => r.name)
+      ? recruitersData.map((r) => r.company_name)
       : staticRecruiters;
 
   const admissions = promoBySlot(items, "home_admissions");

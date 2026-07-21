@@ -1,0 +1,679 @@
+import { useEffect, useState, useMemo } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { useAdminAuth } from "@/hooks/useAdminAuth";
+import {
+  Folder,
+  File,
+  Plus,
+  Trash2,
+  ChevronRight,
+  ArrowLeft,
+  Upload,
+  Image as ImageIcon,
+  Loader2,
+  FolderPlus,
+  ExternalLink,
+  Edit2,
+  X,
+  FileText
+} from "lucide-react";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/admin/media")({
+  component: AdminMediaPage
+});
+
+const supabaseAdmin = supabase as any;
+
+function formatBytes(bytes: number, decimals = 2) {
+  if (!bytes) return "0 Bytes";
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ["Bytes", "KB", "MB", "GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+}
+
+function AdminMediaPage() {
+  const { user, roles } = useAdminAuth();
+
+  // Navigation states
+  const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
+  const [folderHistory, setFolderHistory] = useState<any[]>([]);
+
+  // Data states
+  const [folders, setFolders] = useState<any[]>([]);
+  const [files, setFiles] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Modals & form states
+  const [isFolderModalOpen, setIsFolderModalOpen] = useState(false);
+  const [newFolderName, setNewFolderName] = useState("");
+  const [editingFolder, setEditingFolder] = useState<any | null>(null);
+
+  const [isFileModalOpen, setIsFileModalOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<any | null>(null);
+  const [altText, setAltText] = useState("");
+  const [caption, setCaption] = useState("");
+  const [updatingFile, setUpdatingFile] = useState(false);
+
+  const [uploading, setUploading] = useState(false);
+
+  // User Scoping Metadata
+  const userScope = useMemo(() => {
+    if (!roles || roles.length === 0) return { level: "none" };
+    const primaryRole = roles[0];
+    const isGlobal = roles.some((r) => r.code === "admin");
+    return {
+      level: isGlobal ? "global" : primaryRole.scope_type || "none",
+      collegeId: primaryRole.college_id,
+      departmentId: primaryRole.department_id,
+      trustId: primaryRole.trust_id
+    };
+  }, [roles]);
+
+  // Load active folder directory hierarchy
+  const loadDirectory = async () => {
+    setLoading(true);
+    try {
+      // 1. Fetch subfolders
+      let folderQuery = supabaseAdmin
+        .from("media_folders")
+        .select("*")
+        .is("deleted_at", null);
+
+      if (currentFolderId) {
+        folderQuery = folderQuery.eq("parent_id", currentFolderId);
+      } else {
+        folderQuery = folderQuery.is("parent_id", null);
+      }
+
+      // Apply scoping: department editors filter by department folder
+      if (userScope.level === "department" && userScope.departmentId) {
+        folderQuery = folderQuery.eq("department_id", userScope.departmentId);
+      }
+
+      const { data: foldersData, error: foldersErr } = await folderQuery.order("name", {
+        ascending: true
+      });
+      if (foldersErr) throw foldersErr;
+      setFolders(foldersData || []);
+
+      // 2. Fetch files in folder
+      let filesQuery = supabaseAdmin
+        .from("media_files")
+        .select("*")
+        .is("deleted_at", null);
+
+      if (currentFolderId) {
+        filesQuery = filesQuery.eq("folder_id", currentFolderId);
+      } else {
+        filesQuery = filesQuery.is("folder_id", null);
+      }
+
+      // Apply scoping
+      if (userScope.level === "department" && userScope.departmentId) {
+        filesQuery = filesQuery.eq("department_id", userScope.departmentId);
+      }
+
+      const { data: filesData, error: filesErr } = await filesQuery.order("filename", {
+        ascending: true
+      });
+      if (filesErr) throw filesErr;
+      setFiles(filesData || []);
+    } catch (err: any) {
+      console.error("Failed to load directory:", err);
+      toast.error(`Error loading media files: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDirectory();
+  }, [currentFolderId, userScope]);
+
+  // Handle entering a folder
+  const handleEnterFolder = (folder: any) => {
+    setFolderHistory((prev) => [...prev, folder]);
+    setCurrentFolderId(folder.id);
+  };
+
+  // Handle going back up a folder
+  const handleGoBack = () => {
+    if (folderHistory.length === 0) return;
+    const newHistory = [...folderHistory];
+    newHistory.pop();
+    setFolderHistory(newHistory);
+    setCurrentFolderId(newHistory.length > 0 ? newHistory[newHistory.length - 1].id : null);
+  };
+
+  // Create or Rename folder
+  const handleSaveFolder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newFolderName.trim()) return;
+
+    try {
+      const payload: Record<string, any> = {
+        name: newFolderName.trim(),
+        parent_id: currentFolderId,
+        scope_type: userScope.level === "global" ? "global" : userScope.level,
+        department_id: userScope.level === "department" ? userScope.departmentId : null
+      };
+
+      if (editingFolder) {
+        const { error } = await supabaseAdmin
+          .from("media_folders")
+          .update({ name: newFolderName.trim(), updated_at: new Date().toISOString() })
+          .eq("id", editingFolder.id);
+
+        if (error) throw error;
+        toast.success("Folder renamed successfully!");
+      } else {
+        const { error } = await supabaseAdmin.from("media_folders").insert(payload);
+        if (error) throw error;
+        toast.success("Folder created successfully!");
+      }
+
+      setIsFolderModalOpen(false);
+      setNewFolderName("");
+      setEditingFolder(null);
+      loadDirectory();
+    } catch (err: any) {
+      toast.error(`Folder error: ${err.message}`);
+    }
+  };
+
+  // Delete folder (Soft delete)
+  const handleDeleteFolder = async (folder: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    const confirmed = window.confirm(`Are you sure you want to delete folder "${folder.name}"?`);
+    if (!confirmed) return;
+
+    try {
+      const { error } = await supabaseAdmin
+        .from("media_folders")
+        .update({
+          deleted_at: new Date().toISOString(),
+          deleted_by: user?.id
+        })
+        .eq("id", folder.id);
+
+      if (error) throw error;
+      toast.success("Folder deleted.");
+      loadDirectory();
+    } catch (err: any) {
+      toast.error(`Failed to delete folder: ${err.message}`);
+    }
+  };
+
+  // Upload file
+  const handleUploadFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+
+    setUploading(true);
+    try {
+      // 1. Upload file object to Supabase storage bucket 'media'
+      const fileExt = file.name.split(".").pop();
+      const cleanFileName = file.name.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
+      const storagePath = `media-library/${Date.now()}-${cleanFileName}.${fileExt}`;
+
+      const { data: storageData, error: storageErr } = await supabase.storage
+        .from("media")
+        .upload(storagePath, file, { cacheControl: "3600", upsert: false });
+
+      if (storageErr) throw storageErr;
+
+      // 2. Fetch public URL
+      const { data: urlData } = supabase.storage.from("media").getPublicUrl(storageData.path);
+
+      // 3. Register file record in media_files
+      const payload = {
+        folder_id: currentFolderId,
+        filename: file.name,
+        file_path: urlData.publicUrl,
+        mime_type: file.type || "application/octet-stream",
+        file_size: file.size,
+        scope_type: userScope.level === "global" ? "global" : userScope.level,
+        department_id: userScope.level === "department" ? userScope.departmentId : null,
+        status: "published"
+      };
+
+      const { error: dbErr } = await supabaseAdmin.from("media_files").insert(payload);
+      if (dbErr) throw dbErr;
+
+      toast.success("File uploaded to library successfully!");
+      loadDirectory();
+    } catch (err: any) {
+      console.error("Upload failure:", err);
+      toast.error(`Upload failed: ${err.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Open file details modal
+  const handleOpenFileModal = (file: any) => {
+    setSelectedFile(file);
+    setAltText(file.alt_text || "");
+    setCaption(file.caption || "");
+    setIsFileModalOpen(true);
+  };
+
+  // Update file details (Alt text, Caption)
+  const handleSaveFileDetails = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedFile) return;
+
+    setUpdatingFile(true);
+    try {
+      const { error } = await supabaseAdmin
+        .from("media_files")
+        .update({
+          alt_text: altText.trim() || null,
+          caption: caption.trim() || null,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", selectedFile.id);
+
+      if (error) throw error;
+      toast.success("File details updated!");
+      setIsFileModalOpen(false);
+      loadDirectory();
+    } catch (err: any) {
+      toast.error(`Failed to update details: ${err.message}`);
+    } finally {
+      setUpdatingFile(false);
+    }
+  };
+
+  // Delete file (DB record soft-delete and storage remove)
+  const handleDeleteFile = async (file: any) => {
+    const confirmed = window.confirm(`Are you sure you want to permanently delete file "${file.filename}"?`);
+    if (!confirmed) return;
+
+    try {
+      // 1. Extract path inside storage from publicUrl
+      // URL Format: https://[ref].supabase.co/storage/v1/object/public/media/[path]
+      const urlParts = file.file_path.split("/public/media/");
+      const storagePath = urlParts[1];
+
+      if (storagePath) {
+        // Delete from storage
+        const { error: storageErr } = await supabase.storage.from("media").remove([storagePath]);
+        if (storageErr) {
+          console.warn("Storage deletion warning:", storageErr);
+        }
+      }
+
+      // 2. Hard delete file from DB
+      const { error: dbErr } = await supabaseAdmin
+        .from("media_files")
+        .delete()
+        .eq("id", file.id);
+
+      if (dbErr) throw dbErr;
+
+      toast.success("File deleted successfully!");
+      setIsFileModalOpen(false);
+      loadDirectory();
+    } catch (err: any) {
+      toast.error(`Delete failed: ${err.message}`);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      
+      {/* Title Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl">
+            Media Library
+          </h1>
+          <p className="text-sm text-slate-400">
+            Browse and organize visual assets and document downloads
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {/* Create Folder */}
+          <button
+            onClick={() => {
+              setEditingFolder(null);
+              setNewFolderName("");
+              setIsFolderModalOpen(true);
+            }}
+            className="flex items-center gap-2 rounded bg-slate-800 hover:bg-slate-700 px-4 py-2 text-sm font-semibold text-white border border-slate-700"
+          >
+            <FolderPlus className="h-4 w-4 text-indigo-400" />
+            <span>Create Folder</span>
+          </button>
+
+          {/* Upload File */}
+          <label className="flex items-center gap-2 rounded bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white cursor-pointer shadow">
+            {uploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
+            <span>Upload File</span>
+            <input
+              type="file"
+              onChange={handleUploadFile}
+              disabled={uploading}
+              className="hidden"
+            />
+          </label>
+        </div>
+      </div>
+
+      {/* Directory Navigation breadcrumbs */}
+      <div className="flex items-center gap-2 rounded-lg bg-slate-950 p-3 border border-slate-850">
+        <button
+          onClick={() => {
+            setFolderHistory([]);
+            setCurrentFolderId(null);
+          }}
+          className="text-xs font-semibold text-indigo-400 hover:text-indigo-300"
+        >
+          Media Library
+        </button>
+
+        {folderHistory.map((folder, index) => (
+          <div key={folder.id} className="flex items-center gap-1">
+            <ChevronRight className="h-3.5 w-3.5 text-slate-600" />
+            <button
+              onClick={() => {
+                const newHistory = folderHistory.slice(0, index + 1);
+                setFolderHistory(newHistory);
+                setCurrentFolderId(folder.id);
+              }}
+              className="text-xs font-semibold text-slate-300 hover:text-white"
+            >
+              {folder.name}
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Main Files Grid */}
+      <div className="rounded-xl border border-slate-800 bg-slate-950/20 p-6 min-h-96 relative">
+        {loading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 z-10 rounded-xl">
+            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+          </div>
+        )}
+
+        {folders.length === 0 && files.length === 0 && !loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <ImageIcon className="h-12 w-12 text-slate-700 mb-4" />
+            <h3 className="text-lg font-bold text-white">This Folder is Empty</h3>
+            <p className="text-xs text-slate-500 max-w-xs mt-1">
+              Drag files here, or use the buttons above to add documents and subfolders.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+            
+            {/* Folders List */}
+            {folders.map((folder) => (
+              <div
+                key={folder.id}
+                onClick={() => handleEnterFolder(folder)}
+                className="group flex flex-col items-center justify-center rounded-xl border border-slate-850 bg-slate-950/50 p-4 cursor-pointer hover:border-indigo-500/50 hover:bg-slate-900/30 transition shadow-md"
+              >
+                <div className="relative mb-3 text-amber-500">
+                  <Folder className="h-12 w-12 fill-amber-500/10" />
+                </div>
+                
+                <span className="text-xs font-bold text-slate-200 text-center truncate w-full px-1">
+                  {folder.name}
+                </span>
+
+                <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition mt-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setEditingFolder(folder);
+                      setNewFolderName(folder.name);
+                      setIsFolderModalOpen(true);
+                    }}
+                    className="p-1 text-slate-500 hover:text-white"
+                    title="Rename"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" />
+                  </button>
+                  <button
+                    onClick={(e) => handleDeleteFolder(folder, e)}
+                    className="p-1 text-slate-500 hover:text-red-400"
+                    title="Delete"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Files List */}
+            {files.map((file) => {
+              const isImage = file.mime_type.startsWith("image/");
+              
+              return (
+                <div
+                  key={file.id}
+                  onClick={() => handleOpenFileModal(file)}
+                  className="group flex flex-col rounded-xl border border-slate-850 bg-slate-950/50 overflow-hidden cursor-pointer hover:border-indigo-500/50 hover:bg-slate-900/30 transition shadow-md"
+                >
+                  <div className="relative h-28 w-full bg-slate-900 flex items-center justify-center border-b border-slate-850/50">
+                    {isImage ? (
+                      <img
+                        src={file.file_path}
+                        alt={file.alt_text || file.filename}
+                        className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                    ) : (
+                      <FileText className="h-10 w-10 text-indigo-400" />
+                    )}
+                  </div>
+
+                  <div className="p-3 flex-1 flex flex-col min-w-0">
+                    <span className="text-xs font-bold text-slate-300 truncate mb-1">
+                      {file.filename}
+                    </span>
+                    <span className="text-[10px] text-slate-500 font-medium">
+                      {formatBytes(file.file_size)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+
+          </div>
+        )}
+      </div>
+
+      {/* Create / Edit Folder Modal */}
+      {isFolderModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
+          <div className="relative w-full max-w-sm rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl">
+            <button
+              onClick={() => setIsFolderModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <h2 className="font-display text-lg font-bold text-white mb-4">
+              {editingFolder ? "Rename Folder" : "Create Subfolder"}
+            </h2>
+
+            <form onSubmit={handleSaveFolder} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold text-slate-300">Folder Name</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="e.g. Circulars, Placement-2026"
+                  value={newFolderName}
+                  onChange={(e) => setNewFolderName(e.target.value)}
+                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsFolderModalOpen(false)}
+                  className="rounded border border-slate-800 px-4 py-2 text-sm font-semibold text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="rounded bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white"
+                >
+                  {editingFolder ? "Rename" : "Create"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* File Viewer details modal */}
+      {isFileModalOpen && selectedFile && (
+        <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50 overflow-y-auto">
+          <div className="relative w-full max-w-2xl rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl flex flex-col md:flex-row gap-6 max-h-[90vh]">
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setIsFileModalOpen(false)}
+              className="absolute top-4 right-4 text-slate-500 hover:text-white z-10"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            {/* Visual Preview column */}
+            <div className="md:w-1/2 flex flex-col items-center justify-center bg-slate-900/50 rounded-lg p-4 border border-slate-850">
+              {selectedFile.mime_type.startsWith("image/") ? (
+                <div className="relative overflow-hidden rounded max-h-72 w-full">
+                  <img
+                    src={selectedFile.file_path}
+                    alt={selectedFile.filename}
+                    className="object-contain w-full h-full max-h-64"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-32 w-32 items-center justify-center rounded bg-slate-950 text-indigo-400">
+                  <FileText className="h-16 w-16" />
+                </div>
+              )}
+
+              <div className="mt-4 w-full text-center space-y-1">
+                <p className="text-xs font-semibold text-slate-300 truncate max-w-xs mx-auto">
+                  {selectedFile.filename}
+                </p>
+                <p className="text-[10px] text-slate-500 font-mono">
+                  {selectedFile.mime_type} · {formatBytes(selectedFile.file_size)}
+                </p>
+              </div>
+            </div>
+
+            {/* Form details column */}
+            <form onSubmit={handleSaveFileDetails} className="md:w-1/2 flex flex-col justify-between space-y-4">
+              <div className="space-y-4">
+                <h3 className="font-display text-lg font-bold text-white">Asset Settings</h3>
+                
+                {/* Public URL copy */}
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+                    Storage Public URL:
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={selectedFile.file_path}
+                      onClick={(e) => {
+                        (e.target as HTMLInputElement).select();
+                        navigator.clipboard.writeText(selectedFile.file_path);
+                        toast.success("URL copied to clipboard!");
+                      }}
+                      className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-400 font-mono focus:outline-none cursor-pointer"
+                    />
+                    <a
+                      href={selectedFile.file_path}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="rounded border border-slate-800 p-2 bg-slate-900 text-slate-400 hover:text-white"
+                      title="Open file"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Alt Text */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-300">Alt Text (SEO)</label>
+                  <input
+                    type="text"
+                    placeholder="Short description of image contents"
+                    value={altText}
+                    onChange={(e) => setAltText(e.target.value)}
+                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                  />
+                </div>
+
+                {/* Caption */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold text-slate-300">Caption / Description</label>
+                  <textarea
+                    placeholder="Longer context details"
+                    value={caption}
+                    onChange={(e) => setCaption(e.target.value)}
+                    rows={2}
+                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-4 border-t border-slate-900">
+                <button
+                  type="button"
+                  onClick={() => handleDeleteFile(selectedFile)}
+                  className="flex items-center gap-1.5 rounded bg-red-500/10 hover:bg-red-500/20 px-3.5 py-2 text-xs font-bold text-red-400 transition"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  <span>Delete Permanently</span>
+                </button>
+
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsFileModalOpen(false)}
+                    className="rounded border border-slate-800 px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updatingFile}
+                    className="flex items-center gap-1.5 rounded bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                  >
+                    {updatingFile && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+                    <span>Save Changes</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useMemo } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
@@ -9,6 +9,8 @@ import { placementDivisions } from "@/data/placement";
 import { academicFacilities, sportsFacilities, centreDetails, clubDetails, eventDetails } from "@/data/campus-rfe";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { collegesQuery } from "@/lib/homepage";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -16,6 +18,20 @@ export function Header() {
   const [placementOpen, setPlacementOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  const { data: dbColleges } = useQuery(collegesQuery);
+
+  const displayColleges = useMemo(() => {
+    if (!dbColleges) return colleges;
+    return colleges.map(staticC => {
+      const dbC = dbColleges.find(d => d.slug === staticC.id);
+      return {
+        ...staticC,
+        name: dbC?.name || staticC.name,
+        logo: dbC?.logo_url || staticC.logo,
+      };
+    });
+  }, [dbColleges]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
@@ -73,7 +89,7 @@ export function Header() {
                         className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 rounded-2xl border border-border bg-white p-4 shadow-xl"
                       >
                         <div className="grid grid-cols-1 gap-2">
-                          {colleges.map((c) => (
+                          {displayColleges.map((c) => (
                             <Link
                               key={c.id}
                               to="/colleges/$college"
@@ -248,7 +264,7 @@ export function Header() {
                   )}
                   {n.label === "Colleges" && (
                     <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                      {colleges.map((c) => (
+                      {displayColleges.map((c) => (
                         <Link
                           key={c.id}
                           to="/colleges/$college"
