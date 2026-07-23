@@ -1,0 +1,1 @@
+explore the codebase with 5 subagents and then read the files in the ./docs/context folder and check if the implementation in accurate/consistent with respect to the current codebase
