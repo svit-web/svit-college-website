@@ -1,10 +1,11 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { DepartmentLayout } from "@/components/site/DepartmentLayout";
-import { departments } from "@/data/academics";
+import { getDepartmentByCode } from "@/lib/departments.functions";
 
 export const Route = createFileRoute("/departments/$dept")({
-  loader: ({ params }) => {
-    const department = departments.find((d) => d.id === params.dept);
+  loader: async ({ params }) => {
+    // Department is identified by code in URL (e.g., /departments/CE)
+    const department = await getDepartmentByCode({ data: params.dept.toUpperCase() });
     if (!department) throw notFound();
     return { department };
   },
