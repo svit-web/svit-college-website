@@ -6,11 +6,12 @@ import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
 import { colleges } from "@/data/colleges";
 import { placementDivisions } from "@/data/placement";
-import { academicFacilities, sportsFacilities, centreDetails, clubDetails, eventDetails } from "@/data/campus-rfe";
+import { academicFacilities, sportsFacilities, centreDetails, eventDetails } from "@/data/campus-rfe";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { collegesQuery } from "@/lib/homepage";
+import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -317,6 +318,12 @@ type MegaCategory = {
 };
 
 function useCampusCategories(): MegaCategory[] {
+  const { data: featuredClubs } = useQuery({
+    queryKey: ['featured-clubs'],
+    queryFn: () => getFeaturedStudentClubs(),
+    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+  });
+
   return [
     {
       key: "facilities",
@@ -343,7 +350,7 @@ function useCampusCategories(): MegaCategory[] {
       icon: Users,
       allLabel: "All clubs",
       allTo: "/campus-life/clubs",
-      items: clubDetails.map((c) => ({ label: c.title, to: `/campus-life/clubs/${c.slug}` })),
+      items: featuredClubs?.map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` })) || [],
     },
     {
       key: "events",

@@ -1,11 +1,27 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CampusLeafPage } from "@/components/site/CampusLeafPage";
-import { resolveFacilityLeaf } from "@/data/campus-rfe";
+import { getFacilityBySlug } from "@/lib/facilities.functions";
 
 export const Route = createFileRoute("/campus-life/facilities/$")({
-  loader: ({ params }) => {
-    const item = resolveFacilityLeaf(params._splat ?? "");
-    if (!item) throw notFound();
+  loader: async ({ params }) => {
+    // Extract slug from splat (handles both /academic/slug and /co-curriculum/slug)
+    const parts = (params._splat ?? "").split('/');
+    const slug = parts[parts.length - 1]; // Get last part as slug
+
+    const facility = await getFacilityBySlug({ data: slug });
+    if (!facility) throw notFound();
+
+    // Transform to match CampusLeafPage interface
+    const item = {
+      slug: facility.slug,
+      title: facility.name,
+      subtitle: facility.metadata?.subtitle || "",
+      accent: facility.metadata?.accent || "Facility",
+      description: facility.metadata?.description || "",
+      highlights: Array.isArray(facility.metadata?.highlights) ? facility.metadata.highlights : [],
+      image: null,
+    };
+
     return { item };
   },
   head: ({ loaderData }) =>

@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { CTABanner } from "@/components/site/CTABanner";
-import { aboutPageContent as c } from "@/data/aboutPage";
+import { aboutPageContent as c } from "@/data/aboutPage"; // Still needed for history, leadership, facilities, etc.
+import { getAllCommittees } from "@/lib/committees.functions";
+import { getAllAccreditations } from "@/lib/accreditations.functions";
 import { ImageIcon } from "lucide-react";
 
 import {
@@ -39,6 +41,13 @@ export const Route = createFileRoute("/about")({
       { property: "og:description", content: "Legacy, vision, mission and campus of SVIT Vasad." },
     ],
   }),
+  loader: async () => {
+    const [committees, accreditations] = await Promise.all([
+      getAllCommittees(),
+      getAllAccreditations(),
+    ]);
+    return { committees, accreditations };
+  },
   component: AboutPage,
 });
 
@@ -79,6 +88,8 @@ const sectionLinks = [
 ];
 
 function AboutPage() {
+  const { committees, accreditations } = Route.useLoaderData();
+
   return (
     <>
       {/* Hero: portrait left, brief on right */}
@@ -330,7 +341,7 @@ function AboutPage() {
         </div>
       </SectionShell>
 
-      {/* 8. Accreditation */}
+      {/* 8. Accreditation - Dynamic from Supabase */}
       <section id="accreditation" className="bg-secondary/50 py-16 md:py-20">
         <div className="container-page">
           <SectionHeading
@@ -346,11 +357,13 @@ function AboutPage() {
               </div>
               <table className="w-full text-sm">
                 <tbody>
-                  {c.accreditation.recognitions.map((r) => (
-                    <tr key={r.body} className="border-t border-border first:border-t-0">
-                      <td className="px-4 py-3 text-navy">{r.body}</td>
+                  {accreditations.map((acc) => (
+                    <tr key={acc.id} className="border-t border-border first:border-t-0">
+                      <td className="px-4 py-3 text-navy">
+                        {acc.metadata.body || `${acc.organization} (${acc.value})`}
+                      </td>
                       <td className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gold">
-                        {r.status}
+                        {acc.value}
                       </td>
                     </tr>
                   ))}
@@ -359,18 +372,19 @@ function AboutPage() {
             </div>
 
             <div className="space-y-4">
-              {[
-                { title: "NBA Accreditation", body: c.accreditation.nbaText },
-                { title: "NIRF Ranking", body: c.accreditation.nirfText },
-                { title: "AICTE Approval", body: c.accreditation.aicteText },
-              ].map((b) => (
-                <div key={b.title} className="rounded-xl border-2 border-navy/15 bg-white p-5">
-                  <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
-                    {b.title}
+              {accreditations
+                .filter((acc) => acc.metadata.description)
+                .slice(0, 3)
+                .map((acc) => (
+                  <div key={acc.id} className="rounded-xl border-2 border-navy/15 bg-white p-5">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                      {acc.organization}
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                      {acc.metadata.description}
+                    </p>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{b.body}</p>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
 
@@ -434,36 +448,36 @@ function AboutPage() {
         </div>
       </section>
 
-      {/* 9. Committees */}
+      {/* 9. Committees - Dynamic from Supabase */}
       <SectionShell id="committees">
         <SectionHeading eyebrow="Governance" title="SVIT Committees" variant="eyebrow" />
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {c.committees.map((cm, i) => (
-            <Reveal key={cm.name} delay={i * 0.05}>
+          {committees.map((cm, i) => (
+            <Reveal key={cm.id} delay={i * 0.05}>
               <div className="h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold transition-colors">
                 <h3 className="font-display text-lg font-bold text-navy">{cm.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                  {cm.description}
+                  {cm.metadata.description}
                 </p>
-                {cm.vision && (
+                {cm.metadata.vision && (
                   <p className="mt-3 text-sm text-muted-foreground">
                     <span className="font-semibold text-navy">Vision: </span>
-                    {cm.vision}
+                    {cm.metadata.vision}
                   </p>
                 )}
-                {cm.mission && (
+                {cm.metadata.mission && (
                   <p className="mt-2 text-sm text-muted-foreground">
                     <span className="font-semibold text-navy">Mission: </span>
-                    {cm.mission}
+                    {cm.metadata.mission}
                   </p>
                 )}
-                {cm.keyActivities.length > 0 && (
+                {cm.metadata.keyActivities && cm.metadata.keyActivities.length > 0 && (
                   <div className="mt-4">
                     <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                       Key Activities
                     </div>
                     <ul className="mt-2 space-y-1.5">
-                      {cm.keyActivities.map((a, j) => (
+                      {cm.metadata.keyActivities.map((a, j) => (
                         <li key={j} className="flex gap-2 text-sm text-muted-foreground">
                           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                           {a}
