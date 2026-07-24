@@ -45,7 +45,7 @@ export const getCollegesGrid = createServerFn({ method: "GET" }).handler(
     const supabase = serverClient();
     const { data, error } = await supabase
       .from("colleges")
-      .select("slug, code, name, logo_url, sort_order")
+      .select("slug, code, name, logo_url, sort_order, metadata")
       .order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];

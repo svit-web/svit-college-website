@@ -3,14 +3,13 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
 import { FacultyGrid } from "@/components/site/FacultyGrid";
-import { courses } from "@/data/site";
-import type { CourseSlug } from "@/data/site";
+import { getProgrammeBySlug } from "@/lib/programmes.functions";
 import { getFaculty } from "@/lib/faculty";
 import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/courses/$course/faculty")({
-  loader: ({ params }) => {
-    const course = courses.find((c) => c.slug === (params.course as CourseSlug));
+  loader: async ({ params }) => {
+    const course = await getProgrammeBySlug({ data: params.course });
     if (!course) throw notFound();
     return { course };
   },
@@ -21,7 +20,7 @@ export const Route = createFileRoute("/courses/$course/faculty")({
 
 function CourseFacultyPage() {
   const { course } = Route.useLoaderData();
-  const faculty = getFaculty(course.slug, course.highlights, 9);
+  const faculty = getFaculty(course.code, course.metadata.highlights, 9);
   return (
     <>
       <PageHero title={`${course.name} Faculty`} accent="Meet the mentors" crumbs={[{ label: "Home", to: "/" }, { label: "Courses", to: "/courses" }, { label: course.name, to: "/courses/$course" }, { label: "Faculty" }]} />
@@ -29,7 +28,7 @@ function CourseFacultyPage() {
         <SectionHeading center eyebrow="Our Team" title="Experienced Faculty" subtitle="Senior mentors combining research depth with industry experience." />
         <div className="mt-12"><FacultyGrid members={faculty} /></div>
         <div className="mt-10 text-center">
-          <Link to="/courses/$course" params={{ course: course.slug }} className="inline-flex items-center gap-1 text-sm text-navy hover:text-gold link-underline">
+          <Link to="/courses/$course" params={{ course: course.code }} className="inline-flex items-center gap-1 text-sm text-navy hover:text-gold link-underline">
             <ArrowLeft className="h-4 w-4" /> Back to {course.name}
           </Link>
         </div>

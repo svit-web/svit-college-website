@@ -1,16 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
-import { courses } from "@/data/site";
+import { getAllProgrammes } from "@/lib/programmes.functions";
 import { useState } from "react";
 import { CheckCircle2, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admissions/inquiry")({
   head: () => ({ meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: "Submit an admission enquiry for 2026-27 at SVIT Vasad." }] }),
+  loader: async () => {
+    const programmes = await getAllProgrammes();
+    return { programmes };
+  },
   component: Inquiry,
 });
 
 function Inquiry() {
+  const { programmes } = Route.useLoaderData();
   const [sent, setSent] = useState(false);
   return (
     <>
@@ -40,7 +45,7 @@ function Inquiry() {
                   <Field label="Programme *">
                     <select required className="input">
                       <option value="">Select programme</option>
-                      {courses.map((c) => <option key={c.slug}>{c.name}</option>)}
+                      {programmes.map((c) => <option key={c.code}>{c.name}</option>)}
                     </select>
                   </Field>
                   <Field label="Year *">

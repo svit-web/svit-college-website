@@ -19,7 +19,6 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { courses, events as staticEvents, recruiters as staticRecruiters, stats as staticStats, whyChoose as staticWhy } from "@/data/site";
-import { colleges as staticColleges } from "@/data/colleges";
 import { heroHighlights, type HeroHighlight } from "@/data/heroHighlights";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 import {
@@ -183,23 +182,14 @@ function CollegesSection() {
   const { data } = useQuery(collegesQuery);
   const rows =
     data && data.length > 0
-      ? data.map((c) => {
-          const fallback = staticColleges.find((s) => s.id === c.slug);
-          return {
-            id: c.slug,
-            shortCode: c.code,
-            name: c.name,
-            tagline: fallback?.tagline ?? "",
-            logo: c.logo_url ?? fallback?.logo ?? "",
-          };
-        })
-      : staticColleges.map((c) => ({
-          id: c.id,
-          shortCode: c.shortCode,
+      ? data.map((c) => ({
+          id: c.slug,
+          shortCode: (c as any).metadata?.shortCode ?? c.code,
           name: c.name,
-          tagline: c.tagline,
-          logo: c.logo,
-        }));
+          tagline: (c as any).metadata?.tagline ?? "",
+          logo: c.logo_url ?? "",
+        }))
+      : [];
 
   return (
     <section className="container-page py-20">

@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/site/PageHero";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 import { Reveal } from "@/components/site/Reveal";
-import { colleges } from "@/data/colleges";
+import { getAllColleges } from "@/lib/colleges.functions";
 
 export const Route = createFileRoute("/colleges/")({
   head: () => ({
@@ -14,10 +14,15 @@ export const Route = createFileRoute("/colleges/")({
       { property: "og:description", content: "Explore the four constituent colleges of the SVIT Group." },
     ],
   }),
+  loader: async () => {
+    const colleges = await getAllColleges();
+    return { colleges };
+  },
   component: CollegesIndex,
 });
 
 function CollegesIndex() {
+  const { colleges } = Route.useLoaderData();
   return (
     <>
       <PageHero
@@ -32,24 +37,23 @@ function CollegesIndex() {
             <Reveal key={c.id} delay={i * 0.05}>
               <Link
                 to="/colleges/$college"
-                params={{ college: c.id }}
+                params={{ college: c.slug }}
                 className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-8"
               >
                 <div className="flex items-start gap-5">
                   <CollegeLogo
-                    shortCode={c.shortCode}
-                    src={c.logo}
+                    shortCode={c.metadata?.shortCode ?? c.code}
+                    src={c.logo_url ?? undefined}
                     className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
                   />
                   <div className="min-w-0">
-                    <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.shortCode}</div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.metadata?.shortCode ?? c.code}</div>
                     <h3 className="mt-1 font-display text-xl font-bold text-navy leading-tight">{c.name}</h3>
-                    {/* TODO: confirm final tagline copy */}
-                    <p className="mt-2 text-sm text-muted-foreground italic">{c.tagline}</p>
+                    <p className="mt-2 text-sm text-muted-foreground italic">{c.metadata?.tagline}</p>
                   </div>
                 </div>
                 <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-navy group-hover:text-gold">
-                  Explore {c.shortCode} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Explore {c.metadata?.shortCode ?? c.code} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
             </Reveal>

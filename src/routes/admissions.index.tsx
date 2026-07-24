@@ -3,12 +3,16 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { CTABanner } from "@/components/site/CTABanner";
-import { courses } from "@/data/site";
+import { getAllProgrammes } from "@/lib/programmes.functions";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/admissions/")({
   head: () => ({ meta: [{ title: "Admissions 2026-27 — SVIT Vasad" }, { name: "description", content: "How to apply, eligibility, fees, scholarships and FAQs for admissions at SVIT Vasad." }] }),
+  loader: async () => {
+    const programmes = await getAllProgrammes();
+    return { programmes };
+  },
   component: Admissions,
 });
 
@@ -27,6 +31,7 @@ const faqs = [
 ];
 
 function Admissions() {
+  const { programmes } = Route.useLoaderData();
   return (
     <>
       <PageHero title="Admissions" accent="2026-27 Batch" subtitle="Everything you need to know about applying to SVIT Vasad." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions" }]}>
@@ -64,12 +69,12 @@ function Admissions() {
                 </tr>
               </thead>
               <tbody>
-                {courses.map((c) => (
-                  <tr key={c.slug} className="border-t border-border">
+                {programmes.map((c) => (
+                  <tr key={c.code} className="border-t border-border">
                     <td className="p-4 font-semibold text-navy">{c.name}</td>
-                    <td className="p-4 text-muted-foreground">{c.duration}</td>
-                    <td className="p-4 text-muted-foreground">{c.eligibility}</td>
-                    <td className="p-4 text-muted-foreground">{c.intake}</td>
+                    <td className="p-4 text-muted-foreground">{c.metadata.duration}</td>
+                    <td className="p-4 text-muted-foreground">{c.metadata.eligibility}</td>
+                    <td className="p-4 text-muted-foreground">{c.metadata.intake}</td>
                   </tr>
                 ))}
               </tbody>

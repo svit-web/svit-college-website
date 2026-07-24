@@ -1,27 +1,29 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
-import { collegeMap, type CollegeSlug } from "@/data/colleges";
-import { supabase } from "@/integrations/supabase/client";
+import { getCollegeBySlug } from "@/lib/colleges.functions";
 
 export const Route = createFileRoute("/colleges/$college")({
   loader: async ({ params }) => {
-    const staticCollege = collegeMap[params.college as CollegeSlug];
-    if (!staticCollege) throw notFound();
+    const dbCollege = await getCollegeBySlug({ data: params.college });
+    if (!dbCollege) throw notFound();
 
-    // Query Supabase for dynamic updates (name, logo, website_url, etc.)
-    const { data: dbCollege } = await supabase
-      .from("colleges")
-      .select("*")
-      .eq("slug", params.college)
-      .maybeSingle();
-
-    return {
-      college: {
-        ...staticCollege,
-        name: dbCollege?.name || staticCollege.name,
-        logo: dbCollege?.logo_url || staticCollege.logo,
+    const college = {
+      id: dbCollege.slug as any,
+      name: dbCollege.name,
+      shortCode: dbCollege.metadata?.shortCode ?? dbCollege.code,
+      tagline: dbCollege.metadata?.tagline ?? '',
+      logo: dbCollege.logo_url ?? '',
+      route: `/colleges/${dbCollege.slug}`,
+      hero: {
+        kicker: dbCollege.metadata?.hero?.kicker ?? '',
+        subhead: dbCollege.metadata?.hero?.subhead ?? '',
       },
+      stats: null,
+      whyChoose: null,
+      recruiters: null,
     };
+
+    return { college };
   },
   head: ({ loaderData }) => {
     if (!loaderData) {
