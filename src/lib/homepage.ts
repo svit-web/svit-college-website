@@ -5,6 +5,7 @@ import {
   getLatestEvents,
   getRecruiterLogos,
 } from "./homepage.functions";
+import { getAllProgrammes } from "./programmes.functions";
 
 export type HomepageItem = Awaited<ReturnType<typeof getGlobalHomepageItems>>[number];
 export type CollegeRow = Awaited<ReturnType<typeof getCollegesGrid>>[number];
@@ -32,6 +33,12 @@ export const recruitersQuery = queryOptions({
 export const eventsQuery = queryOptions({
   queryKey: ["events", "latest"],
   queryFn: () => getLatestEvents(),
+  staleTime: 60_000,
+});
+
+export const programmesQuery = queryOptions({
+  queryKey: ["programmes"],
+  queryFn: () => getAllProgrammes(),
   staleTime: 60_000,
 });
 

@@ -18,8 +18,6 @@ import { HeroCardSlider } from "@/components/site/HeroCardSlider";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { courses, events as staticEvents, recruiters as staticRecruiters, stats as staticStats, whyChoose as staticWhy } from "@/data/site";
-import { heroHighlights, type HeroHighlight } from "@/data/heroHighlights";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 import {
   byType,
@@ -27,6 +25,7 @@ import {
   eventsQuery,
   homepageItemsQuery,
   promoBySlot,
+  programmesQuery,
   recruitersQuery,
   type HomepageItem,
 } from "@/lib/homepage";
@@ -41,6 +40,7 @@ export const Route = createFileRoute("/")({
     void context.queryClient.prefetchQuery(collegesQuery);
     void context.queryClient.prefetchQuery(recruitersQuery);
     void context.queryClient.prefetchQuery(eventsQuery);
+    void context.queryClient.prefetchQuery(programmesQuery);
   },
   component: Home,
 });
@@ -86,21 +86,16 @@ function Hero() {
   const secondaryLabel = hero?.secondary_link_label ?? "Explore Courses";
   const secondaryHref = hero?.secondary_link_href ?? "/courses";
 
-  const chips =
-    quickLinks.length > 0
-      ? quickLinks.map((q) => ({ label: q.title, href: q.link_href ?? "#" }))
-      : courses.slice(0, 7).map((c) => ({ label: c.name, href: `/courses/${c.slug}` }));
+  const chips = quickLinks.map((q) => ({ label: q.title, href: q.link_href ?? "#" }));
 
-  const highlights: HeroHighlight[] =
-    highlightCards.length > 0
-      ? highlightCards.map((h) => ({
-          id: h.id,
-          image: h.image_url ?? "",
-          eyebrow: h.eyebrow ?? undefined,
-          title: h.title,
-          subtitle: h.subtitle ?? undefined,
-        }))
-      : heroHighlights;
+  const highlights =
+    highlightCards.map((h) => ({
+      id: h.id,
+      image: h.image_url ?? "",
+      eyebrow: h.eyebrow ?? undefined,
+      title: h.title,
+      subtitle: h.subtitle ?? undefined,
+    }));
 
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
@@ -160,10 +155,7 @@ function Hero() {
 function StatsStrip() {
   const items = useHomepageItems();
   const stats = byType(items, "stat");
-  const rows =
-    stats.length > 0
-      ? stats.map((s) => ({ value: s.title, label: s.subtitle ?? "" }))
-      : staticStats;
+  const rows = stats.map((s) => ({ value: s.title, label: s.subtitle ?? "" }));
   return (
     <section className="bg-navy text-white">
       <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
@@ -247,10 +239,7 @@ function HomeCarouselSection() {
 function WhySection() {
   const items = useHomepageItems();
   const cards = byType(items, "why_choose");
-  const rows =
-    cards.length > 0
-      ? cards.map((c) => ({ title: c.title, desc: c.body ?? "", icon: c.icon_name ?? "BadgeCheck" }))
-      : staticWhy;
+  const rows = cards.map((c) => ({ title: c.title, desc: c.body ?? "", icon: c.icon_name ?? "BadgeCheck" }));
   return (
     <section className="bg-secondary/50 py-20">
       <div className="container-page">
@@ -284,10 +273,7 @@ function WhySection() {
 function TrustBand() {
   const items = useHomepageItems();
   const badges = byType(items, "trust_badge");
-  const labels =
-    badges.length > 0
-      ? badges.map((b) => b.title)
-      : ["AICTE Approved", "NAAC Accredited", "5000+ Students", "15+ Acre Campus"];
+  const labels = badges.map((b) => b.title);
   return (
     <section className="container-page py-14">
       <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-white p-8 md:grid-cols-4">
@@ -313,21 +299,15 @@ function EventsAndEnquiry() {
   const { data: eventsData } = useQuery(eventsQuery);
   const { data: recruitersData } = useQuery(recruitersQuery);
 
-  const eventRows =
-    eventsData && eventsData.length > 0
-      ? eventsData.map((e) => ({
-          title: e.title,
-          tag: e.tag ?? "News",
-          date: e.start_date
-            ? new Date(e.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
-            : "",
-        }))
-      : staticEvents.map((e) => ({ title: e.title, tag: e.tag, date: e.date }));
+  const eventRows = (eventsData ?? []).map((e) => ({
+    title: e.title,
+    tag: e.tag ?? "News",
+    date: e.start_date
+      ? new Date(e.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
+      : "",
+  }));
 
-  const recruiterNames =
-    recruitersData && recruitersData.length > 0
-      ? recruitersData.map((r) => r.company_name)
-      : staticRecruiters;
+  const recruiterNames = (recruitersData ?? []).map((r) => r.company_name);
 
   const admissions = promoBySlot(items, "home_admissions");
 
@@ -377,6 +357,7 @@ function EventsAndEnquiry() {
 }
 
 function EnquiryForm() {
+  const { data: programmes } = useQuery(programmesQuery);
   const [sent, setSent] = useState(false);
   return (
     <form
@@ -398,7 +379,7 @@ function EnquiryForm() {
           <input required placeholder="Mobile" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           <select className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm">
             <option>Interested Programme</option>
-            {courses.map((c) => <option key={c.slug}>{c.name}</option>)}
+            {(programmes ?? []).map((c) => <option key={c.code}>{c.name}</option>)}
           </select>
           <button className="w-full rounded-md bg-navy px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light transition-colors">
             Submit Enquiry
