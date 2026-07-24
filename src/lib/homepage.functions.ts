@@ -64,6 +64,21 @@ export const getRecruiterLogos = createServerFn({ method: "GET" }).handler(
   },
 );
 
+export const getJobListings = createServerFn({ method: "GET" }).handler(
+  async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from("homepage_items")
+      .select("id, title, subtitle, body")
+      .eq("item_type", "job")
+      .eq("is_active", true)
+      .eq("status", "published")
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  },
+);
+
 export const getLatestEvents = createServerFn({ method: "GET" }).handler(
   async () => {
     const supabase = serverClient();

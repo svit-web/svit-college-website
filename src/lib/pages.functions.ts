@@ -1,6 +1,29 @@
 // Server functions for CMS pages and contact info from Supabase
 import { createServerFn } from '@tanstack/react-start';
+import { createClient } from '@supabase/supabase-js';
+import type { Database } from '@/integrations/supabase/types';
 import { supabase } from '@/integrations/supabase/client';
+
+function serverClient() {
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient<Database>(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        if (
+          (key.startsWith('sb_publishable_') || key.startsWith('sb_secret_')) &&
+          headers.get('Authorization') === `Bearer ${key}`
+        ) {
+          headers.delete('Authorization');
+        }
+        headers.set('apikey', key);
+        return fetch(input, { ...init, headers });
+      },
+    },
+  });
+}
 
 export interface AboutPageData {
   hero: { accent: string; title: string; introText: string };
@@ -93,6 +116,50 @@ export const getAboutPage = createServerFn({ method: 'GET' })
     if (error) throw error;
 
     return data?.metadata as AboutPageData | null;
+  });
+
+export interface AlumniPageData {
+  kpis: { v: string; l: string }[];
+}
+
+export interface Testimonial {
+  id: string;
+  author_name: string;
+  author_role: string;
+  company_or_institution: string | null;
+  quote: string;
+  avatar_url: string | null;
+}
+
+/**
+ * Fetch alumni page metadata (KPIs etc.) from the pages table
+ */
+export const getAlumniPage = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from('pages')
+      .select('metadata')
+      .eq('slug', 'alumni')
+      .eq('status', 'published')
+      .maybeSingle();
+    if (error) throw error;
+    return data?.metadata as AlumniPageData | null;
+  });
+
+/**
+ * Fetch all published testimonials
+ */
+export const getAllTestimonials = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const supabase = serverClient();
+    const { data, error } = await supabase
+      .from('testimonials')
+      .select('id, author_name, author_role, company_or_institution, quote, avatar_url')
+      .eq('status', 'published')
+      .is('deleted_at', null);
+    if (error) throw error;
+    return (data ?? []) as Testimonial[];
   });
 
 /**
