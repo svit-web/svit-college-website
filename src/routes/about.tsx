@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { CTABanner } from "@/components/site/CTABanner";
-import { aboutPageContent as c } from "@/data/aboutPage"; // Still needed for history, leadership, facilities, etc.
 import { getAllCommittees } from "@/lib/committees.functions";
 import { getAllAccreditations } from "@/lib/accreditations.functions";
+import { getAboutPage } from "@/lib/pages.functions";
 import { ImageIcon } from "lucide-react";
 
 import {
@@ -42,11 +42,12 @@ export const Route = createFileRoute("/about")({
     ],
   }),
   loader: async () => {
-    const [committees, accreditations] = await Promise.all([
+    const [aboutPage, committees, accreditations] = await Promise.all([
+      getAboutPage(),
       getAllCommittees(),
       getAllAccreditations(),
     ]);
-    return { committees, accreditations };
+    return { aboutPage, committees, accreditations };
   },
   component: AboutPage,
 });
@@ -88,7 +89,7 @@ const sectionLinks = [
 ];
 
 function AboutPage() {
-  const { committees, accreditations } = Route.useLoaderData();
+  const { aboutPage: c, committees, accreditations } = Route.useLoaderData();
 
   return (
     <>
@@ -99,13 +100,13 @@ function AboutPage() {
             {/* Brief about (left) */}
             <div className="min-w-0">
               <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-                {c.hero.accent}
+                {c?.hero?.accent}
               </div>
               <h1 className="mt-3 font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                {c.hero.title}
+                {c?.hero?.title}
               </h1>
               <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed">
-                {c.hero.introText}
+                {c?.hero?.introText}
               </p>
               <div className="mt-8 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wider text-white/70">
                 <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
@@ -177,10 +178,10 @@ function AboutPage() {
         <div className="container-page">
           <SectionHeading eyebrow="Our journey" title="History & Milestones" variant="eyebrow" />
           <p className="mt-6 max-w-4xl text-muted-foreground leading-relaxed">
-            {c.history.introText}
+            {c?.history?.introText}
           </p>
           <ol className="mt-10 space-y-4">
-            {c.history.milestones.map((m, i) => (
+            {(c?.history?.milestones ?? []).map((m, i) => (
               <Reveal key={`${m.year}-${i}`} delay={i * 0.04}>
                 <li className="grid grid-cols-[110px_1fr] gap-4 rounded-xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
                   <div className="font-display text-2xl font-bold text-gold">{m.year}</div>
@@ -189,7 +190,7 @@ function AboutPage() {
               </Reveal>
             ))}
           </ol>
-          {c.history.closingText && (
+          {c?.history?.closingText && (
             <p className="mt-8 max-w-4xl text-muted-foreground leading-relaxed italic">
               {c.history.closingText}
             </p>
@@ -205,7 +206,7 @@ function AboutPage() {
               Vision
             </div>
             <blockquote className="mt-4 font-display text-xl md:text-2xl text-navy leading-snug">
-              “{c.vision.visionText}”
+              "{c?.vision?.visionText}"
             </blockquote>
           </div>
           <div className="rounded-2xl border-2 border-navy/15 bg-white p-8">
@@ -213,7 +214,7 @@ function AboutPage() {
               Mission
             </div>
             <ol className="mt-4 space-y-3">
-              {c.mission.missionPoints.map((p, i) => (
+              {(c?.mission?.missionPoints ?? []).map((p, i) => (
                 <li key={i} className="flex gap-3 text-sm text-muted-foreground leading-relaxed">
                   <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gold/15 text-xs font-bold text-gold">
                     {i + 1}
@@ -233,7 +234,7 @@ function AboutPage() {
             Core Values
           </div>
           <div className="mt-5 flex flex-wrap justify-center gap-3">
-            {c.coreValues.map((v) => (
+            {(c?.coreValues ?? []).map((v) => (
               <span
                 key={v}
                 className="rounded-full border border-white/25 bg-white/5 px-5 py-2 text-sm font-medium tracking-wide"
@@ -248,7 +249,7 @@ function AboutPage() {
       {/* 7. Leadership */}
       <SectionShell id="leadership">
         <SectionHeading eyebrow="Guiding SVIT" title="Leadership" variant="eyebrow" />
-        <p className="mt-4 max-w-3xl text-muted-foreground">{c.leadership.intro}</p>
+        <p className="mt-4 max-w-3xl text-muted-foreground">{c?.leadership?.intro}</p>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {/* Chairman */}
@@ -257,14 +258,14 @@ function AboutPage() {
               <Quote className="h-4 w-4" /> Chairman&rsquo;s Message
             </div>
             <blockquote className="text-navy leading-relaxed italic">
-              “{c.leadership.chairman.quote}”
+              "{c?.leadership?.chairman?.quote}"
             </blockquote>
             <div className="mt-4 text-sm font-semibold text-navy">
-              {c.leadership.chairman.name}
+              {c?.leadership?.chairman?.name}
             </div>
-            <div className="text-xs text-muted-foreground">{c.leadership.chairman.title}</div>
+            <div className="text-xs text-muted-foreground">{c?.leadership?.chairman?.title}</div>
 
-            {c.leadership.chairman.strategicPlanText && (
+            {c?.leadership?.chairman?.strategicPlanText && (
               <div className="mt-6 border-t border-border pt-6">
                 <div className="text-xs font-semibold uppercase tracking-wider text-navy">
                   Strategic Plan
@@ -275,7 +276,7 @@ function AboutPage() {
               </div>
             )}
 
-            {c.leadership.chairman.corePrinciples &&
+            {c?.leadership?.chairman?.corePrinciples &&
               c.leadership.chairman.corePrinciples.length > 0 && (
                 <div className="mt-6">
                   <div className="text-xs font-semibold uppercase tracking-wider text-navy">
@@ -299,13 +300,13 @@ function AboutPage() {
               <Quote className="h-4 w-4" /> Principal&rsquo;s Message
             </div>
             <blockquote className="text-navy leading-relaxed italic">
-              “{c.leadership.principal.quote}”
+              "{c?.leadership?.principal?.quote}"
             </blockquote>
             <div className="mt-4 text-sm font-semibold text-navy">
-              {c.leadership.principal.name}
+              {c?.leadership?.principal?.name}
             </div>
-            <div className="text-xs text-muted-foreground">{c.leadership.principal.title}</div>
-            {c.leadership.principal.bodyText && (
+            <div className="text-xs text-muted-foreground">{c?.leadership?.principal?.title}</div>
+            {c?.leadership?.principal?.bodyText && (
               <p className="mt-6 border-t border-border pt-6 text-sm text-muted-foreground leading-relaxed">
                 {c.leadership.principal.bodyText}
               </p>
@@ -328,7 +329,7 @@ function AboutPage() {
                 </tr>
               </thead>
               <tbody>
-                {c.leadership.boardOfManagement.map((b) => (
+                {(c?.leadership?.boardOfManagement ?? []).map((b) => (
                   <tr key={b.srNo} className="border-t border-border">
                     <td className="px-4 py-3 text-muted-foreground">{b.srNo}</td>
                     <td className="px-4 py-3 font-medium text-navy">{b.name}</td>
@@ -394,10 +395,10 @@ function AboutPage() {
                 Academic Regulations (GTU)
               </div>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {c.accreditation.academicRegulationsText}
+                {c?.accreditation?.academicRegulationsText}
               </p>
               <ul className="mt-4 space-y-2">
-                {c.accreditation.regulationPoints.map((p, i) => (
+                {(c?.accreditation?.regulationPoints ?? []).map((p, i) => (
                   <li key={i} className="flex gap-2 text-sm text-navy">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                     {p}
@@ -410,10 +411,10 @@ function AboutPage() {
                 Mandatory Disclosure &amp; Code of Conduct
               </div>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {c.accreditation.mandatoryDisclosureText}
+                {c?.accreditation?.mandatoryDisclosureText}
               </p>
               <ul className="mt-4 space-y-2">
-                {c.accreditation.codeOfConductPoints.map((p, i) => (
+                {(c?.accreditation?.codeOfConductPoints ?? []).map((p, i) => (
                   <li key={i} className="flex gap-2 text-sm text-navy">
                     <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-crimson" />
                     {p}
@@ -429,7 +430,7 @@ function AboutPage() {
               Related Documents
             </h3>
             <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {c.accreditation.relatedDocuments.map((d) => (
+              {(c?.accreditation?.relatedDocuments ?? []).map((d) => (
                 <li key={d.label}>
                   <a
                     href={d.fileUrl}
@@ -496,7 +497,7 @@ function AboutPage() {
       <section id="facilities" className="bg-secondary/50 py-16 md:py-20">
         <div className="container-page">
           <SectionHeading eyebrow="Life on campus" title="Campus Facilities" variant="eyebrow" />
-          <p className="mt-4 max-w-3xl text-muted-foreground">{c.facilities.intro}</p>
+          <p className="mt-4 max-w-3xl text-muted-foreground">{c?.facilities?.intro}</p>
 
           {/* Library */}
           <div className="mt-10 rounded-2xl border-2 border-navy/15 bg-white p-6">
@@ -504,10 +505,10 @@ function AboutPage() {
               <BookOpen className="h-5 w-5 text-gold" /> Library
             </h3>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              {c.facilities.library.text}
+              {c?.facilities?.library?.text}
             </p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {c.facilities.library.stats.map((s) => (
+              {(c?.facilities?.library?.stats ?? []).map((s) => (
                 <div key={s.label} className="rounded-lg border border-border bg-secondary/40 p-4">
                   <div className="font-display text-xl font-bold text-navy">{s.value}</div>
                   <div className="mt-1 text-xs text-muted-foreground">{s.label}</div>
@@ -530,7 +531,7 @@ function AboutPage() {
                 </tr>
               </thead>
               <tbody>
-                {c.facilities.scholarships.map((s) => (
+                {(c?.facilities?.scholarships ?? []).map((s) => (
                   <tr key={s.name} className="border-t border-border align-top">
                     <td className="px-4 py-3 font-medium text-navy">{s.name}</td>
                     <td className="px-4 py-3 text-navy">{s.amount}</td>
@@ -547,10 +548,10 @@ function AboutPage() {
               <Trophy className="h-5 w-5 text-gold" /> Sports &amp; Recreation
             </h3>
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-              {c.facilities.sports.text}
+              {c?.facilities?.sports?.text}
             </p>
             <div className="mt-4 space-y-3">
-              {c.facilities.sports.activities.map((a) => (
+              {(c?.facilities?.sports?.activities ?? []).map((a) => (
                 <div key={a.label} className="rounded-lg border border-border p-4">
                   <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                     {a.label}
@@ -563,7 +564,7 @@ function AboutPage() {
 
           {/* NSS / NCC */}
           <div className="mt-6 grid gap-6 md:grid-cols-2">
-            {c.facilities.nssNcc.map((n) => (
+            {(c?.facilities?.nssNcc ?? []).map((n) => (
               <div key={n.name} className="rounded-2xl border-2 border-navy/15 bg-white p-6">
                 <h3 className="font-display text-lg font-bold text-navy">{n.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
@@ -580,7 +581,7 @@ function AboutPage() {
                 <Users className="h-5 w-5 text-gold" /> Hostels
               </h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {c.facilities.hostelsTransport.hostelText}
+                {c?.facilities?.hostelsTransport?.hostelText}
               </p>
             </div>
             <div className="rounded-2xl border-2 border-navy/15 bg-white p-6">
@@ -588,14 +589,14 @@ function AboutPage() {
                 <Bus className="h-5 w-5 text-gold" /> Transport
               </h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {c.facilities.hostelsTransport.transportText}
+                {c?.facilities?.hostelsTransport?.transportText}
               </p>
             </div>
           </div>
 
           {/* IT & Medical */}
           <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {c.facilities.itMedical.map((it) => (
+            {(c?.facilities?.itMedical ?? []).map((it) => (
               <div key={it.label} className="rounded-2xl border-2 border-navy/15 bg-white p-5">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
                   <Wifi className="h-4 w-4" /> {it.label}
@@ -612,10 +613,10 @@ function AboutPage() {
       {/* 11. Media */}
       <SectionShell id="media">
         <SectionHeading eyebrow="Stay connected" title="SVIT Media" variant="eyebrow" />
-        <p className="mt-4 max-w-3xl text-muted-foreground">{c.media.intro}</p>
+        <p className="mt-4 max-w-3xl text-muted-foreground">{c?.media?.intro}</p>
 
         <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {c.media.publications.map((p) => (
+          {(c?.media?.publications ?? []).map((p) => (
             <div key={p.name} className="rounded-2xl border-2 border-navy/15 bg-white p-6">
               <h3 className="font-display text-lg font-bold text-navy">{p.name}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{p.description}</p>
@@ -628,7 +629,7 @@ function AboutPage() {
             Follow us
           </div>
           <div className="mt-4 flex flex-wrap gap-3">
-            {c.media.socialMedia.map((s) => {
+            {(c?.media?.socialMedia ?? []).map((s) => {
               const Icon = socialIcons[s.platform] ?? ExternalLink;
               return (
                 <a
@@ -655,10 +656,10 @@ function AboutPage() {
           <h2 className="mt-2 font-display text-3xl md:text-4xl font-bold">Contact Us</h2>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: MapPin, label: "Address", value: c.contact.address, href: undefined },
-              { icon: Phone, label: "Phone", value: c.contact.phone, href: `tel:${c.contact.phone.replace(/\s+/g, "")}` },
-              { icon: Mail, label: "Email", value: c.contact.email, href: `mailto:${c.contact.email}` },
-              { icon: Globe, label: "Website", value: c.contact.website.replace(/^https?:\/\//, ""), href: c.contact.website },
+              { icon: MapPin, label: "Address", value: c?.contact?.address, href: undefined },
+              { icon: Phone, label: "Phone", value: c?.contact?.phone, href: c?.contact?.phone ? `tel:${c.contact.phone.replace(/\s+/g, "")}` : undefined },
+              { icon: Mail, label: "Email", value: c?.contact?.email, href: c?.contact?.email ? `mailto:${c.contact.email}` : undefined },
+              { icon: Globe, label: "Website", value: c?.contact?.website ? c.contact.website.replace(/^https?:\/\//, "") : undefined, href: c?.contact?.website },
             ].map((cc) => (
               <div key={cc.label} className="rounded-2xl border border-white/15 bg-white/5 p-5">
                 <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-gold">
@@ -686,4 +687,3 @@ function AboutPage() {
     </>
   );
 }
-

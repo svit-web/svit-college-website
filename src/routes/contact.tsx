@@ -1,16 +1,21 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
-import { site } from "@/data/site";
+import { getContactInfo } from "@/lib/pages.functions";
 import { CheckCircle2, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({ meta: [{ title: "Contact — SVIT Vasad" }] }),
+  loader: async () => {
+    const contact = await getContactInfo();
+    return { contact };
+  },
   component: Contact,
 });
 
 function Contact() {
+  const { contact } = Route.useLoaderData();
   const [sent, setSent] = useState(false);
   return (
     <>
@@ -19,9 +24,9 @@ function Contact() {
       <section className="container-page py-20">
         <div className="grid gap-6 md:grid-cols-3">
           {[
-            { icon: Phone, t: "Call", v: site.phone, link: `tel:${site.phone.replace(/\s/g, "")}` },
-            { icon: Mail, t: "Email", v: site.email, link: `mailto:${site.email}` },
-            { icon: MapPin, t: "Visit", v: site.address },
+            { icon: Phone, t: "Call", v: contact?.phone, link: contact?.phone ? `tel:${contact.phone.replace(/\s/g, "")}` : undefined },
+            { icon: Mail, t: "Email", v: contact?.email, link: contact?.email ? `mailto:${contact.email}` : undefined },
+            { icon: MapPin, t: "Visit", v: contact?.address },
           ].map((c) => (
             <div key={c.t} className="card-lift rounded-2xl border border-border bg-white p-6">
               <div className="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy"><c.icon className="h-5 w-5" /></div>
@@ -55,9 +60,9 @@ function Contact() {
           <aside className="rounded-2xl bg-secondary/50 p-8">
             <h3 className="font-display text-xl font-bold text-navy">Office Hours</h3>
             <ul className="mt-4 space-y-2 text-sm">
-              <li className="flex justify-between"><span>Mon – Fri</span><span className="font-semibold">9:00 – 17:00</span></li>
-              <li className="flex justify-between"><span>Saturday</span><span className="font-semibold">9:00 – 13:00</span></li>
-              <li className="flex justify-between text-muted-foreground"><span>Sunday</span><span>Closed</span></li>
+              <li className="flex justify-between"><span>Mon – Fri</span><span className="font-semibold">{contact?.office_hours?.weekdays ?? "9:00 – 17:00"}</span></li>
+              <li className="flex justify-between"><span>Saturday</span><span className="font-semibold">{contact?.office_hours?.saturday ?? "9:00 – 13:00"}</span></li>
+              <li className="flex justify-between text-muted-foreground"><span>Sunday</span><span>{contact?.office_hours?.sunday ?? "Closed"}</span></li>
             </ul>
           </aside>
         </div>
