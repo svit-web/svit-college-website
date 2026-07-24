@@ -122,6 +122,7 @@ export const Route = createFileRoute("/placement/$college")({
 });
 
 function PlacementRouteComponent() {
-  const { content } = Route.useLoaderData();
-  return <PlacementPage content={content} />;
+  const data = Route.useLoaderData() as { content: PlacementPageContent } | undefined;
+  if (!data?.content) return <PlacementPageNotFound />;
+  return <PlacementPage content={data.content} />;
 }

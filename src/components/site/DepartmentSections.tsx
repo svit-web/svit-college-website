@@ -6,8 +6,8 @@ import { Reveal } from "./Reveal";
 import type { Department } from "@/lib/departments.functions";
 
 type StaffMember = { id: string; name: string; designation: string; rankGroup: string; employeeCode: string; qualification?: string | null; experienceYears?: number | null; email?: string | null; phone?: string | null; photoUrl?: string | null; isHod?: boolean };
-type ActivityType = "seminar" | "workshop" | "expert_lecture" | "industrial_visit" | "mou" | "other";
-type DeptActivity = { id: string; title: string; type: ActivityType; date: string; description?: string | null; speaker?: string | null; organization?: string | null; imageUrl?: string | null };
+type ActivityType = "seminar" | "workshop" | "expert_lecture" | "industrial_visit" | "mou" | "other" | "sttp_fdp" | "seminar_workshop" | "industry_visit";
+type DeptActivity = { id: string; title: string; type: ActivityType; date: string; startDate: string; endDate?: string | null; description?: string | null; speaker?: string | null; organization?: string | null; company?: string | null; notes?: string | null; documentUrl?: string | null; imageUrl?: string | null };
 
 const getProgramsForDepartment = (_id: string) => [] as { id: string; name: string }[];
 const getProgramDetail = (_id: string) => ({ degreeLevel: "B.E.", yearStarted: null as string | null, intake: null as number | null, durationYears: 4 });
@@ -18,6 +18,7 @@ const getDepartmentContent = (_id: string) => ({
   mission: null as string | null,
   activities: [] as DeptActivity[],
   achievements: [] as { id: string; title: string; year: string; description?: string | null; category?: string | null }[],
+  clubs: [] as { id: string; name: string; description?: string | null }[],
 });
 import {
   GraduationCap,
@@ -264,7 +265,7 @@ export function DeptStaffView({ department }: Props) {
 // -------- Achievements & Clubs --------
 export function DeptAchievementsView({ department }: Props) {
   const { achievements, clubs } = getDepartmentContent(department.static_id);
-  const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
+  const sorted = [...achievements].sort((a, b) => (a.year < b.year ? 1 : -1));
   return (
     <div>
       <SectionHeading eyebrow="Achievements & Clubs" title="Milestones and Student Groups" />
@@ -282,7 +283,7 @@ export function DeptAchievementsView({ department }: Props) {
                     <ImagePlaceholder className="h-28 w-full shrink-0 sm:h-24 sm:w-32" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 text-xs font-semibold text-crimson">
-                        <Calendar className="h-3.5 w-3.5" /> {formatDate(a.date)}
+                        <Calendar className="h-3.5 w-3.5" /> {a.year}
                       </div>
                       <h4 className="mt-1 font-display text-base font-bold text-navy">{a.title}</h4>
                       <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{a.description}</p>
@@ -361,6 +362,7 @@ export function DeptActivitiesView({ department }: Props) {
   const items = activities
     .filter((a) => a.type === tab)
     .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
+
 
   return (
     <div>
