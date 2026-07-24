@@ -66,8 +66,8 @@ function formatDate(iso: string) {
 }
 
 const DEGREE_LABEL: Record<string, string> = {
-  undergraduate: "B.E. / B.Tech / UG",
-  graduate: "M.E. / M.Tech / PG",
+  undergraduate: "UG",
+  graduate: "PG",
   certificate: "Diploma",
 };
 
@@ -137,25 +137,50 @@ export function DeptAboutView({ department, courses = [] }: Props) {
         </div>
       </section>
 
-      {courses.length > 0 && (
-        <section>
-          <SectionHeading eyebrow="Programs" title="Programs Offered" />
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {courses.map((c, i) => (
-              <Reveal key={c.id} delay={i * 0.04}>
-                <div className="flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6">
-                  <span className="w-fit rounded-full bg-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+      <section>
+        <SectionHeading eyebrow="Programs" title="Programs Offered" />
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          {courses.map((c, i) => (
+            <Reveal key={c.id} delay={i * 0.04}>
+              <Link
+                to="/programs/$program"
+                params={{ program: c.id }}
+                className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                     {DEGREE_LABEL[c.degree_level] ?? c.degree_level}
                   </span>
-                  <h3 className="mt-3 font-display text-base font-bold text-navy leading-snug">
-                    {c.metadata.shortName ?? c.name}
-                  </h3>
+                  {c.metadata.yearStarted && (
+                    <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                      Since {c.metadata.yearStarted}
+                    </span>
+                  )}
                 </div>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
+                <h3 className="mt-3 font-display text-lg font-bold text-navy leading-snug">
+                  {c.metadata.shortName ?? c.name}
+                </h3>
+                <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <dt className="text-muted-foreground">Intake</dt>
+                    <dd className="font-bold text-navy">{c.metadata.intake ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-muted-foreground">Duration</dt>
+                    <dd className="font-bold text-navy">{c.metadata.durationYears ? `${c.metadata.durationYears} yrs` : "—"}</dd>
+                  </div>
+                </dl>
+                <div className="mt-4 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
+                  View program →
+                </div>
+              </Link>
+            </Reveal>
+          ))}
+          {courses.length === 0 && (
+            <p className="text-sm text-muted-foreground col-span-full">Program details will be published soon.</p>
+          )}
+        </div>
+      </section>
     </div>
   );
 }

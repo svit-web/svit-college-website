@@ -155,7 +155,7 @@ export interface DeptCourse {
   name: string;
   code: string;
   degree_level: 'undergraduate' | 'graduate' | 'certificate';
-  metadata: { shortName?: string; [key: string]: any };
+  metadata: { shortName?: string; yearStarted?: number; intake?: number; durationYears?: number; [key: string]: any };
 }
 
 /**

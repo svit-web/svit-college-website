@@ -7,7 +7,7 @@ interface CampusItem {
   subtitle: string;
   accent: string;
   description: string;
-  highlights: string[];
+  highlights: { title: string; description: string }[];
   image: string | null;
 }
 

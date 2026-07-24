@@ -43,7 +43,7 @@ function CollegesIndex() {
                 <div className="flex items-start gap-5">
                   <CollegeLogo
                     shortCode={c.metadata?.shortCode ?? c.code}
-                    src={c.logo_url ?? undefined}
+                    src={c.logo_url ?? ""}
                     className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
                   />
                   <div className="min-w-0">

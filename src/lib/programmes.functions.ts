@@ -57,7 +57,7 @@ export const getAllProgrammes = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as Programme[];
+    return data as unknown as Programme[];
   });
 
 /**
@@ -78,7 +78,7 @@ export const getProgrammeBySlug = createServerFn({ method: 'GET' })
 
     if (error) throw error;
 
-    return data as Programme | null;
+    return data as unknown as Programme | null;
   });
 
 /**

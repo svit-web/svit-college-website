@@ -18,6 +18,7 @@ export interface Facility {
     subtitle?: string;
     accent?: string;
     description?: string;
+    category?: string;
     highlights?: Array<{
       title: string;
       description: string;

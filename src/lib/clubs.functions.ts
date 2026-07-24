@@ -40,7 +40,7 @@ export const getAllStudentClubs = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as StudentClub[];
+    return data as unknown as StudentClub[];
   });
 
 /**
@@ -52,7 +52,7 @@ export const getFeaturedStudentClubs = createServerFn({ method: 'GET' })
       .from('student_clubs')
       .select('*')
       .eq('status', 'published')
-      .eq('featured', true)
+      .eq('featured' as any, true)
       .order('name', { ascending: true });
 
     if (error) {
@@ -60,7 +60,7 @@ export const getFeaturedStudentClubs = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as StudentClub[];
+    return data as unknown as StudentClub[];
   });
 
 /**
@@ -79,5 +79,5 @@ export const getStudentClubBySlug = createServerFn({ method: 'GET' })
 
     if (error) throw error;
 
-    return data as StudentClub | null;
+    return data as unknown as StudentClub | null;
   });

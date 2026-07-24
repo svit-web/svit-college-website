@@ -18,6 +18,11 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
+export interface CollegeDept {
+  id: string; name: string; slug: string; code: string;
+  metadata: { degree_type?: string | null; [key: string]: any };
+}
+
 export interface College {
   id: string; name: string; shortCode: string; tagline: string; logo: string;
   route: string;
@@ -25,7 +30,35 @@ export interface College {
   stats: { value: string; label: string }[] | null;
   whyChoose: { title: string; desc: string; icon: string }[] | null;
   recruiters: string[];
-  departments: { id: string; name: string; slug: string; code: string }[];
+  departments: CollegeDept[];
+}
+
+// Ordered degree-type groups for SVIT (and any college that uses degree_type grouping)
+const DEGREE_TYPE_ORDER = ["BE", "ME", "Diploma", "MBA", "MCA"];
+
+function getCollegeProgramView(departments: CollegeDept[]) {
+  const hasGroups = departments.some((d) => d.metadata?.degree_type);
+  if (!hasGroups) {
+    // Flat colleges (SVICA, SVION, COA): each dept is its own group
+    return departments.map((d) => ({ group: d.name, depts: [d] }));
+  }
+  // Grouped: collect unique degree types in order
+  const groupMap = new Map<string, CollegeDept[]>();
+  for (const d of departments) {
+    const key = d.metadata?.degree_type ?? "Other";
+    if (!groupMap.has(key)) groupMap.set(key, []);
+    groupMap.get(key)!.push(d);
+  }
+  // Sort groups by defined order, then alphabetically for any unknowns
+  const orderedKeys = [...groupMap.keys()].sort((a, b) => {
+    const ia = DEGREE_TYPE_ORDER.indexOf(a);
+    const ib = DEGREE_TYPE_ORDER.indexOf(b);
+    if (ia !== -1 && ib !== -1) return ia - ib;
+    if (ia !== -1) return -1;
+    if (ib !== -1) return 1;
+    return a.localeCompare(b);
+  });
+  return orderedKeys.map((key) => ({ group: key, depts: groupMap.get(key)! }));
 }
 const events: { title: string; tag: string; date: string }[] = [];
 
@@ -129,40 +162,52 @@ function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
 }
 
 function ProgramsSection({ college }: { college: College }) {
-  const depts = college.departments;
+  const view = getCollegeProgramView(college.departments);
+  const showGroupHeading = view.length > 1 && college.departments.some((d) => d.metadata?.degree_type);
   return (
     <section id="programmes" className="container-page py-20">
       <SectionHeading
         center
         eyebrow="What We Offer"
         title={`Programmes at ${college.shortCode}`}
-        subtitle={`Departments and programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
+        subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {depts.map((dept, i) => (
-          <Reveal key={dept.id} delay={i * 0.05}>
-            <Link
-              to="/departments/$dept"
-              params={{ dept: dept.slug }}
-              className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
-            >
-              <div
-                aria-hidden
-                className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-              >
-                {initials(dept.name)}
-              </div>
-              <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                {dept.code}
-              </div>
-              <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
-                {dept.name}
-              </h5>
-              <div className="mt-3 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
-                View department →
-              </div>
-            </Link>
-          </Reveal>
+      <div className="mt-12 space-y-14">
+        {view.map((group) => (
+          <div key={group.group}>
+            {showGroupHeading && (
+              <h3 className="mb-6 font-display text-2xl font-bold text-navy">
+                <span className="accent-underline">{group.group}</span>
+              </h3>
+            )}
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {group.depts.map((dept, i) => (
+                <Reveal key={dept.id} delay={i * 0.05}>
+                  <Link
+                    to="/departments/$dept"
+                    params={{ dept: dept.code }}
+                    className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
+                  >
+                    <div
+                      aria-hidden
+                      className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                    >
+                      {initials(dept.name)}
+                    </div>
+                    <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                      {dept.name}
+                    </div>
+                    <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
+                      {dept.code}
+                    </h5>
+                    <div className="mt-3 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
+                      View department →
+                    </div>
+                  </Link>
+                </Reveal>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </section>

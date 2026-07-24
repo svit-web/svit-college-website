@@ -55,16 +55,16 @@ export const getDepartmentsByCollegeSlug = createServerFn({ method: 'GET' })
       .select('id')
       .eq('slug', slug)
       .maybeSingle();
-    if (cErr || !college) return [] as { id: string; name: string; slug: string; code: string }[];
+    if (cErr || !college) return [] as { id: string; name: string; slug: string; code: string; metadata: any }[];
 
     const { data, error } = await supabase
       .from('departments')
-      .select('id, name, slug, code')
+      .select('id, name, slug, code, metadata')
       .eq('college_id', college.id)
       .eq('status', 'published')
       .order('name');
-    if (error) return [] as { id: string; name: string; slug: string; code: string }[];
-    return data as { id: string; name: string; slug: string; code: string }[];
+    if (error) return [] as { id: string; name: string; slug: string; code: string; metadata: any }[];
+    return data as { id: string; name: string; slug: string; code: string; metadata: any }[];
   });
 
 /**

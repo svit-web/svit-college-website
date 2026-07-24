@@ -5,6 +5,17 @@ import { CollegeLogo } from "./CollegeLogo";
 import { CTABanner } from "./CTABanner";
 import type { Department } from "@/lib/departments.functions";
 import { cn } from "@/lib/utils";
+import svitLogo from "@/assets/svit-logo.jpg.asset.json";
+import svicaLogo from "@/assets/svica-logo.jpg.asset.json";
+import svionLogo from "@/assets/svion-logo.png.asset.json";
+import coaLogo from "@/assets/coa-svit-logo.png.asset.json";
+
+const COLLEGE_MAP: Record<string, { shortCode: string; name: string; route: string; logo: string }> = {
+  svit: { shortCode: "SVIT", name: "Sardar Vallabhbhai Patel Institute of Technology", route: "/colleges/svit", logo: svitLogo.url },
+  svica: { shortCode: "SVICA", name: "Sardar Vallabhbhai Patel Institute of Computer Applications", route: "/colleges/svica", logo: svicaLogo.url },
+  svion: { shortCode: "SVION", name: "Sardar Vallabhbhai Patel Institute of Nursing", route: "/colleges/svion", logo: svionLogo.url },
+  "svit-coa": { shortCode: "COA", name: "College of Architecture", route: "/colleges/svit-coa", logo: coaLogo.url },
+};
 
 interface Props {
   department: Department;
@@ -18,6 +29,7 @@ const NAV = [
 ] as const;
 
 export function DepartmentLayout({ department }: Props) {
+  const college = COLLEGE_MAP[department.college_slug];
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const base = `/departments/${department.code}`;
 
@@ -25,13 +37,21 @@ export function DepartmentLayout({ department }: Props) {
     <>
       <PageHero
         title={department.name}
-        accent="Department"
+        accent={college ? `${college.shortCode} · Department` : "Department"}
         subtitle={`Explore programs, faculty, achievements and industry engagement at the Department of ${department.name}.`}
         crumbs={[
           { label: "Home", to: "/" },
+          ...(college ? [{ label: college.shortCode, to: college.route }] : []),
           { label: department.name },
         ]}
-      />
+      >
+        {college && (
+          <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+            <CollegeLogo shortCode={college.shortCode} src={college.logo} className="h-8 w-8 rounded-full bg-white p-0.5" />
+            <span className="text-xs font-semibold uppercase tracking-widest text-white/90">{college.name}</span>
+          </div>
+        )}
+      </PageHero>
 
       <div className="bg-secondary/30">
         <div className="container-page py-10">
