@@ -3,11 +3,22 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
-import { getProgramsForDepartment } from "@/data/academics";
 import type { Department } from "@/lib/departments.functions";
-import { getProgramDetail } from "@/data/programDetails";
-import { getStaffForDepartment, type StaffMember } from "@/data/staff";
-import { getDepartmentContent, type DeptActivity, type ActivityType } from "@/data/departmentContent";
+
+type StaffMember = { id: string; name: string; designation: string; rankGroup: string; employeeCode: string; qualification?: string | null; experienceYears?: number | null; email?: string | null; phone?: string | null; photoUrl?: string | null; isHod?: boolean };
+type ActivityType = "seminar" | "workshop" | "expert_lecture" | "industrial_visit" | "mou" | "other";
+type DeptActivity = { id: string; title: string; type: ActivityType; date: string; description?: string | null; speaker?: string | null; organization?: string | null; imageUrl?: string | null };
+
+const getProgramsForDepartment = (_id: string) => [] as { id: string; name: string }[];
+const getProgramDetail = (_id: string) => ({ degreeLevel: "B.E.", yearStarted: null as string | null, intake: null as number | null, durationYears: 4 });
+const getStaffForDepartment = (_id: string) => [] as StaffMember[];
+const getDepartmentContent = (_id: string) => ({
+  about: null as string | null,
+  vision: null as string | null,
+  mission: null as string | null,
+  activities: [] as DeptActivity[],
+  achievements: [] as { id: string; title: string; year: string; description?: string | null; category?: string | null }[],
+});
 import {
   GraduationCap,
   Users,

@@ -3,7 +3,6 @@ import { Info, Users, Award, Briefcase } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { CollegeLogo } from "./CollegeLogo";
 import { CTABanner } from "./CTABanner";
-import { collegeMap } from "@/data/colleges";
 import type { Department } from "@/lib/departments.functions";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +18,6 @@ const NAV = [
 ] as const;
 
 export function DepartmentLayout({ department }: Props) {
-  const college = collegeMap[department.college_slug as keyof typeof collegeMap];
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const base = `/departments/${department.code}`;
 
@@ -27,21 +25,13 @@ export function DepartmentLayout({ department }: Props) {
     <>
       <PageHero
         title={department.name}
-        accent={college ? `${college.shortCode} · Department` : "Department"}
+        accent="Department"
         subtitle={`Explore programs, faculty, achievements and industry engagement at the Department of ${department.name}.`}
         crumbs={[
           { label: "Home", to: "/" },
-          ...(college ? [{ label: college.shortCode, to: college.route }] : []),
           { label: department.name },
         ]}
-      >
-        {college && (
-          <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
-            <CollegeLogo shortCode={college.shortCode} src={college.logo} className="h-8 w-8 rounded-full bg-white p-0.5" />
-            <span className="text-xs font-semibold uppercase tracking-widest text-white/90">{college.name}</span>
-          </div>
-        )}
-      </PageHero>
+      />
 
       <div className="bg-secondary/30">
         <div className="container-page py-10">

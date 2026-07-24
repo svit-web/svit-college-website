@@ -18,14 +18,22 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
-import type { College } from "@/data/colleges";
-import {
-  getCollegeProgramView,
-  getDepartmentsForCollege,
-  getProgramsForDepartment,
-  type CollegeProgramView,
-} from "@/data/academics";
-import { events, recruiters, stats, whyChoose } from "@/data/site";
+export interface College {
+  id: string; name: string; shortCode: string; tagline: string; logo: string;
+  route: string;
+  hero: { kicker: string; subhead: string };
+  stats: { value: string; label: string }[] | null;
+  whyChoose: { title: string; desc: string; icon: string }[] | null;
+  recruiters: string[] | null;
+}
+type CollegeProgramView = { departmentName: string; programs: { id: string; name: string }[] };
+const getCollegeProgramView = (_id: string): CollegeProgramView[] => [];
+const getDepartmentsForCollege = (_id: string) => [] as { id: string; name: string }[];
+const getProgramsForDepartment = (_id: string) => [] as { id: string; name: string }[];
+const stats: { value: string; label: string }[] = [];
+const whyChoose: { title: string; desc: string; icon: string }[] = [];
+const events: { title: string; tag: string; date: string }[] = [];
+const recruiters: string[] = [];
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BadgeCheck,

@@ -3,9 +3,27 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
-import { primaryNav, site, topNav } from "@/data/site";
-import { colleges } from "@/data/colleges";
-import { placementDivisions } from "@/data/placement";
+const site = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
+const primaryNav = [
+  { label: "Home", to: "/" },
+  { label: "About Us", to: "/about" },
+  { label: "Colleges", to: "/colleges" },
+  { label: "Campus Life", to: "/campus-life" },
+  { label: "Placement", to: "/placement" },
+  { label: "Contact Us", to: "/contact" },
+] as const;
+const topNav = [
+  { label: "Students", to: "/student-login" },
+  { label: "Parents", to: "/parents" },
+  { label: "Alumni", to: "/alumni" },
+  { label: "Careers", to: "/careers" },
+] as const;
+const placementDivisions = [
+  { slug: "svit", label: "SVIT" },
+  { slug: "svion", label: "SVION" },
+  { slug: "svica", label: "SVICA" },
+  { slug: "coa", label: "COA" },
+];
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllCenters } from "@/lib/centers.functions";
 import { getAllEvents } from "@/lib/events.functions";
@@ -25,15 +43,13 @@ export function Header() {
   const { data: dbColleges } = useQuery(collegesQuery);
 
   const displayColleges = useMemo(() => {
-    if (!dbColleges) return colleges;
-    return colleges.map(staticC => {
-      const dbC = dbColleges.find(d => d.slug === staticC.id);
-      return {
-        ...staticC,
-        name: dbC?.name || staticC.name,
-        logo: dbC?.logo_url || staticC.logo,
-      };
-    });
+    return (dbColleges ?? []).map(c => ({
+      id: c.slug,
+      shortCode: (c as any).metadata?.shortCode ?? c.code,
+      name: c.name,
+      tagline: (c as any).metadata?.tagline ?? "",
+      logo: c.logo_url ?? "",
+    }));
   }, [dbColleges]);
 
   return (

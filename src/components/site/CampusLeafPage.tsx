@@ -1,7 +1,15 @@
 import { ImageIcon } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
-import type { CampusItem } from "@/data/campus-rfe";
+interface CampusItem {
+  slug: string;
+  title: string;
+  subtitle: string;
+  accent: string;
+  description: string;
+  highlights: string[];
+  image: string | null;
+}
 
 export function CampusLeafPage({ item }: { item: CampusItem }) {
   return (

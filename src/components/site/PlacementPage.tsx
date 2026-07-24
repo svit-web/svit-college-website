@@ -4,7 +4,17 @@ import { PageHero } from "./PageHero";
 import { CTABanner } from "./CTABanner";
 import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
-import type { PlacementPageContent } from "@/data/placement";
+interface PlacementPageContent {
+  slug: string;
+  collegeId: string;
+  collegeName: string;
+  shortCode: string;
+  aboutText: string;
+  details: { graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[]; statHighlights: { label: string; value: string }[] };
+  summary: { placedStudents: { studentName: string; companyName: string; photo: string | null }[] };
+  recruiters: { companyName: string; logo: string | null }[];
+  placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
+}
 
 interface Props {
   content: PlacementPageContent;

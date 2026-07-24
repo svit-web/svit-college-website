@@ -1,21 +1,19 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { heroHighlights, type HeroHighlight } from "@/data/heroHighlights";
+export interface HeroHighlight {
+  id: string;
+  image: string;
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+}
 
 interface Props {
   items?: HeroHighlight[];
 }
 
-/**
- * Hero-side photo card slider.
- * - Desktop: shows up to 2 cards side-by-side (active + peek of next).
- * - Mobile/tablet: shows 1 card at a time.
- * - Auto-advances; pauses on hover.
- * - Data-driven via `heroHighlights` (or `items` prop) so a future backend
- *   can populate it without touching this component.
- */
-export function HeroCardSlider({ items = heroHighlights }: Props) {
+export function HeroCardSlider({ items = [] }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = items.length;

@@ -1,9 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Youtube } from "lucide-react";
 import { Logo } from "./Logo";
-import { courses, site } from "@/data/site";
+import { useQuery } from "@tanstack/react-query";
+import { programmesQuery } from "@/lib/homepage";
+
+const site = {
+  fullName: "Sardar Vallabhbhai Institute of Technology",
+  email: "info@svitvasad.ac.in",
+  phone: "+91 2692 274766",
+  address: "Beside GIDC Vasad, Vasad — 388306, Anand, Gujarat, India",
+};
 
 export function Footer() {
+  const { data: programmes } = useQuery(programmesQuery);
   const quick = [
     { label: "About Us", to: "/about" },
     { label: "Admissions", to: "/admissions" },
@@ -45,7 +54,7 @@ export function Footer() {
           </div>
 
           <FooterCol title="Quick Links" links={quick} />
-          <FooterCol title="Courses" links={courses.map((c) => ({ label: c.name, to: `/courses/${c.slug}` }))} />
+          <FooterCol title="Courses" links={(programmes ?? []).map((c) => ({ label: c.name, to: `/courses/${c.code}` }))} />
           <FooterCol title="Important" links={important} />
         </div>
       </div>

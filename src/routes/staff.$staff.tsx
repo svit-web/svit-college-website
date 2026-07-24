@@ -1,26 +1,13 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { PageHero } from "@/components/site/PageHero";
-import { getStaffById } from "@/data/staff";
-import { departments } from "@/data/academics";
-import { collegeMap } from "@/data/colleges";
-import { ArrowLeft } from "lucide-react";
+import { createFileRoute, notFound } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/staff/$staff")({
-  loader: ({ params }) => {
-    const member = getStaffById(params.staff);
-    if (!member) throw notFound();
-    const department = departments.find((d) => d.id === member.departmentId) ?? null;
-    return { member, department };
-  },
-  head: ({ loaderData }) => ({
-    meta: [{ title: loaderData ? `${loaderData.member.name} — Staff Profile` : "Staff" }],
-  }),
+  loader: () => { throw notFound(); },
   notFoundComponent: () => (
     <div className="container-page py-32 text-center">
       <h1 className="font-display text-4xl font-bold text-navy">Staff profile not found</h1>
     </div>
   ),
-  component: StaffProfile,
+  component: () => null,
 });
 
 function initials(name: string) {

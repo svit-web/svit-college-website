@@ -1,7 +1,14 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
 import { getAllPlacementStats, getAllRecruiters } from "@/lib/placement.functions";
-import type { PlacementPageContent, PlacementSlug } from "@/data/placement";
+type PlacementSlug = string;
+interface PlacementPageContent {
+  slug: PlacementSlug; collegeId: string; collegeName: string; shortCode: string; aboutText: string;
+  details: { graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[]; statHighlights: { label: string; value: string }[] };
+  summary: { placedStudents: { studentName: string; companyName: string; photo: string | null }[] };
+  recruiters: { companyName: string; logo: string | null }[];
+  placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
+}
 
 // Map of valid college slugs
 const collegeMapping: Record<string, { code: string; name: string; shortCode: string }> = {
