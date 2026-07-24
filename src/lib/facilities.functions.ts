@@ -74,8 +74,6 @@ export const getFacilityBySlug = createServerFn({ method: 'GET' })
   .validator((slug: string) => slug)
   .handler(async (ctx) => {
     const slug = ctx.data;
-    console.log('[getFacilityBySlug] Handler looking for slug:', slug);
-
     const { data, error } = await supabase
       .from('facilities')
       .select('*')
@@ -83,12 +81,7 @@ export const getFacilityBySlug = createServerFn({ method: 'GET' })
       .eq('status', 'published')
       .maybeSingle();
 
-    console.log('[getFacilityBySlug] Query result:', { data: data?.name || null, error, slug });
-
-    if (error) {
-      console.error('[getFacilityBySlug] Error fetching facility:', error);
-      throw error;
-    }
+    if (error) throw error;
 
     return data as Facility | null;
   });

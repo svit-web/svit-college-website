@@ -48,21 +48,14 @@ export const getCenterBySlug = createServerFn({ method: 'GET' })
   .validator((slug: string) => slug)
   .handler(async (ctx) => {
     const slug = ctx.data;
-    console.log('[getCenterBySlug] Looking for slug:', slug);
-
     const { data, error } = await supabase
       .from('centers')
       .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
-      .maybeSingle(); // Use maybeSingle instead of single to handle 0 rows gracefully
+      .maybeSingle();
 
-    console.log('[getCenterBySlug] Query result:', { found: !!data, error, slug });
-
-    if (error) {
-      console.error('[getCenterBySlug] Error fetching center:', error);
-      throw error;
-    }
+    if (error) throw error;
 
     return data as Center | null;
   });

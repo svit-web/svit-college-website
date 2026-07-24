@@ -3,7 +3,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
-import { getProgramsForDepartment, type Department } from "@/data/academics";
+import { getProgramsForDepartment } from "@/data/academics";
+import type { Department } from "@/lib/departments.functions";
 import { getProgramDetail } from "@/data/programDetails";
 import { getStaffForDepartment, type StaffMember } from "@/data/staff";
 import { getDepartmentContent, type DeptActivity, type ActivityType } from "@/data/departmentContent";
@@ -63,8 +64,8 @@ function formatDate(iso: string) {
 
 // -------- About + Programs --------
 export function DeptAboutView({ department }: Props) {
-  const content = getDepartmentContent(department.id);
-  const programs = getProgramsForDepartment(department.id);
+  const content = getDepartmentContent(department.static_id);
+  const programs = getProgramsForDepartment(department.static_id);
   return (
     <div className="space-y-12">
       <section>
@@ -191,7 +192,7 @@ function StaffCard({ member, featured = false }: { member: StaffMember; featured
 }
 
 export function DeptStaffView({ department }: Props) {
-  const staff = getStaffForDepartment(department.id);
+  const staff = getStaffForDepartment(department.static_id);
   const hod = staff.find((s) => s.rankGroup === "HOD");
   const faculty = staff.filter((s) => s.rankGroup === "Faculty");
   const support = staff.filter((s) => s.rankGroup === "Support");
@@ -251,7 +252,7 @@ export function DeptStaffView({ department }: Props) {
 
 // -------- Achievements & Clubs --------
 export function DeptAchievementsView({ department }: Props) {
-  const { achievements, clubs } = getDepartmentContent(department.id);
+  const { achievements, clubs } = getDepartmentContent(department.static_id);
   const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
   return (
     <div>
@@ -344,7 +345,7 @@ function ActivityList({ items }: { items: DeptActivity[] }) {
 }
 
 export function DeptActivitiesView({ department }: Props) {
-  const { activities } = getDepartmentContent(department.id);
+  const { activities } = getDepartmentContent(department.static_id);
   const [tab, setTab] = useState<ActivityType>("sttp_fdp");
   const items = activities
     .filter((a) => a.type === tab)

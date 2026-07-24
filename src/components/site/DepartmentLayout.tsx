@@ -4,7 +4,7 @@ import { PageHero } from "./PageHero";
 import { CollegeLogo } from "./CollegeLogo";
 import { CTABanner } from "./CTABanner";
 import { collegeMap } from "@/data/colleges";
-import type { Department } from "@/data/academics";
+import type { Department } from "@/lib/departments.functions";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -19,9 +19,9 @@ const NAV = [
 ] as const;
 
 export function DepartmentLayout({ department }: Props) {
-  const college = collegeMap[department.collegeId as keyof typeof collegeMap];
+  const college = collegeMap[department.college_slug as keyof typeof collegeMap];
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const base = `/departments/${department.id}`;
+  const base = `/departments/${department.code}`;
 
   return (
     <>
@@ -60,7 +60,7 @@ export function DepartmentLayout({ department }: Props) {
                       <li key={item.to} className="shrink-0 lg:shrink">
                         <Link
                           to={item.to}
-                          params={{ dept: department.id }}
+                          params={{ dept: department.code }}
                           className={cn(
                             "flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all",
                             isActive

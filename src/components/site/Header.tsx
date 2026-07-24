@@ -6,7 +6,9 @@ import { Logo } from "./Logo";
 import { primaryNav, site, topNav } from "@/data/site";
 import { colleges } from "@/data/colleges";
 import { placementDivisions } from "@/data/placement";
-import { academicFacilities, sportsFacilities, centreDetails, eventDetails } from "@/data/campus-rfe";
+import { getAllFacilities } from "@/lib/facilities.functions";
+import { getAllCenters } from "@/lib/centers.functions";
+import { getAllEvents } from "@/lib/events.functions";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -318,10 +320,30 @@ type MegaCategory = {
 };
 
 function useCampusCategories(): MegaCategory[] {
+  const staleTime = 1000 * 60 * 5; // 5 minutes
+
+  const { data: facilities } = useQuery({
+    queryKey: ['facilities'],
+    queryFn: () => getAllFacilities(),
+    staleTime,
+  });
+
+  const { data: centers } = useQuery({
+    queryKey: ['centers'],
+    queryFn: () => getAllCenters(),
+    staleTime,
+  });
+
   const { data: featuredClubs } = useQuery({
     queryKey: ['featured-clubs'],
     queryFn: () => getFeaturedStudentClubs(),
-    staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+    staleTime,
+  });
+
+  const { data: events } = useQuery({
+    queryKey: ['campus-events'],
+    queryFn: () => getAllEvents(),
+    staleTime,
   });
 
   return [
@@ -331,10 +353,10 @@ function useCampusCategories(): MegaCategory[] {
       icon: Building2,
       allLabel: "All facilities",
       allTo: "/campus-life/facilities",
-      items: [
-        ...academicFacilities.map((f) => ({ label: f.title, to: `/campus-life/facilities/academic/${f.slug}` })),
-        ...sportsFacilities.map((f) => ({ label: f.title, to: `/campus-life/facilities/co-curriculum/${f.slug}` })),
-      ],
+      items: (facilities ?? []).map((f) => ({
+        label: f.name,
+        to: `/campus-life/facilities/${f.metadata?.category ?? 'academic'}/${f.slug}`,
+      })),
     },
     {
       key: "co-curricular",
@@ -342,7 +364,7 @@ function useCampusCategories(): MegaCategory[] {
       icon: Sparkles,
       allLabel: "All centres",
       allTo: "/campus-life/centre",
-      items: centreDetails.map((c) => ({ label: c.title.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` })),
+      items: (centers ?? []).map((c) => ({ label: c.name.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` })),
     },
     {
       key: "clubs",
@@ -350,7 +372,7 @@ function useCampusCategories(): MegaCategory[] {
       icon: Users,
       allLabel: "All clubs",
       allTo: "/campus-life/clubs",
-      items: featuredClubs?.map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` })) || [],
+      items: (featuredClubs ?? []).map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` })),
     },
     {
       key: "events",
@@ -358,7 +380,7 @@ function useCampusCategories(): MegaCategory[] {
       icon: CalendarDays,
       allLabel: "All events",
       allTo: "/campus-life/events",
-      items: eventDetails.map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
+      items: (events ?? []).map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
     },
   ];
 }

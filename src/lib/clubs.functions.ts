@@ -70,21 +70,14 @@ export const getStudentClubBySlug = createServerFn({ method: 'GET' })
   .validator((slug: string) => slug)
   .handler(async (ctx) => {
     const slug = ctx.data;
-    console.log('[getStudentClubBySlug] Looking for slug:', slug);
-
     const { data, error } = await supabase
       .from('student_clubs')
       .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
-      .maybeSingle(); // Use maybeSingle instead of single to handle 0 rows gracefully
+      .maybeSingle();
 
-    console.log('[getStudentClubBySlug] Query result:', { found: !!data, error, slug });
-
-    if (error) {
-      console.error('[getStudentClubBySlug] Error fetching student club:', error);
-      throw error;
-    }
+    if (error) throw error;
 
     return data as StudentClub | null;
   });
