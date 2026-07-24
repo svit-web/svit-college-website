@@ -3,23 +3,13 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
-import type { Department } from "@/lib/departments.functions";
+import type { Department, DeptCourse } from "@/lib/departments.functions";
 
 type StaffMember = { id: string; name: string; designation: string; rankGroup: string; employeeCode: string; qualification?: string | null; experienceYears?: number | null; email?: string | null; phone?: string | null; photoUrl?: string | null; isHod?: boolean };
 type ActivityType = "seminar" | "workshop" | "expert_lecture" | "industrial_visit" | "mou" | "other" | "sttp_fdp" | "seminar_workshop" | "industry_visit";
 type DeptActivity = { id: string; title: string; type: ActivityType; date: string; startDate: string; endDate?: string | null; description?: string | null; speaker?: string | null; organization?: string | null; company?: string | null; notes?: string | null; documentUrl?: string | null; imageUrl?: string | null };
 
-const getProgramsForDepartment = (_id: string) => [] as { id: string; name: string }[];
-const getProgramDetail = (_id: string) => ({ degreeLevel: "B.E.", yearStarted: null as string | null, intake: null as number | null, durationYears: 4 });
 const getStaffForDepartment = (_id: string) => [] as StaffMember[];
-const getDepartmentContent = (_id: string) => ({
-  about: null as string | null,
-  vision: null as string | null,
-  mission: null as string | null,
-  activities: [] as DeptActivity[],
-  achievements: [] as { id: string; title: string; year: string; description?: string | null; category?: string | null }[],
-  clubs: [] as { id: string; name: string; description?: string | null }[],
-});
 import {
   GraduationCap,
   Users,
@@ -35,6 +25,7 @@ import { cn } from "@/lib/utils";
 
 interface Props {
   department: Department;
+  courses?: DeptCourse[];
 }
 
 function initials(name: string): string {
@@ -74,10 +65,20 @@ function formatDate(iso: string) {
   }
 }
 
+const DEGREE_LABEL: Record<string, string> = {
+  undergraduate: "B.E. / B.Tech / UG",
+  graduate: "M.E. / M.Tech / PG",
+  certificate: "Diploma",
+};
+
 // -------- About + Programs --------
-export function DeptAboutView({ department }: Props) {
-  const content = getDepartmentContent(department.static_id);
-  const programs = getProgramsForDepartment(department.static_id);
+export function DeptAboutView({ department, courses = [] }: Props) {
+  const m = department.metadata;
+  const aboutText = m.about ?? m.description;
+  const vision = m.vision;
+  const mission = m.mission;
+  const missionLines = Array.isArray(mission) ? mission : mission ? [mission] : [];
+
   return (
     <div className="space-y-12">
       <section>
@@ -85,22 +86,50 @@ export function DeptAboutView({ department }: Props) {
         <div className="mt-6 space-y-6">
           <Reveal>
             <p className="text-base leading-relaxed text-ink">
-              {content.about ??
+              {aboutText ??
                 `The Department of ${department.name} is committed to delivering quality education, cultivating research aptitude and preparing students for meaningful careers in industry and academia.`}
             </p>
           </Reveal>
-          {(content.vision || content.mission) && (
+          {(vision || missionLines.length > 0) && (
             <div className="grid gap-4 sm:grid-cols-2">
-              {content.vision && (
+              {vision && (
                 <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
                   <div className="text-xs font-bold uppercase tracking-widest text-crimson">Vision</div>
-                  <p className="mt-2 text-sm leading-relaxed text-ink">{content.vision}</p>
+                  <p className="mt-2 text-sm leading-relaxed text-ink">{vision}</p>
                 </div>
               )}
-              {content.mission && (
+              {missionLines.length > 0 && (
                 <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
                   <div className="text-xs font-bold uppercase tracking-widest text-crimson">Mission</div>
-                  <p className="mt-2 text-sm leading-relaxed text-ink">{content.mission}</p>
+                  {missionLines.length === 1 ? (
+                    <p className="mt-2 text-sm leading-relaxed text-ink">{missionLines[0]}</p>
+                  ) : (
+                    <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-ink list-disc list-inside">
+                      {missionLines.map((l, i) => <li key={i}>{l}</li>)}
+                    </ul>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+          {(m.intake_ug || m.intake_pg || m.established) && (
+            <div className="flex flex-wrap gap-4">
+              {m.intake_ug && (
+                <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
+                  <div className="font-display text-2xl font-bold text-navy">{m.intake_ug}</div>
+                  <div className="text-xs text-muted-foreground">UG Intake</div>
+                </div>
+              )}
+              {m.intake_pg && (
+                <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
+                  <div className="font-display text-2xl font-bold text-navy">{m.intake_pg}</div>
+                  <div className="text-xs text-muted-foreground">PG Intake</div>
+                </div>
+              )}
+              {m.established && (
+                <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
+                  <div className="font-display text-2xl font-bold text-navy">{m.established}</div>
+                  <div className="text-xs text-muted-foreground">Established</div>
                 </div>
               )}
             </div>
@@ -108,49 +137,25 @@ export function DeptAboutView({ department }: Props) {
         </div>
       </section>
 
-
-      <section>
-        <SectionHeading eyebrow="Programs" title="Programs Offered" />
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-          {programs.map((p, i) => {
-            const d = getProgramDetail(p.id);
-            return (
-              <Reveal key={p.id} delay={i * 0.04}>
-                <Link
-                  to="/programs/$program"
-                  params={{ program: p.id }}
-                  className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
-                >
-                  <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-                      {d.degreeLevel}
-                    </span>
-                    {d.yearStarted && (
-                      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        Since {d.yearStarted}
-                      </span>
-                    )}
-                  </div>
-                  <h3 className="mt-3 font-display text-lg font-bold text-navy leading-snug">{p.name}</h3>
-                  <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
-                    <div>
-                      <dt className="text-muted-foreground">Intake</dt>
-                      <dd className="font-bold text-navy">{d.intake ?? "—"}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-muted-foreground">Duration</dt>
-                      <dd className="font-bold text-navy">{d.durationYears ? `${d.durationYears} yrs` : "—"}</dd>
-                    </div>
-                  </dl>
-                  <div className="mt-4 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
-                    View program →
-                  </div>
-                </Link>
+      {courses.length > 0 && (
+        <section>
+          <SectionHeading eyebrow="Programs" title="Programs Offered" />
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {courses.map((c, i) => (
+              <Reveal key={c.id} delay={i * 0.04}>
+                <div className="flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6">
+                  <span className="w-fit rounded-full bg-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                    {DEGREE_LABEL[c.degree_level] ?? c.degree_level}
+                  </span>
+                  <h3 className="mt-3 font-display text-base font-bold text-navy leading-snug">
+                    {c.metadata.shortName ?? c.name}
+                  </h3>
+                </div>
               </Reveal>
-            );
-          })}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
@@ -264,8 +269,8 @@ export function DeptStaffView({ department }: Props) {
 
 // -------- Achievements & Clubs --------
 export function DeptAchievementsView({ department }: Props) {
-  const { achievements, clubs } = getDepartmentContent(department.static_id);
-  const sorted = [...achievements].sort((a, b) => (a.year < b.year ? 1 : -1));
+  const sorted: { id: string; title: string; year: string; description?: string | null }[] = [];
+  const clubs: { id: string; name: string; description?: string | null }[] = [];
   return (
     <div>
       <SectionHeading eyebrow="Achievements & Clubs" title="Milestones and Student Groups" />
@@ -357,7 +362,7 @@ function ActivityList({ items }: { items: DeptActivity[] }) {
 }
 
 export function DeptActivitiesView({ department }: Props) {
-  const { activities } = getDepartmentContent(department.static_id);
+  const activities: DeptActivity[] = [];
   const [tab, setTab] = useState<ActivityType>("sttp_fdp");
   const items = activities
     .filter((a) => a.type === tab)

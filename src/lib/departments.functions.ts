@@ -13,9 +13,13 @@ export interface Department {
   head_of_department_id: string | null;
   status: 'draft' | 'published' | 'archived';
   metadata: {
+    about?: string;
     description?: string;
     vision?: string;
-    mission?: string;
+    mission?: string | string[];
+    intake_ug?: number;
+    intake_pg?: number;
+    established?: number;
     level?: string;
     degreeType?: string | null;
     [key: string]: any;
@@ -144,4 +148,29 @@ export const getDepartmentByCode = createServerFn({ method: 'GET' })
     }
 
     return data ? mapRow(data) as Department : null;
+  });
+
+export interface DeptCourse {
+  id: string;
+  name: string;
+  code: string;
+  degree_level: 'undergraduate' | 'graduate' | 'certificate';
+  metadata: { shortName?: string; [key: string]: any };
+}
+
+/**
+ * Fetch courses linked to a department
+ */
+export const getCoursesByDepartmentId = createServerFn({ method: 'GET' })
+  .validator((departmentId: string) => departmentId)
+  .handler(async (ctx) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('id, name, code, degree_level, metadata')
+      .eq('department_id', ctx.data)
+      .eq('status', 'published')
+      .order('degree_level', { ascending: true });
+
+    if (error) throw error;
+    return (data ?? []) as DeptCourse[];
   });
