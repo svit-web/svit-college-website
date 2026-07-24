@@ -24,16 +24,10 @@ export interface College {
   hero: { kicker: string; subhead: string };
   stats: { value: string; label: string }[] | null;
   whyChoose: { title: string; desc: string; icon: string }[] | null;
-  recruiters: string[] | null;
+  recruiters: string[];
+  departments: { id: string; name: string; slug: string; code: string }[];
 }
-type CollegeProgramView = { departmentName: string; programs: { id: string; name: string }[] };
-const getCollegeProgramView = (_id: string): CollegeProgramView[] => [];
-const getDepartmentsForCollege = (_id: string) => [] as { id: string; name: string }[];
-const getProgramsForDepartment = (_id: string) => [] as { id: string; name: string }[];
-const stats: { value: string; label: string }[] = [];
-const whyChoose: { title: string; desc: string; icon: string }[] = [];
 const events: { title: string; tag: string; date: string }[] = [];
-const recruiters: string[] = [];
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BadgeCheck,
@@ -52,10 +46,9 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
  * homepage — only text/logo/links change per college.
  */
 export function CollegeLandingPage({ college }: { college: College }) {
-  // TODO: swap in college-specific stats/whyChoose/recruiters when supplied.
-  const displayStats = college.stats ?? stats;
-  const displayWhy = college.whyChoose ?? whyChoose;
-  const displayRecruiters = college.recruiters ?? recruiters;
+  const displayStats = college.stats ?? [];
+  const displayWhy = college.whyChoose ?? [];
+  const displayRecruiters = college.recruiters;
 
   return (
     <>
@@ -136,59 +129,41 @@ function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
 }
 
 function ProgramsSection({ college }: { college: College }) {
-  const view: CollegeProgramView[] = getCollegeProgramView(college.id);
-  const showGroupHeading = view.length > 1;
+  const depts = college.departments;
   return (
     <section id="programmes" className="container-page py-20">
       <SectionHeading
         center
         eyebrow="What We Offer"
         title={`Programmes at ${college.shortCode}`}
-        subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
+        subtitle={`Departments and programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
-      <div className="mt-12 space-y-14">
-        {view.map((group) => {
-          const allPrograms = group.items.flatMap((dept) =>
-            dept.programs.map((p) => ({ ...p, departmentName: dept.departmentName, departmentId: dept.departmentId })),
-          );
-          return (
-            <div key={group.group}>
-              {showGroupHeading && (
-                <h3 className="mb-6 font-display text-2xl font-bold text-navy">
-                  <span className="accent-underline">{group.group}</span>
-                </h3>
-              )}
-              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {allPrograms.map((p, i) => (
-                  <Reveal key={p.id} delay={i * 0.05}>
-                    <Link
-                      to="/departments/$dept"
-                      params={{ dept: p.departmentId }}
-                      className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
-                    >
-                      {/* TODO: replace with real program icon file when available. */}
-                      <div
-                        aria-hidden
-                        className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-                      >
-                        {initials(p.departmentName)}
-                      </div>
-                      <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                        {p.departmentName}
-                      </div>
-                      <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
-                        {p.name}
-                      </h5>
-                      <div className="mt-3 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
-                        View department →
-                      </div>
-                    </Link>
-                  </Reveal>
-                ))}
+      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {depts.map((dept, i) => (
+          <Reveal key={dept.id} delay={i * 0.05}>
+            <Link
+              to="/departments/$dept"
+              params={{ dept: dept.slug }}
+              className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
+            >
+              <div
+                aria-hidden
+                className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+              >
+                {initials(dept.name)}
               </div>
-            </div>
-          );
-        })}
+              <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+                {dept.code}
+              </div>
+              <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
+                {dept.name}
+              </h5>
+              <div className="mt-3 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
+                View department →
+              </div>
+            </Link>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -314,9 +289,6 @@ function RecruitersStrip({ data }: { data: string[] }) {
 
 function EnquiryForm({ college }: { college: College }) {
   const [sent, setSent] = useState(false);
-  const allPrograms = getDepartmentsForCollege(college.id).flatMap((d) =>
-    getProgramsForDepartment(d.id),
-  );
   return (
     <form
       onSubmit={(e) => {
@@ -337,8 +309,8 @@ function EnquiryForm({ college }: { college: College }) {
           <input required placeholder="Mobile" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
           <select className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm">
             <option>Interested Programme</option>
-            {allPrograms.map((p) => (
-              <option key={p.id}>{p.name}</option>
+            {college.departments.map((d) => (
+              <option key={d.id}>{d.name}</option>
             ))}
           </select>
           <button className="w-full rounded-md bg-navy px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light transition-colors">

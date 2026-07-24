@@ -43,6 +43,31 @@ export const getAllColleges = createServerFn({ method: 'GET' })
   });
 
 /**
+ * Fetch departments for a college by college slug
+ */
+export const getDepartmentsByCollegeSlug = createServerFn({ method: 'GET' })
+  .validator((slug: string) => slug)
+  .handler(async (ctx) => {
+    const slug = ctx.data;
+    // First get the college id
+    const { data: college, error: cErr } = await supabase
+      .from('colleges')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle();
+    if (cErr || !college) return [] as { id: string; name: string; slug: string; code: string }[];
+
+    const { data, error } = await supabase
+      .from('departments')
+      .select('id, name, slug, code')
+      .eq('college_id', college.id)
+      .eq('status', 'published')
+      .order('name');
+    if (error) return [] as { id: string; name: string; slug: string; code: string }[];
+    return data as { id: string; name: string; slug: string; code: string }[];
+  });
+
+/**
  * Fetch a single college by slug
  */
 export const getCollegeBySlug = createServerFn({ method: 'GET' })

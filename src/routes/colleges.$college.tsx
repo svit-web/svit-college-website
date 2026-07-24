@@ -1,11 +1,25 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
-import { getCollegeBySlug } from "@/lib/colleges.functions";
+import { getCollegeBySlug, getDepartmentsByCollegeSlug } from "@/lib/colleges.functions";
+import { getHomepageItems, getRecruiterLogos } from "@/lib/homepage.functions";
 
 export const Route = createFileRoute("/colleges/$college")({
   loader: async ({ params }) => {
-    const dbCollege = await getCollegeBySlug({ data: params.college });
+    const [dbCollege, departments, items, recruiters] = await Promise.all([
+      getCollegeBySlug({ data: params.college }),
+      getDepartmentsByCollegeSlug({ data: params.college }),
+      getHomepageItems(),
+      getRecruiterLogos(),
+    ]);
     if (!dbCollege) throw notFound();
+
+    const stats = items
+      .filter((i) => i.item_type === "stat")
+      .map((s) => ({ value: s.title, label: s.subtitle ?? "" }));
+
+    const whyChoose = items
+      .filter((i) => i.item_type === "why_choose")
+      .map((w) => ({ title: w.title, desc: w.body ?? "", icon: w.icon_name ?? "BadgeCheck" }));
 
     const college = {
       id: dbCollege.slug as any,
@@ -18,9 +32,10 @@ export const Route = createFileRoute("/colleges/$college")({
         kicker: dbCollege.metadata?.hero?.kicker ?? '',
         subhead: dbCollege.metadata?.hero?.subhead ?? '',
       },
-      stats: null,
-      whyChoose: null,
-      recruiters: null,
+      stats: stats.length > 0 ? stats : null,
+      whyChoose: whyChoose.length > 0 ? whyChoose : null,
+      recruiters: recruiters.map((r) => r.company_name),
+      departments,
     };
 
     return { college };
