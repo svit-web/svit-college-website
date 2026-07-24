@@ -5,7 +5,7 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { getProgrammeBySlug, getEngDepts } from "@/lib/programmes.functions";
 import { getAllRecruiters } from "@/lib/placement.functions";
-import { Check, Users, FileText, ClipboardList, Calendar } from "lucide-react";
+import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/$course")({
@@ -79,7 +79,6 @@ function CoursePage() {
             <div className="rounded-2xl border border-border bg-white p-6">
               <h4 className="font-display font-bold text-navy">Quick Links</h4>
               <ul className="mt-3 space-y-2 text-sm">
-                <li><Link to="/courses/$course/faculty" params={{ course: course.code }} className="flex items-center gap-2 text-navy hover:text-gold"><Users className="h-4 w-4" /> Faculty</Link></li>
                 <li><Link to="/downloads" className="flex items-center gap-2 text-navy hover:text-gold"><FileText className="h-4 w-4" /> Syllabus</Link></li>
                 <li><Link to="/admissions" className="flex items-center gap-2 text-navy hover:text-gold"><ClipboardList className="h-4 w-4" /> Admissions</Link></li>
                 <li><Link to="/news" className="flex items-center gap-2 text-navy hover:text-gold"><Calendar className="h-4 w-4" /> News</Link></li>

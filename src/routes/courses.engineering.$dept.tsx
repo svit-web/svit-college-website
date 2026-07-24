@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { getEngDeptBySlug, getEngDepts } from "@/lib/programmes.functions";
-import { Users, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/engineering/$dept")({
@@ -52,15 +52,6 @@ function DeptPage() {
               ))}
             </ul>
           </div>
-        </div>
-        <div className="mt-10 rounded-2xl bg-gradient-to-br from-navy to-navy-light p-8 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h3 className="font-display text-2xl font-bold">Meet our {m.short} faculty</h3>
-            <p className="mt-1 text-sm text-white/80">Senior mentors driving research and teaching in {dept.name}.</p>
-          </div>
-          <Link to="/courses/engineering/$dept/faculty" params={{ dept: m.engSlug }} className="inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft">
-            <Users className="h-4 w-4" /> View Faculty
-          </Link>
         </div>
       </section>
 
