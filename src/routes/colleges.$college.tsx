@@ -1,14 +1,14 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
 import { getCollegeBySlug, getDepartmentsByCollegeSlug } from "@/lib/colleges.functions";
-import { getHomepageItems, getRecruiterLogos } from "@/lib/homepage.functions";
+import { getGlobalHomepageItems, getRecruiterLogos } from "@/lib/homepage.functions";
 
 export const Route = createFileRoute("/colleges/$college")({
   loader: async ({ params }) => {
     const [dbCollege, departments, items, recruiters] = await Promise.all([
       getCollegeBySlug({ data: params.college }),
       getDepartmentsByCollegeSlug({ data: params.college }),
-      getHomepageItems(),
+      getGlobalHomepageItems(),
       getRecruiterLogos(),
     ]);
     if (!dbCollege) throw notFound();
