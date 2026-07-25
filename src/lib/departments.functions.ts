@@ -174,3 +174,47 @@ export const getCoursesByDepartmentId = createServerFn({ method: 'GET' })
     if (error) throw error;
     return (data ?? []) as DeptCourse[];
   });
+
+/**
+ * Fetch a single course by ID
+ */
+export const getCourseById = createServerFn({ method: 'GET' })
+  .validator((id: string) => id)
+  .handler(async (ctx) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('id, name, code, degree_level, metadata, department_id')
+      .eq('id', ctx.data)
+      .eq('status', 'published')
+      .maybeSingle();
+
+    if (error) throw error;
+    return data as (DeptCourse & { department_id: string }) | null;
+  });
+
+/**
+ * Fetch a course by ID with its department info
+ */
+export const getCourseWithDept = createServerFn({ method: 'GET' })
+  .validator((id: string) => id)
+  .handler(async (ctx) => {
+    const { data, error } = await supabase
+      .from('courses')
+      .select('id, name, code, degree_level, metadata, department_id, departments(id, name, code, slug)')
+      .eq('id', ctx.data)
+      .eq('status', 'published')
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data) return null;
+
+    const dept = Array.isArray(data.departments) ? data.departments[0] : data.departments;
+    return {
+      id: data.id,
+      name: data.name,
+      code: data.code,
+      degree_level: data.degree_level as DeptCourse['degree_level'],
+      metadata: data.metadata as DeptCourse['metadata'],
+      dept: dept ? { name: dept.name, code: dept.code, slug: dept.slug } : null,
+    };
+  });
