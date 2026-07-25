@@ -4,12 +4,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import type { Department, DeptCourse } from "@/lib/departments.functions";
+import type { StaffMember } from "@/lib/staff.functions";
 
-type StaffMember = { id: string; name: string; designation: string; rankGroup: string; employeeCode: string; qualification?: string | null; experienceYears?: number | null; email?: string | null; phone?: string | null; photoUrl?: string | null; isHod?: boolean };
 type ActivityType = "seminar" | "workshop" | "expert_lecture" | "industrial_visit" | "mou" | "other" | "sttp_fdp" | "seminar_workshop" | "industry_visit";
 type DeptActivity = { id: string; title: string; type: ActivityType; date: string; startDate: string; endDate?: string | null; description?: string | null; speaker?: string | null; organization?: string | null; company?: string | null; notes?: string | null; documentUrl?: string | null; imageUrl?: string | null };
-
-const getStaffForDepartment = (_id: string) => [] as StaffMember[];
 import {
   GraduationCap,
   Users,
@@ -26,6 +24,7 @@ import { cn } from "@/lib/utils";
 interface Props {
   department: Department;
   courses?: DeptCourse[];
+  staff?: StaffMember[];
 }
 
 function initials(name: string): string {
@@ -233,9 +232,8 @@ function StaffCard({ member, featured = false }: { member: StaffMember; featured
   );
 }
 
-export function DeptStaffView({ department }: Props) {
-  const staff = getStaffForDepartment(department.static_id);
-  const hod = staff.find((s) => s.rankGroup === "HOD");
+export function DeptStaffView({ department, staff = [] }: Props) {
+  const hod = staff.find((s) => s.isHod);
   const faculty = staff.filter((s) => s.rankGroup === "Faculty");
   const support = staff.filter((s) => s.rankGroup === "Support");
 

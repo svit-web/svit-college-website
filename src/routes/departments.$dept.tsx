@@ -1,14 +1,18 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { DepartmentLayout } from "@/components/site/DepartmentLayout";
 import { getDepartmentByCode, getCoursesByDepartmentId } from "@/lib/departments.functions";
+import { getStaffByDepartmentId } from "@/lib/staff.functions";
 
 export const Route = createFileRoute("/departments/$dept")({
   loader: async ({ params }) => {
     // Department is identified by code in URL (e.g., /departments/CE)
     const department = await getDepartmentByCode({ data: params.dept.toUpperCase() });
     if (!department) throw notFound();
-    const courses = await getCoursesByDepartmentId({ data: department.id });
-    return { department, courses };
+    const [courses, staff] = await Promise.all([
+      getCoursesByDepartmentId({ data: department.id }),
+      getStaffByDepartmentId({ data: department.id }),
+    ]);
+    return { department, courses, staff };
   },
   head: ({ loaderData }) => {
     if (!loaderData) return { meta: [{ title: "Department not found" }, { name: "robots", content: "noindex" }] };
