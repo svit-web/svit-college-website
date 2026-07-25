@@ -17,49 +17,57 @@ export interface StaffMember {
 }
 
 /**
- * Fetch staff assigned to a department, joined with designation titles.
+ * Fetch staff assigned to a department using two queries to avoid PostgREST nested join type issues.
  */
 export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
   .validator((departmentId: string) => departmentId)
   .handler(async (ctx) => {
-    const { data, error } = await supabase
+    // Step 1: get all assignments for the department
+    const { data: assignments, error: aErr } = await supabase
       .from('staff_department_assignments')
-      .select(`
-        is_primary,
-        metadata,
-        staff_profiles (
-          id,
-          title,
-          first_name,
-          last_name,
-          email,
-          metadata
-        ),
-        designations (
-          title
-        )
-      `)
+      .select('staff_id, designation_id, is_primary, metadata')
       .eq('department_id', ctx.data)
-      .eq('status', 'published');
+      .eq('status', 'published' as any);
 
-    if (error) {
-      console.error('Error fetching staff:', error);
-      throw error;
-    }
+    if (aErr || !assignments || assignments.length === 0) return [] as StaffMember[];
 
-    return (data ?? []).map((row): StaffMember => {
-      const sp = Array.isArray(row.staff_profiles) ? row.staff_profiles[0] : row.staff_profiles;
-      const desig = Array.isArray(row.designations) ? row.designations[0] : row.designations;
+    const staffIds = assignments.map((a) => a.staff_id);
+    const designationIds = [
+      ...new Set(
+        assignments
+          .map((a) => (a as any).designation_id as string | null)
+          .filter((id): id is string => Boolean(id))
+      ),
+    ];
+
+    // Step 2: fetch profiles and designations in parallel
+    const [{ data: profiles }, { data: designations }] = await Promise.all([
+      supabase
+        .from('staff_profiles')
+        .select('id, title, first_name, last_name, email, metadata')
+        .in('id', staffIds),
+      supabase
+        .from('designations')
+        .select('id, title')
+        .in('id', designationIds),
+    ]);
+
+    const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
+    const designMap = new Map((designations ?? []).map((d: any) => [d.id, d.title as string]));
+
+    return assignments.map((a): StaffMember => {
+      const sp = profileMap.get(a.staff_id);
+      const designationId = (a as any).designation_id as string | null;
+      const designTitle = designationId ? (designMap.get(designationId) ?? '') : '';
       const meta = (sp?.metadata ?? {}) as Record<string, any>;
-      const assignMeta = (row.metadata ?? {}) as Record<string, any>;
-
+      const assignMeta = (a.metadata ?? {}) as Record<string, any>;
       const titlePrefix = sp?.title ? `${sp.title} ` : '';
       const fullName = `${titlePrefix}${sp?.first_name ?? ''} ${sp?.last_name ?? ''}`.trim();
 
       return {
         id: sp?.id ?? '',
         name: fullName,
-        designation: desig?.title ?? assignMeta.designation ?? meta.designation ?? '',
+        designation: designTitle || assignMeta.designation || meta.designation || '',
         rankGroup: assignMeta.rankGroup ?? meta.rankGroup ?? 'Support',
         employeeCode: meta.employeeCode ?? '',
         qualification: meta.qualification ?? null,
@@ -67,7 +75,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
         email: sp?.email ?? null,
         phone: meta.phone ?? null,
         photoUrl: meta.photoUrl ?? null,
-        isHod: row.is_primary && (assignMeta.rankGroup === 'HOD' || meta.rankGroup === 'HOD'),
+        isHod: Boolean(a.is_primary) && (assignMeta.rankGroup === 'HOD' || meta.rankGroup === 'HOD'),
       };
     });
   });
