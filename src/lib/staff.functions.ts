@@ -27,7 +27,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
       .from('staff_department_assignments')
       .select('staff_id, designation_id, is_primary, metadata')
       .eq('department_id', ctx.data)
-      .eq('status', 'published' as any);
+      .eq('status', 'published');
 
     if (aErr || !assignments || assignments.length === 0) return [] as StaffMember[];
 
@@ -53,7 +53,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
     ]);
 
     const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
-    const designMap = new Map((designations ?? []).map((d: any) => [d.id, d.title as string]));
+    const designMap = new Map((designations ?? []).map((d) => [d.id, d.title]));
 
     return assignments.map((a): StaffMember => {
       const sp = profileMap.get(a.staff_id);
