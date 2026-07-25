@@ -194,7 +194,7 @@ function StaffCard({ member, featured = false }: { member: StaffMember; featured
   return (
     <Link
       to="/staff/$staff"
-      params={{ staff: member.id }}
+      params={{ staff: member.employeeCode }}
       className={cn(
         "card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold",
         featured && "lg:flex-row lg:items-center lg:gap-6 lg:p-8"
