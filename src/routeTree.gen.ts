@@ -19,6 +19,7 @@ import { Route as CampusLifeRouteImport } from './routes/campus-life'
 import { Route as CareersRouteImport } from './routes/careers'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as GrievanceRouteImport } from './routes/grievance'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ParentsRouteImport } from './routes/parents'
@@ -43,6 +44,8 @@ import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
 import { Route as CoursesIndexRouteImport } from './routes/courses.index'
 import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
 import { Route as DepartmentsDeptRouteImport } from './routes/departments.$dept'
+import { Route as GalleryIndexRouteImport } from './routes/gallery.index'
+import { Route as GalleryAlbumIdRouteImport } from './routes/gallery.$albumId'
 import { Route as PlacementIndexRouteImport } from './routes/placement.index'
 import { Route as PlacementCollegeRouteImport } from './routes/placement.$college'
 import { Route as ProgramsProgramRouteImport } from './routes/programs.$program'
@@ -112,6 +115,11 @@ const ContactRoute = ContactRouteImport.update({
 const DownloadsRoute = DownloadsRouteImport.update({
   id: '/downloads',
   path: '/downloads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GrievanceRoute = GrievanceRouteImport.update({
@@ -234,6 +242,16 @@ const DepartmentsDeptRoute = DepartmentsDeptRouteImport.update({
   path: '/departments/$dept',
   getParentRoute: () => rootRouteImport,
 } as any)
+const GalleryIndexRoute = GalleryIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => GalleryRoute,
+} as any)
+const GalleryAlbumIdRoute = GalleryAlbumIdRouteImport.update({
+  id: '/$albumId',
+  path: '/$albumId',
+  getParentRoute: () => GalleryRoute,
+} as any)
 const PlacementIndexRoute = PlacementIndexRouteImport.update({
   id: '/placement/',
   path: '/placement/',
@@ -351,6 +369,7 @@ export interface FileRoutesByFullPath {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
+  '/gallery': typeof GalleryRouteWithChildren
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
@@ -370,6 +389,7 @@ export interface FileRoutesByFullPath {
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
+  '/gallery/$albumId': typeof GalleryAlbumIdRoute
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
@@ -378,6 +398,7 @@ export interface FileRoutesByFullPath {
   '/campus-life/': typeof CampusLifeIndexRoute
   '/colleges/': typeof CollegesIndexRoute
   '/courses/': typeof CoursesIndexRoute
+  '/gallery/': typeof GalleryIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/admin/tables/$tableId': typeof AdminTablesTableIdRoute
   '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
@@ -423,6 +444,7 @@ export interface FileRoutesByTo {
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
+  '/gallery/$albumId': typeof GalleryAlbumIdRoute
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
@@ -431,6 +453,7 @@ export interface FileRoutesByTo {
   '/campus-life': typeof CampusLifeIndexRoute
   '/colleges': typeof CollegesIndexRoute
   '/courses': typeof CoursesIndexRoute
+  '/gallery': typeof GalleryIndexRoute
   '/placement': typeof PlacementIndexRoute
   '/admin/tables/$tableId': typeof AdminTablesTableIdRoute
   '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
@@ -461,6 +484,7 @@ export interface FileRoutesById {
   '/careers': typeof CareersRoute
   '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
+  '/gallery': typeof GalleryRouteWithChildren
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
@@ -480,6 +504,7 @@ export interface FileRoutesById {
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
+  '/gallery/$albumId': typeof GalleryAlbumIdRoute
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
@@ -488,6 +513,7 @@ export interface FileRoutesById {
   '/campus-life/': typeof CampusLifeIndexRoute
   '/colleges/': typeof CollegesIndexRoute
   '/courses/': typeof CoursesIndexRoute
+  '/gallery/': typeof GalleryIndexRoute
   '/placement/': typeof PlacementIndexRoute
   '/admin/tables/$tableId': typeof AdminTablesTableIdRoute
   '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
@@ -519,6 +545,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/downloads'
+    | '/gallery'
     | '/grievance'
     | '/news'
     | '/parents'
@@ -538,6 +565,7 @@ export interface FileRouteTypes {
     | '/colleges/$college'
     | '/courses/$course'
     | '/departments/$dept'
+    | '/gallery/$albumId'
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
@@ -546,6 +574,7 @@ export interface FileRouteTypes {
     | '/campus-life/'
     | '/colleges/'
     | '/courses/'
+    | '/gallery/'
     | '/placement/'
     | '/admin/tables/$tableId'
     | '/campus-life/centre/$slug'
@@ -591,6 +620,7 @@ export interface FileRouteTypes {
     | '/admissions/inquiry'
     | '/colleges/$college'
     | '/courses/$course'
+    | '/gallery/$albumId'
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
@@ -599,6 +629,7 @@ export interface FileRouteTypes {
     | '/campus-life'
     | '/colleges'
     | '/courses'
+    | '/gallery'
     | '/placement'
     | '/admin/tables/$tableId'
     | '/campus-life/centre/$slug'
@@ -628,6 +659,7 @@ export interface FileRouteTypes {
     | '/careers'
     | '/contact'
     | '/downloads'
+    | '/gallery'
     | '/grievance'
     | '/news'
     | '/parents'
@@ -647,6 +679,7 @@ export interface FileRouteTypes {
     | '/colleges/$college'
     | '/courses/$course'
     | '/departments/$dept'
+    | '/gallery/$albumId'
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
@@ -655,6 +688,7 @@ export interface FileRouteTypes {
     | '/campus-life/'
     | '/colleges/'
     | '/courses/'
+    | '/gallery/'
     | '/placement/'
     | '/admin/tables/$tableId'
     | '/campus-life/centre/$slug'
@@ -685,6 +719,7 @@ export interface RootRouteChildren {
   CareersRoute: typeof CareersRoute
   ContactRoute: typeof ContactRoute
   DownloadsRoute: typeof DownloadsRoute
+  GalleryRoute: typeof GalleryRouteWithChildren
   GrievanceRoute: typeof GrievanceRoute
   NewsRoute: typeof NewsRoute
   ParentsRoute: typeof ParentsRoute
@@ -773,6 +808,13 @@ declare module '@tanstack/react-router' {
       path: '/downloads'
       fullPath: '/downloads'
       preLoaderRoute: typeof DownloadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/grievance': {
@@ -942,6 +984,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/departments/$dept'
       preLoaderRoute: typeof DepartmentsDeptRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/gallery/': {
+      id: '/gallery/'
+      path: '/'
+      fullPath: '/gallery/'
+      preLoaderRoute: typeof GalleryIndexRouteImport
+      parentRoute: typeof GalleryRoute
+    }
+    '/gallery/$albumId': {
+      id: '/gallery/$albumId'
+      path: '/$albumId'
+      fullPath: '/gallery/$albumId'
+      preLoaderRoute: typeof GalleryAlbumIdRouteImport
+      parentRoute: typeof GalleryRoute
     }
     '/placement/': {
       id: '/placement/'
@@ -1148,6 +1204,19 @@ const CampusLifeRouteWithChildren = CampusLifeRoute._addFileChildren(
   CampusLifeRouteChildren,
 )
 
+interface GalleryRouteChildren {
+  GalleryAlbumIdRoute: typeof GalleryAlbumIdRoute
+  GalleryIndexRoute: typeof GalleryIndexRoute
+}
+
+const GalleryRouteChildren: GalleryRouteChildren = {
+  GalleryAlbumIdRoute: GalleryAlbumIdRoute,
+  GalleryIndexRoute: GalleryIndexRoute,
+}
+
+const GalleryRouteWithChildren =
+  GalleryRoute._addFileChildren(GalleryRouteChildren)
+
 interface CoursesCourseRouteChildren {
   CoursesCourseFacultyRoute: typeof CoursesCourseFacultyRoute
 }
@@ -1203,6 +1272,7 @@ const rootRouteChildren: RootRouteChildren = {
   CareersRoute: CareersRoute,
   ContactRoute: ContactRoute,
   DownloadsRoute: DownloadsRoute,
+  GalleryRoute: GalleryRouteWithChildren,
   GrievanceRoute: GrievanceRoute,
   NewsRoute: NewsRoute,
   ParentsRoute: ParentsRoute,

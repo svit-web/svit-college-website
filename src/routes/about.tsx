@@ -1,10 +1,12 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { CTABanner } from "@/components/site/CTABanner";
 import { getAllCommittees } from "@/lib/committees.functions";
 import { getAllAccreditations } from "@/lib/accreditations.functions";
 import { getAboutPage } from "@/lib/pages.functions";
+import { getAllMOUs } from "@/lib/mous.functions";
+import type { MOU } from "@/lib/mous.functions";
 import { ImageIcon } from "lucide-react";
 
 import {
@@ -42,12 +44,13 @@ export const Route = createFileRoute("/about")({
     ],
   }),
   loader: async () => {
-    const [aboutPage, committees, accreditations] = await Promise.all([
+    const [aboutPage, committees, accreditations, mous] = await Promise.all([
       getAboutPage(),
       getAllCommittees(),
       getAllAccreditations(),
+      getAllMOUs(),
     ]);
-    return { aboutPage, committees, accreditations };
+    return { aboutPage, committees, accreditations, mous };
   },
   component: AboutPage,
 });
@@ -83,13 +86,14 @@ const sectionLinks = [
   { id: "leadership", label: "Leadership" },
   { id: "accreditation", label: "Accreditation" },
   { id: "committees", label: "Committees" },
+  { id: "mous", label: "MOUs" },
   { id: "facilities", label: "Facilities" },
   { id: "media", label: "Media" },
   { id: "contact", label: "Contact" },
 ];
 
 function AboutPage() {
-  const { aboutPage: c, committees, accreditations } = Route.useLoaderData();
+  const { aboutPage: c, committees, accreditations, mous } = Route.useLoaderData();
 
   return (
     <>
@@ -493,7 +497,46 @@ function AboutPage() {
         </div>
       </SectionShell>
 
-      {/* 10. Facilities */}
+      {/* 10. MOUs - Dynamic from Supabase */}
+      <section id="mous" className="bg-secondary/50 py-16 md:py-20">
+        <div className="container-page">
+          <SectionHeading eyebrow="Industry Partnerships" title="Memoranda of Understanding" variant="eyebrow" />
+          <p className="mt-4 max-w-3xl text-muted-foreground">
+            SVIT has signed MOUs with leading industries and organizations to provide students with internships, expert lectures, and hands-on training opportunities.
+          </p>
+          <div className="mt-8 overflow-hidden rounded-xl border-2 border-navy/15 bg-white">
+            <table className="w-full text-sm">
+              <thead className="bg-navy text-white">
+                <tr>
+                  <th className="px-4 py-3 text-left">Organization</th>
+                  <th className="px-4 py-3 text-left hidden sm:table-cell">Purpose</th>
+                  <th className="px-4 py-3 text-left hidden md:table-cell">Department</th>
+                  <th className="px-4 py-3 text-left hidden lg:table-cell">Signed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {mous.map((mou: MOU, i: number) => (
+                  <tr key={mou.id} className={`border-t border-border ${i % 2 === 0 ? "" : "bg-secondary/30"}`}>
+                    <td className="px-4 py-3 font-medium text-navy">{mou.partner_organization}</td>
+                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{mou.purpose}</td>
+                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
+                      {mou.metadata?.department ?? "—"}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
+                      {mou.signed_date ? new Date(mou.signed_date).toLocaleDateString("en-IN", { year: "numeric", month: "short" }) : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="mt-4 text-right text-xs text-muted-foreground">
+            {mous.length} active MOUs
+          </div>
+        </div>
+      </section>
+
+      {/* 11. Facilities */}
       <section id="facilities" className="bg-secondary/50 py-16 md:py-20">
         <div className="container-page">
           <SectionHeading eyebrow="Life on campus" title="Campus Facilities" variant="eyebrow" />
@@ -622,6 +665,18 @@ function AboutPage() {
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{p.description}</p>
             </div>
           ))}
+        </div>
+
+        <div className="mt-8">
+          <div className="text-xs font-semibold uppercase tracking-wider text-crimson mb-3">
+            Photo Gallery
+          </div>
+          <Link
+            to="/gallery"
+            className="inline-flex items-center gap-2 rounded-xl border-2 border-navy/15 bg-white px-5 py-3 text-sm font-semibold text-navy hover:border-gold hover:text-gold transition-colors"
+          >
+            Browse Campus Gallery →
+          </Link>
         </div>
 
         <div className="mt-8">
