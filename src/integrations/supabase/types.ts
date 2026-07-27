@@ -308,6 +308,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          icon_url: string | null
           id: string
           metadata: Json
           name: string
@@ -322,6 +323,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          icon_url?: string | null
           id?: string
           metadata?: Json
           name: string
@@ -336,6 +338,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          icon_url?: string | null
           id?: string
           metadata?: Json
           name?: string
@@ -807,6 +810,95 @@ export type Database = {
           },
         ]
       }
+      department_activities: {
+        Row: {
+          activity_type: string
+          company: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string
+          document_url: string | null
+          end_date: string | null
+          id: string
+          metadata: Json
+          notes: string | null
+          start_date: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          activity_type: string
+          company?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id: string
+          document_url?: string | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          start_date: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          activity_type?: string
+          company?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string
+          document_url?: string | null
+          end_date?: string | null
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "department_activities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "department_activities_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "department_activities_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "department_activities_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       departments: {
         Row: {
           code: string
@@ -817,6 +909,7 @@ export type Database = {
           deleted_by: string | null
           head_of_department_id: string | null
           id: string
+          logo_url: string | null
           metadata: Json
           name: string
           slug: string
@@ -833,6 +926,7 @@ export type Database = {
           deleted_by?: string | null
           head_of_department_id?: string | null
           id?: string
+          logo_url?: string | null
           metadata?: Json
           name: string
           slug: string
@@ -849,6 +943,7 @@ export type Database = {
           deleted_by?: string | null
           head_of_department_id?: string | null
           id?: string
+          logo_url?: string | null
           metadata?: Json
           name?: string
           slug?: string
@@ -3707,6 +3802,7 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
+          featured: boolean | null
           id: string
           logo_url: string | null
           metadata: Json
@@ -3724,6 +3820,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          featured?: boolean | null
           id?: string
           logo_url?: string | null
           metadata?: Json
@@ -3741,6 +3838,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          featured?: boolean | null
           id?: string
           logo_url?: string | null
           metadata?: Json
@@ -4102,7 +4200,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_table_schema_info: { Args: { target_table: string }; Returns: Json }
     }
     Enums: {
       content_status: "draft" | "published" | "archived"

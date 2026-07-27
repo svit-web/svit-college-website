@@ -20,6 +20,7 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 export interface CollegeDept {
   id: string; name: string; slug: string; code: string;
+  logo_url?: string | null;
   metadata: { degree_type?: string | null; [key: string]: any };
 }
 
@@ -188,12 +189,18 @@ function ProgramsSection({ college }: { college: College }) {
                     params={{ dept: dept.code }}
                     className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
                   >
-                    <div
-                      aria-hidden
-                      className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-                    >
-                      {initials(dept.name)}
-                    </div>
+                    {dept.logo_url ? (
+                      <div className="mb-4 flex h-12 w-12 items-center justify-center overflow-hidden rounded-md bg-white p-1.5 ring-1 ring-navy/10">
+                        <img src={dept.logo_url} alt={`${dept.name} logo`} className="h-full w-full object-contain" />
+                      </div>
+                    ) : (
+                      <div
+                        aria-hidden
+                        className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
+                      >
+                        {initials(dept.name)}
+                      </div>
+                    )}
                     <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
                       {dept.name}
                     </div>

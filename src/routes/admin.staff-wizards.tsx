@@ -594,7 +594,7 @@ function StaffProfileWizardPage() {
   };
 
   return (
-    <div className="grid h-[calc(100vh-8.5rem)] grid-cols-1 overflow-hidden rounded-xl border border-slate-800 bg-slate-950 md:grid-cols-3">
+    <div className="grid h-[calc(100vh-8.5rem)] grid-cols-1 overflow-hidden rounded-xl font-mono md:grid-cols-3">
       
       {/* 📁 LEFT PANEL: Staff List Drawer */}
       <div className="flex flex-col border-r border-slate-800 bg-slate-900/10">
@@ -603,12 +603,12 @@ function StaffProfileWizardPage() {
         <div className="p-4 border-b border-slate-800 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
-              <Users className="h-5 w-5 text-indigo-400" />
+              <Users className="h-5 w-5 text-crimson" />
               Faculty Members
             </h2>
             <button
               onClick={() => setIsNewStaffOpen(true)}
-              className="flex items-center gap-1 rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white hover:bg-indigo-500 transition"
+              className="flex items-center gap-1 rounded bg-crimson px-2 py-1 text-xs font-semibold text-white hover:bg-crimson/90 transition"
             >
               <Plus className="h-3.5 w-3.5" /> Add New
             </button>
@@ -621,7 +621,7 @@ function StaffProfileWizardPage() {
               placeholder="Search faculty by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded border border-slate-800 bg-slate-950 py-1.5 pl-9 pr-4 text-xs text-slate-200 placeholder-slate-500 focus:border-indigo-500 focus:outline-none"
+              className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-xs text-slate-200 placeholder-slate-500 focus:border-crimson focus:outline-none"
             />
           </div>
         </div>
@@ -630,7 +630,7 @@ function StaffProfileWizardPage() {
         <div className="flex-1 overflow-y-auto divide-y divide-slate-850 max-h-full">
           {listLoading ? (
             <div className="flex h-48 items-center justify-center">
-              <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+              <Loader2 className="h-6 w-6 animate-spin text-crimson" />
             </div>
           ) : filteredStaffList.length > 0 ? (
             filteredStaffList.map((staff) => {
@@ -640,14 +640,14 @@ function StaffProfileWizardPage() {
                   key={staff.id}
                   onClick={() => setSelectedStaffId(staff.id)}
                   className={`flex items-center justify-between p-3.5 cursor-pointer transition ${
-                    active ? "bg-indigo-500/10 border-l-4 border-indigo-500 pl-2.5" : "hover:bg-slate-900/50"
+                    active ? "bg-crimson/10 border-l-4 border-crimson pl-2.5" : "hover:bg-slate-900/50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     {staff.avatar_url ? (
                       <img src={staff.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover border border-slate-800" />
                     ) : (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-850 text-xs font-bold text-indigo-400 border border-slate-800">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-850 text-xs font-bold text-crimson border border-slate-800">
                         {staff.first_name?.[0] || ""}{staff.last_name?.[0] || ""}
                       </div>
                     )}
@@ -684,7 +684,7 @@ function StaffProfileWizardPage() {
           detailsLoading ? (
             <div className="flex flex-1 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                <Loader2 className="h-8 w-8 animate-spin text-crimson" />
                 <p className="text-sm text-slate-400 font-medium">Fetching detailed profile datasets...</p>
               </div>
             </div>
@@ -707,7 +707,7 @@ function StaffProfileWizardPage() {
                       onClick={() => setActiveTab(t.id as any)}
                       className={`flex items-center gap-2 border-b-2 px-5 py-4 text-xs font-bold uppercase tracking-wider transition ${
                         active
-                          ? "border-indigo-500 text-white bg-indigo-500/5"
+                          ? "border-crimson text-white bg-crimson/5"
                           : "border-transparent text-slate-400 hover:text-white"
                       }`}
                     >
@@ -730,7 +730,7 @@ function StaffProfileWizardPage() {
                         <select
                           value={generalForm.title || "Dr."}
                           onChange={(e) => setGeneralForm(p => ({ ...p, title: e.target.value }))}
-                          className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                         >
                           <option value="Prof.">Prof.</option>
                           <option value="Dr.">Dr.</option>
@@ -745,7 +745,7 @@ function StaffProfileWizardPage() {
                         <select
                           value={generalForm.status || "published"}
                           onChange={(e) => setGeneralForm(p => ({ ...p, status: e.target.value }))}
-                          className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                         >
                           <option value="published">Published</option>
                           <option value="draft">Draft</option>
@@ -760,7 +760,7 @@ function StaffProfileWizardPage() {
                           value={generalForm.first_name || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, first_name: e.target.value }))}
                           required
-                          className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                         />
                       </div>
 
@@ -771,7 +771,7 @@ function StaffProfileWizardPage() {
                           value={generalForm.last_name || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, last_name: e.target.value }))}
                           required
-                          className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                         />
                       </div>
 
@@ -782,7 +782,7 @@ function StaffProfileWizardPage() {
                           value={generalForm.email || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, email: e.target.value }))}
                           required
-                          className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                         />
                       </div>
 
@@ -792,7 +792,7 @@ function StaffProfileWizardPage() {
                           type="text"
                           value={generalForm.phone || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, phone: e.target.value }))}
-                          className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                         />
                       </div>
                     </div>
@@ -812,7 +812,7 @@ function StaffProfileWizardPage() {
                         value={generalForm.bio || ""}
                         onChange={(e) => setGeneralForm(p => ({ ...p, bio: e.target.value }))}
                         rows={4}
-                        className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                       />
                     </div>
 
@@ -820,7 +820,7 @@ function StaffProfileWizardPage() {
                       <button
                         type="submit"
                         disabled={generalSaving}
-                        className="flex items-center gap-2 rounded bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-indigo-500 disabled:opacity-50 transition"
+                        className="flex items-center gap-2 rounded bg-crimson px-5 py-2.5 text-sm font-semibold text-white shadow hover:bg-crimson/90 disabled:opacity-50 transition"
                       >
                         {generalSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                         <span>Save Profile Changes</span>
@@ -836,7 +836,7 @@ function StaffProfileWizardPage() {
                     {/* Add assignment subform */}
                     <div className="rounded-xl border border-slate-850 bg-slate-900/10 p-5 space-y-4">
                       <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Plus className="h-4 w-4 text-indigo-400" /> Add Academic Department Assignment
+                        <Plus className="h-4 w-4 text-crimson" /> Add Academic Department Assignment
                       </h3>
                       
                       <form onSubmit={handleAddAssignment} className="grid gap-4 sm:grid-cols-3 sm:items-end">
@@ -846,7 +846,7 @@ function StaffProfileWizardPage() {
                             value={newAssignment.department_id}
                             onChange={(e) => setNewAssignment(p => ({ ...p, department_id: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                           >
                             <option value="">-- Select --</option>
                             {departments.map((d) => (
@@ -877,14 +877,14 @@ function StaffProfileWizardPage() {
                               id="is_primary"
                               checked={newAssignment.is_primary}
                               onChange={(e) => setNewAssignment(p => ({ ...p, is_primary: e.target.checked }))}
-                              className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-indigo-650"
+                              className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-crimson"
                             />
                             <label htmlFor="is_primary" className="ml-2 text-xs font-semibold text-slate-400">Primary Assignment</label>
                           </div>
 
                           <button
                             type="submit"
-                            className="rounded bg-indigo-600 px-3 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition"
+                            className="rounded bg-crimson px-3 py-2 text-xs font-bold text-white hover:bg-crimson/90 transition"
                           >
                             Add Role
                           </button>
@@ -956,7 +956,7 @@ function StaffProfileWizardPage() {
                     {/* Add qualifications */}
                     <div className="rounded-xl border border-slate-850 bg-slate-900/10 p-5 space-y-4">
                       <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Plus className="h-4 w-4 text-indigo-400" /> Add Degree / Academic Qualification
+                        <Plus className="h-4 w-4 text-crimson" /> Add Degree / Academic Qualification
                       </h3>
                       
                       <form onSubmit={handleAddQual} className="grid gap-4 sm:grid-cols-3 sm:items-end">
@@ -968,7 +968,7 @@ function StaffProfileWizardPage() {
                             value={newQual.degree}
                             onChange={(e) => setNewQual(p => ({ ...p, degree: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                           />
                         </div>
 
@@ -980,7 +980,7 @@ function StaffProfileWizardPage() {
                             value={newQual.institution}
                             onChange={(e) => setNewQual(p => ({ ...p, institution: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                           />
                         </div>
 
@@ -992,13 +992,13 @@ function StaffProfileWizardPage() {
                               value={newQual.year}
                               onChange={(e) => setNewQual(p => ({ ...p, year: Number(e.target.value) }))}
                               required
-                              className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                             />
                           </div>
 
                           <button
                             type="submit"
-                            className="rounded bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition h-10"
+                            className="rounded bg-crimson px-4 py-2 text-xs font-bold text-white hover:bg-crimson/90 transition h-10"
                           >
                             Add
                           </button>
@@ -1015,7 +1015,7 @@ function StaffProfileWizardPage() {
                           {qualifications.map((q) => (
                             <div key={q.id} className="flex items-center justify-between rounded-xl border border-slate-850 bg-slate-900/5 p-4">
                               <div className="flex gap-3">
-                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-indigo-500/10 text-indigo-400 border border-indigo-500/25">
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-crimson/10 text-crimson border border-crimson/25">
                                   <BookOpen className="h-5 w-5" />
                                 </div>
                                 <div>
@@ -1049,7 +1049,7 @@ function StaffProfileWizardPage() {
                     {/* Add Experience form */}
                     <div className="rounded-xl border border-slate-850 bg-slate-900/10 p-5 space-y-4">
                       <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                        <Plus className="h-4 w-4 text-indigo-400" /> Add Professional Experience
+                        <Plus className="h-4 w-4 text-crimson" /> Add Professional Experience
                       </h3>
                       
                       <form onSubmit={handleAddExp} className="space-y-4">
@@ -1062,7 +1062,7 @@ function StaffProfileWizardPage() {
                               value={newExp.organization}
                               onChange={(e) => setNewExp(p => ({ ...p, organization: e.target.value }))}
                               required
-                              className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                             />
                           </div>
 
@@ -1074,7 +1074,7 @@ function StaffProfileWizardPage() {
                               value={newExp.role}
                               onChange={(e) => setNewExp(p => ({ ...p, role: e.target.value }))}
                               required
-                              className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                             />
                           </div>
                         </div>
@@ -1086,7 +1086,7 @@ function StaffProfileWizardPage() {
                               type="date"
                               value={newExp.start_date}
                               onChange={(e) => setNewExp(p => ({ ...p, start_date: e.target.value }))}
-                              className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                             />
                           </div>
 
@@ -1096,7 +1096,7 @@ function StaffProfileWizardPage() {
                               type="date"
                               value={newExp.end_date}
                               onChange={(e) => setNewExp(p => ({ ...p, end_date: e.target.value }))}
-                              className="w-full rounded border border-slate-800 bg-slate-950 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
                             />
                           </div>
 
@@ -1107,14 +1107,14 @@ function StaffProfileWizardPage() {
                                 id="is_academic"
                                 checked={newExp.is_academic}
                                 onChange={(e) => setNewExp(p => ({ ...p, is_academic: e.target.checked }))}
-                                className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-indigo-650"
+                                className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-crimson"
                               />
                               <label htmlFor="is_academic" className="ml-2 text-xs font-semibold text-slate-400">Teaching / Academic</label>
                             </div>
 
                             <button
                               type="submit"
-                              className="rounded bg-indigo-600 px-4 py-2 text-xs font-bold text-white hover:bg-indigo-500 transition"
+                              className="rounded bg-crimson px-4 py-2 text-xs font-bold text-white hover:bg-crimson/90 transition"
                             >
                               Add Exp
                             </button>
@@ -1133,7 +1133,7 @@ function StaffProfileWizardPage() {
                             <div key={exp.id} className="relative">
                               {/* Icon dot */}
                               <div className="absolute -left-[25px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-950 border border-slate-800">
-                                <div className="h-2 w-2 rounded-full bg-indigo-500" />
+                                <div className="h-2 w-2 rounded-full bg-crimson" />
                               </div>
 
                               <div className="flex items-start justify-between rounded-xl border border-slate-850 bg-slate-900/5 p-4">
@@ -1142,7 +1142,7 @@ function StaffProfileWizardPage() {
                                   <p className="text-xs text-slate-400">{exp.organization}</p>
                                   <p className="mt-1 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
                                     {exp.start_date ? exp.start_date : "?"} — {exp.end_date ? exp.end_date : "Present"}
-                                    {exp.is_academic && <span className="ml-2 text-indigo-400">(Academic)</span>}
+                                    {exp.is_academic && <span className="ml-2 text-crimson">(Academic)</span>}
                                   </p>
                                 </div>
 
@@ -1179,11 +1179,11 @@ function StaffProfileWizardPage() {
                           placeholder="e.g. Artificial Intelligence, Cryptography"
                           value={newInterest}
                           onChange={(e) => setNewInterest(e.target.value)}
-                          className="flex-1 rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-300 focus:outline-none"
+                          className="flex-1 rounded font-mono px-3 py-1.5 text-xs text-slate-300 focus:outline-none"
                         />
                         <button
                           type="submit"
-                          className="rounded bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 transition"
+                          className="rounded bg-crimson px-3 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 transition"
                         >
                           Add Tag
                         </button>
@@ -1225,7 +1225,7 @@ function StaffProfileWizardPage() {
                             value={newPub.title}
                             onChange={(e) => setNewPub(p => ({ ...p, title: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                           <input
                             type="text"
@@ -1233,20 +1233,20 @@ function StaffProfileWizardPage() {
                             value={newPub.journal_conference}
                             onChange={(e) => setNewPub(p => ({ ...p, journal_conference: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                           <input
                             type="date"
                             value={newPub.publish_date}
                             onChange={(e) => setNewPub(p => ({ ...p, publish_date: e.target.value }))}
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                           <input
                             type="text"
                             placeholder="DOI or Website link URL"
                             value={newPub.doi_url}
                             onChange={(e) => setNewPub(p => ({ ...p, doi_url: e.target.value }))}
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                         </div>
                         <textarea
@@ -1254,12 +1254,12 @@ function StaffProfileWizardPage() {
                           value={newPub.abstract}
                           onChange={(e) => setNewPub(p => ({ ...p, abstract: e.target.value }))}
                           rows={2}
-                          className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                          className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                         />
                         <div className="flex justify-end">
                           <button
                             type="submit"
-                            className="rounded bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-indigo-500 transition"
+                            className="rounded bg-crimson px-3.5 py-1.5 text-xs font-bold text-white hover:bg-crimson/90 transition"
                           >
                             Add Publication
                           </button>
@@ -1275,7 +1275,7 @@ function StaffProfileWizardPage() {
                                 <p className="text-xs text-slate-400">{pub.journal_conference}</p>
                                 {pub.publish_date && <p className="text-[10px] text-slate-500 font-medium">Published on: {pub.publish_date}</p>}
                                 {pub.doi_url && (
-                                  <a href={pub.doi_url} target="_blank" rel="noreferrer" className="text-xs text-indigo-400 hover:underline inline-block mt-1">
+                                  <a href={pub.doi_url} target="_blank" rel="noreferrer" className="text-xs text-crimson hover:underline inline-block mt-1">
                                     View DOI Source
                                   </a>
                                 )}
@@ -1307,19 +1307,19 @@ function StaffProfileWizardPage() {
                             value={newPatent.title}
                             onChange={(e) => setNewPatent(p => ({ ...p, title: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                           <input
                             type="text"
                             placeholder="Patent Number"
                             value={newPatent.patent_number}
                             onChange={(e) => setNewPatent(p => ({ ...p, patent_number: e.target.value }))}
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                           <select
                             value={newPatent.patent_status}
                             onChange={(e) => setNewPatent(p => ({ ...p, patent_status: e.target.value }))}
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           >
                             <option value="filed">Filed</option>
                             <option value="published">Published</option>
@@ -1329,13 +1329,13 @@ function StaffProfileWizardPage() {
                             type="date"
                             value={newPatent.publication_date}
                             onChange={(e) => setNewPatent(p => ({ ...p, publication_date: e.target.value }))}
-                            className="w-full rounded border border-slate-800 bg-slate-950 px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
                           />
                         </div>
                         <div className="flex justify-end">
                           <button
                             type="submit"
-                            className="rounded bg-indigo-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-indigo-500 transition"
+                            className="rounded bg-crimson px-3.5 py-1.5 text-xs font-bold text-white hover:bg-crimson/90 transition"
                           >
                             Add Patent
                           </button>
@@ -1350,7 +1350,7 @@ function StaffProfileWizardPage() {
                                 <h4 className="text-sm font-semibold text-slate-200">{pat.title}</h4>
                                 <p className="text-xs text-slate-400">
                                   {pat.patent_number ? `No: ${pat.patent_number}` : "No number"} · Status: 
-                                  <span className="ml-1 text-indigo-400 font-semibold uppercase">{pat.patent_status}</span>
+                                  <span className="ml-1 text-crimson font-semibold uppercase">{pat.patent_status}</span>
                                 </p>
                               </div>
                               <button
@@ -1385,7 +1385,7 @@ function StaffProfileWizardPage() {
       {/* ➕ MODAL: Add New Staff Member Dialog */}
       {isNewStaffOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-md rounded-lg border border-slate-800 bg-slate-950 p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-lg font-mono p-6 shadow-2xl">
             <h3 className="font-display text-lg font-bold text-white mb-4">Create Staff Profile</h3>
             
             <form onSubmit={handleCreateStaff} className="space-y-4">
@@ -1395,7 +1395,7 @@ function StaffProfileWizardPage() {
                   <select
                     value={newStaffValues.title}
                     onChange={(e) => setNewStaffValues(p => ({ ...p, title: e.target.value }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   >
                     <option value="Dr.">Dr.</option>
                     <option value="Prof.">Prof.</option>
@@ -1410,7 +1410,7 @@ function StaffProfileWizardPage() {
                     required
                     value={newStaffValues.first_name}
                     onChange={(e) => setNewStaffValues(p => ({ ...p, first_name: e.target.value }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   />
                 </div>
               </div>
@@ -1422,7 +1422,7 @@ function StaffProfileWizardPage() {
                   required
                   value={newStaffValues.last_name}
                   onChange={(e) => setNewStaffValues(p => ({ ...p, last_name: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -1433,7 +1433,7 @@ function StaffProfileWizardPage() {
                   required
                   value={newStaffValues.email}
                   onChange={(e) => setNewStaffValues(p => ({ ...p, email: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -1443,7 +1443,7 @@ function StaffProfileWizardPage() {
                   type="text"
                   value={newStaffValues.phone}
                   onChange={(e) => setNewStaffValues(p => ({ ...p, phone: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -1457,7 +1457,7 @@ function StaffProfileWizardPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
                 >
                   Create Profile
                 </button>

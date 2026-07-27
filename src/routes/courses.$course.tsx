@@ -3,20 +3,21 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
-import { getProgrammeBySlug, getEngDepts } from "@/lib/programmes.functions";
+import { getProgrammeBySlug } from "@/lib/programmes.functions";
+import { getBranchesByCourseId } from "@/lib/courses.functions";
 import { getAllRecruiters } from "@/lib/placement.functions";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/$course")({
   loader: async ({ params }) => {
-    const [programme, engDepts, recruitersData] = await Promise.all([
-      getProgrammeBySlug({ data: params.course }),
-      getEngDepts(),
+    const programme = await getProgrammeBySlug({ data: params.course });
+    if (!programme) throw notFound();
+    const [branches, recruitersData] = await Promise.all([
+      getBranchesByCourseId({ data: programme.id }),
       getAllRecruiters(),
     ]);
-    if (!programme) throw notFound();
-    return { course: programme, engDepts, recruiters: recruitersData.map((r) => r.company_name) };
+    return { course: programme, branches, recruiters: recruitersData.map((r) => r.company_name) };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -29,8 +30,7 @@ export const Route = createFileRoute("/courses/$course")({
 });
 
 function CoursePage() {
-  const { course, engDepts, recruiters } = Route.useLoaderData();
-  const isEng = course.code === "engineering";
+  const { course, branches, recruiters } = Route.useLoaderData();
   const m = course.metadata;
   return (
     <>
@@ -88,20 +88,41 @@ function CoursePage() {
         </div>
       </section>
 
-      {isEng && (
+      {branches.length > 0 && (
         <section className="bg-secondary/50 py-20">
           <div className="container-page">
-            <SectionHeading center eyebrow="Engineering Departments" title="Specialised Branches" />
+            <SectionHeading center eyebrow={`${course.name} · Specialisations`} title="Specialised Branches" />
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {engDepts.map((d, i) => (
-                <Reveal key={d.code} delay={i * 0.03}>
-                  <Link to="/courses/engineering/$dept" params={{ dept: d.metadata.engSlug }} className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
-                    <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-md text-white text-xs font-bold", d.metadata.color)}>{d.metadata.short}</div>
-                    <h4 className="font-display font-bold text-navy">{d.name}</h4>
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{d.metadata.overview}</p>
-                  </Link>
-                </Reveal>
-              ))}
+              {branches.map((b, i) => {
+                const card = (
+                  <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
+                    {b.icon_url ? (
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-secondary/60 p-1.5">
+                        <img src={b.icon_url} alt="" className="h-full w-full object-contain" />
+                      </div>
+                    ) : (
+                      <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-md text-white text-xs font-bold", b.metadata.color ?? "bg-navy")}>
+                        {b.metadata.short ?? b.code}
+                      </div>
+                    )}
+                    <h4 className="font-display font-bold text-navy">{b.name}</h4>
+                    {b.metadata.overview && (
+                      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{b.metadata.overview}</p>
+                    )}
+                  </div>
+                );
+                return (
+                  <Reveal key={b.id} delay={i * 0.03}>
+                    {b.metadata.engSlug ? (
+                      <Link to="/courses/engineering/$dept" params={{ dept: b.metadata.engSlug }}>
+                        {card}
+                      </Link>
+                    ) : (
+                      card
+                    )}
+                  </Reveal>
+                );
+              })}
             </div>
           </div>
         </section>

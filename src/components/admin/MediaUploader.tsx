@@ -110,10 +110,10 @@ export function MediaUploader({
 
       {value ? (
         // Preview State
-        <div className="relative rounded-lg border border-slate-800 bg-slate-900/50 p-2">
+        <div className="relative rounded-lg border border-slate-200 bg-slate-50 p-2">
           <div className="flex items-center gap-3">
             {type === "image" ? (
-              <div className="relative h-16 w-16 overflow-hidden rounded border border-slate-800 bg-slate-950">
+              <div className="relative h-16 w-16 overflow-hidden rounded border border-slate-200 bg-white">
                 <img
                   src={value}
                   alt="Upload preview"
@@ -121,18 +121,18 @@ export function MediaUploader({
                 />
               </div>
             ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded border border-slate-800 bg-slate-950 text-indigo-400">
+              <div className="flex h-16 w-16 items-center justify-center rounded border border-slate-200 bg-white text-crimson">
                 <File className="h-6 w-6" />
               </div>
             )}
 
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-slate-500 font-mono truncate">{value}</p>
+              <p className="text-xs text-slate-600 font-mono truncate">{value}</p>
               <a
                 href={value}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center text-xs font-semibold text-indigo-400 hover:text-indigo-300 mt-1"
+                className="inline-flex items-center text-xs font-semibold text-crimson hover:text-crimson/80 mt-1"
               >
                 View Uploaded Asset
               </a>
@@ -141,7 +141,7 @@ export function MediaUploader({
             <button
               type="button"
               onClick={handleRemove}
-              className="rounded-full bg-slate-850 p-1 text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition"
+              className="rounded-full bg-slate-100 p-1 text-slate-600 hover:bg-red-50 hover:text-red-500 transition"
               title="Remove file"
             >
               <X className="h-4 w-4" />
@@ -158,22 +158,22 @@ export function MediaUploader({
           onClick={() => fileInputRef.current?.click()}
           className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition ${
             dragActive
-              ? "border-indigo-500 bg-indigo-500/5 text-indigo-400"
-              : "border-slate-800 bg-slate-950/40 text-slate-400 hover:border-slate-700 hover:bg-slate-900/10"
+              ? "border-crimson bg-crimson/5 text-crimson"
+              : "border-slate-300 bg-slate-50 text-slate-600 hover:border-slate-400 hover:bg-slate-100"
           }`}
         >
           {uploading ? (
             <div className="flex flex-col items-center gap-2 py-2">
-              <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
-              <p className="text-sm font-medium text-slate-400">Uploading to storage...</p>
+              <Loader2 className="h-8 w-8 animate-spin text-crimson" />
+              <p className="text-sm font-medium text-slate-600">Uploading to storage...</p>
             </div>
           ) : (
             <>
-              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 text-slate-400 border border-slate-800">
+              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-600 border border-slate-200">
                 {type === "image" ? <ImageIcon className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
               </div>
-              <p className="text-sm font-semibold text-slate-200">
-                Drag & drop or <span className="text-indigo-400">browse</span>
+              <p className="text-sm font-semibold text-navy">
+                Drag & drop or <span className="text-crimson">browse</span>
               </p>
               <p className="text-xs text-slate-500 mt-1">
                 Supports {type === "image" ? "PNG, JPG, WEBP" : "PDF, DOCX, ZIP"} up to 10MB

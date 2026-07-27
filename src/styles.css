@@ -130,6 +130,25 @@
   }
 }
 
+/* ─── Admin Theme (Matches Main SVIT Design) ──────────────────────────── */
+@layer utilities {
+  .admin-bg { background-color: oklch(0.97 0.008 260); }
+  .admin-surface { background-color: oklch(1 0 0); }
+  .admin-border { border-color: oklch(0.88 0.01 260); }
+  .admin-text-muted { color: oklch(0.54 0.046 257); }
+  .admin-card { background-color: oklch(0.985 0.005 260); }
+  .admin-sidebar-bg { background-color: var(--navy); }
+  .admin-sidebar-text { color: oklch(0.92 0.02 260); }
+  .admin-sidebar-active { background-color: oklch(0.42 0.15 268 / 0.15); }
+  .admin-header-bg { background-color: oklch(1 0 0); }
+}
+
+/* Admin scrollbar styling */
+.admin-scroll::-webkit-scrollbar { width: 6px; }
+.admin-scroll::-webkit-scrollbar-track { background: transparent; }
+.admin-scroll::-webkit-scrollbar-thumb { background: oklch(0.78 0.02 260); border-radius: 999px; }
+.admin-scroll::-webkit-scrollbar-thumb:hover { background: oklch(0.68 0.04 260); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }

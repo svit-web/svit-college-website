@@ -45,6 +45,11 @@ export function DepartmentLayout({ department }: Props) {
           { label: department.name },
         ]}
       >
+        {department.logo_url && (
+          <div className="mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white/95 p-2 shadow-md">
+            <img src={department.logo_url} alt={`${department.name} logo`} className="h-full w-full object-contain" />
+          </div>
+        )}
         {college && (
           <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
             <CollegeLogo shortCode={college.shortCode} src={college.logo} className="h-8 w-8 rounded-full bg-white p-0.5" />

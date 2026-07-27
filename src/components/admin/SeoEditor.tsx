@@ -135,54 +135,54 @@ export function SeoEditor({ seoId, onChange }: SeoEditorProps) {
   };
 
   return (
-    <div className="rounded-lg border border-slate-800 bg-slate-900/10 overflow-hidden">
-      
+    <div className="rounded-lg border border-slate-200 bg-slate-50 overflow-hidden">
+
       {/* Accordion Trigger */}
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between px-4 py-3 bg-slate-900/40 text-left hover:bg-slate-900/60 transition"
+        className="flex w-full items-center justify-between px-4 py-3 bg-white text-left hover:bg-slate-50 transition"
       >
         <div className="flex items-center gap-2">
-          <Globe className="h-4 w-4 text-indigo-400" />
-          <span className="text-sm font-semibold text-slate-200">SEO Headers & OpenGraph Settings</span>
+          <Globe className="h-4 w-4 text-crimson" />
+          <span className="text-sm font-semibold text-navy">SEO Headers & OpenGraph Settings</span>
           {seoId && (
-            <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400 border border-emerald-500/15">
+            <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700 border border-emerald-200">
               Configured
             </span>
           )}
         </div>
-        <Settings2 className={`h-4 w-4 text-slate-450 transform transition ${isOpen ? "rotate-90 text-white" : ""}`} />
+        <Settings2 className={`h-4 w-4 text-slate-500 transform transition ${isOpen ? "rotate-90 text-navy" : ""}`} />
       </button>
 
       {/* Expandable panel */}
       {isOpen && (
-        <div className="p-4 border-t border-slate-850 bg-slate-950/20 space-y-4">
+        <div className="p-4 border-t border-slate-200 bg-white space-y-4">
           {loading ? (
             <div className="flex h-32 items-center justify-center">
-              <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
+              <Loader2 className="h-5 w-5 animate-spin text-crimson" />
             </div>
           ) : (
             <>
               {/* Meta Tags Grid */}
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wide">Meta Title</label>
+                  <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Meta Title</label>
                   <input
                     type="text"
                     placeholder="Page Title — SVIT Vasad"
                     value={formValues.meta_title}
                     onChange={(e) => handleFieldChange("meta_title", e.target.value)}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wide">Robots Directives</label>
+                  <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Robots Directives</label>
                   <select
                     value={formValues.robots_directives}
                     onChange={(e) => handleFieldChange("robots_directives", e.target.value)}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                   >
                     <option value="index, follow">Index, Follow (Standard)</option>
                     <option value="noindex, nofollow">Noindex, Nofollow (Hidden Page)</option>
@@ -192,65 +192,65 @@ export function SeoEditor({ seoId, onChange }: SeoEditorProps) {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wide">Meta Description</label>
+                <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Meta Description</label>
                 <textarea
                   placeholder="Enter page summary description for Google search snippet (recommended under 160 characters)..."
                   value={formValues.meta_description}
                   onChange={(e) => handleFieldChange("meta_description", e.target.value)}
                   rows={2}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                 />
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wide">Meta Keywords</label>
+                  <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Meta Keywords</label>
                   <input
                     type="text"
                     placeholder="e.g. engineering, college, vasad, admissions"
                     value={formValues.meta_keywords}
                     onChange={(e) => handleFieldChange("meta_keywords", e.target.value)}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                   />
                   <p className="text-[9px] text-slate-500">Comma-separated keywords.</p>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold text-slate-450 uppercase tracking-wide">Canonical Link URL</label>
+                  <label className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">Canonical Link URL</label>
                   <input
                     type="text"
                     placeholder="e.g. https://svitvasad.ac.in/about"
                     value={formValues.canonical_url}
                     onChange={(e) => handleFieldChange("canonical_url", e.target.value)}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                   />
                 </div>
               </div>
 
               {/* Social sharing fields (OpenGraph) */}
-              <div className="pt-3 border-t border-slate-900 space-y-3">
-                <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                  <Sparkles className="h-3 w-3 text-indigo-400" /> OpenGraph Social Sharing Card Preview
+              <div className="pt-3 border-t border-slate-200 space-y-3">
+                <h4 className="text-[10px] font-bold text-slate-600 uppercase tracking-wider flex items-center gap-1">
+                  <Sparkles className="h-3 w-3 text-crimson" /> OpenGraph Social Sharing Card Preview
                 </h4>
 
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500 uppercase">OG Card Title</label>
+                    <label className="text-[9px] font-bold text-slate-600 uppercase">OG Card Title</label>
                     <input
                       type="text"
                       placeholder="Title for WhatsApp / Twitter / LinkedIn sharing card"
                       value={formValues.og_title}
                       onChange={(e) => handleFieldChange("og_title", e.target.value)}
-                      className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                      className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                     />
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-slate-500 uppercase">Twitter Card Size</label>
+                    <label className="text-[9px] font-bold text-slate-600 uppercase">Twitter Card Size</label>
                     <select
                       value={formValues.twitter_card}
                       onChange={(e) => handleFieldChange("twitter_card", e.target.value)}
-                      className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                      className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                     >
                       <option value="summary_large_image">Large Image Preview card</option>
                       <option value="summary">Small Icon Summary card</option>
@@ -259,18 +259,18 @@ export function SeoEditor({ seoId, onChange }: SeoEditorProps) {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase">OG Card Description</label>
+                  <label className="text-[9px] font-bold text-slate-600 uppercase">OG Card Description</label>
                   <textarea
                     placeholder="Description displayed on WhatsApp/Facebook sharing card..."
                     value={formValues.og_description}
                     onChange={(e) => handleFieldChange("og_description", e.target.value)}
                     rows={2}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:outline-none focus:border-crimson/50"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[9px] font-bold text-slate-500 uppercase flex items-center gap-1">
+                  <label className="text-[9px] font-bold text-slate-600 uppercase flex items-center gap-1">
                     <ImageIcon className="h-3 w-3" /> OG Image Banner URL
                   </label>
                   <MediaUploader
@@ -282,12 +282,12 @@ export function SeoEditor({ seoId, onChange }: SeoEditorProps) {
               </div>
 
               {/* Action Save Bar */}
-              <div className="flex justify-end pt-3 border-t border-slate-900">
+              <div className="flex justify-end pt-3 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={handleSaveSeo}
                   disabled={saving}
-                  className="flex items-center gap-1.5 rounded bg-indigo-600 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-indigo-500 disabled:opacity-50 transition"
+                  className="flex items-center gap-1.5 rounded bg-crimson px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 disabled:opacity-50 transition"
                 >
                   {saving ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />

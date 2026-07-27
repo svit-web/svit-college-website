@@ -377,7 +377,7 @@ function AdminMenusPage() {
               <div className="w-4 h-4 shrink-0" /> // spacer
             )}
 
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-950 text-indigo-400 border border-slate-800">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-950 text-crimson border border-slate-800">
               <Folder className="h-3.5 w-3.5" />
             </div>
 
@@ -413,7 +413,7 @@ function AdminMenusPage() {
 
             <button
               onClick={() => handleOpenAddItem(node.id)}
-              className="flex items-center gap-1 rounded bg-indigo-600/10 px-2 py-1 text-[10px] font-bold text-indigo-400 border border-indigo-500/15 hover:bg-indigo-650/20 transition"
+              className="flex items-center gap-1 rounded bg-crimson/10 px-2 py-1 text-[10px] font-bold text-crimson border border-crimson/15 hover:bg-crimson/20 transition"
               title="Add child sub-link"
             >
               <Plus className="h-3 w-3" />
@@ -464,7 +464,7 @@ function AdminMenusPage() {
 
         <button
           onClick={() => setIsMenuModalOpen(true)}
-          className="flex items-center gap-2 rounded bg-indigo-650 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-550 shadow transition"
+          className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson/90 shadow transition"
         >
           <Plus className="h-4 w-4" />
           <span>New Menu Group</span>
@@ -476,12 +476,12 @@ function AdminMenusPage() {
         <div className="space-y-1">
           <span className="text-xs font-semibold text-slate-450 uppercase tracking-wider block">Active Navigation Group</span>
           {loadingMenus ? (
-            <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
+            <Loader2 className="h-5 w-5 animate-spin text-crimson" />
           ) : (
             <select
               value={selectedMenuId}
               onChange={(e) => setSelectedMenuId(e.target.value)}
-              className="rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+              className="rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
             >
               {menusList.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -495,7 +495,7 @@ function AdminMenusPage() {
         <button
           onClick={() => handleOpenAddItem()}
           disabled={!selectedMenuId}
-          className="flex items-center gap-2 rounded bg-indigo-600/10 px-4 py-2 text-sm font-semibold text-indigo-400 border border-indigo-500/20 hover:bg-indigo-650/15 disabled:opacity-50 transition"
+          className="flex items-center gap-2 rounded bg-crimson/10 px-4 py-2 text-sm font-semibold text-crimson border border-crimson/20 hover:bg-crimson/15 disabled:opacity-50 transition"
         >
           <Plus className="h-4 w-4" />
           <span>Add Root Link</span>
@@ -506,7 +506,7 @@ function AdminMenusPage() {
       <div className="flex-1 rounded-xl border border-slate-850 bg-slate-950 p-6 shadow-xl min-h-[400px]">
         {loadingItems ? (
           <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-crimson" />
           </div>
         ) : menuItems.length > 0 ? (
           <div className="space-y-3">
@@ -538,7 +538,7 @@ function AdminMenusPage() {
                   placeholder="e.g. Main Header Menu"
                   value={newMenuValues.name}
                   onChange={(e) => setNewMenuValues(p => ({ ...p, name: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -550,7 +550,7 @@ function AdminMenusPage() {
                   placeholder="e.g. main-header"
                   value={newMenuValues.code}
                   onChange={(e) => setNewMenuValues(p => ({ ...p, code: e.target.value.toLowerCase().replace(/\s+/g, "-") }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -564,7 +564,7 @@ function AdminMenusPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
                 >
                   Create Menu
                 </button>
@@ -591,7 +591,7 @@ function AdminMenusPage() {
                   placeholder="e.g. Admissions"
                   value={itemFormValues.title}
                   onChange={(e) => setItemFormValues(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -601,7 +601,7 @@ function AdminMenusPage() {
                   <select
                     value={itemFormValues.link_type}
                     onChange={(e) => setItemFormValues(p => ({ ...p, link_type: e.target.value }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   >
                     <option value="custom">Custom URL</option>
                     <option value="page">Inner Page</option>
@@ -614,7 +614,7 @@ function AdminMenusPage() {
                     type="number"
                     value={itemFormValues.sort_order}
                     onChange={(e) => setItemFormValues(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   />
                 </div>
               </div>
@@ -627,7 +627,7 @@ function AdminMenusPage() {
                   placeholder="e.g. /admissions or https://external.com"
                   value={itemFormValues.url}
                   onChange={(e) => setItemFormValues(p => ({ ...p, url: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -638,7 +638,7 @@ function AdminMenusPage() {
                   placeholder="e.g. Home, Settings, User"
                   value={itemFormValues.icon}
                   onChange={(e) => setItemFormValues(p => ({ ...p, icon: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -652,7 +652,7 @@ function AdminMenusPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
                 >
                   {editingItem ? "Save Link" : "Create Link"}
                 </button>

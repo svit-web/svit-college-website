@@ -307,7 +307,7 @@ function AdminHomepageLayoutPage() {
       {/* Title */}
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl flex items-center gap-3">
-          <Layout className="h-8 w-8 text-indigo-400" />
+          <Layout className="h-8 w-8 text-crimson" />
           Homepage Layout Configurator
         </h1>
         <p className="text-sm text-slate-400">
@@ -321,7 +321,7 @@ function AdminHomepageLayoutPage() {
           onClick={() => setActiveTab("sections")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "sections"
-              ? "border-indigo-500 text-white"
+              ? "border-crimson text-white"
               : "border-transparent text-slate-450 hover:text-slate-200"
           }`}
         >
@@ -333,7 +333,7 @@ function AdminHomepageLayoutPage() {
           onClick={() => setActiveTab("widgets")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "widgets"
-              ? "border-indigo-500 text-white"
+              ? "border-crimson text-white"
               : "border-transparent text-slate-450 hover:text-slate-200"
           }`}
         >
@@ -345,7 +345,7 @@ function AdminHomepageLayoutPage() {
           onClick={() => setActiveTab("items")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "items"
-              ? "border-indigo-500 text-white"
+              ? "border-crimson text-white"
               : "border-transparent text-slate-450 hover:text-slate-200"
           }`}
         >
@@ -374,7 +374,7 @@ function AdminHomepageLayoutPage() {
                   });
                   setIsSectionModalOpen(true);
                 }}
-                className="flex items-center gap-2 rounded bg-indigo-650 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-550"
+                className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
               >
                 <Plus className="h-4 w-4" />
                 <span>Add Layout Section</span>
@@ -383,7 +383,7 @@ function AdminHomepageLayoutPage() {
 
             {loadingSections ? (
               <div className="flex h-48 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                <Loader2 className="h-8 w-8 animate-spin text-crimson" />
               </div>
             ) : sections.length > 0 ? (
               <div className="space-y-3">
@@ -393,12 +393,12 @@ function AdminHomepageLayoutPage() {
                     className="flex items-center justify-between rounded-xl border border-slate-850 bg-slate-900/10 p-4 hover:bg-slate-900/25 transition"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-550/10 text-indigo-400 border border-indigo-500/20 font-bold text-sm">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-crimson/10 text-crimson border border-crimson/20 font-bold text-sm">
                         {idx + 1}
                       </div>
                       <div>
                         <h4 className="text-sm font-semibold text-slate-200">{sec.title || "Unnamed Section"}</h4>
-                        <p className="text-[10px] text-indigo-400 uppercase tracking-wide font-mono mt-0.5">
+                        <p className="text-[10px] text-crimson uppercase tracking-wide font-mono mt-0.5">
                           Type: {sec.section_type} • Config: {JSON.stringify(sec.config)}
                         </p>
                       </div>
@@ -463,7 +463,7 @@ function AdminHomepageLayoutPage() {
                   });
                   setIsWidgetModalOpen(true);
                 }}
-                className="flex items-center gap-2 rounded bg-indigo-650 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-550"
+                className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
               >
                 <Plus className="h-4 w-4" />
                 <span>Add Widget Block</span>
@@ -472,7 +472,7 @@ function AdminHomepageLayoutPage() {
 
             {loadingWidgets ? (
               <div className="flex h-48 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                <Loader2 className="h-8 w-8 animate-spin text-crimson" />
               </div>
             ) : widgets.length > 0 ? (
               <div className="space-y-3">
@@ -485,7 +485,7 @@ function AdminHomepageLayoutPage() {
                     >
                       <div>
                         <h4 className="text-sm font-semibold text-slate-200">{widget.title || "Unnamed Widget"}</h4>
-                        <p className="text-[10px] text-indigo-400 uppercase tracking-wide font-mono mt-0.5">
+                        <p className="text-[10px] text-crimson uppercase tracking-wide font-mono mt-0.5">
                           Type: {widget.widget_type} • Section: {parentSection?.title || "(Orphaned/None)"}
                         </p>
                       </div>
@@ -544,7 +544,7 @@ function AdminHomepageLayoutPage() {
                   placeholder="e.g. Latest Events"
                   value={sectionForm.title}
                   onChange={(e) => setSectionForm(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -554,7 +554,7 @@ function AdminHomepageLayoutPage() {
                   <select
                     value={sectionForm.section_type}
                     onChange={(e) => setSectionForm(p => ({ ...p, section_type: e.target.value }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   >
                     <option value="hero">Hero slider/carousel</option>
                     <option value="grid">Grid (e.g. departments/courses)</option>
@@ -570,7 +570,7 @@ function AdminHomepageLayoutPage() {
                     type="number"
                     value={sectionForm.sort_order}
                     onChange={(e) => setSectionForm(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   />
                 </div>
               </div>
@@ -585,7 +585,7 @@ function AdminHomepageLayoutPage() {
                   placeholder='e.g. { "cols": 3, "darkTheme": true }'
                   value={sectionForm.config}
                   onChange={(e) => setSectionForm(p => ({ ...p, config: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -599,7 +599,7 @@ function AdminHomepageLayoutPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
                 >
                   {editingSection ? "Save Changes" : "Create Section"}
                 </button>
@@ -626,7 +626,7 @@ function AdminHomepageLayoutPage() {
                   placeholder="e.g. Admission Alerts Bar"
                   value={widgetForm.title}
                   onChange={(e) => setWidgetForm(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -636,7 +636,7 @@ function AdminHomepageLayoutPage() {
                   <select
                     value={widgetForm.section_id}
                     onChange={(e) => setWidgetForm(p => ({ ...p, section_id: e.target.value }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   >
                     {sections.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -651,7 +651,7 @@ function AdminHomepageLayoutPage() {
                   <select
                     value={widgetForm.widget_type}
                     onChange={(e) => setWidgetForm(p => ({ ...p, widget_type: e.target.value }))}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                   >
                     <option value="html">Custom HTML / Text</option>
                     <option value="links">Social Links Grid</option>
@@ -667,7 +667,7 @@ function AdminHomepageLayoutPage() {
                   type="number"
                   value={widgetForm.sort_order}
                   onChange={(e) => setWidgetForm(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3.5 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3.5 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -681,7 +681,7 @@ function AdminHomepageLayoutPage() {
                   placeholder='e.g. { "htmlContent": "<h3>Vasad Info</h3>", "color": "blue" }'
                   value={widgetForm.config}
                   onChange={(e) => setWidgetForm(p => ({ ...p, config: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -695,7 +695,7 @@ function AdminHomepageLayoutPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
                 >
                   {editingWidget ? "Save Widget" : "Integrate Widget"}
                 </button>

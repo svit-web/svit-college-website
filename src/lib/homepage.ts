@@ -18,10 +18,18 @@ export const homepageItemsQuery = queryOptions({
   staleTime: 60_000,
 });
 
+// staleTime 0 (not 60s like the rest): college names/logos are edited rarely,
+// but every page mount (nav dropdown, homepage, /colleges) should reflect an
+// admin edit immediately rather than serving a minute-old cached name.
+// refetchInterval matters specifically for the header's Colleges dropdown:
+// Header is a persistent layout component that never remounts on navigation,
+// so without polling it would only ever refresh on window refocus/reload —
+// staying wrong indefinitely in a long-lived background tab.
 export const collegesQuery = queryOptions({
   queryKey: ["colleges"],
   queryFn: () => getCollegesGrid(),
-  staleTime: 60_000,
+  staleTime: 0,
+  refetchInterval: 30_000,
 });
 
 export const recruitersQuery = queryOptions({
