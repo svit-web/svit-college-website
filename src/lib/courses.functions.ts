@@ -112,6 +112,7 @@ export interface Branch {
   course_id: string;
   name: string;
   code: string;
+  icon_url: string | null;
   status: 'draft' | 'published' | 'archived';
   metadata: {
     engSlug?: string;

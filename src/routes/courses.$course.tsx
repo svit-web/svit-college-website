@@ -96,9 +96,15 @@ function CoursePage() {
               {branches.map((b, i) => {
                 const card = (
                   <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
-                    <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-md text-white text-xs font-bold", b.metadata.color ?? "bg-navy")}>
-                      {b.metadata.short ?? b.code}
-                    </div>
+                    {b.icon_url ? (
+                      <div className="mb-3 flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-secondary/60 p-1.5">
+                        <img src={b.icon_url} alt="" className="h-full w-full object-contain" />
+                      </div>
+                    ) : (
+                      <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-md text-white text-xs font-bold", b.metadata.color ?? "bg-navy")}>
+                        {b.metadata.short ?? b.code}
+                      </div>
+                    )}
                     <h4 className="font-display font-bold text-navy">{b.name}</h4>
                     {b.metadata.overview && (
                       <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{b.metadata.overview}</p>
