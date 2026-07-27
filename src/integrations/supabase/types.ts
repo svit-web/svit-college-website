@@ -906,6 +906,7 @@ export type Database = {
           deleted_by: string | null
           head_of_department_id: string | null
           id: string
+          logo_url: string | null
           metadata: Json
           name: string
           slug: string
@@ -922,6 +923,7 @@ export type Database = {
           deleted_by?: string | null
           head_of_department_id?: string | null
           id?: string
+          logo_url?: string | null
           metadata?: Json
           name: string
           slug: string
@@ -938,6 +940,7 @@ export type Database = {
           deleted_by?: string | null
           head_of_department_id?: string | null
           id?: string
+          logo_url?: string | null
           metadata?: Json
           name?: string
           slug?: string

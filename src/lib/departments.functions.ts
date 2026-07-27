@@ -11,6 +11,7 @@ export interface Department {
   code: string;
   static_id: string; // maps DB code → legacy static dept ID for content/staff/programs lookup
   head_of_department_id: string | null;
+  logo_url: string | null;
   status: 'draft' | 'published' | 'archived';
   metadata: {
     about?: string;
