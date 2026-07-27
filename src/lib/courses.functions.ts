@@ -106,3 +106,44 @@ export const getCourseByCode = createServerFn({ method: 'GET' })
 
     return data as Course | null;
   });
+
+export interface Branch {
+  id: string;
+  course_id: string;
+  name: string;
+  code: string;
+  status: 'draft' | 'published' | 'archived';
+  metadata: {
+    engSlug?: string;
+    short?: string;
+    color?: string;
+    overview?: string;
+    labs?: string[];
+    careers?: string[];
+    [key: string]: any;
+  };
+}
+
+/**
+ * Fetch published branches (specialisations) for a course, admin-editable
+ * via /admin/tables/branches.
+ */
+export const getBranchesByCourseId = createServerFn({ method: 'GET' })
+  .validator((courseId: string) => courseId)
+  .handler(async (ctx) => {
+    const courseId = ctx.data;
+
+    const { data, error } = await supabase
+      .from('branches')
+      .select('*')
+      .eq('course_id', courseId)
+      .eq('status', 'published')
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching branches by course:', error);
+      throw error;
+    }
+
+    return data as unknown as Branch[];
+  });
