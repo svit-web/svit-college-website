@@ -935,9 +935,25 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
                       >
-                        <option value="published">Published</option>
-                        <option value="draft">Draft</option>
-                        <option value="archived">Archived</option>
+                        {/* Different tables use different status enums (e.g. events has
+                            draft/published/cancelled, not draft/published/archived) —
+                            use the real enum values from the DB, not a fixed guess. */}
+                        {(col.enum_values ?? ["published", "draft", "archived"]).map((v: string) => (
+                          <option key={v} value={v}>{formatLabel(v)}</option>
+                        ))}
+                      </select>
+                    ) : /* Any other enum (USER-DEFINED type) column with known values */
+                    col.type === "USER-DEFINED" && col.enum_values ? (
+                      <select
+                        value={formValues[col.name] || ""}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                      >
+                        <option value="">-- Select --</option>
+                        {col.enum_values.map((v: string) => (
+                          <option key={v} value={v}>{formatLabel(v)}</option>
+                        ))}
                       </select>
                     ) : /* Text Area for larger string inputs */
                     col.name === "description" || col.name === "bio" || col.name === "content" ? (
