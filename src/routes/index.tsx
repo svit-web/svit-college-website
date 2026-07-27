@@ -19,28 +19,28 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
+import { EventsNewsSlider, type EventSlide } from "@/components/site/EventsNewsSlider";
 import {
   byType,
   collegesQuery,
   eventsQuery,
   homepageItemsQuery,
   promoBySlot,
-  programmesQuery,
   recruitersQuery,
   type HomepageItem,
 } from "@/lib/homepage";
-import { toast } from "sonner";
-import { useState } from "react";
 import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/")({
-  loader: ({ context }) => {
+  loader: async ({ context }) => {
     // Prime caches in parallel; ignore failures so the page still renders with static fallback.
     void context.queryClient.prefetchQuery(homepageItemsQuery);
     void context.queryClient.prefetchQuery(collegesQuery);
     void context.queryClient.prefetchQuery(recruitersQuery);
-    void context.queryClient.prefetchQuery(eventsQuery);
-    void context.queryClient.prefetchQuery(programmesQuery);
+    // Awaited (unlike the above): the events/news slider is the section's
+    // main content, not a progressive-enhancement extra, so first paint
+    // shouldn't race the fetch and show an empty state.
+    await context.queryClient.ensureQueryData(eventsQuery).catch(() => null);
   },
   component: Home,
 });
@@ -295,54 +295,27 @@ function CTABannerSection() {
 }
 
 function EventsAndEnquiry() {
-  const items = useHomepageItems();
   const { data: eventsData } = useQuery(eventsQuery);
   const { data: recruitersData } = useQuery(recruitersQuery);
 
-  const eventRows = (eventsData ?? []).map((e) => ({
+  const slides: EventSlide[] = (eventsData ?? []).map((e) => ({
+    id: e.id,
+    slug: e.slug ?? null,
     title: e.title,
     tag: e.tag ?? "News",
     date: e.start_date
       ? new Date(e.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
       : "",
+    imageUrl: e.featured_image_url ?? null,
   }));
 
   const recruiterNames = (recruitersData ?? []).map((r) => r.company_name);
 
-  const admissions = promoBySlot(items, "home_admissions");
-
   return (
     <section className="container-page py-20">
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <SectionHeading eyebrow="Latest" title="Events & News" variant="eyebrow" />
-          <ul className="mt-6 space-y-4">
-            {eventRows.map((e) => (
-              <li key={e.title} className="card-lift rounded-2xl border border-border bg-white p-5">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">{e.tag}</div>
-                <div className="mt-1 font-display text-base font-bold text-navy">{e.title}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{e.date}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-navy to-navy-light p-8 text-white">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">
-            {admissions?.eyebrow ?? "Admissions Open"}
-          </div>
-          <h3 className="font-display text-2xl font-bold">{admissions?.title ?? "Your future starts here"}</h3>
-          <p className="mt-3 text-sm text-white/80">
-            {admissions?.body ??
-              "Join 5000+ students building careers with SVIT. Merit-based scholarships, hostel accommodation, and dedicated placement support."}
-          </p>
-          <Link
-            to={admissions?.link_href ?? "/admissions"}
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft"
-          >
-            {admissions?.link_label ?? "View Admissions"} <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <EnquiryForm />
+      <SectionHeading center eyebrow="Latest" title="Events & News" variant="eyebrow" />
+      <div className="mt-10">
+        <EventsNewsSlider items={slides} />
       </div>
       <Reveal className="mt-14">
         <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">Our Recruiters</div>
@@ -353,39 +326,5 @@ function EventsAndEnquiry() {
         </div>
       </Reveal>
     </section>
-  );
-}
-
-function EnquiryForm() {
-  const { data: programmes } = useQuery(programmesQuery);
-  const [sent, setSent] = useState(false);
-  return (
-    <form
-      onSubmit={(e) => {
-        e.preventDefault();
-        setSent(true);
-        toast.success("Enquiry submitted — we'll be in touch shortly.");
-      }}
-      className="rounded-2xl border border-border bg-white p-6"
-    >
-      <div className="text-xs font-semibold uppercase tracking-widest text-crimson">Quick Enquiry</div>
-      <h3 className="mt-1 font-display text-xl font-bold text-navy">Talk to us</h3>
-      {sent ? (
-        <div className="mt-6 rounded-md bg-secondary p-5 text-sm">Thank you! We'll respond within 24 hours.</div>
-      ) : (
-        <div className="mt-4 space-y-3">
-          <input required placeholder="Full Name" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          <input required type="email" placeholder="Email" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          <input required placeholder="Mobile" className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-ring" />
-          <select className="w-full rounded-md border border-input bg-background px-3 py-2.5 text-sm">
-            <option>Interested Programme</option>
-            {(programmes ?? []).map((c) => <option key={c.code}>{c.name}</option>)}
-          </select>
-          <button className="w-full rounded-md bg-navy px-4 py-3 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light transition-colors">
-            Submit Enquiry
-          </button>
-        </div>
-      )}
-    </form>
   );
 }
