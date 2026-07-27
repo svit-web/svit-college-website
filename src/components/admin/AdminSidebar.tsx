@@ -61,7 +61,8 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
         { label: "Departments", to: "/admin/tables/departments" },
         { label: "Courses", to: "/admin/tables/courses" },
         { label: "Branches", to: "/admin/tables/branches" },
-        { label: "Facilities", to: "/admin/tables/facilities" }
+        { label: "Facilities", to: "/admin/tables/facilities" },
+        { label: "Department Activities", to: "/admin/tables/department_activities" }
       ]
     },
     {
@@ -141,24 +142,24 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
     : "Admin User";
 
   return (
-    <div className="flex h-full w-64 flex-col border-r border-slate-800 bg-slate-950 text-slate-300">
+    <div className="flex h-full w-64 flex-col border-r border-navy-light admin-sidebar-bg text-white shadow-lg">
       {/* Header Brand */}
-      <div className="flex h-16 items-center justify-between border-b border-slate-800 px-6">
-        <Link to="/admin" className="flex items-center gap-2 font-display text-lg font-bold text-white">
-          <BookOpen className="h-6 w-6 text-indigo-500" />
-          <span>SVIT <span className="text-indigo-400">Admin</span></span>
+      <div className="flex h-16 items-center justify-between border-b border-navy-light/30 px-6">
+        <Link to="/admin" className="flex items-center gap-2 font-display text-lg font-bold text-white hover:text-gold transition">
+          <BookOpen className="h-6 w-6 text-gold" />
+          <span>SVIT <span className="text-gold">Admin</span></span>
         </Link>
       </div>
 
       {/* Profile summary */}
-      <div className="border-b border-slate-800 p-4">
-        <div className="flex items-center gap-3 rounded-lg bg-slate-900/50 p-2 border border-slate-800/50">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-indigo-500/10 font-bold text-indigo-400 border border-indigo-500/25">
+      <div className="border-b border-navy-light/30 p-4">
+        <div className="flex items-center gap-3 rounded-lg bg-navy-light/20 p-2 border border-gold/10">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/20 font-bold text-gold border border-gold/30">
             {userFullName.charAt(0).toUpperCase()}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="truncate text-sm font-semibold text-slate-200">{userFullName}</span>
-            <span className="truncate text-xs text-slate-500 font-medium">
+            <span className="truncate text-sm font-semibold text-white">{userFullName}</span>
+            <span className="truncate text-xs text-gold/80 font-medium">
               {isAdmin ? "Global Admin" : "Editor Portal"}
             </span>
           </div>
@@ -168,27 +169,27 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
       {/* Search Filter */}
       <div className="px-4 py-3">
         <div className="relative">
-          <Search className="absolute top-2.5 left-3 h-4 w-4 text-slate-500" />
+          <Search className="absolute top-2.5 left-3 h-4 w-4 text-white/50" />
           <input
             type="text"
             placeholder="Search tables..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-md border border-slate-800 bg-slate-900/80 py-1.5 pl-9 pr-4 text-sm text-slate-200 placeholder-slate-500 transition focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-md border border-navy-light/30 bg-navy-light/20 py-1.5 pl-9 pr-4 text-sm text-white placeholder-white/50 transition focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50"
           />
         </div>
       </div>
 
       {/* Navigation Groups */}
-      <nav className="flex-1 overflow-y-auto px-4 py-2 space-y-1">
+      <nav className="admin-scroll flex-1 overflow-y-auto px-4 py-2 space-y-1">
         {/* Dashboard Home Link */}
         <Link
           to="/admin"
           className={cn(
             "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition",
             location.pathname === "/admin"
-              ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/20"
-              : "text-slate-400 hover:bg-slate-900 hover:text-slate-200 border border-transparent"
+              ? "bg-gold/20 text-gold border border-gold/30"
+              : "text-white/80 hover:bg-navy-light/30 hover:text-white border border-transparent"
           )}
         >
           <LayoutDashboard className="h-4 w-4" />
@@ -206,8 +207,8 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
               <button
                 onClick={() => toggleGroup(group.label)}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition hover:bg-slate-900/50 hover:text-slate-200",
-                  groupHasActiveChild ? "text-indigo-400" : "text-slate-400"
+                  "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition hover:bg-navy-light/30 hover:text-white",
+                  groupHasActiveChild ? "text-gold" : "text-white/80"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -216,14 +217,14 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
                 </div>
                 <ChevronDown
                   className={cn(
-                    "h-4 w-4 text-slate-500 transition-transform duration-200",
-                    isExpanded && "rotate-180 text-slate-400"
+                    "h-4 w-4 text-white/50 transition-transform duration-200",
+                    isExpanded && "rotate-180 text-white/70"
                   )}
                 />
               </button>
 
               {isExpanded && (
-                <div className="pl-7 space-y-1 border-l border-slate-800 ml-5 mt-1 py-1">
+                <div className="pl-7 space-y-1 border-l border-navy-light/30 ml-5 mt-1 py-1">
                   {group.items.map((item) => {
                     const isActive = location.pathname === item.to;
                     return (
@@ -233,8 +234,8 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
                         className={cn(
                           "block rounded-md px-3 py-1.5 text-xs font-medium transition",
                           isActive
-                            ? "bg-indigo-500/10 text-indigo-400 font-semibold"
-                            : "text-slate-500 hover:text-slate-300"
+                            ? "bg-gold/15 text-gold font-semibold"
+                            : "text-white/70 hover:text-white hover:bg-navy-light/20"
                         )}
                       >
                         {item.label}
@@ -249,10 +250,10 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
       </nav>
 
       {/* Footer Log Out */}
-      <div className="border-t border-slate-800 p-4">
+      <div className="border-t border-navy-light/30 p-4">
         <button
           onClick={logout}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-400 transition hover:bg-red-500/10 hover:text-red-400 border border-transparent hover:border-red-500/20"
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-crimson/20 hover:text-crimson border border-transparent hover:border-crimson/30"
         >
           <LogOut className="h-4 w-4" />
           <span>Log Out</span>

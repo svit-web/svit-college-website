@@ -4,12 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import type { Department, DeptCourse } from "@/lib/departments.functions";
-
-type StaffMember = { id: string; name: string; designation: string; rankGroup: string; employeeCode: string; qualification?: string | null; experienceYears?: number | null; email?: string | null; phone?: string | null; photoUrl?: string | null; isHod?: boolean };
-type ActivityType = "seminar" | "workshop" | "expert_lecture" | "industrial_visit" | "mou" | "other" | "sttp_fdp" | "seminar_workshop" | "industry_visit";
-type DeptActivity = { id: string; title: string; type: ActivityType; date: string; startDate: string; endDate?: string | null; description?: string | null; speaker?: string | null; organization?: string | null; company?: string | null; notes?: string | null; documentUrl?: string | null; imageUrl?: string | null };
-
-const getStaffForDepartment = (_id: string) => [] as StaffMember[];
+import type { DeptStaffMember, DeptAchievement, DeptActivity, DeptActivityType } from "@/lib/department-content.functions";
 import {
   GraduationCap,
   Users,
@@ -26,6 +21,9 @@ import { cn } from "@/lib/utils";
 interface Props {
   department: Department;
   courses?: DeptCourse[];
+  staff?: DeptStaffMember[];
+  achievements?: DeptAchievement[];
+  activities?: DeptActivity[];
 }
 
 function initials(name: string): string {
@@ -186,12 +184,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
 }
 
 // -------- Staff --------
-function fieldOrNA(v: string | number | null | undefined, suffix = "") {
-  if (v === null || v === undefined || v === "") return <span className="italic text-muted-foreground/70">Not available</span>;
-  return <>{v}{suffix}</>;
-}
-
-function StaffCard({ member, featured = false }: { member: StaffMember; featured?: boolean }) {
+function StaffCard({ member, featured = false }: { member: DeptStaffMember; featured?: boolean }) {
   return (
     <Link
       to="/staff/$staff"
@@ -202,7 +195,15 @@ function StaffCard({ member, featured = false }: { member: StaffMember; featured
       )}
     >
       <div className={cn("flex items-center gap-4", featured && "lg:flex-col lg:items-start lg:gap-3")}>
-        <AvatarPlaceholder name={member.name} size={featured ? "lg" : "md"} />
+        {member.avatarUrl ? (
+          <img
+            src={member.avatarUrl}
+            alt={member.name}
+            className={cn("shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm", featured ? "h-24 w-24" : "h-16 w-16")}
+          />
+        ) : (
+          <AvatarPlaceholder name={member.name} size={featured ? "lg" : "md"} />
+        )}
         {!featured && (
           <div className="min-w-0">
             <div className="font-display font-bold text-navy leading-tight">{member.name}</div>
@@ -220,11 +221,7 @@ function StaffCard({ member, featured = false }: { member: StaffMember; featured
             <div className="mt-1 text-sm font-semibold text-crimson">{member.designation}</div>
           </>
         )}
-        <div><span className="font-semibold text-ink">Qualification:</span> {fieldOrNA(member.qualification)}</div>
-        <div>
-          <span className="font-semibold text-ink">Experience:</span> {member.experienceYears ? `${member.experienceYears}+ yrs` : <span className="italic text-muted-foreground/70">Not available</span>}
-        </div>
-        <div><span className="font-semibold text-ink">Employee Code:</span> {member.employeeCode}</div>
+        {member.email && <div><span className="font-semibold text-ink">Email:</span> {member.email}</div>}
       </div>
       <div className={cn("mt-4 text-xs font-semibold text-navy transition-colors group-hover:text-gold-strong", featured && "lg:mt-2")}>
         View profile →
@@ -233,8 +230,7 @@ function StaffCard({ member, featured = false }: { member: StaffMember; featured
   );
 }
 
-export function DeptStaffView({ department }: Props) {
-  const staff = getStaffForDepartment(department.static_id);
+export function DeptStaffView({ staff = [] }: Props) {
   const hod = staff.find((s) => s.rankGroup === "HOD");
   const faculty = staff.filter((s) => s.rankGroup === "Faculty");
   const support = staff.filter((s) => s.rankGroup === "Support");
@@ -293,8 +289,10 @@ export function DeptStaffView({ department }: Props) {
 }
 
 // -------- Achievements & Clubs --------
-export function DeptAchievementsView({ department }: Props) {
-  const sorted: { id: string; title: string; year: string; description?: string | null }[] = [];
+export function DeptAchievementsView({ achievements = [] }: Props) {
+  const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
+  // Student clubs have no department scoping in the schema (global table) —
+  // left empty here rather than showing unrelated clubs from other departments.
   const clubs: { id: string; name: string; description?: string | null }[] = [];
   return (
     <div>
@@ -313,7 +311,7 @@ export function DeptAchievementsView({ department }: Props) {
                     <ImagePlaceholder className="h-28 w-full shrink-0 sm:h-24 sm:w-32" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 text-xs font-semibold text-crimson">
-                        <Calendar className="h-3.5 w-3.5" /> {a.year}
+                        <Calendar className="h-3.5 w-3.5" /> {formatDate(a.date)}
                       </div>
                       <h4 className="mt-1 font-display text-base font-bold text-navy">{a.title}</h4>
                       <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{a.description}</p>
@@ -351,7 +349,7 @@ export function DeptAchievementsView({ department }: Props) {
 }
 
 // -------- Industry Activities --------
-const ACTIVITY_TABS: { id: ActivityType; label: string; icon: typeof Mic }[] = [
+const ACTIVITY_TABS: { id: DeptActivityType; label: string; icon: typeof Mic }[] = [
   { id: "sttp_fdp", label: "STTP / FDP / Conference", icon: Presentation },
   { id: "expert_lecture", label: "Expert Lectures", icon: Mic },
   { id: "seminar_workshop", label: "Seminars & Workshops", icon: Users },
@@ -386,9 +384,8 @@ function ActivityList({ items }: { items: DeptActivity[] }) {
   );
 }
 
-export function DeptActivitiesView({ department }: Props) {
-  const activities: DeptActivity[] = [];
-  const [tab, setTab] = useState<ActivityType>("sttp_fdp");
+export function DeptActivitiesView({ activities = [] }: Props) {
+  const [tab, setTab] = useState<DeptActivityType>("sttp_fdp");
   const items = activities
     .filter((a) => a.type === tab)
     .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));

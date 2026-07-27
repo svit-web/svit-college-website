@@ -170,7 +170,7 @@ function AdminDashboardHome() {
       value: metrics?.colleges,
       icon: School,
       link: "/admin/colleges",
-      color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+      color: "text-crimson bg-crimson/10 border-crimson/20",
       description: "Campuses & Institutes"
     },
     {
@@ -262,22 +262,22 @@ function AdminDashboardHome() {
     <div className="space-y-8 font-sans antialiased text-slate-200">
       
       {/* Scope banner & welcome */}
-      <div className="flex flex-col gap-4 rounded-xl border border-indigo-500/25 bg-slate-950/40 p-6 md:flex-row md:items-center md:justify-between shadow-2xl backdrop-blur-md">
+      <div className="flex flex-col gap-4 rounded-xl border border-crimson/25 admin-card p-6 md:flex-row md:items-center md:justify-between shadow-2xl backdrop-blur-md">
         <div className="space-y-1">
-          <span className="inline-flex items-center rounded bg-indigo-500/10 px-2 py-0.5 text-xs font-semibold text-indigo-400 border border-indigo-500/25">
+          <span className="inline-flex items-center rounded bg-crimson/10 px-2 py-0.5 text-xs font-semibold text-crimson border border-crimson/25">
             🔑 {userScope.label}
           </span>
           <h2 className="text-xl font-bold text-white md:text-2xl mt-1">
             Welcome back, {userFullName}!
           </h2>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm admin-text-muted">
             Administrative scope controls are automatically active for your session.
           </p>
         </div>
         
-        <div className="flex items-center gap-2 rounded-lg bg-slate-900/60 p-3 border border-slate-800">
+        <div className="flex items-center gap-2 rounded-lg admin-surface/60 p-3 border admin-border">
           <div className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-          <span className="text-xs text-slate-400 font-semibold tracking-wide uppercase">
+          <span className="text-xs admin-text-muted font-semibold tracking-wide uppercase">
             Database Status: Connected
           </span>
         </div>
@@ -286,7 +286,7 @@ function AdminDashboardHome() {
       {/* Overview Analytics Cards */}
       <div className="space-y-4">
         <h3 className="font-display text-lg font-bold text-white flex items-center gap-2">
-          <Shield className="h-5 w-5 text-indigo-500" />
+          <Shield className="h-5 w-5 text-crimson" />
           Core Administrative Portals
         </h3>
         
@@ -297,10 +297,10 @@ function AdminDashboardHome() {
               <a
                 key={idx}
                 href={card.link}
-                className="group relative overflow-hidden rounded-xl border border-slate-805 bg-slate-950/60 p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-700/80 hover:bg-slate-900/30 hover:shadow-lg"
+                className="group relative overflow-hidden rounded-xl border admin-border admin-card p-5 transition-all duration-300 hover:-translate-y-0.5 hover:border-slate-600/60 hover:admin-surface/30 hover:shadow-lg hover:shadow-crimson/5"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold text-slate-400 group-hover:text-slate-300">
+                  <span className="text-xs font-semibold admin-text-muted group-hover:text-slate-300">
                     {card.title}
                   </span>
                   <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg border", card.color)}>
@@ -311,16 +311,16 @@ function AdminDashboardHome() {
                   {loadingMetrics ? (
                     <Loader2 className="h-6 w-6 animate-spin text-slate-600" />
                   ) : (
-                    <span className="text-2xl font-bold tracking-tight text-white group-hover:text-indigo-400 transition">
+                    <span className="text-2xl font-bold tracking-tight text-white group-hover:text-crimson transition">
                       {card.value ?? 0}
                     </span>
                   )}
-                  <span className="flex items-center gap-1 text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 transition">
+                  <span className="flex items-center gap-1 text-[10px] font-semibold text-crimson hover:text-crimson/80 transition">
                     <span>Manage</span>
                     <ArrowRight className="h-3 w-3" />
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-500 font-medium mt-1">
+                <p className="text-[10px] admin-text-muted font-medium mt-1">
                   {card.description}
                 </p>
               </a>
@@ -338,14 +338,14 @@ function AdminDashboardHome() {
           {/* Quick Shortcuts */}
           <div className="space-y-4">
             <h3 className="font-display text-lg font-bold text-white flex items-center gap-2">
-              <Plus className="h-5 w-5 text-indigo-500" />
+              <Plus className="h-5 w-5 text-crimson" />
               Quick Actions Shortcuts
             </h3>
             
             <div className="grid gap-4 sm:grid-cols-2">
               <a
                 href="/admin/events"
-                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-4 hover:bg-slate-900/30 transition group"
+                className="flex items-center justify-between rounded-xl border admin-border admin-card p-4 hover:admin-surface/30 transition group"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/25">
@@ -353,15 +353,15 @@ function AdminDashboardHome() {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-200">Publish Department Event</h4>
-                    <p className="text-xs text-slate-500">Post news, seminar, or tech-fest details</p>
+                    <p className="text-xs admin-text-muted">Post news, seminar, or tech-fest details</p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition" />
+                <ChevronRight className="h-4 w-4 admin-text-muted group-hover:text-crimson group-hover:translate-x-1 transition" />
               </a>
 
               <a
                 href="/admin/recruiters"
-                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-4 hover:bg-slate-900/30 transition group"
+                className="flex items-center justify-between rounded-xl border admin-border admin-card p-4 hover:admin-surface/30 transition group"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 text-violet-400 border border-violet-500/25">
@@ -369,15 +369,15 @@ function AdminDashboardHome() {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-200">Add New Placement Recruiter</h4>
-                    <p className="text-xs text-slate-500">Insert hiring partner metadata</p>
+                    <p className="text-xs admin-text-muted">Insert hiring partner metadata</p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition" />
+                <ChevronRight className="h-4 w-4 admin-text-muted group-hover:text-crimson group-hover:translate-x-1 transition" />
               </a>
 
               <a
                 href="/admin/trash"
-                className="flex items-center justify-between rounded-xl border border-slate-800 bg-slate-950 p-4 hover:bg-slate-900/30 transition group sm:col-span-2 md:col-span-1"
+                className="flex items-center justify-between rounded-xl border admin-border admin-card p-4 hover:admin-surface/30 transition group sm:col-span-2 md:col-span-1"
               >
                 <div className="flex items-start gap-3">
                   <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/25">
@@ -385,28 +385,28 @@ function AdminDashboardHome() {
                   </div>
                   <div>
                     <h4 className="text-sm font-semibold text-slate-200">Trash & Recovery Bin</h4>
-                    <p className="text-xs text-slate-500">Restore or purge soft-deleted data</p>
+                    <p className="text-xs admin-text-muted">Restore or purge soft-deleted data</p>
                   </div>
                 </div>
-                <ChevronRight className="h-4 w-4 text-slate-600 group-hover:text-indigo-400 group-hover:translate-x-1 transition" />
+                <ChevronRight className="h-4 w-4 admin-text-muted group-hover:text-crimson group-hover:translate-x-1 transition" />
               </a>
             </div>
           </div>
 
           {/* Activity feed */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 border-b border-slate-850 pb-2">
-              <Activity className="h-5 w-5 text-indigo-400" />
+            <div className="flex items-center gap-2 border-b admin-border pb-2">
+              <Activity className="h-5 w-5 text-crimson" />
               <h3 className="font-display text-lg font-bold text-white">Recent System Audit Log</h3>
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-950/40 overflow-hidden">
+            <div className="rounded-xl border admin-border admin-card overflow-hidden">
               {loadingLogs ? (
                 <div className="flex h-48 items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                  <Loader2 className="h-8 w-8 animate-spin text-crimson" />
                 </div>
               ) : auditLogs && auditLogs.length > 0 ? (
-                <div className="divide-y divide-slate-850">
+                <div className="divide-y admin-border">
                   {auditLogs.map((log: any) => {
                     const userFullName = log.user
                       ? `${log.user.first_name || ""} ${log.user.last_name || ""}`.trim() || "System Manager"
@@ -416,26 +416,26 @@ function AdminDashboardHome() {
                     return (
                       <div
                         key={log.id}
-                        className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-slate-900/10 transition"
+                        className="p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:admin-surface/10 transition"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-indigo-400 border border-slate-700">
+                          <div className="flex h-8 w-8 items-center justify-center rounded-full admin-surface text-xs font-bold text-crimson border admin-border">
                             {userFullName.charAt(0).toUpperCase()}
                           </div>
                           <div>
                             <p className="text-sm font-semibold text-slate-200">
                               {userFullName}{" "}
-                              <span className="font-normal text-slate-400">
-                                performed <strong className="text-indigo-400 font-semibold">{log.action}</strong> on{" "}
-                                <code className="rounded bg-slate-900 px-1.5 py-0.5 text-xs text-indigo-300 border border-slate-800">
+                              <span className="font-normal admin-text-muted">
+                                performed <strong className="text-crimson font-semibold">{log.action}</strong> on{" "}
+                                <code className="rounded admin-surface px-1.5 py-0.5 text-xs text-crimson/80 border admin-border">
                                   {log.table_name}
                                 </code>
                               </span>
                             </p>
-                            <p className="text-xs text-slate-500 mt-1">Record ID: {log.record_id}</p>
+                            <p className="text-xs admin-text-muted mt-1">Record ID: {log.record_id}</p>
                           </div>
                         </div>
-                        <span className="text-xs font-medium text-slate-500 whitespace-nowrap">{dateStr}</span>
+                        <span className="text-xs font-medium admin-text-muted whitespace-nowrap">{dateStr}</span>
                       </div>
                     );
                   })}
@@ -443,8 +443,8 @@ function AdminDashboardHome() {
               ) : (
                 <div className="flex h-48 flex-col items-center justify-center text-center p-6">
                   <Shield className="h-10 w-10 text-slate-700 mb-2" />
-                  <p className="text-sm text-slate-400 font-medium">No actions logged yet.</p>
-                  <p className="text-xs text-slate-500 mt-1 max-w-xs">
+                  <p className="text-sm admin-text-muted font-medium">No actions logged yet.</p>
+                  <p className="text-xs admin-text-muted mt-1 max-w-xs">
                     Modifications to tables will be tracked here once audit log triggers execute.
                   </p>
                 </div>
@@ -455,24 +455,24 @@ function AdminDashboardHome() {
 
         {/* Right Column: Schema Inspector (Data Dictionary Viewer) */}
         <div className="space-y-4">
-          <div className="flex items-center gap-2 border-b border-slate-850 pb-2">
-            <Database className="h-5 w-5 text-indigo-400" />
+          <div className="flex items-center gap-2 border-b admin-border pb-2">
+            <Database className="h-5 w-5 text-crimson" />
             <h3 className="font-display text-lg font-bold text-white">Database Dictionary Inspector</h3>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-950/60 p-6 space-y-4 shadow-xl">
-            <p className="text-xs text-slate-400 leading-relaxed">
+          <div className="rounded-xl border admin-border admin-card p-6 space-y-4 shadow-xl">
+            <p className="text-xs admin-text-muted leading-relaxed">
               Select any table from the dropdown to query its exact schema columns, data types, and foreign key relations directly from the database catalog.
             </p>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wide">
+              <label className="text-[10px] font-bold admin-text-muted uppercase tracking-wide">
                 Target Table:
               </label>
               <select
                 value={selectedDictTable}
                 onChange={(e) => setSelectedDictTable(e.target.value)}
-                className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded border admin-border admin-surface px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
               >
                 {dataDictionaryTables.map((t) => (
                   <option key={t} value={t}>
@@ -484,26 +484,26 @@ function AdminDashboardHome() {
 
             {schemaLoading ? (
               <div className="flex h-48 items-center justify-center">
-                <Loader2 className="h-6 w-6 animate-spin text-indigo-500" />
+                <Loader2 className="h-6 w-6 animate-spin text-crimson" />
               </div>
             ) : schemaDetails ? (
               <div className="space-y-4 pt-2">
                 
                 {/* Primary Key & Details */}
-                <div className="flex items-center justify-between text-xs border-b border-slate-850 pb-2">
-                  <span className="text-slate-400">Primary Key Column:</span>
-                  <span className="rounded bg-indigo-500/10 px-2 py-0.5 font-mono text-indigo-300 font-bold border border-indigo-500/20">
+                <div className="flex items-center justify-between text-xs border-b admin-border pb-2">
+                  <span className="admin-text-muted">Primary Key Column:</span>
+                  <span className="rounded bg-crimson/10 px-2 py-0.5 font-mono text-crimson font-bold border border-crimson/20">
                     {schemaDetails.primary_key}
                   </span>
                 </div>
 
                 {/* Columns List */}
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block">
+                  <span className="text-[10px] font-bold admin-text-muted uppercase tracking-wide block">
                     Columns Definition ({schemaDetails.columns.length}):
                   </span>
                   
-                  <div className="max-h-56 overflow-y-auto pr-1 space-y-1.5 divide-y divide-slate-900">
+                  <div className="max-h-56 overflow-y-auto pr-1 space-y-1.5 divide-y admin-border">
                     {schemaDetails.columns.map((col: any) => {
                       const isPK = col.name === schemaDetails.primary_key;
                       const fk = schemaDetails.foreign_keys?.find((f: any) => f.column === col.name);
@@ -513,13 +513,13 @@ function AdminDashboardHome() {
                           <div className="flex items-center gap-1.5">
                             <span className={cn(
                               "font-mono font-medium",
-                              isPK ? "text-indigo-400 font-bold" : "text-slate-300"
+                              isPK ? "text-crimson font-bold" : "text-slate-300"
                             )}>
                               {col.name}
                             </span>
                             {fk && (
                               <span
-                                className="cursor-help rounded bg-slate-900 border border-slate-800 px-1 py-0.2 text-[9px] text-slate-400"
+                                className="cursor-help rounded admin-surface border admin-border px-1 py-0.2 text-[9px] admin-text-muted"
                                 title={`FK References ${fk.foreign_table}.${fk.foreign_column}`}
                               >
                                 FK 🔗
@@ -527,7 +527,7 @@ function AdminDashboardHome() {
                             )}
                           </div>
                           
-                          <span className="font-mono text-slate-500 text-[10px]">
+                          <span className="font-mono admin-text-muted text-[10px]">
                             {col.type}
                             {col.is_nullable ? "?" : ""}
                           </span>
@@ -540,7 +540,7 @@ function AdminDashboardHome() {
                 {/* Link to CRUD management */}
                 <a
                   href={`/admin/tables/${selectedDictTable}`}
-                  className="flex w-full items-center justify-center gap-2 rounded bg-indigo-600/15 py-2 text-xs font-bold text-indigo-400 border border-indigo-500/20 hover:bg-indigo-600/25 hover:text-indigo-300 transition"
+                  className="flex w-full items-center justify-center gap-2 rounded bg-crimson/15 py-2 text-xs font-bold text-crimson border border-crimson/20 hover:bg-crimson/25 hover:text-crimson/80 transition"
                 >
                   <span>Open CRUD Manager</span>
                   <ExternalLink className="h-3.5 w-3.5" />

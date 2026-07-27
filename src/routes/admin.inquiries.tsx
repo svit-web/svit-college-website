@@ -308,7 +308,7 @@ function AdminInquiriesPage() {
             setFormConfigFields({ form_name: "", fields_config: "[]", recipient_emails: "" });
             setIsFormModalOpen(true);
           }}
-          className="flex items-center gap-2 rounded bg-indigo-650 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-550 shadow transition"
+          className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson/90 shadow transition"
         >
           <Plus className="h-4 w-4" />
           <span>New Inquiry Form</span>
@@ -321,7 +321,7 @@ function AdminInquiriesPage() {
           onClick={() => setActiveTab("submissions")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "submissions"
-              ? "border-indigo-500 text-white"
+              ? "border-crimson text-white"
               : "border-transparent text-slate-450 hover:text-slate-200"
           }`}
         >
@@ -333,7 +333,7 @@ function AdminInquiriesPage() {
           onClick={() => setActiveTab("forms")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "forms"
-              ? "border-indigo-500 text-white"
+              ? "border-crimson text-white"
               : "border-transparent text-slate-450 hover:text-slate-200"
           }`}
         >
@@ -355,12 +355,12 @@ function AdminInquiriesPage() {
                 <div className="space-y-1">
                   <span className="text-xs font-semibold text-slate-450 uppercase block">Active Template</span>
                   {loadingForms ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
+                    <Loader2 className="h-5 w-5 animate-spin text-crimson" />
                   ) : (
                     <select
                       value={selectedFormId}
                       onChange={(e) => setSelectedFormId(e.target.value)}
-                      className="rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:outline-none"
+                      className="rounded font-mono px-3 py-2 text-sm text-slate-200 focus:outline-none"
                     >
                       {formsList.map((f) => (
                         <option key={f.id} value={f.id}>
@@ -380,7 +380,7 @@ function AdminInquiriesPage() {
                       placeholder="Search messages, names, departments..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded border border-slate-800 bg-slate-900 py-1.5 pl-9 pr-4 text-sm text-slate-200 focus:outline-none"
+                      className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-sm text-slate-200 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -397,10 +397,10 @@ function AdminInquiriesPage() {
             </div>
 
             {/* Grid Table Display */}
-            <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-xl">
+            <div className="overflow-hidden rounded-xl font-mono shadow-xl">
               {loadingSubmissions ? (
                 <div className="flex h-64 items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+                  <Loader2 className="h-8 w-8 animate-spin text-crimson" />
                 </div>
               ) : filteredSubmissions.length > 0 ? (
                 <div className="overflow-x-auto">
@@ -463,7 +463,7 @@ function AdminInquiriesPage() {
         {/* TAB 2: Forms Schema Configurator */}
         {activeTab === "forms" && (
           <div className="space-y-4">
-            <div className="rounded-xl border border-slate-800 bg-slate-950 overflow-hidden">
+            <div className="rounded-xl font-mono overflow-hidden">
               <div className="divide-y divide-slate-850">
                 {formsList.map((form) => (
                   <div
@@ -472,7 +472,7 @@ function AdminInquiriesPage() {
                   >
                     <div>
                       <h4 className="text-sm font-semibold text-slate-200">{form.form_name}</h4>
-                      <p className="text-[10px] text-indigo-400 font-mono mt-0.5">
+                      <p className="text-[10px] text-crimson font-mono mt-0.5">
                         FieldsCount: {Array.isArray(form.fields_config) ? form.fields_config.length : 0}
                       </p>
                     </div>
@@ -517,7 +517,7 @@ function AdminInquiriesPage() {
                   placeholder="e.g. Admission Inquiries Form"
                   value={formConfigFields.form_name}
                   onChange={(e) => setFormConfigFields(p => ({ ...p, form_name: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -528,7 +528,7 @@ function AdminInquiriesPage() {
                   placeholder="e.g. registrar@svit.ac.in, admissions@svit.ac.in"
                   value={formConfigFields.recipient_emails}
                   onChange={(e) => setFormConfigFields(p => ({ ...p, recipient_emails: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -542,7 +542,7 @@ function AdminInquiriesPage() {
                   placeholder='e.g. [\n  { "name": "email", "type": "email", "label": "Email Address", "required": true }\n]'
                   value={formConfigFields.fields_config}
                   onChange={(e) => setFormConfigFields(p => ({ ...p, fields_config: e.target.value }))}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
                 />
               </div>
 
@@ -556,7 +556,7 @@ function AdminInquiriesPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-500"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
                 >
                   {editingForm ? "Save Changes" : "Create Form"}
                 </button>

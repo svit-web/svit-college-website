@@ -221,7 +221,7 @@ function AdminTrashPanelPage() {
             <select
               value={selectedTable}
               onChange={(e) => setSelectedTable(e.target.value)}
-              className="rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+              className="rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
             >
               {SOFT_DELETE_TABLES.map((tbl) => (
                 <option key={tbl} value={tbl}>
@@ -240,7 +240,7 @@ function AdminTrashPanelPage() {
                 placeholder="Filter by name / code / title..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded border border-slate-800 bg-slate-900 py-1.5 pl-9 pr-4 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-sm text-slate-200 focus:border-crimson focus:outline-none"
               />
             </div>
           </div>
@@ -278,10 +278,10 @@ function AdminTrashPanelPage() {
       )}
 
       {/* Grid Table display */}
-      <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-950 shadow-xl">
+      <div className="overflow-hidden rounded-xl font-mono shadow-xl">
         {loadingData ? (
           <div className="flex h-64 items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-crimson" />
           </div>
         ) : filteredRecords.length > 0 ? (
           <div className="overflow-x-auto">
@@ -352,7 +352,7 @@ function AdminTrashPanelPage() {
             <Archive className="h-12 w-12 text-slate-800" />
             <h3 className="mt-4 text-sm font-bold text-white">Bin is Empty</h3>
             <p className="mt-2 max-w-xs text-xs text-slate-500">
-              There are no deleted records found in the <code className="text-indigo-400 font-mono">{selectedTable}</code> table.
+              There are no deleted records found in the <code className="text-crimson font-mono">{selectedTable}</code> table.
             </p>
           </div>
         )}

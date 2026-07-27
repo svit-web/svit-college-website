@@ -348,12 +348,12 @@ function AdminMediaPage() {
             }}
             className="flex items-center gap-2 rounded bg-slate-800 hover:bg-slate-700 px-4 py-2 text-sm font-semibold text-white border border-slate-700"
           >
-            <FolderPlus className="h-4 w-4 text-indigo-400" />
+            <FolderPlus className="h-4 w-4 text-crimson" />
             <span>Create Folder</span>
           </button>
 
           {/* Upload File */}
-          <label className="flex items-center gap-2 rounded bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white cursor-pointer shadow">
+          <label className="flex items-center gap-2 rounded bg-crimson hover:bg-crimson/90 px-4 py-2 text-sm font-semibold text-white cursor-pointer shadow">
             {uploading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
@@ -377,7 +377,7 @@ function AdminMediaPage() {
             setFolderHistory([]);
             setCurrentFolderId(null);
           }}
-          className="text-xs font-semibold text-indigo-400 hover:text-indigo-300"
+          className="text-xs font-semibold text-crimson hover:text-crimson/80"
         >
           Media Library
         </button>
@@ -400,10 +400,10 @@ function AdminMediaPage() {
       </div>
 
       {/* Main Files Grid */}
-      <div className="rounded-xl border border-slate-800 bg-slate-950/20 p-6 min-h-96 relative">
+      <div className="rounded-xl font-mono/20 p-6 min-h-96 relative">
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 z-10 rounded-xl">
-            <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
+            <Loader2 className="h-8 w-8 animate-spin text-crimson" />
           </div>
         )}
 
@@ -423,7 +423,7 @@ function AdminMediaPage() {
               <div
                 key={folder.id}
                 onClick={() => handleEnterFolder(folder)}
-                className="group flex flex-col items-center justify-center rounded-xl border border-slate-850 bg-slate-950/50 p-4 cursor-pointer hover:border-indigo-500/50 hover:bg-slate-900/30 transition shadow-md"
+                className="group flex flex-col items-center justify-center rounded-xl border border-slate-850 bg-slate-950/50 p-4 cursor-pointer hover:border-crimson/50 hover:bg-slate-900/30 transition shadow-md"
               >
                 <div className="relative mb-3 text-amber-500">
                   <Folder className="h-12 w-12 fill-amber-500/10" />
@@ -465,7 +465,7 @@ function AdminMediaPage() {
                 <div
                   key={file.id}
                   onClick={() => handleOpenFileModal(file)}
-                  className="group flex flex-col rounded-xl border border-slate-850 bg-slate-950/50 overflow-hidden cursor-pointer hover:border-indigo-500/50 hover:bg-slate-900/30 transition shadow-md"
+                  className="group flex flex-col rounded-xl border border-slate-850 bg-slate-950/50 overflow-hidden cursor-pointer hover:border-crimson/50 hover:bg-slate-900/30 transition shadow-md"
                 >
                   <div className="relative h-28 w-full bg-slate-900 flex items-center justify-center border-b border-slate-850/50">
                     {isImage ? (
@@ -475,7 +475,7 @@ function AdminMediaPage() {
                         className="h-full w-full object-cover group-hover:scale-105 transition duration-300"
                       />
                     ) : (
-                      <FileText className="h-10 w-10 text-indigo-400" />
+                      <FileText className="h-10 w-10 text-crimson" />
                     )}
                   </div>
 
@@ -519,7 +519,7 @@ function AdminMediaPage() {
                   placeholder="e.g. Circulars, Placement-2026"
                   value={newFolderName}
                   onChange={(e) => setNewFolderName(e.target.value)}
-                  className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                  className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                 />
               </div>
 
@@ -533,7 +533,7 @@ function AdminMediaPage() {
                 </button>
                 <button
                   type="submit"
-                  className="rounded bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-sm font-semibold text-white"
+                  className="rounded bg-crimson hover:bg-crimson/90 px-4 py-2 text-sm font-semibold text-white"
                 >
                   {editingFolder ? "Rename" : "Create"}
                 </button>
@@ -567,7 +567,7 @@ function AdminMediaPage() {
                   />
                 </div>
               ) : (
-                <div className="flex h-32 w-32 items-center justify-center rounded bg-slate-950 text-indigo-400">
+                <div className="flex h-32 w-32 items-center justify-center rounded bg-slate-950 text-crimson">
                   <FileText className="h-16 w-16" />
                 </div>
               )}
@@ -602,7 +602,7 @@ function AdminMediaPage() {
                         navigator.clipboard.writeText(selectedFile.file_path);
                         toast.success("URL copied to clipboard!");
                       }}
-                      className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-400 font-mono focus:outline-none cursor-pointer"
+                      className="w-full rounded font-mono px-3 py-1.5 text-xs text-slate-400 font-mono focus:outline-none cursor-pointer"
                     />
                     <a
                       href={selectedFile.file_path}
@@ -624,7 +624,7 @@ function AdminMediaPage() {
                     placeholder="Short description of image contents"
                     value={altText}
                     onChange={(e) => setAltText(e.target.value)}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                   />
                 </div>
 
@@ -636,7 +636,7 @@ function AdminMediaPage() {
                     value={caption}
                     onChange={(e) => setCaption(e.target.value)}
                     rows={2}
-                    className="w-full rounded border border-slate-800 bg-slate-900 px-3 py-2 text-sm text-slate-200 focus:border-indigo-500 focus:outline-none"
+                    className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
                   />
                 </div>
               </div>
@@ -663,7 +663,7 @@ function AdminMediaPage() {
                   <button
                     type="submit"
                     disabled={updatingFile}
-                    className="flex items-center gap-1.5 rounded bg-indigo-600 hover:bg-indigo-500 px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                    className="flex items-center gap-1.5 rounded bg-crimson hover:bg-crimson/90 px-4 py-2 text-xs font-semibold text-white disabled:opacity-50"
                   >
                     {updatingFile && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
                     <span>Save Changes</span>
