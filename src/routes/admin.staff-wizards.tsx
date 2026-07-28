@@ -879,7 +879,11 @@ function StaffProfileWizardPage() {
                               onChange={(e) => setNewAssignment(p => ({ ...p, is_primary: e.target.checked }))}
                               className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-crimson"
                             />
-                            <label htmlFor="is_primary" className="ml-2 text-xs font-semibold text-slate-400">Primary Assignment</label>
+                            <label
+                              htmlFor="is_primary"
+                              className="ml-2 text-xs font-semibold text-slate-400 cursor-help"
+                              title="Mark this as the staff member's main department. Only the primary assignment appears on their profile page and determines HOD status."
+                            >Primary Assignment</label>
                           </div>
 
                           <button
