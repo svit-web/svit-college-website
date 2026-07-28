@@ -28,7 +28,7 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, to
       <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-all duration-500 ease-in-out group-hover:border-gold group-hover:shadow-lg">
 
         {/* Logo / initials — always visible, blurs + scales on hover */}
-        <div className="absolute inset-0 flex items-center justify-center p-6 transition-all duration-500 ease-in-out group-hover:blur-[3px]">
+        <div className="absolute inset-0 flex items-center justify-center p-2 transition-all duration-500 ease-in-out group-hover:blur-[3px]">
           {iconUrl ? (
             <img src={iconUrl} alt={name} className="h-full w-full object-contain" />
           ) : (

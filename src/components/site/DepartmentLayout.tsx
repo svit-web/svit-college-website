@@ -44,7 +44,7 @@ export function DepartmentLayout({ department }: Props) {
         ]}
         rightSlot={
           department.logo_url ? (
-            <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-3xl bg-white/10 p-1.5 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm">
+            <div className="flex h-72 w-72 items-center justify-center overflow-hidden rounded-3xl bg-white/10 p-4 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm">
               <img src={department.logo_url} alt={`${department.name} logo`} className="h-full w-full object-contain" />
             </div>
           ) : undefined

@@ -148,7 +148,7 @@ function ProgramsSection({ college }: { college: College }) {
         title={`Programmes at ${college.shortCode}`}
         subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
-      <div className="mt-12 grid gap-5 grid-cols-2 lg:grid-cols-3">
+      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {allDepts.map((dept, i) => (
           <Reveal key={dept.id} delay={i * 0.05}>
             <DeptBranchCard
