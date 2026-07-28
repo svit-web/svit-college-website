@@ -3148,7 +3148,6 @@ export type Database = {
       }
       staff_profiles: {
         Row: {
-          avatar_url: string | null
           bio: string | null
           created_at: string
           created_by: string | null
@@ -3158,9 +3157,11 @@ export type Database = {
           expertise: string[]
           first_name: string
           id: string
+          joining_year: number | null
           last_name: string
           metadata: Json
           office_hours: Json
+          past_experience_years: number | null
           phone: string | null
           social_links: Json
           status: Database["public"]["Enums"]["content_status"]
@@ -3170,7 +3171,6 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          avatar_url?: string | null
           bio?: string | null
           created_at?: string
           created_by?: string | null
@@ -3180,9 +3180,11 @@ export type Database = {
           expertise?: string[]
           first_name: string
           id?: string
+          joining_year?: number | null
           last_name: string
           metadata?: Json
           office_hours?: Json
+          past_experience_years?: number | null
           phone?: string | null
           social_links?: Json
           status?: Database["public"]["Enums"]["content_status"]
@@ -3192,7 +3194,6 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          avatar_url?: string | null
           bio?: string | null
           created_at?: string
           created_by?: string | null
@@ -3202,9 +3203,11 @@ export type Database = {
           expertise?: string[]
           first_name?: string
           id?: string
+          joining_year?: number | null
           last_name?: string
           metadata?: Json
           office_hours?: Json
+          past_experience_years?: number | null
           phone?: string | null
           social_links?: Json
           status?: Database["public"]["Enums"]["content_status"]

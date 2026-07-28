@@ -168,6 +168,13 @@ function StaffProfilePage() {
                   { label: "Designation", value: profile.designation },
                   { label: "Department", value: dept?.name },
                   { label: "Employee Code", value: profile.employeeCode },
+                  { label: "Joining Year", value: profile.joiningYear ? String(profile.joiningYear) : null },
+                  {
+                    label: "Total Experience",
+                    value: (profile.joiningYear || profile.pastExperienceYears != null)
+                      ? `${(profile.pastExperienceYears ?? 0) + (profile.joiningYear ? new Date().getFullYear() - profile.joiningYear : 0)} years`
+                      : null,
+                  },
                 ].filter((d) => d.value).map((d) => (
                   <div key={d.label} className="rounded-xl border-2 border-navy/10 bg-white px-4 py-3">
                     <dt className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{d.label}</dt>

@@ -24,6 +24,8 @@ export interface StaffMember {
   officeHours?: { day: string; time: string }[] | null;
   socialLinks?: { linkedin?: string; googleScholar?: string; orcid?: string } | null;
   isHod?: boolean;
+  joiningYear?: number | null;
+  pastExperienceYears?: number | null;
   achievements: StaffAchievement[];
 }
 
@@ -102,6 +104,8 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
       bio: (data as any).bio ?? null,
       officeHours: (data as any).office_hours ?? null,
       socialLinks: (data as any).social_links ?? null,
+      joiningYear: (data as any).joining_year ?? null,
+      pastExperienceYears: (data as any).past_experience_years ?? null,
       department: dept ? { id: dept.id, name: dept.name, code: dept.code } : null,
       achievements,
     };

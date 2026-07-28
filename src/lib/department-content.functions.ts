@@ -25,7 +25,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
       .select(`
         is_primary,
         designations ( title ),
-        staff_profiles ( id, title, first_name, last_name, email, avatar_url, status, metadata )
+        staff_profiles ( id, title, first_name, last_name, email, status, metadata )
       `)
       .eq('department_id', departmentId)
       .eq('status', 'published');

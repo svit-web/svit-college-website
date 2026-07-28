@@ -95,7 +95,7 @@ function StaffProfilesPage() {
       const { data, error } = await supabase
         .from("staff_profiles")
         .select(`
-          id, title, first_name, last_name, email, avatar_url, status, expertise,
+          id, title, first_name, last_name, email, status, expertise, metadata,
           staff_department_assignments(
             is_primary,
             department:department_id(name),
@@ -111,7 +111,7 @@ function StaffProfilesPage() {
       try {
         const { data } = await supabase
           .from("staff_profiles")
-          .select("id, title, first_name, last_name, email, avatar_url, status, expertise")
+          .select("id, title, first_name, last_name, email, status, expertise, metadata")
           .is("deleted_at", null)
           .order("first_name");
         setStaffList(data || []);
@@ -202,14 +202,17 @@ function StaffProfilesPage() {
     if (!selectedId) return;
     setGeneralSaving(true);
     try {
+      const currentMeta = (generalForm.metadata as Record<string, any>) ?? {};
       const { error } = await supabase.from("staff_profiles").update({
         title: generalForm.title,
         first_name: generalForm.first_name,
         last_name: generalForm.last_name,
         email: generalForm.email,
         phone: generalForm.phone,
-        avatar_url: generalForm.avatar_url,
         bio: generalForm.bio,
+        joining_year: generalForm.joining_year ? Number(generalForm.joining_year) : null,
+        past_experience_years: generalForm.past_experience_years ? Number(generalForm.past_experience_years) : null,
+        metadata: { ...currentMeta, photoUrl: generalForm._photoUrl ?? currentMeta.photoUrl ?? null },
         status: generalForm.status || "published",
         updated_by: user?.id,
       }).eq("id", selectedId);
@@ -401,9 +404,9 @@ function StaffProfilesPage() {
                 )}
               >
                 <div className="flex items-start gap-3">
-                  {staff.avatar_url ? (
+                  {(staff.metadata as any)?.photoUrl ? (
                     <img
-                      src={staff.avatar_url}
+                      src={(staff.metadata as any).photoUrl}
                       alt=""
                       className="h-11 w-11 rounded-full object-cover border border-slate-200 shrink-0"
                     />
@@ -620,10 +623,29 @@ function StaffProfilesPage() {
                       <div className="space-y-1">
                         <label className="field-label">Profile Photo</label>
                         <MediaUploader
-                          value={generalForm.avatar_url || ""}
-                          onChange={(url) => setGeneralForm((p) => ({ ...p, avatar_url: url }))}
+                          value={generalForm._photoUrl ?? (generalForm.metadata as any)?.photoUrl ?? ""}
+                          onChange={(url) => setGeneralForm((p) => ({ ...p, _photoUrl: url }))}
                           type="image"
                         />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <label className="field-label">Joining Year</label>
+                          <input type="number" min="1980" max="2099"
+                            value={generalForm.joining_year || ""}
+                            onChange={(e) => setGeneralForm((p) => ({ ...p, joining_year: e.target.value }))}
+                            placeholder="e.g. 2015"
+                            className="field-input" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="field-label">Past Experience (yrs)</label>
+                          <input type="number" min="0" max="60"
+                            value={generalForm.past_experience_years || ""}
+                            onChange={(e) => setGeneralForm((p) => ({ ...p, past_experience_years: e.target.value }))}
+                            placeholder="e.g. 3"
+                            className="field-input" />
+                        </div>
                       </div>
 
                       <div className="space-y-1">
