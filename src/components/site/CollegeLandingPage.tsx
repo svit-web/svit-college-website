@@ -18,6 +18,7 @@ import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
+import { DeptBranchCard } from "@/components/site/DeptBranchCard";
 export interface CollegeDept {
   id: string; name: string; slug: string; code: string;
   logo_url?: string | null;
@@ -184,33 +185,13 @@ function ProgramsSection({ college }: { college: College }) {
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {group.depts.map((dept, i) => (
                 <Reveal key={dept.id} delay={i * 0.05}>
-                  <Link
+                  <DeptBranchCard
+                    name={dept.name}
+                    iconUrl={dept.logo_url}
+                    fallbackLabel={initials(dept.name)}
                     to="/departments/$dept"
                     params={{ dept: dept.code }}
-                    className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
-                  >
-                    {dept.logo_url ? (
-                      <div className="mb-4 flex h-12 w-12 items-center justify-center overflow-hidden rounded-md bg-white p-1.5 ring-1 ring-navy/10">
-                        <img src={dept.logo_url} alt={`${dept.name} logo`} className="h-full w-full object-contain" />
-                      </div>
-                    ) : (
-                      <div
-                        aria-hidden
-                        className="mb-4 flex h-12 w-12 items-center justify-center rounded-md border-2 border-dashed border-navy/25 bg-secondary text-[10px] font-bold uppercase tracking-wider text-muted-foreground"
-                      >
-                        {initials(dept.name)}
-                      </div>
-                    )}
-                    <div className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      {dept.name}
-                    </div>
-                    <h5 className="mt-1 font-display text-lg font-bold text-navy leading-snug">
-                      {dept.code}
-                    </h5>
-                    <div className="mt-3 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
-                      View department →
-                    </div>
-                  </Link>
+                  />
                 </Reveal>
               ))}
             </div>
