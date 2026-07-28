@@ -306,23 +306,23 @@ function AdminHomepageLayoutPage() {
       
       {/* Title */}
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl flex items-center gap-3">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl flex items-center gap-3">
           <Layout className="h-8 w-8 text-crimson" />
           Homepage Layout Configurator
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-slate-500">
           Design layout sections, add interactive widgets, and manage banner slider promos.
         </p>
       </div>
 
       {/* Tabs list */}
-      <div className="flex border-b border-slate-800">
+      <div className="flex border-b border-slate-200">
         <button
           onClick={() => setActiveTab("sections")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "sections"
-              ? "border-crimson text-white"
-              : "border-transparent text-slate-450 hover:text-slate-200"
+              ? "border-crimson text-navy"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <Layers className="h-4 w-4" />
@@ -333,8 +333,8 @@ function AdminHomepageLayoutPage() {
           onClick={() => setActiveTab("widgets")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "widgets"
-              ? "border-crimson text-white"
-              : "border-transparent text-slate-450 hover:text-slate-200"
+              ? "border-crimson text-navy"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <Sliders className="h-4 w-4" />
@@ -345,8 +345,8 @@ function AdminHomepageLayoutPage() {
           onClick={() => setActiveTab("items")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "items"
-              ? "border-crimson text-white"
-              : "border-transparent text-slate-450 hover:text-slate-200"
+              ? "border-crimson text-navy"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <Grid className="h-4 w-4" />
@@ -360,8 +360,8 @@ function AdminHomepageLayoutPage() {
         {/* TAB 1: Sections Manager */}
         {activeTab === "sections" && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center bg-slate-950 p-4 border border-slate-850 rounded-lg">
-              <span className="text-sm text-slate-400 font-semibold">Rearrange homepage row items:</span>
+            <div className="flex justify-between items-center bg-white p-4 border border-slate-200 rounded-lg">
+              <span className="text-sm text-slate-500 font-semibold">Rearrange homepage row items:</span>
               <button
                 onClick={() => {
                   setEditingSection(null);
@@ -390,14 +390,14 @@ function AdminHomepageLayoutPage() {
                 {sections.map((sec, idx) => (
                   <div
                     key={sec.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-850 bg-slate-900/10 p-4 hover:bg-slate-900/25 transition"
+                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 hover:bg-slate-100 transition"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-crimson/10 text-crimson border border-crimson/20 font-bold text-sm">
                         {idx + 1}
                       </div>
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-200">{sec.title || "Unnamed Section"}</h4>
+                        <h4 className="text-sm font-semibold text-slate-800">{sec.title || "Unnamed Section"}</h4>
                         <p className="text-[10px] text-crimson uppercase tracking-wide font-mono mt-0.5">
                           Type: {sec.section_type} • Config: {JSON.stringify(sec.config)}
                         </p>
@@ -408,21 +408,21 @@ function AdminHomepageLayoutPage() {
                       <button
                         onClick={() => handleShiftSection(sec, "up")}
                         disabled={idx === 0}
-                        className="rounded p-1.5 text-slate-450 hover:bg-slate-800 hover:text-white disabled:opacity-30"
+                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
                       >
                         <ArrowUp className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleShiftSection(sec, "down")}
                         disabled={idx === sections.length - 1}
-                        className="rounded p-1.5 text-slate-450 hover:bg-slate-800 hover:text-white disabled:opacity-30"
+                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
                       >
                         <ArrowDown className="h-4 w-4" />
                       </button>
-                      <span className="h-4 w-px bg-slate-800" />
+                      <span className="h-4 w-px bg-slate-100" />
                       <button
                         onClick={() => handleOpenEditSection(sec)}
-                        className="rounded p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white"
+                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
@@ -437,9 +437,9 @@ function AdminHomepageLayoutPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center p-12 bg-slate-950 border border-slate-850 rounded-lg">
+              <div className="text-center p-12 bg-white border border-slate-200 rounded-lg">
                 <Layers className="h-12 w-12 mx-auto text-slate-800" />
-                <h3 className="text-white font-bold mt-4">No sections defined</h3>
+                <h3 className="text-navy font-bold mt-4">No sections defined</h3>
                 <p className="text-xs text-slate-500 mt-2">Add homepage layout sections to structure page rows.</p>
               </div>
             )}
@@ -449,8 +449,8 @@ function AdminHomepageLayoutPage() {
         {/* TAB 2: Widgets Manager */}
         {activeTab === "widgets" && (
           <div className="space-y-4">
-            <div className="flex justify-between items-center bg-slate-950 p-4 border border-slate-850 rounded-lg">
-              <span className="text-sm text-slate-400 font-semibold">Integrate active homepage widget blocks:</span>
+            <div className="flex justify-between items-center bg-white p-4 border border-slate-200 rounded-lg">
+              <span className="text-sm text-slate-500 font-semibold">Integrate active homepage widget blocks:</span>
               <button
                 onClick={() => {
                   setEditingWidget(null);
@@ -481,10 +481,10 @@ function AdminHomepageLayoutPage() {
                   return (
                     <div
                       key={widget.id}
-                      className="flex items-center justify-between rounded-xl border border-slate-850 bg-slate-900/10 p-4 hover:bg-slate-900/25 transition"
+                      className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 hover:bg-slate-100 transition"
                     >
                       <div>
-                        <h4 className="text-sm font-semibold text-slate-200">{widget.title || "Unnamed Widget"}</h4>
+                        <h4 className="text-sm font-semibold text-slate-800">{widget.title || "Unnamed Widget"}</h4>
                         <p className="text-[10px] text-crimson uppercase tracking-wide font-mono mt-0.5">
                           Type: {widget.widget_type} • Section: {parentSection?.title || "(Orphaned/None)"}
                         </p>
@@ -493,7 +493,7 @@ function AdminHomepageLayoutPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleOpenEditWidget(widget)}
-                          className="rounded p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white"
+                          className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
@@ -509,9 +509,9 @@ function AdminHomepageLayoutPage() {
                 })}
               </div>
             ) : (
-              <div className="text-center p-12 bg-slate-950 border border-slate-850 rounded-lg">
+              <div className="text-center p-12 bg-white border border-slate-200 rounded-lg">
                 <Sliders className="h-12 w-12 mx-auto text-slate-800" />
-                <h3 className="text-white font-bold mt-4">No widgets defined</h3>
+                <h3 className="text-navy font-bold mt-4">No widgets defined</h3>
                 <p className="text-xs text-slate-500 mt-2">Create customizable sidebar or grid layout widgets.</p>
               </div>
             )}
@@ -520,7 +520,7 @@ function AdminHomepageLayoutPage() {
 
         {/* TAB 3: Carousel Items Manager */}
         {activeTab === "items" && (
-          <div className="rounded-xl border border-slate-850 bg-slate-950 p-1">
+          <div className="rounded-xl border border-slate-200 bg-white p-1">
             <AdminCrudManager tableId="homepage_items" />
           </div>
         )}
@@ -530,31 +530,31 @@ function AdminHomepageLayoutPage() {
       {/* ➕ MODAL: Add / Edit Layout Section */}
       {isSectionModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-lg rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-white mb-4">
+          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-navy mb-4">
               {editingSection ? "Edit Section Details" : "Create Layout Section"}
             </h3>
             
             <form onSubmit={handleSaveSection} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Section title / Label</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Section title / Label</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Latest Events"
                   value={sectionForm.title}
                   onChange={(e) => setSectionForm(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Section Type</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Section Type</label>
                   <select
                     value={sectionForm.section_type}
                     onChange={(e) => setSectionForm(p => ({ ...p, section_type: e.target.value }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   >
                     <option value="hero">Hero slider/carousel</option>
                     <option value="grid">Grid (e.g. departments/courses)</option>
@@ -565,18 +565,18 @@ function AdminHomepageLayoutPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Sort Order</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Sort Order</label>
                   <input
                     type="number"
                     value={sectionForm.sort_order}
                     onChange={(e) => setSectionForm(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase flex items-center gap-1">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase flex items-center gap-1">
                   <span>Configuration settings (JSON format)</span>
                 </label>
                 <textarea
@@ -585,15 +585,15 @@ function AdminHomepageLayoutPage() {
                   placeholder='e.g. { "cols": 3, "darkTheme": true }'
                   value={sectionForm.config}
                   onChange={(e) => setSectionForm(p => ({ ...p, config: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-900">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsSectionModalOpen(false)}
-                  className="rounded border border-slate-850 px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
                 >
                   Cancel
                 </button>
@@ -612,31 +612,31 @@ function AdminHomepageLayoutPage() {
       {/* ➕ MODAL: Add / Edit Widget Block */}
       {isWidgetModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-lg rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-white mb-4">
+          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-navy mb-4">
               {editingWidget ? "Edit Widget Block" : "Integrate Widget Block"}
             </h3>
             
             <form onSubmit={handleSaveWidget} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Widget Name / Title</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Widget Name / Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Admission Alerts Bar"
                   value={widgetForm.title}
                   onChange={(e) => setWidgetForm(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Parent Section Group</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Parent Section Group</label>
                   <select
                     value={widgetForm.section_id}
                     onChange={(e) => setWidgetForm(p => ({ ...p, section_id: e.target.value }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   >
                     {sections.map((s) => (
                       <option key={s.id} value={s.id}>
@@ -647,11 +647,11 @@ function AdminHomepageLayoutPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Widget Type</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Widget Type</label>
                   <select
                     value={widgetForm.widget_type}
                     onChange={(e) => setWidgetForm(p => ({ ...p, widget_type: e.target.value }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   >
                     <option value="html">Custom HTML / Text</option>
                     <option value="links">Social Links Grid</option>
@@ -662,17 +662,17 @@ function AdminHomepageLayoutPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Sort Order</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Sort Order</label>
                 <input
                   type="number"
                   value={widgetForm.sort_order}
                   onChange={(e) => setWidgetForm(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                  className="w-full rounded font-mono px-3.5 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase flex items-center gap-1">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase flex items-center gap-1">
                   <span>Widget configuration settings (JSON format)</span>
                 </label>
                 <textarea
@@ -681,15 +681,15 @@ function AdminHomepageLayoutPage() {
                   placeholder='e.g. { "htmlContent": "<h3>Vasad Info</h3>", "color": "blue" }'
                   value={widgetForm.config}
                   onChange={(e) => setWidgetForm(p => ({ ...p, config: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-900">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsWidgetModalOpen(false)}
-                  className="rounded border border-slate-850 px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
                 >
                   Cancel
                 </button>

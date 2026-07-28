@@ -360,7 +360,7 @@ function AdminMenusPage() {
         
         {/* Row Link Card */}
         <div
-          className={`flex items-center justify-between rounded-lg border border-slate-850 bg-slate-900/10 p-3 hover:bg-slate-900/35 transition`}
+          className={`flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 p-3 hover:bg-slate-100 transition`}
           style={{ marginLeft: `${depth * 24}px` }}
         >
           <div className="flex items-center gap-3 min-w-0">
@@ -369,7 +369,7 @@ function AdminMenusPage() {
             {hasChildren ? (
               <button
                 onClick={() => toggleExpand(node.id)}
-                className="text-slate-500 hover:text-white shrink-0"
+                className="text-slate-500 hover:text-navy shrink-0"
               >
                 {isExpanded ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
               </button>
@@ -377,12 +377,12 @@ function AdminMenusPage() {
               <div className="w-4 h-4 shrink-0" /> // spacer
             )}
 
-            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-950 text-crimson border border-slate-800">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-white text-crimson border border-slate-200">
               <Folder className="h-3.5 w-3.5" />
             </div>
 
             <div className="min-w-0">
-              <h4 className="text-sm font-semibold text-slate-200 truncate">{node.title}</h4>
+              <h4 className="text-sm font-semibold text-slate-800 truncate">{node.title}</h4>
               <p className="text-[10px] text-slate-500 font-mono truncate flex items-center gap-1">
                 <LinkIcon className="h-2.5 w-2.5" />
                 <span>{node.url || "(No Link)"}</span>
@@ -396,20 +396,20 @@ function AdminMenusPage() {
             {/* Shift Order Buttons */}
             <button
               onClick={() => handleShiftSort(node, "up")}
-              className="rounded p-1 text-slate-650 hover:bg-slate-800 hover:text-white transition"
+              className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-navy transition"
               title="Move up"
             >
               <ArrowUp className="h-3.5 w-3.5" />
             </button>
             <button
               onClick={() => handleShiftSort(node, "down")}
-              className="rounded p-1 text-slate-655 hover:bg-slate-800 hover:text-white transition"
+              className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-navy transition"
               title="Move down"
             >
               <ArrowDown className="h-3.5 w-3.5" />
             </button>
 
-            <span className="w-px h-4 bg-slate-800 mx-1" />
+            <span className="w-px h-4 bg-slate-100 mx-1" />
 
             <button
               onClick={() => handleOpenAddItem(node.id)}
@@ -422,7 +422,7 @@ function AdminMenusPage() {
 
             <button
               onClick={() => handleOpenEditItem(node)}
-              className="rounded p-1 text-slate-500 hover:bg-slate-850 hover:text-white transition"
+              className="rounded p-1 text-slate-500 hover:bg-slate-100 hover:text-navy transition"
               title="Edit Link"
             >
               <Edit2 className="h-3.5 w-3.5" />
@@ -454,10 +454,10 @@ function AdminMenusPage() {
       {/* Title Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl">
             Navigation Menu Tree Manager
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-500">
             Build and arrange nested multi-level website menus and headers.
           </p>
         </div>
@@ -472,16 +472,16 @@ function AdminMenusPage() {
       </div>
 
       {/* Select Menu group bar */}
-      <div className="flex flex-col gap-4 rounded-xl bg-slate-950 p-4 border border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl bg-white p-4 border border-slate-200 sm:flex-row sm:items-center sm:justify-between">
         <div className="space-y-1">
-          <span className="text-xs font-semibold text-slate-450 uppercase tracking-wider block">Active Navigation Group</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Active Navigation Group</span>
           {loadingMenus ? (
             <Loader2 className="h-5 w-5 animate-spin text-crimson" />
           ) : (
             <select
               value={selectedMenuId}
               onChange={(e) => setSelectedMenuId(e.target.value)}
-              className="rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+              className="rounded font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
             >
               {menusList.map((m) => (
                 <option key={m.id} value={m.id}>
@@ -503,7 +503,7 @@ function AdminMenusPage() {
       </div>
 
       {/* Tree list area */}
-      <div className="flex-1 rounded-xl border border-slate-850 bg-slate-950 p-6 shadow-xl min-h-[400px]">
+      <div className="flex-1 rounded-xl border border-slate-200 bg-white p-6 shadow-xl min-h-[400px]">
         {loadingItems ? (
           <div className="flex h-64 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-crimson" />
@@ -515,8 +515,8 @@ function AdminMenusPage() {
         ) : (
           <div className="flex flex-col items-center justify-center p-16 text-center">
             <Menu className="h-14 w-14 text-slate-800" />
-            <h3 className="mt-4 text-base font-bold text-white">Menu is Empty</h3>
-            <p className="mt-2 max-w-sm text-xs text-slate-550">
+            <h3 className="mt-4 text-base font-bold text-navy">Menu is Empty</h3>
+            <p className="mt-2 max-w-sm text-xs text-slate-500">
               There are no links in this menu. Click the "Add Root Link" button above to register your first navigation link.
             </p>
           </div>
@@ -526,39 +526,39 @@ function AdminMenusPage() {
       {/* ➕ MODAL: Create Menu Group dialog */}
       {isMenuModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-md rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-white mb-4">Create Navigation Menu</h3>
+          <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-navy mb-4">Create Navigation Menu</h3>
             
             <form onSubmit={handleCreateMenu} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Menu Name (e.g. Header Navigation)</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Menu Name (e.g. Header Navigation)</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Main Header Menu"
                   value={newMenuValues.name}
                   onChange={(e) => setNewMenuValues(p => ({ ...p, name: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">System Code (slug)</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">System Code (slug)</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. main-header"
                   value={newMenuValues.code}
                   onChange={(e) => setNewMenuValues(p => ({ ...p, code: e.target.value.toLowerCase().replace(/\s+/g, "-") }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-900">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsMenuModalOpen(false)}
-                  className="rounded border border-slate-850 px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
                 >
                   Cancel
                 </button>
@@ -577,31 +577,31 @@ function AdminMenusPage() {
       {/* ➕ MODAL: Add / Edit Link details dialog */}
       {isItemModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-md rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-white mb-4">
+          <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-navy mb-4">
               {editingItem ? "Edit Navigation Link" : "Add Navigation Link"}
             </h3>
             
             <form onSubmit={handleSaveItem} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Link Title</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Link Title</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Admissions"
                   value={itemFormValues.title}
                   onChange={(e) => setItemFormValues(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Link Type</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Link Type</label>
                   <select
                     value={itemFormValues.link_type}
                     onChange={(e) => setItemFormValues(p => ({ ...p, link_type: e.target.value }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   >
                     <option value="custom">Custom URL</option>
                     <option value="page">Inner Page</option>
@@ -609,44 +609,44 @@ function AdminMenusPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Sort Order</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Sort Order</label>
                   <input
                     type="number"
                     value={itemFormValues.sort_order}
                     onChange={(e) => setItemFormValues(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Target URL / Route Link</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Target URL / Route Link</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. /admissions or https://external.com"
                   value={itemFormValues.url}
                   onChange={(e) => setItemFormValues(p => ({ ...p, url: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Icon Class (optional)</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Icon Class (optional)</label>
                 <input
                   type="text"
                   placeholder="e.g. Home, Settings, User"
                   value={itemFormValues.icon}
                   onChange={(e) => setItemFormValues(p => ({ ...p, icon: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-900">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsItemModalOpen(false)}
-                  className="rounded border border-slate-850 px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
                 >
                   Cancel
                 </button>

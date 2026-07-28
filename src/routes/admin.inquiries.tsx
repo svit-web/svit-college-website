@@ -293,11 +293,11 @@ function AdminInquiriesPage() {
       {/* Title */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl flex items-center gap-3">
+          <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl flex items-center gap-3">
             <FileText className="h-8 w-8 text-rose-500" />
             Inquiry Submission Suite
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-500">
             Export submissions to spreadsheet CSV logs and configure template dynamic fields.
           </p>
         </div>
@@ -316,13 +316,13 @@ function AdminInquiriesPage() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800">
+      <div className="flex border-b border-slate-200">
         <button
           onClick={() => setActiveTab("submissions")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "submissions"
-              ? "border-crimson text-white"
-              : "border-transparent text-slate-450 hover:text-slate-200"
+              ? "border-crimson text-navy"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <Inbox className="h-4 w-4" />
@@ -333,8 +333,8 @@ function AdminInquiriesPage() {
           onClick={() => setActiveTab("forms")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "forms"
-              ? "border-crimson text-white"
-              : "border-transparent text-slate-450 hover:text-slate-200"
+              ? "border-crimson text-navy"
+              : "border-transparent text-slate-500 hover:text-slate-800"
           }`}
         >
           <Settings className="h-4 w-4" />
@@ -350,17 +350,17 @@ function AdminInquiriesPage() {
           <div className="space-y-4">
             
             {/* Toolbar */}
-            <div className="flex flex-col gap-4 rounded-xl bg-slate-950 p-4 border border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 rounded-xl bg-white p-4 border border-slate-200 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 flex-1">
                 <div className="space-y-1">
-                  <span className="text-xs font-semibold text-slate-450 uppercase block">Active Template</span>
+                  <span className="text-xs font-semibold text-slate-500 uppercase block">Active Template</span>
                   {loadingForms ? (
                     <Loader2 className="h-5 w-5 animate-spin text-crimson" />
                   ) : (
                     <select
                       value={selectedFormId}
                       onChange={(e) => setSelectedFormId(e.target.value)}
-                      className="rounded font-mono px-3 py-2 text-sm text-slate-200 focus:outline-none"
+                      className="rounded border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:outline-none"
                     >
                       {formsList.map((f) => (
                         <option key={f.id} value={f.id}>
@@ -372,7 +372,7 @@ function AdminInquiriesPage() {
                 </div>
 
                 <div className="space-y-1 flex-1 max-w-sm">
-                  <span className="text-xs font-semibold text-slate-450 uppercase block">Inbox Search</span>
+                  <span className="text-xs font-semibold text-slate-500 uppercase block">Inbox Search</span>
                   <div className="relative">
                     <Search className="absolute top-2.5 left-3 h-4 w-4 text-slate-500" />
                     <input
@@ -380,7 +380,7 @@ function AdminInquiriesPage() {
                       placeholder="Search messages, names, departments..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-sm text-slate-200 focus:outline-none"
+                      className="w-full rounded border border-slate-200 bg-white font-mono py-1.5 pl-9 pr-4 text-sm text-slate-800 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -397,7 +397,7 @@ function AdminInquiriesPage() {
             </div>
 
             {/* Grid Table Display */}
-            <div className="overflow-hidden rounded-xl font-mono shadow-xl">
+            <div className="overflow-hidden rounded-xl border border-slate-200 bg-white font-mono shadow-xl">
               {loadingSubmissions ? (
                 <div className="flex h-64 items-center justify-center">
                   <Loader2 className="h-8 w-8 animate-spin text-crimson" />
@@ -406,32 +406,32 @@ function AdminInquiriesPage() {
                 <div className="overflow-x-auto">
                   <table className="w-full text-left border-collapse">
                     <thead>
-                      <tr className="border-b border-slate-800 bg-slate-900/50">
-                        <th className="px-6 py-4 text-xs font-bold uppercase text-slate-400">Date Info</th>
+                      <tr className="border-b border-slate-200 bg-slate-100">
+                        <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Date Info</th>
                         {dataKeys.map((key) => (
-                          <th key={key} className="px-6 py-4 text-xs font-bold uppercase text-slate-400">
+                          <th key={key} className="px-6 py-4 text-xs font-bold uppercase text-slate-500">
                             {key.replace(/_/g, " ")}
                           </th>
                         ))}
-                        <th className="px-6 py-4 text-xs font-bold uppercase text-slate-400">Staff Notes</th>
-                        <th className="px-6 py-4 text-right text-xs font-bold uppercase text-slate-400">Actions</th>
+                        <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Staff Notes</th>
+                        <th className="px-6 py-4 text-right text-xs font-bold uppercase text-slate-500">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-850">
+                    <tbody className="divide-y divide-slate-200">
                       {filteredSubmissions.map((sub) => (
-                        <tr key={sub.id} className="hover:bg-slate-900/20 transition">
-                          <td className="px-6 py-4 text-xs text-slate-400 font-medium">
+                        <tr key={sub.id} className="hover:bg-slate-100 transition">
+                          <td className="px-6 py-4 text-xs text-slate-500 font-medium">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               {new Date(sub.created_at).toLocaleDateString()}
                             </span>
                           </td>
                           {dataKeys.map((key) => (
-                            <td key={key} className="px-6 py-4 text-xs text-slate-200">
-                              {sub.submitted_data?.[key] ? String(sub.submitted_data[key]) : <span className="text-slate-600">-</span>}
+                            <td key={key} className="px-6 py-4 text-xs text-slate-800">
+                              {sub.submitted_data?.[key] ? String(sub.submitted_data[key]) : <span className="text-slate-500">-</span>}
                             </td>
                           ))}
-                          <td className="px-6 py-4 text-xs text-slate-450 italic">
+                          <td className="px-6 py-4 text-xs text-slate-500 italic">
                             {sub.notes || "(No notes added)"}
                           </td>
                           <td className="px-6 py-4 text-right">
@@ -450,7 +450,7 @@ function AdminInquiriesPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center p-16 text-center">
                   <Inbox className="h-14 w-14 text-slate-800" />
-                  <h3 className="mt-4 text-base font-bold text-white">No submissions found</h3>
+                  <h3 className="mt-4 text-base font-bold text-navy">No submissions found</h3>
                   <p className="mt-2 max-w-sm text-xs text-slate-500">
                     Submissions will display here once visitors submit forms on the college portal.
                   </p>
@@ -463,15 +463,15 @@ function AdminInquiriesPage() {
         {/* TAB 2: Forms Schema Configurator */}
         {activeTab === "forms" && (
           <div className="space-y-4">
-            <div className="rounded-xl font-mono overflow-hidden">
-              <div className="divide-y divide-slate-850">
+            <div className="rounded-xl border border-slate-200 bg-white font-mono overflow-hidden">
+              <div className="divide-y divide-slate-200">
                 {formsList.map((form) => (
                   <div
                     key={form.id}
-                    className="flex items-center justify-between p-5 hover:bg-slate-900/10 transition"
+                    className="flex items-center justify-between p-5 hover:bg-slate-50 transition"
                   >
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-200">{form.form_name}</h4>
+                      <h4 className="text-sm font-semibold text-slate-800">{form.form_name}</h4>
                       <p className="text-[10px] text-crimson font-mono mt-0.5">
                         FieldsCount: {Array.isArray(form.fields_config) ? form.fields_config.length : 0}
                       </p>
@@ -480,7 +480,7 @@ function AdminInquiriesPage() {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleOpenEditForm(form)}
-                        className="rounded p-1.5 text-slate-500 hover:bg-slate-800 hover:text-white"
+                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
@@ -503,37 +503,37 @@ function AdminInquiriesPage() {
       {/* ➕ MODAL: Add / Edit Form Schema Template */}
       {isFormModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-lg rounded-lg border border-slate-850 bg-slate-950 p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-white mb-4">
+          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-navy mb-4">
               {editingForm ? "Edit Form Template Details" : "Create Inquiry Form Template"}
             </h3>
             
             <form onSubmit={handleSaveForm} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Form Template Name</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Form Template Name</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Admission Inquiries Form"
                   value={formConfigFields.form_name}
                   onChange={(e) => setFormConfigFields(p => ({ ...p, form_name: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Recipient Email Addresses (comma separated)</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Recipient Email Addresses (comma separated)</label>
                 <input
                   type="text"
                   placeholder="e.g. registrar@svit.ac.in, admissions@svit.ac.in"
                   value={formConfigFields.recipient_emails}
                   onChange={(e) => setFormConfigFields(p => ({ ...p, recipient_emails: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase flex items-center justify-between">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase flex items-center justify-between">
                   <span>Configuration structure JSON (fields collection)</span>
                 </label>
                 <textarea
@@ -542,15 +542,15 @@ function AdminInquiriesPage() {
                   placeholder='e.g. [\n  { "name": "email", "type": "email", "label": "Email Address", "required": true }\n]'
                   value={formConfigFields.fields_config}
                   onChange={(e) => setFormConfigFields(p => ({ ...p, fields_config: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none"
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-900">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsFormModalOpen(false)}
-                  className="rounded border border-slate-850 px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
                 >
                   Cancel
                 </button>

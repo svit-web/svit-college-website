@@ -199,11 +199,11 @@ function AdminTrashPanelPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="font-display text-2xl font-bold tracking-tight text-white md:text-3xl flex items-center gap-3">
+        <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl flex items-center gap-3">
           <Archive className="h-8 w-8 text-rose-500" />
           Trash Panel & Recovery
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm text-slate-500">
           Restore soft-deleted rows or permanently purge them from the database.
           {!isAdmin && (
             <span className="ml-2 rounded bg-amber-500/10 px-2 py-0.5 text-xs text-amber-400 border border-amber-500/20">
@@ -214,14 +214,14 @@ function AdminTrashPanelPage() {
       </div>
 
       {/* Selector Toolbar */}
-      <div className="flex flex-col gap-4 rounded-xl bg-slate-950 p-5 border border-slate-800 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 rounded-xl bg-white p-5 border border-slate-200 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 flex-1">
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Target Table Bin</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Target Table Bin</span>
             <select
               value={selectedTable}
               onChange={(e) => setSelectedTable(e.target.value)}
-              className="rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+              className="rounded font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
             >
               {SOFT_DELETE_TABLES.map((tbl) => (
                 <option key={tbl} value={tbl}>
@@ -232,7 +232,7 @@ function AdminTrashPanelPage() {
           </div>
 
           <div className="space-y-1 flex-1 max-w-sm sm:mt-0">
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Search Deleted Items</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Search Deleted Items</span>
             <div className="relative">
               <Search className="absolute top-2.5 left-3 h-4 w-4 text-slate-500" />
               <input
@@ -240,7 +240,7 @@ function AdminTrashPanelPage() {
                 placeholder="Filter by name / code / title..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-sm text-slate-800 focus:border-crimson focus:outline-none"
               />
             </div>
           </div>
@@ -256,20 +256,20 @@ function AdminTrashPanelPage() {
         <div className="flex items-center justify-between rounded-xl border border-rose-500/40 bg-rose-500/5 p-4">
           <div>
             <p className="text-sm font-bold text-rose-400">⚠️ Permanent Deletion Confirmation</p>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               This action <strong>cannot be undone</strong>. The record will be permanently removed from the database.
             </p>
           </div>
           <div className="flex gap-2 ml-4 shrink-0">
             <button
               onClick={() => setPurgeConfirmId(null)}
-              className="rounded border border-slate-700 px-3 py-1.5 text-xs text-slate-400 hover:text-white transition"
+              className="rounded border border-slate-200 px-3 py-1.5 text-xs text-slate-500 hover:text-navy transition"
             >
               Cancel
             </button>
             <button
               onClick={() => handlePurgeConfirm(purgeConfirmId)}
-              className="rounded bg-rose-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition"
+              className="rounded bg-rose-600 px-3 py-1.5 text-xs font-bold text-navy hover:bg-rose-500 transition"
             >
               Yes, Permanently Delete
             </button>
@@ -278,7 +278,7 @@ function AdminTrashPanelPage() {
       )}
 
       {/* Grid Table display */}
-      <div className="overflow-hidden rounded-xl font-mono shadow-xl">
+      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white font-mono shadow-xl">
         {loadingData ? (
           <div className="flex h-64 items-center justify-center">
             <Loader2 className="h-8 w-8 animate-spin text-crimson" />
@@ -287,23 +287,23 @@ function AdminTrashPanelPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-slate-800 bg-slate-900/50">
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Record Info</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">Deleted At</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-400">UUID Ref</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-400">Actions</th>
+                <tr className="border-b border-slate-200 bg-slate-100">
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Record Info</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Deleted At</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">UUID Ref</th>
+                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-850">
+              <tbody className="divide-y divide-slate-200">
                 {filteredRecords.map((r) => {
                   const label = r.name || r.title || r.interest_name || r.degree || r.organization || "Unnamed Record";
                   return (
-                    <tr key={r.id} className="hover:bg-slate-900/20 transition">
+                    <tr key={r.id} className="hover:bg-slate-100 transition">
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-slate-200 text-sm">{label}</div>
+                        <div className="font-semibold text-slate-800 text-sm">{label}</div>
                         {r.code && <div className="text-xs text-slate-500 mt-0.5">Code: {r.code}</div>}
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-450 font-semibold font-mono">
+                      <td className="px-6 py-4 text-xs text-slate-500 font-semibold font-mono">
                         {r.deleted_at ? new Date(r.deleted_at).toLocaleString() : "Unknown"}
                       </td>
                       <td className="px-6 py-4 text-xs text-slate-500 font-mono">
@@ -350,7 +350,7 @@ function AdminTrashPanelPage() {
         ) : (
           <div className="flex flex-col items-center justify-center p-12 text-center">
             <Archive className="h-12 w-12 text-slate-800" />
-            <h3 className="mt-4 text-sm font-bold text-white">Bin is Empty</h3>
+            <h3 className="mt-4 text-sm font-bold text-navy">Bin is Empty</h3>
             <p className="mt-2 max-w-xs text-xs text-slate-500">
               There are no deleted records found in the <code className="text-crimson font-mono">{selectedTable}</code> table.
             </p>
@@ -360,20 +360,20 @@ function AdminTrashPanelPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center justify-between text-xs text-slate-500">
           <span>Page {page + 1} of {totalPages} ({totalCount} total)</span>
           <div className="flex gap-2">
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0 || loadingData}
-              className="flex items-center gap-1 rounded border border-slate-800 px-3 py-1.5 hover:bg-slate-800 disabled:opacity-40 transition"
+              className="flex items-center gap-1 rounded border border-slate-200 px-3 py-1.5 hover:bg-slate-100 disabled:opacity-40 transition"
             >
               <ChevronLeft className="h-3.5 w-3.5" /> Prev
             </button>
             <button
               onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
               disabled={page >= totalPages - 1 || loadingData}
-              className="flex items-center gap-1 rounded border border-slate-800 px-3 py-1.5 hover:bg-slate-800 disabled:opacity-40 transition"
+              className="flex items-center gap-1 rounded border border-slate-200 px-3 py-1.5 hover:bg-slate-100 disabled:opacity-40 transition"
             >
               Next <ChevronRight className="h-3.5 w-3.5" />
             </button>
