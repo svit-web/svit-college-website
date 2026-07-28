@@ -31,6 +31,63 @@ import { toast } from "sonner";
 
 const supabaseAdmin = supabase as any;
 
+// Structured editor for the departments.metadata JSONB field
+function DepartmentMetaEditor({ value, onChange }: { value: any; onChange: (val: any) => void }) {
+  const meta: Record<string, any> = (() => {
+    if (!value) return {};
+    if (typeof value === "object") return value;
+    try { return JSON.parse(value); } catch { return {}; }
+  })();
+  const set = (key: string, val: any) => onChange({ ...meta, [key]: val === "" ? undefined : val });
+  return (
+    <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/60 p-4">
+      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Department Profile Fields</p>
+      <div className="space-y-1.5">
+        <label className="text-[11px] font-semibold text-slate-600 uppercase">About</label>
+        <textarea
+          rows={4}
+          value={meta.about || ""}
+          onChange={(e) => set("about", e.target.value)}
+          placeholder="Brief description of the department..."
+          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+        />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-semibold text-slate-600 uppercase">Vision</label>
+          <textarea
+            rows={3}
+            value={meta.vision || ""}
+            onChange={(e) => set("vision", e.target.value)}
+            placeholder="Department vision..."
+            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <label className="text-[11px] font-semibold text-slate-600 uppercase">Mission</label>
+          <textarea
+            rows={3}
+            value={meta.mission || ""}
+            onChange={(e) => set("mission", e.target.value)}
+            placeholder="Department mission..."
+            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+          />
+        </div>
+      </div>
+      <div className="space-y-1.5">
+        <label className="text-[11px] font-semibold text-slate-600 uppercase">Intake (seats per year)</label>
+        <input
+          type="number"
+          value={meta.intake ?? ""}
+          onChange={(e) => set("intake", e.target.value ? Number(e.target.value) : "")}
+          placeholder="e.g. 60"
+          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+        />
+      </div>
+    </div>
+  );
+}
+
 // Helper to format table names into beautiful headers
 function formatLabel(str: string): string {
   return str
@@ -41,6 +98,7 @@ function formatLabel(str: string): string {
 
 // Columns we typically want to hide from the main table grid list to avoid clutter
 const HIDDEN_GRID_COLUMNS = [
+  "id",
   "created_at",
   "updated_at",
   "created_by",
@@ -1007,7 +1065,12 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
                       />
                     ) : /* JSON / metadata textarea editor */
-                    col.name === "metadata" || col.type === "jsonb" ? (
+                    col.name === "metadata" && tableId === "departments" ? (
+                      <DepartmentMetaEditor
+                        value={formValues[col.name]}
+                        onChange={(val) => handleFieldChange(col.name, val)}
+                      />
+                    ) : col.name === "metadata" || col.type === "jsonb" ? (
                       <textarea
                         value={
                           typeof formValues[col.name] === "object"
