@@ -128,16 +128,19 @@ function AboutPage() {
               </div>
             </div>
 
-            {/* Portrait placeholder (right) */}
+            {/* Portrait (right) */}
             <div className="mx-auto w-full max-w-sm lg:mx-0 lg:ml-auto">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-gold/40 bg-white/5 shadow-2xl">
-                {/* TODO: Replace with real portrait photo */}
-                <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
-                  <ImageIcon className="h-14 w-14" />
-                  <span className="text-xs font-semibold uppercase tracking-[0.25em]">
-                    Portrait Photo
-                  </span>
-                </div>
+                {c?.hero?.portraitUrl ? (
+                  <img src={c.hero.portraitUrl} alt="SVIT Leadership" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
+                    <ImageIcon className="h-14 w-14" />
+                    <span className="text-xs font-semibold uppercase tracking-[0.25em]">
+                      Portrait Photo
+                    </span>
+                  </div>
+                )}
                 <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
               </div>
             </div>

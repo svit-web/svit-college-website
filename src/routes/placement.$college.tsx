@@ -1,6 +1,7 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
-import { getPlacementStatsByCollege, getAllRecruiters, type PlacementStatistics } from "@/lib/placement.functions";
+import { getPlacementStatsByCollege, getAllRecruiters, getPlacementCell, getCollegeBySlug, type PlacementStatistics } from "@/lib/placement.functions";
+
 type PlacementSlug = string;
 interface PlacementPageContent {
   slug: PlacementSlug; collegeId: string; collegeName: string; shortCode: string; aboutText: string;
@@ -10,21 +11,12 @@ interface PlacementPageContent {
   placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
 }
 
-// Map of valid college slugs
-const collegeMapping: Record<string, { code: string; name: string; shortCode: string }> = {
-  'svit-degree': { code: 'svit-degree', name: 'Sardar Vallabhbhai Patel Institute of Technology', shortCode: 'SVIT' },
-  svica: { code: 'svica', name: 'SVIT College of Applied Sciences', shortCode: 'SVICA' },
-  svion: { code: 'svion', name: 'SVIT Institute of Nursing', shortCode: 'SVION' },
-  'svit-coa': { code: 'svit-coa', name: 'College of Architecture', shortCode: 'COA' },
-};
-
 export const Route = createFileRoute("/placement/$college")({
-  head: ({ params }) => {
-    const college = collegeMapping[params.college];
-    const title = college ? `${college.shortCode} Placements — SVIT Vasad` : "Placements — SVIT Vasad";
-    const desc = college
-      ? `Placement outcomes, recruiters and Training & Placement Cell at ${college.name}.`
-      : "SVIT Vasad Placement.";
+  head: ({ params, loaderData }) => {
+    const shortCode = (loaderData as any)?.content?.shortCode ?? params.college.toUpperCase();
+    const collegeName = (loaderData as any)?.content?.collegeName ?? "SVIT Vasad";
+    const title = `${shortCode} Placements — SVIT Vasad`;
+    const desc = `Placement outcomes, recruiters and Training & Placement Cell at ${collegeName}.`;
     return {
       meta: [
         { title },
@@ -35,12 +27,13 @@ export const Route = createFileRoute("/placement/$college")({
     };
   },
   loader: async ({ params }) => {
-    const college = collegeMapping[params.college];
+    const college = await getCollegeBySlug({ data: params.college });
     if (!college) throw notFound();
 
-    const [stats, allRecruiters] = await Promise.all([
+    const [stats, allRecruiters, placementCell] = await Promise.all([
       getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
       getAllRecruiters(),
+      getPlacementCell({ data: params.college }),
     ]);
 
     function toDisplayYear(academicYear: string): string {
@@ -49,7 +42,6 @@ export const Route = createFileRoute("/placement/$college")({
       return part.length === 2 ? '20' + part : part;
     }
 
-    // Build chart data — ascending order
     const graphicalData = [...stats]
       .reverse()
       .map(s => ({
@@ -70,7 +62,6 @@ export const Route = createFileRoute("/placement/$college")({
         ]
       : [];
 
-    // Filter recruiters for this college via metadata.colleges array
     const collegeRecruiters = allRecruiters
       .filter(r => {
         const cols = (r.metadata as any)?.colleges as string[] | undefined;
@@ -78,25 +69,22 @@ export const Route = createFileRoute("/placement/$college")({
       })
       .map(r => ({ companyName: r.company_name, logo: r.logo_url || null }));
 
-    const aboutText = '';
-    const placementOfficer = { name: '', designation: 'Training & Placement Officer', phone: '', email: '', photo: null };
-    const placedStudents: { studentName: string; companyName: string; photo: string | null }[] = [];
-
     const content: PlacementPageContent = {
       slug: params.college as PlacementSlug,
       collegeId: college.code,
       collegeName: college.name,
       shortCode: college.shortCode,
-      aboutText,
-      details: {
-        graphicalData,
-        statHighlights,
-      },
-      summary: {
-        placedStudents,
-      },
+      aboutText: placementCell?.about_text ?? '',
+      details: { graphicalData, statHighlights },
+      summary: { placedStudents: [] },
       recruiters: collegeRecruiters,
-      placementOfficer,
+      placementOfficer: {
+        name: placementCell?.officer_name ?? '',
+        designation: placementCell?.officer_designation ?? 'Training & Placement Officer',
+        phone: placementCell?.officer_phone ?? '',
+        email: placementCell?.officer_email ?? '',
+        photo: placementCell?.officer_photo_url ?? null,
+      },
     };
 
     return { content };
