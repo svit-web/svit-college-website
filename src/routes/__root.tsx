@@ -15,7 +15,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { collegesQuery } from "@/lib/homepage";
+import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 
 function NotFoundComponent() {
   return (
@@ -61,9 +61,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: ({ context }) => {
-    // Header's Colleges mega-menu appears on every route; warm the cache
-    // (non-blocking — pages with their own colleges loader already await it).
+    // Header's Colleges mega-menu + Footer contact info appear on every route; warm the cache
     void context.queryClient.prefetchQuery(collegesQuery);
+    void context.queryClient.prefetchQuery(contactInfoQuery);
   },
   head: () => ({
     meta: [

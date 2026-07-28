@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { getAllProgrammes } from "@/lib/programmes.functions";
+import { getContactInfo } from "@/lib/pages.functions";
 import { useState } from "react";
 import { CheckCircle2, Phone } from "lucide-react";
 import { toast } from "sonner";
@@ -8,14 +9,17 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/admissions/inquiry")({
   head: () => ({ meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: "Submit an admission enquiry for 2026-27 at SVIT Vasad." }] }),
   loader: async () => {
-    const programmes = await getAllProgrammes();
-    return { programmes };
+    const [programmes, contact] = await Promise.all([
+      getAllProgrammes(),
+      getContactInfo(),
+    ]);
+    return { programmes, phone: contact?.phone ?? "+91 2692 274766" };
   },
   component: Inquiry,
 });
 
 function Inquiry() {
-  const { programmes } = Route.useLoaderData();
+  const { programmes, phone } = Route.useLoaderData();
   const [sent, setSent] = useState(false);
   return (
     <>
@@ -81,8 +85,8 @@ function Inquiry() {
             <div className="rounded-2xl border border-border bg-white p-6">
               <div className="text-xs font-semibold uppercase tracking-widest text-crimson">Helpline</div>
               <h3 className="mt-1 font-display text-lg font-bold text-navy">Talk to admissions</h3>
-              <a href="tel:+912692274766" className="mt-3 inline-flex items-center gap-2 text-navy hover:text-gold">
-                <Phone className="h-4 w-4" /> +91 2692 274766
+              <a href={`tel:${phone.replace(/\s/g, "")}`} className="mt-3 inline-flex items-center gap-2 text-navy hover:text-gold">
+                <Phone className="h-4 w-4" /> {phone}
               </a>
             </div>
           </aside>

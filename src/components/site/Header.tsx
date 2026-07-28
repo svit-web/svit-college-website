@@ -3,7 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
-const site = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
+const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
@@ -13,24 +13,17 @@ const primaryNav = [
   { label: "Contact Us", to: "/contact" },
 ] as const;
 const topNav = [
-  { label: "Students", to: "/student-login" },
   { label: "Parents", to: "/parents" },
   { label: "Alumni", to: "/alumni" },
   { label: "Careers", to: "/careers" },
 ] as const;
-const placementDivisions = [
-  { slug: "svit", label: "SVIT" },
-  { slug: "svion", label: "SVION" },
-  { slug: "svica", label: "SVICA" },
-  { slug: "coa", label: "COA" },
-];
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllCenters } from "@/lib/centers.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { collegesQuery } from "@/lib/homepage";
+import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 
 export function Header() {
@@ -41,6 +34,12 @@ export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const { data: dbColleges } = useQuery(collegesQuery);
+  const { data: contactInfo } = useQuery(contactInfoQuery);
+
+  const site = {
+    email: contactInfo?.email ?? fallbackSite.email,
+    phone: contactInfo?.phone ?? fallbackSite.phone,
+  };
 
   const displayColleges = useMemo(() => {
     return (dbColleges ?? []).map(c => ({
@@ -51,6 +50,10 @@ export function Header() {
       logo: c.logo_url ?? "",
     }));
   }, [dbColleges]);
+
+  const placementDivisions = useMemo(() => {
+    return displayColleges.map(c => ({ slug: c.id, label: c.shortCode }));
+  }, [displayColleges]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
