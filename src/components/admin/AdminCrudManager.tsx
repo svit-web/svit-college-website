@@ -808,7 +808,11 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                     className={`border-b border-slate-100 transition ${hasWritePermission ? "cursor-pointer hover:bg-crimson/[0.02]" : "hover:bg-slate-50"}`}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-3 py-2 text-xs text-slate-800 max-w-[200px] truncate">
+                      <td
+                        key={cell.id}
+                        className="px-3 py-2 text-xs text-slate-800 max-w-[200px] truncate"
+                        onClick={cell.column.id === "select" ? (e) => e.stopPropagation() : undefined}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
