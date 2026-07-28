@@ -64,7 +64,26 @@ export const getDepartmentsByCollegeSlug = createServerFn({ method: 'GET' })
       .eq('status', 'published')
       .order('name');
     if (error) return [] as { id: string; name: string; slug: string; code: string; metadata: any }[];
-    return data as { id: string; name: string; slug: string; code: string; metadata: any }[];
+
+    // Departments and branches are edited in two separate admin screens
+    // (/admin/tables/departments vs /admin/tables/branches) but often
+    // represent the same real-world thing (e.g. Computer Engineering) — a
+    // department without its own logo falls back to its matching branch's
+    // icon (linked via metadata.engSlug) so one upload covers both grids.
+    const { data: branches } = await supabase
+      .from('branches')
+      .select('icon_url, metadata')
+      .not('icon_url', 'is', null);
+    const iconByEngSlug: Record<string, string> = {};
+    for (const b of branches ?? []) {
+      const engSlug = (b.metadata as any)?.engSlug;
+      if (engSlug && b.icon_url) iconByEngSlug[engSlug] = b.icon_url;
+    }
+
+    return (data ?? []).map((d: any) => ({
+      ...d,
+      logo_url: d.logo_url ?? iconByEngSlug[d.metadata?.engSlug] ?? null,
+    })) as { id: string; name: string; slug: string; code: string; logo_url: string | null; metadata: any }[];
   });
 
 /**

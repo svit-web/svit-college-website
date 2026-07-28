@@ -63,6 +63,23 @@ function mapRow(row: any): Department {
   };
 }
 
+// Departments and branches are edited in two separate admin screens
+// (/admin/tables/departments vs /admin/tables/branches) but often represent
+// the same real-world thing (e.g. Computer Engineering) — a department
+// without its own logo falls back to its matching branch's icon (linked via
+// metadata.engSlug) so one upload covers both the department page and the
+// course page's branch grid.
+async function withBranchIconFallback(department: Department): Promise<Department> {
+  if (department.logo_url || !department.metadata?.engSlug) return department;
+  const { data } = await supabase
+    .from('branches')
+    .select('icon_url')
+    .eq('metadata->>engSlug', department.metadata.engSlug)
+    .not('icon_url', 'is', null)
+    .maybeSingle();
+  return data?.icon_url ? { ...department, logo_url: data.icon_url } : department;
+}
+
 /**
  * Fetch all published departments
  */
@@ -125,7 +142,7 @@ export const getDepartmentBySlug = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data ? mapRow(data) as Department : null;
+    return data ? withBranchIconFallback(mapRow(data) as Department) : null;
   });
 
 /**
@@ -148,7 +165,7 @@ export const getDepartmentByCode = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data ? mapRow(data) as Department : null;
+    return data ? withBranchIconFallback(mapRow(data) as Department) : null;
   });
 
 export interface DeptCourse {
