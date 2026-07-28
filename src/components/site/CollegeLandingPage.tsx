@@ -36,33 +36,7 @@ export interface College {
   departments: CollegeDept[];
 }
 
-// Ordered degree-type groups for SVIT (and any college that uses degree_type grouping)
-const DEGREE_TYPE_ORDER = ["BE", "ME", "Diploma", "MBA", "MCA"];
 
-function getCollegeProgramView(departments: CollegeDept[]) {
-  const hasGroups = departments.some((d) => d.metadata?.degree_type);
-  if (!hasGroups) {
-    // Flat colleges (SVICA, SVION, COA): each dept is its own group
-    return departments.map((d) => ({ group: d.name, depts: [d] }));
-  }
-  // Grouped: collect unique degree types in order
-  const groupMap = new Map<string, CollegeDept[]>();
-  for (const d of departments) {
-    const key = d.metadata?.degree_type ?? "Other";
-    if (!groupMap.has(key)) groupMap.set(key, []);
-    groupMap.get(key)!.push(d);
-  }
-  // Sort groups by defined order, then alphabetically for any unknowns
-  const orderedKeys = [...groupMap.keys()].sort((a, b) => {
-    const ia = DEGREE_TYPE_ORDER.indexOf(a);
-    const ib = DEGREE_TYPE_ORDER.indexOf(b);
-    if (ia !== -1 && ib !== -1) return ia - ib;
-    if (ia !== -1) return -1;
-    if (ib !== -1) return 1;
-    return a.localeCompare(b);
-  });
-  return orderedKeys.map((key) => ({ group: key, depts: groupMap.get(key)! }));
-}
 const events: { title: string; tag: string; date: string }[] = [];
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -165,8 +139,7 @@ function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
 }
 
 function ProgramsSection({ college }: { college: College }) {
-  const view = getCollegeProgramView(college.departments);
-  const showGroupHeading = view.length > 1 && college.departments.some((d) => d.metadata?.degree_type);
+  const allDepts = college.departments;
   return (
     <section id="programmes" className="container-page py-20">
       <SectionHeading
@@ -175,28 +148,17 @@ function ProgramsSection({ college }: { college: College }) {
         title={`Programmes at ${college.shortCode}`}
         subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
-      <div className="mt-12 space-y-14">
-        {view.map((group) => (
-          <div key={group.group}>
-            {showGroupHeading && (
-              <h3 className="mb-6 font-display text-2xl font-bold text-navy">
-                <span className="accent-underline">{group.group}</span>
-              </h3>
-            )}
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {group.depts.map((dept, i) => (
-                <Reveal key={dept.id} delay={i * 0.05}>
-                  <DeptBranchCard
-                    name={dept.name}
-                    iconUrl={dept.logo_url}
-                    fallbackLabel={initials(dept.name)}
-                    to="/departments/$dept"
-                    params={{ dept: dept.code }}
-                  />
-                </Reveal>
-              ))}
-            </div>
-          </div>
+      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {allDepts.map((dept, i) => (
+          <Reveal key={dept.id} delay={i * 0.05}>
+            <DeptBranchCard
+              name={dept.name}
+              iconUrl={dept.logo_url}
+              fallbackLabel={initials(dept.name)}
+              to="/departments/$dept"
+              params={{ dept: dept.code }}
+            />
+          </Reveal>
         ))}
       </div>
     </section>

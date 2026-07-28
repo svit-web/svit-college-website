@@ -23,7 +23,7 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, to
   return (
     <Wrapper
       {...(wrapperProps as any)}
-      className={cn("group block aspect-square", to && "cursor-pointer")}
+      className={cn("group block aspect-[3/4]", to && "cursor-pointer")}
     >
       <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-all duration-500 ease-in-out group-hover:border-gold group-hover:shadow-lg">
 
@@ -44,8 +44,8 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, to
         </div>
 
         {/* Hover overlay — text on dark backdrop */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/75 p-5 text-center opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100">
-          <h4 className="font-display text-lg font-bold leading-snug text-white">{name}</h4>
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/75 p-6 text-center opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100">
+          <h4 className="font-display text-xl font-bold leading-snug text-white">{name}</h4>
           {to ? (
             <div className="flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-3 py-1 text-xs font-semibold text-gold">
               View department <ArrowRight className="h-3 w-3" />
