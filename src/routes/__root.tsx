@@ -74,7 +74,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "SVIT Vasad — Institute of Technology" },
       { property: "og:description", content: "Empowering minds, inspiring innovation. Admissions open for 2026-27." },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://svitvasad.ac.in/og-image.jpg" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://svitvasad.ac.in/og-image.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -90,10 +92,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const GA4_ID = typeof window !== "undefined"
+  ? (import.meta as any).env?.VITE_GA4_ID
+  : undefined;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /></head>
+      <head>
+        <HeadContent />
+        {GA4_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} />
+            <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');` }} />
+          </>
+        )}
+      </head>
       <body>{children}<Scripts /></body>
     </html>
   );
