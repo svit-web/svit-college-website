@@ -25,9 +25,16 @@ export function MediaUploader({
     if (!file) return;
 
     // Optional validation for images
-    if (type === "image" && !file.type.startsWith("image/")) {
-      toast.error("Please upload an image file (PNG, JPG, WEBP, etc.)");
-      return;
+    if (type === "image") {
+      if (!file.type.startsWith("image/")) {
+        toast.error("Please upload an image file (PNG, JPG, WEBP, etc.)");
+        return;
+      }
+      const ext = file.name.split(".").pop()?.toLowerCase();
+      if (["heic", "heif"].includes(ext ?? "") || ["image/heic", "image/heif"].includes(file.type)) {
+        toast.error("HEIC/HEIF images are not supported by browsers. Please convert to JPG or PNG first.");
+        return;
+      }
     }
 
     setUploading(true);
@@ -176,7 +183,7 @@ export function MediaUploader({
                 Drag & drop or <span className="text-crimson">browse</span>
               </p>
               <p className="text-xs text-slate-500 mt-1">
-                Supports {type === "image" ? "PNG, JPG, WEBP" : "PDF, DOCX, ZIP"} up to 10MB
+                {type === "image" ? "PNG, JPG, WEBP only — no HEIC" : "PDF, DOCX, ZIP"} · max 10MB
               </p>
             </>
           )}
