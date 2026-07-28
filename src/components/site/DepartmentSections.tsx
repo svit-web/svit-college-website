@@ -15,6 +15,7 @@ import {
   Building2,
   Mic,
   Image as ImageIcon,
+  Mail,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -186,52 +187,64 @@ export function DeptAboutView({ department, courses = [] }: Props) {
 // -------- Staff --------
 function StaffCard({ member, featured = false }: { member: DeptStaffMember; featured?: boolean }) {
   const cardClass = cn(
-    "card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold",
-    featured && "lg:flex-row lg:items-center lg:gap-6 lg:p-8"
+    "group flex gap-5 rounded-2xl border-2 bg-white transition-all",
+    featured
+      ? "border-gold/30 bg-gradient-to-br from-navy/5 via-white to-white p-6 items-center shadow-sm"
+      : "border-navy/10 p-4 items-start hover:border-gold hover:shadow-md"
   );
+
   const inner = (
     <>
-      <div className={cn("flex items-center gap-4", featured && "lg:flex-col lg:items-start lg:gap-3")}>
+      {/* Photo */}
+      <div className="shrink-0">
         {member.avatarUrl ? (
           <img
             src={member.avatarUrl}
             alt={member.name}
-            className={cn("shrink-0 rounded-full object-cover ring-2 ring-white shadow-sm", featured ? "h-24 w-24" : "h-16 w-16")}
+            className={cn(
+              "rounded-xl object-cover object-top shadow-sm",
+              featured ? "h-36 w-28" : "h-28 w-22"
+            )}
           />
         ) : (
-          <AvatarPlaceholder name={member.name} size={featured ? "lg" : "md"} />
-        )}
-        {!featured && (
-          <div className="min-w-0">
-            <div className="font-display font-bold text-navy leading-tight">{member.name}</div>
-            <div className="mt-0.5 text-xs font-semibold uppercase tracking-wider text-crimson">
-              {member.designation}
-            </div>
+          <div className={cn(
+            "flex items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-deep font-display font-bold text-white shadow-sm",
+            featured ? "h-36 w-28 text-3xl" : "h-28 w-22 text-2xl"
+          )}>
+            {initials(member.name)}
           </div>
         )}
       </div>
-      <div className={cn("mt-4 space-y-1.5 text-xs text-muted-foreground", featured && "lg:mt-0 lg:flex-1")}>
+
+      {/* Details */}
+      <div className="min-w-0 flex-1 py-1">
         {featured && (
-          <>
-            <div className="font-display text-xl font-bold text-navy">{member.name}</div>
-            <div className="text-xs font-bold uppercase tracking-widest text-gold-strong">Head of Department</div>
-            <div className="mt-1 text-sm font-semibold text-crimson">{member.designation}</div>
-          </>
+          <div className="mb-2 inline-flex items-center rounded-full bg-gold/20 px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gold-strong">
+            Head of Department
+          </div>
         )}
-        {member.email && <div><span className="font-semibold text-ink">Email:</span> {member.email}</div>}
-      </div>
-      <div className={cn("mt-4 text-xs font-semibold text-navy transition-colors group-hover:text-gold-strong", featured && "lg:mt-2")}>
-        View profile →
+        <h3 className={cn("font-display font-bold text-navy leading-tight", featured ? "text-xl" : "text-base")}>
+          {member.name}
+        </h3>
+        <div className="mt-1 text-sm font-semibold text-crimson">{member.designation}</div>
+        {member.email && (
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Mail className="h-3.5 w-3.5 shrink-0 text-navy/40" />
+            <span className="truncate">{member.email}</span>
+          </div>
+        )}
+        {member.employeeCode && (
+          <div className="mt-3 text-xs font-semibold text-navy/40 transition-colors group-hover:text-gold-strong">
+            View full profile →
+          </div>
+        )}
       </div>
     </>
   );
+
   if (member.employeeCode) {
     return (
-      <Link
-        to="/staff/$staff"
-        params={{ staff: member.employeeCode }}
-        className={cardClass}
-      >
+      <Link to="/staff/$staff" params={{ staff: member.employeeCode }} className={cardClass}>
         {inner}
       </Link>
     );
@@ -253,7 +266,7 @@ export function DeptStaffView({ staff = [] }: Props) {
       />
 
       {hod && (
-        <div className="mt-8">
+        <div className="mt-8 max-w-xl">
           <StaffCard member={hod} featured />
         </div>
       )}
@@ -261,7 +274,7 @@ export function DeptStaffView({ staff = [] }: Props) {
       {faculty.length > 0 && (
         <div className="mt-10">
           <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">Faculty ({faculty.length})</h3>
-          <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2">
             {faculty.map((m, i) => (
               <Reveal key={m.id} delay={i * 0.03}>
                 <StaffCard member={m} />
