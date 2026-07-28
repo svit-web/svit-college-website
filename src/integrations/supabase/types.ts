@@ -220,86 +220,6 @@ export type Database = {
           },
         ]
       }
-      awards: {
-        Row: {
-          awarding_body: string
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          description: string | null
-          id: string
-          metadata: Json
-          received_year: number
-          staff_id: string
-          status: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          awarding_body: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          id?: string
-          metadata?: Json
-          received_year: number
-          staff_id: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          awarding_body?: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          id?: string
-          metadata?: Json
-          received_year?: number
-          staff_id?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "awards_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "awards_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "awards_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "awards_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       cells: {
         Row: {
           college_id: string
@@ -1177,89 +1097,6 @@ export type Database = {
           },
           {
             foreignKeyName: "events_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      experiences: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          end_date: string | null
-          id: string
-          is_academic: boolean
-          metadata: Json
-          organization: string
-          role: string
-          staff_id: string
-          start_date: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          end_date?: string | null
-          id?: string
-          is_academic?: boolean
-          metadata?: Json
-          organization: string
-          role: string
-          staff_id: string
-          start_date: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          end_date?: string | null
-          id?: string
-          is_academic?: boolean
-          metadata?: Json
-          organization?: string
-          role?: string
-          staff_id?: string
-          start_date?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "experiences_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "experiences_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "experiences_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "experiences_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
@@ -2571,89 +2408,6 @@ export type Database = {
           },
         ]
       }
-      patents: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          inventors: string[]
-          metadata: Json
-          patent_number: string | null
-          patent_status: string
-          publication_date: string | null
-          staff_id: string
-          status: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          inventors: string[]
-          metadata?: Json
-          patent_number?: string | null
-          patent_status: string
-          publication_date?: string | null
-          staff_id: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          inventors?: string[]
-          metadata?: Json
-          patent_number?: string | null
-          patent_status?: string
-          publication_date?: string | null
-          staff_id?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "patents_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "patents_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "patents_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "patents_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       permissions: {
         Row: {
           code: string
@@ -2919,156 +2673,6 @@ export type Database = {
           },
         ]
       }
-      publications: {
-        Row: {
-          abstract: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          doi_url: string | null
-          id: string
-          journal_conference: string
-          metadata: Json
-          publish_date: string
-          status: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          abstract?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          doi_url?: string | null
-          id?: string
-          journal_conference: string
-          metadata?: Json
-          publish_date: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          abstract?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          doi_url?: string | null
-          id?: string
-          journal_conference?: string
-          metadata?: Json
-          publish_date?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "publications_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "publications_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "publications_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      qualifications: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          degree: string
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          institution: string
-          metadata: Json
-          staff_id: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-          year: number
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          degree: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          institution: string
-          metadata?: Json
-          staff_id: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-          year: number
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          degree?: string
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          institution?: string
-          metadata?: Json
-          staff_id?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-          year?: number
-        }
-        Relationships: [
-          {
-            foreignKeyName: "qualifications_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "qualifications_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "qualifications_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "qualifications_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       recruiters: {
         Row: {
           company_name: string
@@ -3209,160 +2813,6 @@ export type Database = {
           },
           {
             foreignKeyName: "redirects_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      research_interests: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          interest_name: string
-          metadata: Json
-          staff_id: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          interest_name: string
-          metadata?: Json
-          staff_id: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          interest_name?: string
-          metadata?: Json
-          staff_id?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "research_interests_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "research_interests_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "research_interests_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "research_interests_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      research_projects: {
-        Row: {
-          amount: number | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          duration_years: number | null
-          funding_agency: string | null
-          id: string
-          metadata: Json
-          principal_investigator_id: string
-          project_status: string
-          status: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          amount?: number | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          duration_years?: number | null
-          funding_agency?: string | null
-          id?: string
-          metadata?: Json
-          principal_investigator_id: string
-          project_status: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          amount?: number | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          duration_years?: number | null
-          funding_agency?: string | null
-          id?: string
-          metadata?: Json
-          principal_investigator_id?: string
-          project_status?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "research_projects_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "research_projects_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "research_projects_principal_investigator_id_fkey"
-            columns: ["principal_investigator_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "research_projects_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
@@ -3552,6 +3002,59 @@ export type Database = {
           },
         ]
       }
+      staff_achievements: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          extra: Json | null
+          id: string
+          staff_id: string
+          status: string
+          title: string
+          type: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          extra?: Json | null
+          id?: string
+          staff_id: string
+          status?: string
+          title: string
+          type: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          extra?: Json | null
+          id?: string
+          staff_id?: string
+          status?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_achievements_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_department_assignments: {
         Row: {
           created_at: string
@@ -3652,6 +3155,7 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           email: string
+          expertise: string[]
           first_name: string
           id: string
           last_name: string
@@ -3673,6 +3177,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           email: string
+          expertise?: string[]
           first_name: string
           id?: string
           last_name: string
@@ -3694,6 +3199,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           email?: string
+          expertise?: string[]
           first_name?: string
           id?: string
           last_name?: string
@@ -3734,36 +3240,6 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      staff_publications: {
-        Row: {
-          publication_id: string
-          staff_id: string
-        }
-        Insert: {
-          publication_id: string
-          staff_id: string
-        }
-        Update: {
-          publication_id?: string
-          staff_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "staff_publications_publication_id_fkey"
-            columns: ["publication_id"]
-            isOneToOne: false
-            referencedRelation: "publications"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "staff_publications_staff_id_fkey"
-            columns: ["staff_id"]
-            isOneToOne: false
-            referencedRelation: "staff_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -4174,6 +3650,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      current_user_is_admin: { Args: never; Returns: boolean }
+      current_user_is_college_admin_for: {
+        Args: { target_college_id: string }
+        Returns: boolean
+      }
+      current_user_is_dept_admin_for: {
+        Args: { target_dept_id: string }
+        Returns: boolean
+      }
+      current_user_is_editor: { Args: never; Returns: boolean }
       get_table_schema_info: { Args: { target_table: string }; Returns: Json }
     }
     Enums: {
@@ -4325,3 +3811,4 @@ export const Constants = {
     },
   },
 } as const
+

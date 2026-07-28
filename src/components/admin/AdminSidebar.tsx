@@ -9,9 +9,9 @@ import {
   Settings,
   ChevronDown,
   LogOut,
-  Search,
   BookOpen,
-  FolderLock
+  PanelLeft,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,12 +20,15 @@ interface SidebarProps {
   profile: any;
   roles: any[];
   logout: () => void;
+  collapsed: boolean;
+  onToggle: () => void;
+  mobileOpen: boolean;
+  onMobileClose: () => void;
 }
 
 interface NavItem {
   label: string;
   to: string;
-  tableId?: string;
 }
 
 interface NavGroup {
@@ -34,213 +37,263 @@ interface NavGroup {
   items: NavItem[];
 }
 
-export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
+const NAV_GROUPS: NavGroup[] = [
+  {
+    label: "Academics",
+    icon: School,
+    items: [
+      { label: "Colleges", to: "/admin/colleges" },
+      { label: "Departments", to: "/admin/tables/departments" },
+      { label: "Courses", to: "/admin/tables/courses" },
+      { label: "Facilities", to: "/admin/tables/facilities" },
+      { label: "Dept Activities", to: "/admin/tables/department_activities" },
+    ],
+  },
+  {
+    label: "Staff & Faculty",
+    icon: Users,
+    items: [
+      { label: "Staff Profiles", to: "/admin/staff-wizards" },
+    ],
+  },
+  {
+    label: "Website CMS",
+    icon: Globe,
+    items: [
+      { label: "Homepage Layout", to: "/admin/homepage" },
+      { label: "Pages & Content", to: "/admin/tables/pages" },
+      { label: "Menus / Nav", to: "/admin/menus" },
+      { label: "Menu Items", to: "/admin/tables/menu_items" },
+      { label: "Blog Posts", to: "/admin/posts" },
+      { label: "Post Categories", to: "/admin/tables/content_categories" },
+      { label: "Testimonials", to: "/admin/tables/testimonials" },
+      { label: "Recruiters", to: "/admin/recruiters" },
+      { label: "Accreditations", to: "/admin/tables/accreditations" },
+      { label: "Placement Stats", to: "/admin/tables/placement_statistics" },
+      { label: "Downloads / Forms", to: "/admin/tables/downloads" },
+      { label: "Media Library", to: "/admin/media" },
+    ],
+  },
+  {
+    label: "Campus Life",
+    icon: Trophy,
+    items: [
+      { label: "Events", to: "/admin/events" },
+      { label: "Achievements", to: "/admin/tables/achievements" },
+      { label: "Gallery Albums", to: "/admin/tables/gallery_albums" },
+      { label: "Gallery Media", to: "/admin/tables/gallery_media" },
+      { label: "Student Clubs", to: "/admin/tables/student_clubs" },
+      { label: "MOUs", to: "/admin/tables/mous" },
+    ],
+  },
+  {
+    label: "System",
+    icon: Settings,
+    items: [
+      { label: "Inquiries Inbox", to: "/admin/inquiries" },
+      { label: "Users & Profiles", to: "/admin/tables/user_profiles" },
+      { label: "User Roles", to: "/admin/tables/user_roles" },
+      { label: "Audit Logs", to: "/admin/tables/audit_logs" },
+      { label: "Trash & Recovery", to: "/admin/trash" },
+    ],
+  },
+];
+
+export function AdminSidebar({
+  profile,
+  roles,
+  logout,
+  collapsed,
+  onToggle,
+  mobileOpen,
+  onMobileClose,
+}: SidebarProps) {
   const location = useLocation();
-  const [searchQuery, setSearchQuery] = useState("");
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     Academics: true,
-    CMS: false,
-    Staff: false,
-    Life: false,
-    System: false
+    "Staff & Faculty": true,
   });
 
-  const toggleGroup = (groupName: string) => {
-    setExpandedGroups((prev) => ({
-      ...prev,
-      [groupName]: !prev[groupName]
-    }));
+  const toggleGroup = (label: string) => {
+    setExpandedGroups((p) => ({ ...p, [label]: !p[label] }));
   };
 
-  const navGroups: NavGroup[] = [
-    {
-      label: "Academics",
-      icon: School,
-      items: [
-        { label: "Colleges", to: "/admin/colleges" },
-        { label: "Departments", to: "/admin/tables/departments" },
-        { label: "Courses", to: "/admin/tables/courses" },
-        { label: "Facilities", to: "/admin/tables/facilities" },
-        { label: "Department Activities", to: "/admin/tables/department_activities" }
-      ]
-    },
-    {
-      label: "Staff & Faculty",
-      icon: Users,
-      items: [
-        { label: "Staff Profiles", to: "/admin/staff-wizards" },
-        { label: "Qualifications", to: "/admin/tables/qualifications" },
-        { label: "Experiences", to: "/admin/tables/experiences" },
-        { label: "Awards & Honors", to: "/admin/tables/awards" },
-        { label: "Publications", to: "/admin/tables/publications" },
-        { label: "Patents", to: "/admin/tables/patents" },
-        { label: "Research Projects", to: "/admin/tables/research_projects" }
-      ]
-    },
-    {
-      label: "Website CMS",
-      icon: Globe,
-      items: [
-        { label: "Homepage Layout", to: "/admin/homepage" },
-        { label: "Pages & Content", to: "/admin/tables/pages" },
-        { label: "Menus / Nav", to: "/admin/menus" },
-        { label: "Menu Items", to: "/admin/tables/menu_items" },
-        { label: "Blog Posts", to: "/admin/posts" },
-        { label: "Post Categories", to: "/admin/tables/content_categories" },
-        { label: "Testimonials", to: "/admin/tables/testimonials" },
-        { label: "Recruiters", to: "/admin/recruiters" },
-        { label: "Accreditations", to: "/admin/tables/accreditations" },
-        { label: "Placement Stats", to: "/admin/tables/placement_statistics" },
-        { label: "Downloads / Forms", to: "/admin/tables/downloads" },
-        { label: "Media Library", to: "/admin/media" }
-      ]
-    },
-    {
-      label: "Campus Life",
-      icon: Trophy,
-      items: [
-        { label: "Events", to: "/admin/events" },
-        { label: "Achievements", to: "/admin/tables/achievements" },
-        { label: "Gallery Albums", to: "/admin/tables/gallery_albums" },
-        { label: "Gallery Media", to: "/admin/tables/gallery_media" },
-        { label: "Cells & Units", to: "/admin/tables/cells" },
-        { label: "Committees", to: "/admin/tables/committees" },
-        { label: "Student Clubs", to: "/admin/tables/student_clubs" },
-        { label: "MOUs", to: "/admin/tables/mous" }
-      ]
-    },
-    {
-      label: "System Settings",
-      icon: Settings,
-      items: [
-        { label: "Inquiries Inbox", to: "/admin/inquiries" },
-        { label: "Contact Info", to: "/admin/tables/contact_info" },
-        { label: "Users & Profiles", to: "/admin/tables/user_profiles" },
-        { label: "User Roles Mapping", to: "/admin/tables/user_roles" },
-        { label: "Roles List", to: "/admin/tables/roles" },
-        { label: "Redirects", to: "/admin/tables/redirects" },
-        { label: "Audit Logs", to: "/admin/tables/audit_logs" },
-        { label: "Trash & Recovery", to: "/admin/trash" }
-      ]
-    }
-  ];
-
-  // Filter groups and items based on search query
-  const filteredGroups = navGroups
-    .map((group) => {
-      const filteredItems = group.items.filter((item) =>
-        item.label.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      return { ...group, items: filteredItems };
-    })
-    .filter((group) => group.items.length > 0);
+  const isActive = (to: string) => location.pathname === to;
+  const groupHasActive = (group: NavGroup) => group.items.some((i) => isActive(i.to));
 
   const isAdmin = roles.some((r) => r.code === "admin");
+  const userInitial = profile
+    ? (profile.first_name?.[0] || profile.last_name?.[0] || "A").toUpperCase()
+    : "A";
   const userFullName = profile
-    ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Admin User"
-    : "Admin User";
+    ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Admin"
+    : "Admin";
 
-  return (
-    <div className="flex h-full w-64 flex-col border-r border-navy-light admin-sidebar-bg text-white shadow-lg">
-      {/* Header Brand */}
-      <div className="flex h-16 items-center justify-between border-b border-navy-light/30 px-6">
-        <Link to="/admin" className="flex items-center gap-2 font-display text-lg font-bold text-white hover:text-gold transition">
-          <BookOpen className="h-6 w-6 text-gold" />
-          <span>SVIT <span className="text-gold">Admin</span></span>
-        </Link>
+  const sidebarContent = (isMobile = false) => (
+    <div
+      className={cn(
+        "flex h-full flex-col bg-zinc-950 text-white transition-all duration-300 overflow-hidden",
+        !isMobile && (collapsed ? "w-[60px]" : "w-64")
+      )}
+    >
+      {/* Header */}
+      <div className={cn(
+        "flex h-14 shrink-0 items-center border-b border-zinc-800",
+        collapsed && !isMobile ? "justify-center px-0" : "justify-between px-4"
+      )}>
+        {(!collapsed || isMobile) && (
+          <Link
+            to="/admin"
+            onClick={isMobile ? onMobileClose : undefined}
+            className="flex items-center gap-2 font-semibold text-white text-sm hover:text-zinc-300 transition"
+          >
+            <BookOpen className="h-5 w-5 text-crimson shrink-0" />
+            <span>SVIT Admin</span>
+          </Link>
+        )}
+        {isMobile ? (
+          <button onClick={onMobileClose} className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition">
+            <X className="h-4 w-4" />
+          </button>
+        ) : (
+          <button
+            onClick={onToggle}
+            className={cn(
+              "rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition",
+              collapsed && "mx-auto"
+            )}
+            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          >
+            <PanelLeft className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
-      {/* Profile summary */}
-      <div className="border-b border-navy-light/30 p-4">
-        <div className="flex items-center gap-3 rounded-lg bg-navy-light/20 p-2 border border-gold/10">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/20 font-bold text-gold border border-gold/30">
-            {userFullName.charAt(0).toUpperCase()}
-          </div>
-          <div className="flex flex-col min-w-0">
-            <span className="truncate text-sm font-semibold text-white">{userFullName}</span>
-            <span className="truncate text-xs text-gold/80 font-medium">
-              {isAdmin ? "Global Admin" : "Editor Portal"}
-            </span>
+      {/* User chip */}
+      {(!collapsed || isMobile) && (
+        <div className="px-3 py-3 border-b border-zinc-800">
+          <div className="flex items-center gap-2.5 rounded-lg bg-zinc-900 px-2.5 py-2">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-crimson/20 text-xs font-bold text-crimson border border-crimson/30">
+              {userInitial}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-xs font-semibold text-white leading-none">{userFullName}</p>
+              <p className="mt-0.5 text-[10px] text-zinc-500 font-medium">
+                {isAdmin ? "Global Admin" : "Editor"}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Search Filter */}
-      <div className="px-4 py-3">
-        <div className="relative">
-          <Search className="absolute top-2.5 left-3 h-4 w-4 text-white/50" />
-          <input
-            type="text"
-            placeholder="Search tables..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-md border border-navy-light/30 bg-navy-light/20 py-1.5 pl-9 pr-4 text-sm text-white placeholder-white/50 transition focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold/50"
-          />
+      {/* Collapsed: show avatar only */}
+      {collapsed && !isMobile && (
+        <div className="flex justify-center py-3 border-b border-zinc-800">
+          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-crimson/20 text-xs font-bold text-crimson border border-crimson/30">
+            {userInitial}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Navigation Groups */}
-      <nav className="admin-scroll flex-1 overflow-y-auto px-4 py-2 space-y-1">
-        {/* Dashboard Home Link */}
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto py-2 px-2 space-y-0.5 admin-scroll">
+        {/* Dashboard */}
         <Link
           to="/admin"
+          onClick={isMobile ? onMobileClose : undefined}
           className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition",
-            location.pathname === "/admin"
-              ? "bg-gold/20 text-gold border border-gold/30"
-              : "text-white/80 hover:bg-navy-light/30 hover:text-white border border-transparent"
+            "flex items-center gap-3 rounded-lg px-2.5 py-2 text-sm font-medium transition",
+            collapsed && !isMobile && "justify-center px-2",
+            isActive("/admin")
+              ? "bg-zinc-800 text-white"
+              : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
           )}
+          title={collapsed && !isMobile ? "Dashboard" : undefined}
         >
-          <LayoutDashboard className="h-4 w-4" />
-          <span>Dashboard Overview</span>
+          <LayoutDashboard className="h-4 w-4 shrink-0" />
+          {(!collapsed || isMobile) && <span>Dashboard</span>}
         </Link>
 
-        {filteredGroups.map((group) => {
-          const isExpanded = expandedGroups[group.label] || searchQuery !== "";
-          const groupHasActiveChild = group.items.some(
-            (item) => location.pathname === item.to
-          );
+        {/* Groups */}
+        {NAV_GROUPS.map((group) => {
+          const hasActive = groupHasActive(group);
+          const expanded = expandedGroups[group.label] || hasActive;
+
+          if (collapsed && !isMobile) {
+            // Icon-only mode: show group icon as a separator-style button with tooltip
+            return (
+              <div key={group.label} className="pt-3 pb-1">
+                <div
+                  className={cn(
+                    "flex justify-center rounded-lg p-2 text-zinc-500",
+                    hasActive && "text-crimson"
+                  )}
+                  title={group.label}
+                >
+                  <group.icon className="h-4 w-4" />
+                </div>
+                {/* Show individual icons for items in collapsed mode */}
+                {group.items.map((item) => (
+                  <Link
+                    key={item.to}
+                    to={item.to}
+                    className={cn(
+                      "flex justify-center rounded-lg p-2 transition my-0.5",
+                      isActive(item.to)
+                        ? "bg-zinc-800 text-white"
+                        : "text-zinc-600 hover:bg-zinc-900 hover:text-zinc-300"
+                    )}
+                    title={item.label}
+                  >
+                    <div className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      isActive(item.to) ? "bg-crimson" : "bg-zinc-600"
+                    )} />
+                  </Link>
+                ))}
+              </div>
+            );
+          }
 
           return (
-            <div key={group.label} className="space-y-1 pt-2">
+            <div key={group.label} className="pt-3">
               <button
                 onClick={() => toggleGroup(group.label)}
                 className={cn(
-                  "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition hover:bg-navy-light/30 hover:text-white",
-                  groupHasActiveChild ? "text-gold" : "text-white/90"
+                  "flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition",
+                  hasActive ? "text-crimson" : "text-zinc-500 hover:text-zinc-300"
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <group.icon className="h-4 w-4" />
+                <div className="flex items-center gap-2">
+                  <group.icon className="h-3.5 w-3.5" />
                   <span>{group.label}</span>
                 </div>
                 <ChevronDown
-                  className={cn(
-                    "h-4 w-4 text-white/50 transition-transform duration-200",
-                    isExpanded && "rotate-180 text-white/70"
-                  )}
+                  className={cn("h-3 w-3 transition-transform duration-200", expanded && "rotate-180")}
                 />
               </button>
 
-              {isExpanded && (
-                <div className="pl-7 space-y-1 border-l border-navy-light/30 ml-5 mt-1 py-1">
-                  {group.items.map((item) => {
-                    const isActive = location.pathname === item.to;
-                    return (
-                      <Link
-                        key={item.label}
-                        to={item.to}
-                        className={cn(
-                          "block rounded-md px-3 py-1.5 text-xs font-medium transition",
-                          isActive
-                            ? "bg-gold/15 text-gold font-semibold"
-                            : "text-white/85 hover:text-white hover:bg-navy-light/20"
-                        )}
-                      >
-                        {item.label}
-                      </Link>
-                    );
-                  })}
+              {expanded && (
+                <div className="mt-0.5 space-y-0.5 pl-2">
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      onClick={isMobile ? onMobileClose : undefined}
+                      className={cn(
+                        "flex items-center gap-2 rounded-lg px-2.5 py-1.5 text-sm transition",
+                        isActive(item.to)
+                          ? "bg-zinc-800 text-white font-medium"
+                          : "text-zinc-400 hover:bg-zinc-900 hover:text-white"
+                      )}
+                    >
+                      <div className={cn(
+                        "h-1 w-1 rounded-full shrink-0",
+                        isActive(item.to) ? "bg-crimson" : "bg-zinc-700"
+                      )} />
+                      <span>{item.label}</span>
+                    </Link>
+                  ))}
                 </div>
               )}
             </div>
@@ -248,16 +301,42 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
         })}
       </nav>
 
-      {/* Footer Log Out */}
-      <div className="border-t border-navy-light/30 p-4">
+      {/* Footer logout */}
+      <div className={cn("border-t border-zinc-800 p-2", collapsed && !isMobile && "flex justify-center")}>
         <button
           onClick={logout}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-white/80 transition hover:bg-crimson/20 hover:text-crimson border border-transparent hover:border-crimson/30"
+          className={cn(
+            "flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium text-zinc-400 hover:bg-zinc-900 hover:text-white transition w-full",
+            collapsed && !isMobile && "w-auto justify-center px-2"
+          )}
+          title={collapsed && !isMobile ? "Log out" : undefined}
         >
-          <LogOut className="h-4 w-4" />
-          <span>Log Out</span>
+          <LogOut className="h-4 w-4 shrink-0" />
+          {(!collapsed || isMobile) && <span>Log out</span>}
         </button>
       </div>
     </div>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <div className="hidden lg:flex h-full shrink-0">
+        {sidebarContent(false)}
+      </div>
+
+      {/* Mobile overlay drawer */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 flex lg:hidden">
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={onMobileClose}
+          />
+          <div className="relative z-10 flex h-full w-64 flex-col shadow-2xl">
+            {sidebarContent(true)}
+          </div>
+        </div>
+      )}
+    </>
   );
 }

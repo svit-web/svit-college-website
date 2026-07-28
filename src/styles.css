@@ -152,3 +152,28 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Admin dark panel form field utilities */
+.field-label {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: oklch(0.56 0.02 260);
+}
+
+.field-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid oklch(0.32 0.02 260);
+  background-color: oklch(0.17 0.01 260);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #fff;
+  transition: border-color 0.15s;
+  outline: none;
+}
+
+.field-input:focus { border-color: var(--crimson); }
+.field-input::placeholder { color: oklch(0.45 0.02 260); }

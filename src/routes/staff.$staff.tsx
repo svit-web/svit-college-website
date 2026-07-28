@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Mail, Phone, GraduationCap, Clock, Hash, ExternalLink, Linkedin, BookOpen, FlaskConical, Calendar } from "lucide-react";
+import { ArrowLeft, Mail, Phone, ExternalLink, Linkedin, BookOpen, Tag } from "lucide-react";
 import { getStaffByEmployeeCode } from "@/lib/staff.functions";
 import { cn } from "@/lib/utils";
 
@@ -8,6 +8,15 @@ function initials(name: string) {
   const parts = clean.split(/\s+/);
   return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
 }
+
+const ACHIEVEMENT_LABELS: Record<string, string> = {
+  award: "Awards & Honors",
+  patent: "Patents",
+  publication: "Publications",
+  research: "Research Projects",
+  qualification: "Qualifications",
+  experience: "Experience",
+};
 
 export const Route = createFileRoute("/staff/$staff")({
   loader: async ({ params }) => {
@@ -25,25 +34,25 @@ export const Route = createFileRoute("/staff/$staff")({
 });
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">{children}</h2>
-  );
-}
-
-function EmptyState({ text }: { text: string }) {
-  return <p className="text-sm text-muted-foreground italic">{text}</p>;
+  return <h2 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">{children}</h2>;
 }
 
 function StaffProfilePage() {
   const { profile } = Route.useLoaderData();
   const dept = profile.department;
 
+  // Group achievements by type
+  const achievementGroups: Record<string, typeof profile.achievements> = {};
+  for (const a of profile.achievements) {
+    if (!achievementGroups[a.type]) achievementGroups[a.type] = [];
+    achievementGroups[a.type].push(a);
+  }
+
   return (
     <div className="min-h-screen bg-secondary/20">
       {/* ── Hero ── */}
       <section className="bg-gradient-to-br from-navy-deep via-navy to-navy pb-16 pt-10 text-white">
         <div className="container-page">
-          {/* Breadcrumb */}
           <nav className="mb-8 flex flex-wrap items-center gap-1.5 text-xs text-white/50">
             <Link to="/" className="transition-colors hover:text-white/80">Home</Link>
             {dept && (
@@ -58,7 +67,6 @@ function StaffProfilePage() {
             <span className="text-white/80">{profile.name}</span>
           </nav>
 
-          {/* Photo + identity */}
           <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:gap-10">
             {profile.photoUrl ? (
               <img
@@ -86,29 +94,18 @@ function StaffProfilePage() {
                 <div className="mt-1.5 text-sm text-white/60">Department of {dept.name}</div>
               )}
 
-              {/* Quick chips */}
-              <div className="mt-5 flex flex-wrap gap-3">
-                {profile.joiningYear && (
-                  <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
-                    <Calendar className="h-3.5 w-3.5 text-gold/70" />
-                    Working since {profile.joiningYear}
-                  </div>
-                )}
-                {profile.experienceYears && (
-                  <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
-                    <Clock className="h-3.5 w-3.5 text-gold/70" />
-                    {profile.experienceYears}+ yrs experience
-                  </div>
-                )}
-                {profile.qualification && (
-                  <div className="flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
-                    <GraduationCap className="h-3.5 w-3.5 text-gold/70" />
-                    {profile.qualification}
-                  </div>
-                )}
-              </div>
+              {/* Expertise tags */}
+              {profile.expertise.length > 0 && (
+                <div className="mt-5 flex flex-wrap gap-2">
+                  {profile.expertise.map((tag: string) => (
+                    <span key={tag} className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3 py-1 text-xs text-white/80">
+                      <Tag className="h-3 w-3 text-gold/70" />
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              )}
 
-              {/* Social links */}
               {profile.socialLinks && (
                 <div className="mt-4 flex gap-3">
                   {profile.socialLinks.linkedin && (
@@ -140,10 +137,8 @@ function StaffProfilePage() {
       <section className="container-page py-12">
         <div className="grid gap-10 lg:grid-cols-3">
 
-          {/* Left column — contact + meta */}
+          {/* Left column */}
           <div className="space-y-8 lg:col-span-1">
-
-            {/* Contact */}
             {(profile.email || profile.phone) && (
               <div>
                 <SectionLabel>Contact</SectionLabel>
@@ -166,18 +161,14 @@ function StaffProfilePage() {
               </div>
             )}
 
-            {/* Academic details */}
             <div>
               <SectionLabel>Academic Details</SectionLabel>
               <dl className="space-y-3">
                 {[
                   { label: "Designation", value: profile.designation },
-                  { label: "Qualification", value: profile.qualification },
-                  { label: "Experience", value: profile.experienceYears ? `${profile.experienceYears}+ years` : null },
-                  { label: "Working since", value: profile.joiningYear ? String(profile.joiningYear) : null },
                   { label: "Department", value: dept?.name },
                   { label: "Employee Code", value: profile.employeeCode },
-                ].filter(d => d.value).map(d => (
+                ].filter((d) => d.value).map((d) => (
                   <div key={d.label} className="rounded-xl border-2 border-navy/10 bg-white px-4 py-3">
                     <dt className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{d.label}</dt>
                     <dd className="mt-0.5 text-sm font-semibold text-navy">{d.value}</dd>
@@ -186,24 +177,6 @@ function StaffProfilePage() {
               </dl>
             </div>
 
-            {/* Research interests */}
-            <div>
-              <SectionLabel>Research Interests</SectionLabel>
-              {profile.researchInterests.length === 0 ? (
-                <EmptyState text="No research interests listed yet." />
-              ) : (
-                <div className="flex flex-wrap gap-2">
-                  {profile.researchInterests.map(r => (
-                    <span key={r.id}
-                      className="rounded-full border border-navy/15 bg-white px-3 py-1 text-xs font-semibold text-navy">
-                      {r.interestName}
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Office hours */}
             {profile.officeHours && profile.officeHours.length > 0 && (
               <div>
                 <SectionLabel>Office Hours</SectionLabel>
@@ -219,10 +192,8 @@ function StaffProfilePage() {
             )}
           </div>
 
-          {/* Right column — bio, publications, projects */}
+          {/* Right column */}
           <div className="space-y-10 lg:col-span-2">
-
-            {/* Bio */}
             {profile.bio && (
               <div>
                 <SectionLabel>About</SectionLabel>
@@ -232,76 +203,33 @@ function StaffProfilePage() {
               </div>
             )}
 
-            {/* Research projects */}
-            <div>
-              <SectionLabel>Research Projects</SectionLabel>
-              {profile.researchProjects.length === 0 ? (
-                <EmptyState text="No research projects recorded yet." />
-              ) : (
-                <div className="space-y-4">
-                  {profile.researchProjects.map(p => (
-                    <div key={p.id} className="rounded-2xl border-2 border-navy/10 bg-white p-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <h3 className="font-display text-base font-bold text-navy">{p.title}</h3>
-                        {p.projectStatus && (
-                          <span className={cn(
-                            "shrink-0 rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest",
-                            p.projectStatus === "ongoing" ? "bg-green-100 text-green-700" : "bg-secondary text-muted-foreground"
-                          )}>
-                            {p.projectStatus}
-                          </span>
-                        )}
-                      </div>
-                      <dl className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
-                        {p.fundingAgency && <div><span className="font-semibold text-ink">Funded by:</span> {p.fundingAgency}</div>}
-                        {p.amount && <div><span className="font-semibold text-ink">Amount:</span> ₹{p.amount.toLocaleString()}</div>}
-                        {p.durationYears && <div><span className="font-semibold text-ink">Duration:</span> {p.durationYears} yr{p.durationYears > 1 ? "s" : ""}</div>}
-                      </dl>
+            {/* Achievements grouped by type */}
+            {Object.entries(achievementGroups).map(([type, items]) => (
+              <div key={type}>
+                <SectionLabel>{ACHIEVEMENT_LABELS[type] ?? type}</SectionLabel>
+                <div className="space-y-3">
+                  {items.map((a) => (
+                    <div key={a.id} className="rounded-2xl border-2 border-navy/10 bg-white p-5">
+                      <h3 className="font-semibold text-navy text-sm">{a.title}</h3>
+                      {(a.year || a.description) && (
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {a.year && <span className="font-semibold text-ink">{a.year}</span>}
+                          {a.year && a.description && " · "}
+                          {a.description}
+                        </p>
+                      )}
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            ))}
 
-            {/* Publications */}
-            <div>
-              <SectionLabel>Publications</SectionLabel>
-              {profile.publications.length === 0 ? (
-                <EmptyState text="No publications recorded yet." />
-              ) : (
-                <ol className="space-y-4 list-none">
-                  {profile.publications.map((pub, i) => (
-                    <li key={pub.id} className="flex gap-4 rounded-2xl border-2 border-navy/10 bg-white p-5">
-                      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-navy text-[10px] font-bold text-white">
-                        {i + 1}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="font-display text-sm font-bold text-navy leading-snug">{pub.title}</h3>
-                        {pub.journalConference && (
-                          <div className="mt-1 text-xs font-semibold italic text-crimson">{pub.journalConference}</div>
-                        )}
-                        {pub.publishDate && (
-                          <div className="mt-1 text-xs text-muted-foreground">{new Date(pub.publishDate).getFullYear()}</div>
-                        )}
-                        {pub.abstract && (
-                          <p className="mt-2 text-xs text-muted-foreground leading-relaxed line-clamp-3">{pub.abstract}</p>
-                        )}
-                        {pub.doiUrl && (
-                          <a href={pub.doiUrl} target="_blank" rel="noreferrer"
-                            className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-navy hover:text-gold-strong">
-                            <ExternalLink className="h-3 w-3" /> DOI
-                          </a>
-                        )}
-                      </div>
-                    </li>
-                  ))}
-                </ol>
-              )}
-            </div>
+            {profile.achievements.length === 0 && !profile.bio && (
+              <p className="text-sm text-muted-foreground italic">No additional details listed yet.</p>
+            )}
           </div>
         </div>
 
-        {/* Back link */}
         {dept && (
           <div className="mt-12 border-t border-navy/10 pt-8">
             <Link to="/departments/$dept/staff" params={{ dept: dept.code }}

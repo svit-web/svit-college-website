@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback, Suspense } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
@@ -10,7 +10,7 @@ export const Route = createFileRoute("/admin")({
   component: AdminLayout,
 });
 
-// ─── Error Boundary Component ────────────────────────────────────────────────
+// ─── Error Boundary ───────────────────────────────────────────────────────────
 interface ErrorBoundaryState { hasError: boolean; error: Error | null }
 
 class AdminErrorBoundary extends React.Component<
@@ -53,7 +53,7 @@ class AdminErrorBoundary extends React.Component<
   }
 }
 
-// ─── Route Loading Skeleton ───────────────────────────────────────────────────
+// ─── Loading Skeleton ─────────────────────────────────────────────────────────
 function RouteLoadingSkeleton() {
   return (
     <div className="space-y-6 p-2">
@@ -74,6 +74,14 @@ function AdminLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/admin/login";
+
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!loading) {
@@ -96,25 +104,30 @@ function AdminLayout() {
     );
   }
 
-  // Login page — render directly without layout shell
-  if (isLoginPage) {
-    return <Outlet />;
-  }
-
-  // Not authorized — return nothing while redirect fires
-  if (!isAuthorized) {
-    return null;
-  }
+  if (isLoginPage) return <Outlet />;
+  if (!isAuthorized) return null;
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
-      <AdminSidebar user={user} profile={profile} roles={roles} logout={logout} />
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <AdminHeader profile={profile} roles={roles} logout={logout} />
-        <main className="admin-scroll flex-1 overflow-y-auto admin-bg p-6 md:p-8">
-          {/* ErrorBoundary catches any thrown errors in child routes */}
+      <AdminSidebar
+        user={user}
+        profile={profile}
+        roles={roles}
+        logout={logout}
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed((c) => !c)}
+        mobileOpen={mobileOpen}
+        onMobileClose={() => setMobileOpen(false)}
+      />
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+        <AdminHeader
+          profile={profile}
+          roles={roles}
+          logout={logout}
+          onMobileMenuToggle={() => setMobileOpen((o) => !o)}
+        />
+        <main className="admin-scroll flex-1 overflow-y-auto admin-bg p-4 md:p-6 lg:p-8">
           <AdminErrorBoundary>
-            {/* Suspense shows a skeleton while lazy route chunks load */}
             <Suspense fallback={<RouteLoadingSkeleton />}>
               <Outlet />
             </Suspense>
