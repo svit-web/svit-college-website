@@ -23,7 +23,7 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, to
   return (
     <Wrapper
       {...(wrapperProps as any)}
-      className={cn("group block aspect-[3/4]", to && "cursor-pointer")}
+      className={cn("group block aspect-square", to && "cursor-pointer")}
     >
       <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-all duration-500 ease-in-out group-hover:border-gold group-hover:shadow-lg">
 
