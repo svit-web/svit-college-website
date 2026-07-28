@@ -3,6 +3,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
+import { DeptBranchCard } from "@/components/site/DeptBranchCard";
 import { getProgrammeBySlug } from "@/lib/programmes.functions";
 import { getBranchesByCourseId } from "@/lib/courses.functions";
 import { getAllRecruiters } from "@/lib/placement.functions";
@@ -93,36 +94,38 @@ function CoursePage() {
           <div className="container-page">
             <SectionHeading center eyebrow={`${course.name} · Specialisations`} title="Specialised Branches" />
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {branches.map((b, i) => {
-                const card = (
-                  <div className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-6">
-                    {b.icon_url ? (
-                      <div className="mb-3 flex h-10 w-10 items-center justify-center overflow-hidden rounded-md bg-secondary/60 p-1.5">
-                        <img src={b.icon_url} alt="" className="h-full w-full object-contain" />
+              {branches.map((b, i) => (
+                <Reveal key={b.id} delay={i * 0.03}>
+                  {b.metadata.engSlug ? (
+                    <DeptBranchCard
+                      name={b.name}
+                      iconUrl={b.icon_url}
+                      fallbackLabel={b.metadata.short ?? b.code}
+                      fallbackColor={b.metadata.color}
+                      to="/courses/engineering/$dept"
+                      params={{ dept: b.metadata.engSlug }}
+                    />
+                  ) : (
+                    <div className="flex h-full flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white">
+                      <div className="flex flex-1 items-center gap-4 p-5">
+                        {b.icon_url ? (
+                          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary/40 p-2">
+                            <img src={b.icon_url} alt="" className="h-full w-full object-contain" />
+                          </div>
+                        ) : (
+                          <div className={cn("flex h-16 w-16 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white", b.metadata.color ?? "bg-navy")}>
+                            {b.metadata.short ?? b.code}
+                          </div>
+                        )}
+                        <h4 className="font-display text-lg font-bold leading-snug text-navy">{b.name}</h4>
                       </div>
-                    ) : (
-                      <div className={cn("mb-3 flex h-10 w-10 items-center justify-center rounded-md text-white text-xs font-bold", b.metadata.color ?? "bg-navy")}>
-                        {b.metadata.short ?? b.code}
+                      <div className="bg-secondary/60 px-5 py-3 text-sm font-semibold text-muted-foreground">
+                        Details coming soon
                       </div>
-                    )}
-                    <h4 className="font-display font-bold text-navy">{b.name}</h4>
-                    {b.metadata.overview && (
-                      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{b.metadata.overview}</p>
-                    )}
-                  </div>
-                );
-                return (
-                  <Reveal key={b.id} delay={i * 0.03}>
-                    {b.metadata.engSlug ? (
-                      <Link to="/courses/engineering/$dept" params={{ dept: b.metadata.engSlug }}>
-                        {card}
-                      </Link>
-                    ) : (
-                      card
-                    )}
-                  </Reveal>
-                );
-              })}
+                    </div>
+                  )}
+                </Reveal>
+              ))}
             </div>
           </div>
         </section>
