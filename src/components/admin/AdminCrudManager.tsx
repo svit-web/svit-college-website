@@ -140,7 +140,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
   // Pagination & Sorting & Filters
   const [page, setPage] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -611,17 +611,15 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
       return {
         accessorKey: col.name,
-        header: ({ column }: any) => {
-          return (
-            <button
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-              className="flex items-center gap-1.5 font-semibold text-navy hover:text-gold"
-            >
-              <span>{formatLabel(col.name)}</span>
-              <ArrowUpDown className="h-3.5 w-3.5" />
-            </button>
-          );
-        },
+        header: ({ column }: any) => (
+          <button
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            className="flex items-center gap-1 font-semibold text-slate-600 hover:text-navy text-[11px]"
+          >
+            <span>{formatLabel(col.name)}</span>
+            <ArrowUpDown className="h-3 w-3 opacity-40" />
+          </button>
+        ),
         cell: ({ getValue }: any) => {
           const val = getValue();
           if (val === null || val === undefined) return <span className="text-slate-400">-</span>;
@@ -663,7 +661,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
           // Default truncate strings
           if (typeof val === "string") {
-            return <span className="truncate max-w-xs block">{val}</span>;
+            return <span className="truncate max-w-[180px] block">{val}</span>;
           }
 
           return <span>{String(val)}</span>;
@@ -732,85 +730,71 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
   return (
     <div className="space-y-6">
-      {/* Title & Actions Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl">
-            {formatLabel(tableId)} Manager
+      {/* Title + Search + Add — single compact row */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <h1 className="text-lg font-bold text-navy truncate">
+            {formatLabel(tableId)}
           </h1>
-          <p className="text-sm text-slate-700">
-            {recordCount} total rows found in database
-          </p>
+          <span className="shrink-0 text-xs text-slate-500">{recordCount} rows</span>
         </div>
 
-        {hasWritePermission ? (
-          <button
-            onClick={() => handleOpenModal()}
-            className="flex items-center gap-2 rounded-md bg-crimson px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-crimson/20 transition hover:bg-crimson/90 focus:outline-none focus:ring-2 focus:ring-crimson"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Add {formatLabel(tableId).slice(0, -1) || "Record"}</span>
-          </button>
-        ) : (
-          <div className="flex items-center gap-2 rounded-md bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-700 border border-amber-300">
-            <AlertTriangle className="h-4 w-4" />
-            <span>Read-Only (Global Config)</span>
+        <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search className="absolute top-2 left-2.5 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-44 rounded border border-slate-200 bg-white py-1.5 pl-8 pr-7 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery("")} className="absolute top-2 right-2 text-slate-400 hover:text-navy">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
-        )}
-      </div>
 
-      {/* Grid Filter Toolbar */}
-      <div className="flex flex-col gap-4 rounded-lg bg-slate-50 p-4 border border-slate-200 sm:flex-row sm:items-center sm:justify-between">
-        {/* Search */}
-        <div className="relative max-w-sm flex-1">
-          <Search className="absolute top-2.5 left-3 h-4 w-4 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Search matching fields..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-md border border-slate-200 bg-white py-2 pl-9 pr-4 text-sm text-slate-800 placeholder-text-slate-600 transition focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
-          />
-          {searchQuery && (
+          {hasWritePermission ? (
             <button
-              onClick={() => setSearchQuery("")}
-              className="absolute top-2.5 right-3 text-slate-500 hover:text-navy"
+              onClick={() => handleOpenModal()}
+              className="flex items-center gap-1.5 rounded bg-crimson px-3 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 transition shrink-0"
             >
-              <X className="h-4 w-4" />
+              <Plus className="h-3.5 w-3.5" />
+              Add
             </button>
+          ) : (
+            <div className="flex items-center gap-1.5 rounded bg-amber-50 px-2.5 py-1.5 text-[10px] font-semibold text-amber-700 border border-amber-200">
+              <AlertTriangle className="h-3 w-3" />
+              Read-Only
+            </div>
           )}
-        </div>
-
-        {/* Info */}
-        <div className="text-right text-xs text-slate-600 font-medium">
-          Active Schema: <code className="text-crimson font-mono">{tableId}</code>
         </div>
       </div>
 
       {/* Grid Table Container */}
-      <div className="relative overflow-hidden rounded-lg bg-white border border-slate-200 shadow-xl">
+      <div className="relative overflow-hidden rounded-lg bg-white border border-slate-200 shadow-sm">
         {dataLoading && (
           <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
-            <Loader2 className="h-10 w-10 animate-spin text-crimson" />
+            <Loader2 className="h-7 w-7 animate-spin text-crimson" />
           </div>
         )}
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full text-left border-collapse text-xs">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="border-b border-slate-200 bg-slate-50">
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="px-6 py-4 text-sm font-semibold text-slate-900">
+                    <th key={header.id} className="px-3 py-2 text-xs font-semibold text-slate-700 whitespace-nowrap">
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
                   {hasWritePermission && (
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-900">
-                      Actions
-                    </th>
+                    <th className="px-3 py-2 text-right text-xs font-semibold text-slate-700 w-24" />
                   )}
                 </tr>
               ))}
@@ -818,37 +802,41 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
             <tbody>
               {records.length > 0 ? (
                 table.getRowModel().rows.map((row) => (
-                  <tr key={row.id} className="border-b border-slate-200 hover:bg-slate-50 transition">
+                  <tr
+                    key={row.id}
+                    onClick={() => hasWritePermission && handleOpenModal(row.original)}
+                    className={`border-b border-slate-100 transition ${hasWritePermission ? "cursor-pointer hover:bg-crimson/[0.02]" : "hover:bg-slate-50"}`}
+                  >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-6 py-4 text-sm text-slate-900 font-medium">
+                      <td key={cell.id} className="px-3 py-2 text-xs text-slate-800 max-w-[200px] truncate">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
                     {hasWritePermission && (
-                      <td className="px-6 py-4 text-right">
-                        <div className="flex justify-end gap-2">
+                      <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-1 opacity-60 hover:opacity-100 transition">
                           {tableId === "user_profiles" && (
                             <button
                               onClick={() => handleResetPassword(row.original)}
-                              className="rounded p-1 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
-                              title="Send password reset email"
+                              className="rounded p-1 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition"
+                              title="Reset password"
                             >
-                              <KeyRound className="h-4 w-4" />
+                              <KeyRound className="h-3.5 w-3.5" />
                             </button>
                           )}
                           <button
                             onClick={() => handleOpenModal(row.original)}
-                            className="rounded p-1 text-slate-700 hover:bg-slate-100 hover:text-navy transition"
-                            title="Edit record"
+                            className="rounded p-1 text-crimson hover:bg-crimson/10 transition"
+                            title="Edit"
                           >
-                            <Edit2 className="h-4 w-4" />
+                            <Edit2 className="h-3.5 w-3.5" />
                           </button>
                           <button
                             onClick={() => handleDelete(row.original)}
-                            className="rounded p-1 text-slate-700 hover:bg-red-50 hover:text-red-600 transition"
-                            title="Delete record"
+                            className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 transition"
+                            title="Delete"
                           >
-                            <Trash2 className="h-4 w-4" />
+                            <Trash2 className="h-3.5 w-3.5" />
                           </button>
                         </div>
                       </td>
@@ -859,7 +847,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                 <tr>
                   <td
                     colSpan={tableColumns.length + (hasWritePermission ? 1 : 0)}
-                    className="px-6 py-12 text-center text-slate-600"
+                    className="px-3 py-10 text-center text-xs text-slate-500"
                   >
                     No matching records found.
                   </td>
@@ -869,50 +857,38 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           </table>
         </div>
 
-        {/* Pagination Toolbar */}
+        {/* Pagination — compact */}
         {recordCount > 0 && (
-          <div className="flex flex-col gap-4 items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row">
-            <span className="text-sm text-slate-700">
-              Showing <span className="font-semibold text-slate-900">{page * pageSize + 1}</span> to{" "}
-              <span className="font-semibold text-slate-900">
-                {Math.min((page + 1) * pageSize, recordCount)}
-              </span>{" "}
-              of <span className="font-semibold text-slate-900">{recordCount}</span> results
+          <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2">
+            <span className="text-xs text-slate-500">
+              {page * pageSize + 1}–{Math.min((page + 1) * pageSize, recordCount)} of {recordCount}
             </span>
 
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-1">
-                <span className="text-xs text-slate-700">Rows per page:</span>
-                <select
-                  value={pageSize}
-                  onChange={(e) => {
-                    setPageSize(Number(e.target.value));
-                    setPage(0);
-                  }}
-                  className="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-crimson/50"
-                >
-                  {[5, 10, 20, 50].map((size) => (
-                    <option key={size} value={size}>
-                      {size}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <div className="flex items-center gap-3">
+              <select
+                value={pageSize}
+                onChange={(e) => { setPageSize(Number(e.target.value)); setPage(0); }}
+                className="rounded border border-slate-200 bg-white px-1.5 py-1 text-xs text-slate-700 focus:outline-none"
+              >
+                {[10, 25, 50, 100].map((s) => (
+                  <option key={s} value={s}>{s}/page</option>
+                ))}
+              </select>
 
-              <div className="flex gap-1.5">
+              <div className="flex gap-1">
                 <button
                   onClick={() => setPage((p) => Math.max(0, p - 1))}
                   disabled={page === 0}
-                  className="flex items-center justify-center rounded border border-slate-200 bg-white p-1.5 text-slate-600 hover:text-navy disabled:pointer-events-none disabled:opacity-40 transition"
+                  className="rounded border border-slate-200 bg-white p-1 text-slate-500 hover:text-navy disabled:opacity-30 transition"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-3.5 w-3.5" />
                 </button>
                 <button
                   onClick={() => setPage((p) => p + 1)}
                   disabled={(page + 1) * pageSize >= recordCount}
-                  className="flex items-center justify-center rounded border border-slate-200 bg-white p-1.5 text-slate-600 hover:text-navy disabled:pointer-events-none disabled:opacity-40 transition"
+                  className="rounded border border-slate-200 bg-white p-1 text-slate-500 hover:text-navy disabled:opacity-30 transition"
                 >
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-3.5 w-3.5" />
                 </button>
               </div>
             </div>
