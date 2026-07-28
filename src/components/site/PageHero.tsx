@@ -9,12 +9,14 @@ export function PageHero({
   subtitle,
   crumbs,
   children,
+  rightSlot,
 }: {
   title: string;
   accent?: string;
   subtitle?: string;
   crumbs?: { label: string; to?: string }[];
   children?: ReactNode;
+  rightSlot?: ReactNode;
 }) {
   return (
     <section className="relative overflow-hidden bg-navy text-white">
@@ -36,27 +38,39 @@ export function PageHero({
             ))}
           </nav>
         )}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="max-w-4xl"
-        >
-          {accent && (
-            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-              {accent}
-            </div>
+        <div className="flex items-center justify-between gap-10">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-4xl flex-1"
+          >
+            {accent && (
+              <div className="mb-3 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+                {accent}
+              </div>
+            )}
+            <h1 className="font-display text-4xl md:text-6xl font-bold leading-[1.05]">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="mt-5 text-base md:text-lg text-white/80 max-w-2xl leading-relaxed">
+                {subtitle}
+              </p>
+            )}
+            {children && <div className="mt-6">{children}</div>}
+          </motion.div>
+          {rightSlot && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="hidden shrink-0 lg:block"
+            >
+              {rightSlot}
+            </motion.div>
           )}
-          <h1 className="font-display text-4xl md:text-6xl font-bold leading-[1.05]">
-            {title}
-          </h1>
-          {subtitle && (
-            <p className="mt-5 text-base md:text-lg text-white/80 max-w-2xl leading-relaxed">
-              {subtitle}
-            </p>
-          )}
-          {children && <div className="mt-6">{children}</div>}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

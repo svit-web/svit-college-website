@@ -31,6 +31,7 @@ export interface College {
   hero: { kicker: string; subhead: string };
   stats: { value: string; label: string }[] | null;
   whyChoose: { title: string; desc: string; icon: string }[] | null;
+  trustBadges: { label: string; icon: string }[];
   recruiters: string[];
   departments: CollegeDept[];
 }
@@ -91,7 +92,7 @@ export function CollegeLandingPage({ college }: { college: College }) {
       <StatsStrip data={displayStats} />
       <ProgramsSection college={college} />
       <WhySection college={college} data={displayWhy} />
-      <TrustBand />
+      <TrustBand items={college.trustBadges} />
       <EventsAndEnquiry college={college} />
       <RecruitersStrip data={displayRecruiters} />
       <CTABanner />
@@ -249,17 +250,20 @@ function WhySection({
   );
 }
 
-function TrustBand() {
-  const items = ["AICTE Approved", "NAAC Accredited", "5000+ Students", "15+ Acre Campus"];
+function TrustBand({ items }: { items: { label: string; icon: string }[] }) {
+  if (items.length === 0) return null;
   return (
     <section className="container-page py-14">
       <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-white p-8 md:grid-cols-4">
-        {items.map((i) => (
-          <div key={i} className="flex items-center justify-center gap-2 text-navy">
-            <BadgeCheck className="h-5 w-5 text-gold" />
-            <span className="text-sm font-semibold uppercase tracking-wider">{i}</span>
-          </div>
-        ))}
+        {items.map((item) => {
+          const Icon = iconMap[item.icon] ?? BadgeCheck;
+          return (
+            <div key={item.label} className="flex items-center justify-center gap-2 text-navy">
+              <Icon className="h-5 w-5 text-gold" />
+              <span className="text-sm font-semibold uppercase tracking-wider">{item.label}</span>
+            </div>
+          );
+        })}
       </div>
     </section>
   );

@@ -1,25 +1,31 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
 import { getCollegeBySlug, getDepartmentsByCollegeSlug } from "@/lib/colleges.functions";
-import { getGlobalHomepageItems, getRecruiterLogos } from "@/lib/homepage.functions";
+import { getGlobalHomepageItems, getCollegeHomepageItems, getRecruiterLogos } from "@/lib/homepage.functions";
 
 export const Route = createFileRoute("/colleges/$college")({
   loader: async ({ params }) => {
-    const [dbCollege, departments, items, recruiters] = await Promise.all([
+    const [dbCollege, departments, globalItems, collegeItems, recruiters] = await Promise.all([
       getCollegeBySlug({ data: params.college }),
       getDepartmentsByCollegeSlug({ data: params.college }),
       getGlobalHomepageItems(),
+      getCollegeHomepageItems({ data: params.college }),
       getRecruiterLogos(),
     ]);
     if (!dbCollege) throw notFound();
 
-    const stats = items
-      .filter((i) => i.item_type === "stat")
-      .map((s) => ({ value: s.title, label: s.subtitle ?? "" }));
+    // For each item type, prefer college-specific items; fall back to global
+    function byType(items: typeof globalItems, type: string) {
+      return items.filter((i) => i.item_type === type);
+    }
+    function resolve(type: string) {
+      const specific = byType(collegeItems, type);
+      return specific.length > 0 ? specific : byType(globalItems, type);
+    }
 
-    const whyChoose = items
-      .filter((i) => i.item_type === "why_choose")
-      .map((w) => ({ title: w.title, desc: w.body ?? "", icon: w.icon_name ?? "BadgeCheck" }));
+    const stats = resolve("stat").map((s) => ({ value: s.title, label: s.subtitle ?? "" }));
+    const whyChoose = resolve("why_choose").map((w) => ({ title: w.title, desc: w.body ?? "", icon: w.icon_name ?? "BadgeCheck" }));
+    const trustBadges = resolve("trust_badge").map((t) => ({ label: t.title, icon: t.icon_name ?? "BadgeCheck" }));
 
     const college = {
       id: dbCollege.slug as any,
@@ -34,6 +40,7 @@ export const Route = createFileRoute("/colleges/$college")({
       },
       stats: stats.length > 0 ? stats : null,
       whyChoose: whyChoose.length > 0 ? whyChoose : null,
+      trustBadges,
       recruiters: recruiters.map((r) => r.company_name),
       departments,
     };
