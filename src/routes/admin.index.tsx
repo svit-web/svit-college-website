@@ -110,8 +110,8 @@ function AdminDashboardHome() {
       {/* Welcome row */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
-          <h1 className="text-xl font-bold text-white">Welcome back, {userName}</h1>
-          <p className="text-xs admin-text-muted mt-0.5">{userScope}</p>
+          <h1 className="text-xl font-bold text-navy">Welcome back, {userName}</h1>
+          <p className="text-xs text-slate-500 mt-0.5">{userScope}</p>
         </div>
         <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -121,7 +121,7 @@ function AdminDashboardHome() {
 
       {/* Primary stat cards — Events, Posts, Staff, Recruiters */}
       <div>
-        <p className="mb-3 text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Frequently Updated</p>
+        <p className="mb-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Frequently Updated</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {PRIMARY_CARDS.map((card) => {
             const Icon = card.icon;
@@ -130,20 +130,20 @@ function AdminDashboardHome() {
               <Link
                 key={card.key}
                 to={card.link}
-                className="group rounded-xl border admin-border admin-card p-4 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:border-zinc-600/60"
+                className="group rounded-xl border border-slate-200 bg-white p-4 transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300"
               >
                 <div className={cn("flex h-8 w-8 items-center justify-center rounded-lg border", card.bg)}>
                   <Icon className={cn("h-4 w-4", card.color)} />
                 </div>
                 <div className="mt-3 flex items-end justify-between">
                   {metricsLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-zinc-600" />
+                    <Loader2 className="h-5 w-5 animate-spin text-slate-400" />
                   ) : (
-                    <span className="text-2xl font-bold text-white">{value ?? 0}</span>
+                    <span className="text-2xl font-bold text-navy">{value ?? 0}</span>
                   )}
                   <ArrowRight className={cn("h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition", card.color)} />
                 </div>
-                <p className="mt-1 text-xs font-medium text-zinc-400">{card.label}</p>
+                <p className="mt-1 text-xs font-medium text-slate-500">{card.label}</p>
               </Link>
             );
           })}
@@ -155,7 +155,7 @@ function AdminDashboardHome() {
 
         {/* Activity feed — 3 cols */}
         <div className="lg:col-span-3 space-y-3">
-          <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
             <Activity className="h-3.5 w-3.5" /> Recent Activity
           </p>
           <div className="rounded-xl border admin-border admin-card overflow-hidden">
@@ -205,7 +205,7 @@ function AdminDashboardHome() {
 
         {/* Secondary stats — 2 cols */}
         <div className="lg:col-span-2 space-y-3">
-          <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider">Structure</p>
+          <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Structure</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2">
             {SECONDARY_CARDS.map((card) => {
               const Icon = card.icon;
@@ -214,7 +214,7 @@ function AdminDashboardHome() {
                 <Link
                   key={card.key}
                   to={card.link}
-                  className="group rounded-xl border admin-border admin-card p-3 transition hover:border-zinc-600/60 hover:shadow-sm"
+                  className="group rounded-xl border border-slate-200 bg-white p-3 transition hover:border-slate-300 hover:shadow-sm"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <Icon className={cn("h-3.5 w-3.5", card.color)} />
@@ -232,7 +232,7 @@ function AdminDashboardHome() {
 
           {/* Quick links */}
           <div className="rounded-xl border admin-border admin-card p-4 space-y-2">
-            <p className="text-[11px] font-semibold text-zinc-500 uppercase tracking-wider mb-3">Quick Links</p>
+            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Quick Links</p>
             {[
               { label: "Add New Event", link: "/admin/events" },
               { label: "Staff Profiles", link: "/admin/staff-wizards" },
