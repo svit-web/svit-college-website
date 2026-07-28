@@ -31,26 +31,27 @@ export interface Department {
 
 // Maps DB department code → legacy static department ID used in departmentContent.ts, academics.ts, staff.ts
 const CODE_TO_STATIC_ID: Record<string, string> = {
-  CA: 'dept-svica-ca',
-  GN: 'dept-svion-gn',
-  AE: 'dept-svit-be-aeronautical',
-  CE: 'dept-svit-be-computer',
-  'CE-DIP': 'dept-svit-dip-computer',
-  'CE-PG': 'dept-svit-me-computer',
-  CIV: 'dept-svit-be-civil',
-  'CIV-DIP': 'dept-svit-dip-civil',
-  'CIV-PG': 'dept-svit-me-civil',
-  CSD: 'dept-svit-be-csd',
-  EC: 'dept-svit-be-ec',
-  EE: 'dept-svit-be-electrical',
-  'EE-DIP': 'dept-svit-dip-electrical',
-  IT: 'dept-svit-be-it',
-  'IT-DIP': 'dept-svit-dip-it',
-  MBA: 'dept-svit-mba',
-  MCA: 'dept-svit-mca',
-  ME: 'dept-svit-be-mechanical',
-  'ME-DIP': 'dept-svit-dip-mechanical',
+  // Other colleges
+  CA:   'dept-svica-ca',
+  GN:   'dept-svion-gn',
   ARCH: 'dept-coa-arch',
+  // SVIT Degree
+  AE:   'dept-svit-be-aeronautical',
+  CE:   'dept-svit-be-computer',
+  CIV:  'dept-svit-be-civil',
+  CSD:  'dept-svit-be-csd',
+  EC:   'dept-svit-be-ec',
+  EE:   'dept-svit-be-electrical',
+  IT:   'dept-svit-be-it',
+  MBA:  'dept-svit-mba',
+  MCA:  'dept-svit-mca',
+  ME:   'dept-svit-be-mechanical',
+  // SVIT Diploma
+  'DP-CE':  'dept-svit-dip-computer',
+  'DP-CIV': 'dept-svit-dip-civil',
+  'DP-EE':  'dept-svit-dip-electrical',
+  'DP-IT':  'dept-svit-dip-it',
+  'DP-ME':  'dept-svit-dip-mechanical',
 };
 
 function mapRow(row: any): Department {
@@ -63,22 +64,6 @@ function mapRow(row: any): Department {
   };
 }
 
-// Departments and branches are edited in two separate admin screens
-// (/admin/tables/departments vs /admin/tables/branches) but often represent
-// the same real-world thing (e.g. Computer Engineering) — a department
-// without its own logo falls back to its matching branch's icon (linked via
-// metadata.engSlug) so one upload covers both the department page and the
-// course page's branch grid.
-async function withBranchIconFallback(department: Department): Promise<Department> {
-  if (department.logo_url || !department.metadata?.engSlug) return department;
-  const { data } = await supabase
-    .from('branches')
-    .select('icon_url')
-    .eq('metadata->>engSlug', department.metadata.engSlug)
-    .not('icon_url', 'is', null)
-    .maybeSingle();
-  return data?.icon_url ? { ...department, logo_url: data.icon_url } : department;
-}
 
 /**
  * Fetch all published departments
@@ -142,7 +127,7 @@ export const getDepartmentBySlug = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data ? withBranchIconFallback(mapRow(data) as Department) : null;
+    return data ? mapRow(data) as Department : null;
   });
 
 /**
@@ -165,7 +150,7 @@ export const getDepartmentByCode = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data ? withBranchIconFallback(mapRow(data) as Department) : null;
+    return data ? mapRow(data) as Department : null;
   });
 
 export interface DeptCourse {

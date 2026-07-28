@@ -2,10 +2,7 @@ import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
-import { Reveal } from "@/components/site/Reveal";
-import { DeptBranchCard } from "@/components/site/DeptBranchCard";
 import { getProgrammeBySlug } from "@/lib/programmes.functions";
-import { getBranchesByCourseId } from "@/lib/courses.functions";
 import { getAllRecruiters } from "@/lib/placement.functions";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
 
@@ -13,11 +10,8 @@ export const Route = createFileRoute("/courses/$course")({
   loader: async ({ params }) => {
     const programme = await getProgrammeBySlug({ data: params.course });
     if (!programme) throw notFound();
-    const [branches, recruitersData] = await Promise.all([
-      getBranchesByCourseId({ data: programme.id }),
-      getAllRecruiters(),
-    ]);
-    return { course: programme, branches, recruiters: recruitersData.map((r) => r.company_name) };
+    const recruitersData = await getAllRecruiters();
+    return { course: programme, recruiters: recruitersData.map((r) => r.company_name) };
   },
   head: ({ loaderData }) => ({
     meta: [
@@ -30,7 +24,7 @@ export const Route = createFileRoute("/courses/$course")({
 });
 
 function CoursePage() {
-  const { course, branches, recruiters } = Route.useLoaderData();
+  const { course, recruiters } = Route.useLoaderData();
   const m = course.metadata;
   return (
     <>
@@ -87,29 +81,6 @@ function CoursePage() {
           </aside>
         </div>
       </section>
-
-      {branches.length > 0 && (
-        <section className="bg-secondary/50 py-20">
-          <div className="container-page">
-            <SectionHeading center eyebrow={`${course.name} · Specialisations`} title="Specialised Branches" />
-            <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {branches.map((b, i) => (
-                <Reveal key={b.id} delay={i * 0.03}>
-                  <DeptBranchCard
-                    name={b.name}
-                    iconUrl={b.icon_url}
-                    fallbackLabel={b.metadata.short ?? b.code}
-                    fallbackColor={b.metadata.color}
-                    {...(b.metadata.engSlug
-                      ? { to: "/courses/engineering/$dept", params: { dept: b.metadata.engSlug } }
-                      : {})}
-                  />
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="container-page py-20">
         <SectionHeading center eyebrow="Recruiters" title="Where our graduates go" />

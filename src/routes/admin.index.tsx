@@ -195,7 +195,7 @@ function AdminDashboardHome() {
       icon: FileSpreadsheet,
       link: "/admin/tables/courses",
       color: "text-teal-400 bg-teal-500/10 border-teal-500/20",
-      description: "Degree programs & branches"
+      description: "Degree & diploma programmes"
     },
     {
       title: "Events",

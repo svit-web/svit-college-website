@@ -60,7 +60,6 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
         { label: "Colleges", to: "/admin/colleges" },
         { label: "Departments", to: "/admin/tables/departments" },
         { label: "Courses", to: "/admin/tables/courses" },
-        { label: "Branches", to: "/admin/tables/branches" },
         { label: "Facilities", to: "/admin/tables/facilities" },
         { label: "Department Activities", to: "/admin/tables/department_activities" }
       ]

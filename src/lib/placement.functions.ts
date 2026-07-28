@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface PlacementStatistics {
   id: string;
-  college_id: string | null;
+  department_id: string | null;
   academic_year: string;
   total_students: number;
   placed_students: number;
@@ -32,25 +32,27 @@ export interface Recruiter {
 }
 
 /**
- * Fetch published placement statistics for a specific college (by college slug).
+ * Fetch published placement statistics for a college (by slug).
+ * Aggregates across all departments belonging to that college.
  * Returns rows ordered newest-first.
  */
 export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
   .validator((collegeSlug: string) => collegeSlug)
   .handler(async (ctx) => {
-    // Resolve slug → id first
-    const { data: college } = await supabase
-      .from('colleges')
-      .select('id')
-      .eq('slug', ctx.data)
-      .maybeSingle();
+    const { data: depts } = await supabase
+      .from('departments')
+      .select('id, colleges!inner(slug)')
+      .eq('colleges.slug' as any, ctx.data)
+      .eq('status', 'published');
 
-    if (!college) return [] as PlacementStatistics[];
+    if (!depts?.length) return [] as PlacementStatistics[];
+
+    const deptIds = depts.map((d: any) => d.id);
 
     const { data, error } = await supabase
       .from('placement_statistics')
       .select('*')
-      .eq('college_id' as any, college.id)
+      .in('department_id' as any, deptIds)
       .eq('status', 'published')
       .order('academic_year', { ascending: false });
 

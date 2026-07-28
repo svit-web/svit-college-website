@@ -22,7 +22,6 @@ const SOFT_DELETE_TABLES = [
   "colleges",
   "departments",
   "courses",
-  "branches",
   "facilities",
   "staff_profiles",
   "qualifications",

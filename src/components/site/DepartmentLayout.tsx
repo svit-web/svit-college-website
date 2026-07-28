@@ -5,16 +5,14 @@ import { CollegeLogo } from "./CollegeLogo";
 import { CTABanner } from "./CTABanner";
 import type { Department } from "@/lib/departments.functions";
 import { cn } from "@/lib/utils";
-import svitLogo from "@/assets/svit-logo.jpg.asset.json";
-import svicaLogo from "@/assets/svica-logo.jpg.asset.json";
-import svionLogo from "@/assets/svion-logo.png.asset.json";
-import coaLogo from "@/assets/coa-svit-logo.png.asset.json";
+const BASE = "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/logos";
 
 const COLLEGE_MAP: Record<string, { shortCode: string; name: string; route: string; logo: string }> = {
-  svit: { shortCode: "SVIT", name: "Sardar Vallabhbhai Patel Institute of Technology", route: "/colleges/svit", logo: svitLogo.url },
-  svica: { shortCode: "SVICA", name: "Sardar Vallabhbhai Patel Institute of Computer Applications", route: "/colleges/svica", logo: svicaLogo.url },
-  svion: { shortCode: "SVION", name: "Sardar Vallabhbhai Patel Institute of Nursing", route: "/colleges/svion", logo: svionLogo.url },
-  "svit-coa": { shortCode: "COA", name: "College of Architecture", route: "/colleges/svit-coa", logo: coaLogo.url },
+  "svit-degree": { shortCode: "SVIT",    name: "Sardar Vallabhbhai Patel Institute of Technology", route: "/colleges/svit-degree", logo: `${BASE}/svit.jpg` },
+  "svit-diploma":{ shortCode: "SVIT-P",  name: "SVIT Polytechnic",                                 route: "/colleges/svit-diploma", logo: `${BASE}/svit.jpg` },
+  svica:         { shortCode: "SVICA",   name: "Sardar Vallabhbhai Patel Institute of Computer Applications", route: "/colleges/svica", logo: `${BASE}/svica.jpg` },
+  svion:         { shortCode: "SVION",   name: "Sardar Vallabhbhai Patel Institute of Nursing",     route: "/colleges/svion", logo: `${BASE}/svion.png` },
+  "svit-coa":    { shortCode: "COA",     name: "College of Architecture",                          route: "/colleges/svit-coa", logo: `${BASE}/coa-svit.png` },
 };
 
 interface Props {
@@ -44,12 +42,14 @@ export function DepartmentLayout({ department }: Props) {
           ...(college ? [{ label: college.shortCode, to: college.route }] : []),
           { label: department.name },
         ]}
+        rightSlot={
+          department.logo_url ? (
+            <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-3xl bg-white/10 p-4 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm">
+              <img src={department.logo_url} alt={`${department.name} logo`} className="h-full w-full object-contain" />
+            </div>
+          ) : undefined
+        }
       >
-        {department.logo_url && (
-          <div className="mb-4 flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-white/95 p-2 shadow-md">
-            <img src={department.logo_url} alt={`${department.name} logo`} className="h-full w-full object-contain" />
-          </div>
-        )}
         {college && (
           <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
             <CollegeLogo shortCode={college.shortCode} src={college.logo} className="h-8 w-8 rounded-full bg-white p-0.5" />

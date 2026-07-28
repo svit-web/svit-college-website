@@ -12,10 +12,10 @@ interface PlacementPageContent {
 
 // Map of valid college slugs
 const collegeMapping: Record<string, { code: string; name: string; shortCode: string }> = {
-  svit: { code: 'svit', name: 'Sardar Vallabhbhai Patel Institute of Technology', shortCode: 'SVIT' },
+  'svit-degree': { code: 'svit-degree', name: 'Sardar Vallabhbhai Patel Institute of Technology', shortCode: 'SVIT' },
   svica: { code: 'svica', name: 'SVIT College of Applied Sciences', shortCode: 'SVICA' },
   svion: { code: 'svion', name: 'SVIT Institute of Nursing', shortCode: 'SVION' },
-  coa: { code: 'coa', name: 'SVIT College of Architecture', shortCode: 'COA' },
+  'svit-coa': { code: 'svit-coa', name: 'College of Architecture', shortCode: 'COA' },
 };
 
 export const Route = createFileRoute("/placement/$college")({
