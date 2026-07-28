@@ -15,6 +15,7 @@ import {
   Sliders
 } from "lucide-react";
 import { toast } from "sonner";
+import { MediaUploader } from "@/components/admin/MediaUploader";
 
 export const Route = createFileRoute("/admin/homepage")({
   component: AdminHomepageLayoutPage
@@ -1044,16 +1045,15 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {/* Image URL — hero, carousel_slide, promo_card, hero_slide */}
+              {/* Image upload — hero, carousel_slide, promo_card, hero_slide */}
               {["hero", "carousel_slide", "promo_card", "hero_slide"].includes(form.item_type) && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">Image URL</label>
-                  <input value={form.image_url} onChange={(e) => f("image_url", e.target.value)}
-                    placeholder="https://... (paste Supabase storage URL)"
-                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-                  {form.image_url && (
-                    <img src={form.image_url} alt="preview" className="mt-1 h-24 w-full rounded object-cover border border-slate-200" />
-                  )}
+                  <label className="text-xs font-semibold uppercase text-slate-600">Image</label>
+                  <MediaUploader
+                    value={form.image_url}
+                    onChange={(url) => f("image_url", url)}
+                    bucketName="media"
+                  />
                 </div>
               )}
 
