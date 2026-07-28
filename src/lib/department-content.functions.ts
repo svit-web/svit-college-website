@@ -51,7 +51,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
           designation,
           rankGroup,
           email: s.email ?? null,
-          avatarUrl: s.avatar_url ?? null,
+          avatarUrl: (s.metadata as any)?.photoUrl || s.avatar_url || null,
           employeeCode: (s.metadata as any)?.employeeCode ?? null,
         };
       });
