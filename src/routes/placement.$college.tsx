@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
-import { getAllPlacementStats, getAllRecruiters } from "@/lib/placement.functions";
+import { getPlacementStatsByCollege, getAllRecruiters, type PlacementStatistics } from "@/lib/placement.functions";
 type PlacementSlug = string;
 interface PlacementPageContent {
   slug: PlacementSlug; collegeId: string; collegeName: string; shortCode: string; aboutText: string;
@@ -38,64 +38,49 @@ export const Route = createFileRoute("/placement/$college")({
     const college = collegeMapping[params.college];
     if (!college) throw notFound();
 
-    const [allStats, allRecruiters] = await Promise.all([
-      getAllPlacementStats(),
+    const [stats, allRecruiters] = await Promise.all([
+      getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
       getAllRecruiters(),
     ]);
 
-    // Build graphicalData from all years' college-specific metadata (ascending order for chart)
-    const graphicalData = allStats
-      .filter(year => year.metadata?.colleges?.[college.code])
-      .map(year => {
-        const cd = year.metadata.colleges![college.code];
-        // Convert "2024-25" → "2025" (use the end year for display)
-        const displayYear = year.academic_year.includes('-')
-          ? year.academic_year.split('-')[1].length === 2
-            ? '20' + year.academic_year.split('-')[1]
-            : year.academic_year.split('-')[1]
-          : year.academic_year;
-        return {
-          year: displayYear,
-          studentsPlaced: cd.studentsPlaced,
-          placementPercentage: cd.placementPercentage,
-        };
-      })
-      .reverse(); // ascending order for the chart
+    function toDisplayYear(academicYear: string): string {
+      if (!academicYear.includes('-')) return academicYear;
+      const part = academicYear.split('-')[1];
+      return part.length === 2 ? '20' + part : part;
+    }
 
-    // Get latest year's college data for stat highlights and extra info
-    const latestYear = allStats.find(y => y.metadata?.colleges?.[college.code]);
-    const latestCollegeData = latestYear?.metadata?.colleges?.[college.code];
+    // Build chart data — ascending order
+    const graphicalData = [...stats]
+      .reverse()
+      .map(s => ({
+        year: toDisplayYear(s.academic_year),
+        studentsPlaced: s.placed_students,
+        placementPercentage: s.total_students > 0
+          ? Math.round((s.placed_students / s.total_students) * 100)
+          : 0,
+      }));
 
-    const statHighlights = latestCollegeData
+    const latest = stats[0] ?? null;
+    const statHighlights = latest
       ? [
-          { label: 'Students Placed', value: `${latestCollegeData.studentsPlaced}+` },
-          { label: 'Highest Package', value: `₹${latestCollegeData.highestPackage} LPA` },
-          { label: 'Average Package', value: `₹${latestCollegeData.averagePackage} LPA` },
-          { label: 'Companies Visited', value: `${latestYear!.recruiters_count}+` },
+          { label: 'Students Placed', value: `${latest.placed_students}+` },
+          ...(latest.highest_package ? [{ label: 'Highest Package', value: `₹${latest.highest_package} LPA` }] : []),
+          ...(latest.average_package ? [{ label: 'Average Package', value: `₹${latest.average_package} LPA` }] : []),
+          ...(latest.recruiters_count ? [{ label: 'Companies Visited', value: `${latest.recruiters_count}+` }] : []),
         ]
       : [];
 
-    // Filter recruiters for this college
+    // Filter recruiters for this college via metadata.colleges array
     const collegeRecruiters = allRecruiters
       .filter(r => {
-        const colleges = (r.metadata as any)?.colleges as string[] | undefined;
-        return colleges?.includes(college.code);
+        const cols = (r.metadata as any)?.colleges as string[] | undefined;
+        return !cols || cols.includes(college.code);
       })
-      .map(r => ({
-        companyName: r.company_name,
-        logo: r.logo_url || null,
-      }));
+      .map(r => ({ companyName: r.company_name, logo: r.logo_url || null }));
 
-    // Get aboutText, placementOfficer, placedStudents from latest year metadata
-    const aboutText = latestCollegeData?.aboutText || '';
-    const placementOfficer = latestCollegeData?.placementOfficer || {
-      name: '',
-      designation: 'Training & Placement Officer',
-      phone: '',
-      email: '',
-      photo: null,
-    };
-    const placedStudents = latestCollegeData?.placedStudents || [];
+    const aboutText = '';
+    const placementOfficer = { name: '', designation: 'Training & Placement Officer', phone: '', email: '', photo: null };
+    const placedStudents: { studentName: string; companyName: string; photo: string | null }[] = [];
 
     const content: PlacementPageContent = {
       slug: params.college as PlacementSlug,

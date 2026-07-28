@@ -4,38 +4,15 @@ import { supabase } from '@/integrations/supabase/client';
 
 export interface PlacementStatistics {
   id: string;
+  college_id: string | null;
   academic_year: string;
   total_students: number;
   placed_students: number;
-  highest_package: number;
-  average_package: number;
-  recruiters_count: number;
+  highest_package: number | null;
+  average_package: number | null;
+  recruiters_count: number | null;
   status: 'draft' | 'published' | 'archived';
-  metadata: {
-    colleges?: {
-      [collegeCode: string]: {
-        totalStudents: number;
-        studentsPlaced: number;
-        placementPercentage: number;
-        highestPackage: number;
-        averagePackage: number;
-        aboutText?: string;
-        placementOfficer?: {
-          name: string;
-          designation: string;
-          phone: string;
-          email: string;
-          photo: string | null;
-        };
-        placedStudents?: Array<{
-          studentName: string;
-          companyName: string;
-          photo: string | null;
-        }>;
-      };
-    };
-    [key: string]: any;
-  };
+  metadata: { [key: string]: string | number | boolean | null };
   created_at: string;
   updated_at: string;
 }
@@ -55,13 +32,25 @@ export interface Recruiter {
 }
 
 /**
- * Fetch all published placement statistics
+ * Fetch published placement statistics for a specific college (by college slug).
+ * Returns rows ordered newest-first.
  */
-export const getAllPlacementStats = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
+  .validator((collegeSlug: string) => collegeSlug)
+  .handler(async (ctx) => {
+    // Resolve slug → id first
+    const { data: college } = await supabase
+      .from('colleges')
+      .select('id')
+      .eq('slug', ctx.data)
+      .maybeSingle();
+
+    if (!college) return [] as PlacementStatistics[];
+
     const { data, error } = await supabase
       .from('placement_statistics')
       .select('*')
+      .eq('college_id' as any, college.id)
       .eq('status', 'published')
       .order('academic_year', { ascending: false });
 
@@ -70,17 +59,18 @@ export const getAllPlacementStats = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as PlacementStatistics[];
+    return (data ?? []) as unknown as PlacementStatistics[];
   });
 
 /**
- * Fetch all recruiters
+ * Fetch published recruiters, optionally filtered by college slug via metadata.colleges array.
  */
 export const getAllRecruiters = createServerFn({ method: 'GET' })
   .handler(async () => {
     const { data, error } = await supabase
       .from('recruiters')
       .select('*')
+      .eq('status', 'published')
       .order('sort_order', { ascending: true });
 
     if (error) {
@@ -88,5 +78,5 @@ export const getAllRecruiters = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as Recruiter[];
+    return (data ?? []) as Recruiter[];
   });
