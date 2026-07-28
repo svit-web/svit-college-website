@@ -2,6 +2,29 @@
 import { createServerFn } from '@tanstack/react-start';
 import { supabase } from '@/integrations/supabase/client';
 
+export interface StaffPublication {
+  id: string;
+  title: string;
+  journalConference: string | null;
+  publishDate: string | null;
+  doiUrl: string | null;
+  abstract: string | null;
+}
+
+export interface ResearchInterest {
+  id: string;
+  interestName: string;
+}
+
+export interface ResearchProject {
+  id: string;
+  title: string;
+  fundingAgency: string | null;
+  amount: number | null;
+  durationYears: number | null;
+  projectStatus: string | null;
+}
+
 export interface StaffMember {
   id: string;
   name: string;
@@ -10,10 +33,17 @@ export interface StaffMember {
   employeeCode: string;
   qualification?: string | null;
   experienceYears?: number | null;
+  joiningYear?: number | null;
   email?: string | null;
   phone?: string | null;
   photoUrl?: string | null;
+  bio?: string | null;
+  officeHours?: { day: string; time: string }[] | null;
+  socialLinks?: { linkedin?: string; googleScholar?: string; orcid?: string } | null;
   isHod?: boolean;
+  publications: StaffPublication[];
+  researchInterests: ResearchInterest[];
+  researchProjects: ResearchProject[];
 }
 
 /**
@@ -24,7 +54,7 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('staff_profiles')
-      .select('id, title, first_name, last_name, email, metadata')
+      .select('id, title, first_name, last_name, email, bio, office_hours, social_links, metadata')
       .eq('status', 'published')
       .filter('metadata->>employeeCode', 'eq', ctx.data)
       .maybeSingle();
@@ -32,15 +62,32 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
     if (error) throw error;
     if (!data) return null;
 
-    // Fetch their primary department assignment
-    const { data: assignment } = await supabase
-      .from('staff_department_assignments')
-      .select('designation_id, metadata, departments(id, name, code)')
-      .eq('staff_id', data.id)
-      .eq('is_primary', true)
-      .eq('status', 'published')
-      .maybeSingle();
+    // Fetch assignment, publications, research interests, research projects in parallel
+    const [assignmentRes, publicationsRes, interestsRes, projectsRes] = await Promise.all([
+      supabase
+        .from('staff_department_assignments')
+        .select('designation_id, metadata, departments(id, name, code)')
+        .eq('staff_id', data.id)
+        .eq('is_primary', true)
+        .eq('status', 'published')
+        .maybeSingle(),
+      supabase
+        .from('staff_publications')
+        .select('publication_id, publications(id, title, journal_conference, publish_date, doi_url, abstract)')
+        .eq('staff_id', data.id),
+      supabase
+        .from('research_interests')
+        .select('id, interest_name')
+        .eq('staff_id', data.id)
+        .eq('status', 'published'),
+      supabase
+        .from('research_projects')
+        .select('id, title, funding_agency, amount, duration_years, project_status')
+        .eq('principal_investigator_id', data.id)
+        .eq('status', 'published'),
+    ]);
 
+    const assignment = assignmentRes.data;
     const dept = assignment
       ? (Array.isArray((assignment as any).departments)
           ? (assignment as any).departments[0]
@@ -62,6 +109,40 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
     const titlePrefix = data.title ? `${data.title} ` : '';
     const fullName = `${titlePrefix}${data.first_name} ${data.last_name}`.trim();
 
+    const publications: StaffPublication[] = (publicationsRes.data ?? [])
+      .map((sp: any) => {
+        const p = Array.isArray(sp.publications) ? sp.publications[0] : sp.publications;
+        if (!p) return null;
+        return {
+          id: p.id,
+          title: p.title,
+          journalConference: p.journal_conference ?? null,
+          publishDate: p.publish_date ?? null,
+          doiUrl: p.doi_url ?? null,
+          abstract: p.abstract ?? null,
+        };
+      })
+      .filter(Boolean) as StaffPublication[];
+
+    const researchInterests: ResearchInterest[] = (interestsRes.data ?? []).map((r: any) => ({
+      id: r.id,
+      interestName: r.interest_name,
+    }));
+
+    const researchProjects: ResearchProject[] = (projectsRes.data ?? []).map((r: any) => ({
+      id: r.id,
+      title: r.title,
+      fundingAgency: r.funding_agency ?? null,
+      amount: r.amount ?? null,
+      durationYears: r.duration_years ?? null,
+      projectStatus: r.project_status ?? null,
+    }));
+
+    const experienceYears = meta.experienceYears ?? null;
+    const joiningYear = experienceYears
+      ? new Date().getFullYear() - Number(experienceYears)
+      : null;
+
     return {
       id: data.id,
       name: fullName,
@@ -69,11 +150,18 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
       rankGroup: assignMeta.rankGroup ?? meta.rankGroup ?? 'Support',
       employeeCode: meta.employeeCode ?? '',
       qualification: meta.qualification ?? null,
-      experienceYears: meta.experienceYears ?? null,
+      experienceYears,
+      joiningYear,
       email: data.email,
       phone: meta.phone ?? null,
       photoUrl: meta.photoUrl ?? null,
+      bio: (data as any).bio ?? null,
+      officeHours: (data as any).office_hours ?? null,
+      socialLinks: (data as any).social_links ?? null,
       department: dept ? { id: dept.id, name: dept.name, code: dept.code } : null,
+      publications,
+      researchInterests,
+      researchProjects,
     };
   });
 
@@ -137,6 +225,9 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
         phone: meta.phone ?? null,
         photoUrl: meta.photoUrl ?? null,
         isHod: Boolean(a.is_primary) && (assignMeta.rankGroup === 'HOD' || meta.rankGroup === 'HOD'),
+        publications: [],
+        researchInterests: [],
+        researchProjects: [],
       };
     });
   });
