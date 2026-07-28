@@ -101,7 +101,7 @@ export const getCollegeHomepageItems = createServerFn({ method: "GET" })
         "id, item_type, eyebrow, title, title_accent, subtitle, body, image_url, icon_name, link_href, link_label, secondary_link_href, secondary_link_label, sort_order, metadata",
       )
       .eq("scope_type", "college")
-      .eq("college_id" as any, college.id)
+      .eq("college_id", college.id)
       .eq("is_active", true)
       .eq("status", "published")
       .order("sort_order", { ascending: true });

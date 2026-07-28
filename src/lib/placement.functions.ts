@@ -52,7 +52,7 @@ export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
     const { data, error } = await supabase
       .from('placement_statistics')
       .select('*')
-      .in('department_id' as any, deptIds)
+      .in('department_id', deptIds)
       .eq('status', 'published')
       .order('academic_year', { ascending: false });
 

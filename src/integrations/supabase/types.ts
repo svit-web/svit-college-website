@@ -300,62 +300,6 @@ export type Database = {
           },
         ]
       }
-      branches: {
-        Row: {
-          code: string
-          course_id: string
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          icon_url: string | null
-          id: string
-          metadata: Json
-          name: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          code: string
-          course_id: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          icon_url?: string | null
-          id?: string
-          metadata?: Json
-          name: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          code?: string
-          course_id?: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          icon_url?: string | null
-          id?: string
-          metadata?: Json
-          name?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "branches_course_id_fkey"
-            columns: ["course_id"]
-            isOneToOne: false
-            referencedRelation: "courses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       cells: {
         Row: {
           college_id: string
@@ -1595,6 +1539,7 @@ export type Database = {
       homepage_items: {
         Row: {
           body: string | null
+          college_id: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
@@ -1622,6 +1567,7 @@ export type Database = {
         }
         Insert: {
           body?: string | null
+          college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1649,6 +1595,7 @@ export type Database = {
         }
         Update: {
           body?: string | null
+          college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1675,6 +1622,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "homepage_items_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "homepage_items_created_by_fkey"
             columns: ["created_by"]
@@ -2772,6 +2726,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          department_id: string | null
           highest_package: number | null
           id: string
           metadata: Json
@@ -2789,6 +2744,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           highest_package?: number | null
           id?: string
           metadata?: Json
@@ -2806,6 +2762,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           highest_package?: number | null
           id?: string
           metadata?: Json
@@ -2829,6 +2786,13 @@ export type Database = {
             columns: ["deleted_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placement_statistics_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {
@@ -3112,8 +3076,9 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          department_id: string | null
           id: string
-          logo_url: string
+          logo_url: string | null
           metadata: Json
           sort_order: number
           status: Database["public"]["Enums"]["content_status"]
@@ -3127,8 +3092,9 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           id?: string
-          logo_url: string
+          logo_url?: string | null
           metadata?: Json
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
@@ -3142,8 +3108,9 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           id?: string
-          logo_url?: string
+          logo_url?: string | null
           metadata?: Json
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
@@ -3164,6 +3131,13 @@ export type Database = {
             columns: ["deleted_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recruiters_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {
@@ -4211,6 +4185,7 @@ export type Database = {
       scope_level: "global" | "trust" | "institute" | "college" | "department"
       staff_type: "faculty" | "office_staff"
       submission_status: "unread" | "read" | "replied"
+      user_role_enum: "super_admin" | "college_admin" | "dept_coordinator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4346,6 +4321,7 @@ export const Constants = {
       scope_level: ["global", "trust", "institute", "college", "department"],
       staff_type: ["faculty", "office_staff"],
       submission_status: ["unread", "read", "replied"],
+      user_role_enum: ["super_admin", "college_admin", "dept_coordinator"],
     },
   },
 } as const
