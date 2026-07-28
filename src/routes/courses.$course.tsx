@@ -8,7 +8,6 @@ import { getProgrammeBySlug } from "@/lib/programmes.functions";
 import { getBranchesByCourseId } from "@/lib/courses.functions";
 import { getAllRecruiters } from "@/lib/placement.functions";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/courses/$course")({
   loader: async ({ params }) => {
@@ -96,34 +95,15 @@ function CoursePage() {
             <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {branches.map((b, i) => (
                 <Reveal key={b.id} delay={i * 0.03}>
-                  {b.metadata.engSlug ? (
-                    <DeptBranchCard
-                      name={b.name}
-                      iconUrl={b.icon_url}
-                      fallbackLabel={b.metadata.short ?? b.code}
-                      fallbackColor={b.metadata.color}
-                      to="/courses/engineering/$dept"
-                      params={{ dept: b.metadata.engSlug }}
-                    />
-                  ) : (
-                    <div className="flex h-full flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white">
-                      <div className="flex flex-1 items-center gap-4 p-5">
-                        {b.icon_url ? (
-                          <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-secondary/40 p-2">
-                            <img src={b.icon_url} alt="" className="h-full w-full object-contain" />
-                          </div>
-                        ) : (
-                          <div className={cn("flex h-16 w-16 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white", b.metadata.color ?? "bg-navy")}>
-                            {b.metadata.short ?? b.code}
-                          </div>
-                        )}
-                        <h4 className="font-display text-lg font-bold leading-snug text-navy">{b.name}</h4>
-                      </div>
-                      <div className="bg-secondary/60 px-5 py-3 text-sm font-semibold text-muted-foreground">
-                        Details coming soon
-                      </div>
-                    </div>
-                  )}
+                  <DeptBranchCard
+                    name={b.name}
+                    iconUrl={b.icon_url}
+                    fallbackLabel={b.metadata.short ?? b.code}
+                    fallbackColor={b.metadata.color}
+                    {...(b.metadata.engSlug
+                      ? { to: "/courses/engineering/$dept", params: { dept: b.metadata.engSlug } }
+                      : {})}
+                  />
                 </Reveal>
               ))}
             </div>
