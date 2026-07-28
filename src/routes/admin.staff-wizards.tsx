@@ -597,12 +597,12 @@ function StaffProfileWizardPage() {
     <div className="grid h-[calc(100vh-8.5rem)] grid-cols-1 overflow-hidden rounded-xl font-mono md:grid-cols-3">
       
       {/* 📁 LEFT PANEL: Staff List Drawer */}
-      <div className="flex flex-col border-r border-slate-800 bg-slate-900/10">
+      <div className="flex flex-col border-r border-slate-200 bg-slate-50">
         
         {/* Toolbar Header */}
-        <div className="p-4 border-b border-slate-800 space-y-4">
+        <div className="p-4 border-b border-slate-200 space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="font-display text-lg font-bold text-white flex items-center gap-2">
+            <h2 className="font-display text-lg font-bold text-navy flex items-center gap-2">
               <Users className="h-5 w-5 text-crimson" />
               Faculty Members
             </h2>
@@ -621,13 +621,13 @@ function StaffProfileWizardPage() {
               placeholder="Search faculty by name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-xs text-slate-200 placeholder-slate-500 focus:border-crimson focus:outline-none"
+              className="w-full rounded font-mono py-1.5 pl-9 pr-4 text-xs text-slate-800 placeholder-slate-500 focus:border-crimson focus:outline-none"
             />
           </div>
         </div>
 
         {/* Scrollable List container */}
-        <div className="flex-1 overflow-y-auto divide-y divide-slate-850 max-h-full">
+        <div className="flex-1 overflow-y-auto divide-y divide-slate-200 max-h-full">
           {listLoading ? (
             <div className="flex h-48 items-center justify-center">
               <Loader2 className="h-6 w-6 animate-spin text-crimson" />
@@ -640,19 +640,19 @@ function StaffProfileWizardPage() {
                   key={staff.id}
                   onClick={() => setSelectedStaffId(staff.id)}
                   className={`flex items-center justify-between p-3.5 cursor-pointer transition ${
-                    active ? "bg-crimson/10 border-l-4 border-crimson pl-2.5" : "hover:bg-slate-900/50"
+                    active ? "bg-crimson/10 border-l-4 border-crimson pl-2.5" : "hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-center gap-3">
                     {staff.avatar_url ? (
-                      <img src={staff.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover border border-slate-800" />
+                      <img src={staff.avatar_url} alt="" className="h-9 w-9 rounded-full object-cover border border-slate-200" />
                     ) : (
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-850 text-xs font-bold text-crimson border border-slate-800">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-crimson border border-slate-200">
                         {staff.first_name?.[0] || ""}{staff.last_name?.[0] || ""}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h4 className="text-sm font-semibold text-slate-200 truncate">
+                      <h4 className="text-sm font-semibold text-slate-800 truncate">
                         {staff.title} {staff.first_name} {staff.last_name}
                       </h4>
                       <p className="text-[11px] text-slate-500 truncate">{staff.email}</p>
@@ -679,20 +679,20 @@ function StaffProfileWizardPage() {
       </div>
 
       {/* 🔮 RIGHT VIEW: Multi-tab Wizards Panel */}
-      <div className="flex flex-col md:col-span-2 bg-slate-950 overflow-hidden">
+      <div className="flex flex-col md:col-span-2 bg-white overflow-hidden">
         {selectedStaffId ? (
           detailsLoading ? (
             <div className="flex flex-1 items-center justify-center">
               <div className="flex flex-col items-center gap-3">
                 <Loader2 className="h-8 w-8 animate-spin text-crimson" />
-                <p className="text-sm text-slate-400 font-medium">Fetching detailed profile datasets...</p>
+                <p className="text-sm text-slate-500 font-medium">Fetching detailed profile datasets...</p>
               </div>
             </div>
           ) : (
             <div className="flex h-full flex-col overflow-hidden">
               
               {/* Tab Navigation header */}
-              <div className="flex border-b border-slate-800 bg-slate-900/30 overflow-x-auto">
+              <div className="flex border-b border-slate-200 bg-slate-100 overflow-x-auto">
                 {[
                   { id: "general", label: "General details", icon: Users },
                   { id: "academics", label: "Department", icon: School },
@@ -707,8 +707,8 @@ function StaffProfileWizardPage() {
                       onClick={() => setActiveTab(t.id as any)}
                       className={`flex items-center gap-2 border-b-2 px-5 py-4 text-xs font-bold uppercase tracking-wider transition ${
                         active
-                          ? "border-crimson text-white bg-crimson/5"
-                          : "border-transparent text-slate-400 hover:text-white"
+                          ? "border-crimson text-crimson bg-crimson/5"
+                          : "border-transparent text-slate-500 hover:text-navy"
                       }`}
                     >
                       <t.icon className="h-3.5 w-3.5" />
@@ -726,11 +726,11 @@ function StaffProfileWizardPage() {
                   <form onSubmit={handleSaveGeneral} className="space-y-6">
                     <div className="grid gap-6 sm:grid-cols-2">
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Title</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Title</label>
                         <select
                           value={generalForm.title || "Dr."}
                           onChange={(e) => setGeneralForm(p => ({ ...p, title: e.target.value }))}
-                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         >
                           <option value="Prof.">Prof.</option>
                           <option value="Dr.">Dr.</option>
@@ -741,11 +741,11 @@ function StaffProfileWizardPage() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Status</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Status</label>
                         <select
                           value={generalForm.status || "published"}
                           onChange={(e) => setGeneralForm(p => ({ ...p, status: e.target.value }))}
-                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         >
                           <option value="published">Published</option>
                           <option value="draft">Draft</option>
@@ -754,51 +754,51 @@ function StaffProfileWizardPage() {
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-300 uppercase tracking-wide">First Name</label>
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">First Name</label>
                         <input
                           type="text"
                           value={generalForm.first_name || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, first_name: e.target.value }))}
                           required
-                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-300 uppercase tracking-wide">Last Name</label>
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">Last Name</label>
                         <input
                           type="text"
                           value={generalForm.last_name || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, last_name: e.target.value }))}
                           required
-                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-300 uppercase tracking-wide">Email Address</label>
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">Email Address</label>
                         <input
                           type="email"
                           value={generalForm.email || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, email: e.target.value }))}
                           required
-                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         />
                       </div>
 
                       <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Phone Number</label>
+                        <label className="text-xs font-bold text-slate-500 uppercase tracking-wide">Phone Number</label>
                         <input
                           type="text"
                           value={generalForm.phone || ""}
                           onChange={(e) => setGeneralForm(p => ({ ...p, phone: e.target.value }))}
-                          className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         />
                       </div>
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-300 uppercase tracking-wide">Profile Photo</label>
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">Profile Photo</label>
                       <MediaUploader
                         value={generalForm.avatar_url || ""}
                         onChange={(url) => setGeneralForm(p => ({ ...p, avatar_url: url }))}
@@ -807,16 +807,16 @@ function StaffProfileWizardPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-300 uppercase tracking-wide">Bio / Introduction</label>
+                      <label className="text-xs font-bold text-slate-700 uppercase tracking-wide">Bio / Introduction</label>
                       <textarea
                         value={generalForm.bio || ""}
                         onChange={(e) => setGeneralForm(p => ({ ...p, bio: e.target.value }))}
                         rows={4}
-                        className="w-full rounded font-mono px-3 py-2 text-sm text-slate-200 focus:border-crimson focus:outline-none"
+                        className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                       />
                     </div>
 
-                    <div className="flex justify-end pt-4 border-t border-slate-900">
+                    <div className="flex justify-end pt-4 border-t border-slate-200">
                       <button
                         type="submit"
                         disabled={generalSaving}
@@ -834,19 +834,19 @@ function StaffProfileWizardPage() {
                   <div className="space-y-8">
                     
                     {/* Add assignment subform */}
-                    <div className="rounded-xl border border-slate-850 bg-slate-900/10 p-5 space-y-4">
-                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 space-y-4">
+                      <h3 className="text-sm font-bold text-navy flex items-center gap-2">
                         <Plus className="h-4 w-4 text-crimson" /> Add Academic Department Assignment
                       </h3>
                       
                       <form onSubmit={handleAddAssignment} className="grid gap-4 sm:grid-cols-3 sm:items-end">
                         <div className="space-y-1">
-                          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Department</label>
+                          <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Department</label>
                           <select
                             value={newAssignment.department_id}
                             onChange={(e) => setNewAssignment(p => ({ ...p, department_id: e.target.value }))}
                             required
-                            className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           >
                             <option value="">-- Select --</option>
                             {departments.map((d) => (
@@ -856,12 +856,12 @@ function StaffProfileWizardPage() {
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Designation</label>
+                          <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Designation</label>
                           <select
                             value={newAssignment.designation_id}
                             onChange={(e) => setNewAssignment(p => ({ ...p, designation_id: e.target.value }))}
                             required
-                            className="w-full rounded border border-slate-800 bg-slate-955 px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:outline-none"
                           >
                             <option value="">-- Select --</option>
                             {designations.map((d) => (
@@ -877,11 +877,11 @@ function StaffProfileWizardPage() {
                               id="is_primary"
                               checked={newAssignment.is_primary}
                               onChange={(e) => setNewAssignment(p => ({ ...p, is_primary: e.target.checked }))}
-                              className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-crimson"
+                              className="h-4 w-4 rounded border-slate-200 bg-white text-crimson"
                             />
                             <label
                               htmlFor="is_primary"
-                              className="ml-2 text-xs font-semibold text-slate-400 cursor-help"
+                              className="ml-2 text-xs font-semibold text-slate-500 cursor-help"
                               title="Mark this as the staff member's main department. Only the primary assignment appears on their profile page and determines HOD status."
                             >Primary Assignment</label>
                           </div>
@@ -901,23 +901,23 @@ function StaffProfileWizardPage() {
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Current Assignments</h3>
                       
                       {assignments.length > 0 ? (
-                        <div className="overflow-hidden rounded-lg border border-slate-850 bg-slate-950">
+                        <div className="overflow-hidden rounded-lg border border-slate-200 bg-white">
                           <table className="w-full text-left border-collapse">
                             <thead>
-                              <tr className="border-b border-slate-850 bg-slate-900/30">
-                                <th className="px-4 py-3 text-xs font-semibold text-slate-400">Department</th>
-                                <th className="px-4 py-3 text-xs font-semibold text-slate-400">Designation</th>
-                                <th className="px-4 py-3 text-xs font-semibold text-slate-400">Type</th>
-                                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-400">Actions</th>
+                              <tr className="border-b border-slate-200 bg-slate-100">
+                                <th className="px-4 py-3 text-xs font-semibold text-slate-500">Department</th>
+                                <th className="px-4 py-3 text-xs font-semibold text-slate-500">Designation</th>
+                                <th className="px-4 py-3 text-xs font-semibold text-slate-500">Type</th>
+                                <th className="px-4 py-3 text-right text-xs font-semibold text-slate-500">Actions</th>
                               </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-850">
+                            <tbody className="divide-y divide-slate-200">
                               {assignments.map((asg) => (
-                                <tr key={asg.id} className="hover:bg-slate-900/10">
-                                  <td className="px-4 py-3 text-sm text-slate-200">
+                                <tr key={asg.id} className="hover:bg-slate-50">
+                                  <td className="px-4 py-3 text-sm text-slate-800">
                                     {asg.department?.name || <span className="text-slate-600">-</span>}
                                   </td>
-                                  <td className="px-4 py-3 text-sm text-slate-400 font-medium">
+                                  <td className="px-4 py-3 text-sm text-slate-500 font-medium">
                                     {asg.designation?.title || <span className="text-slate-600">-</span>}
                                   </td>
                                   <td className="px-4 py-3 text-sm">
@@ -926,7 +926,7 @@ function StaffProfileWizardPage() {
                                         Primary
                                       </span>
                                     ) : (
-                                      <span className="inline-flex items-center rounded bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-500 border border-slate-800">
+                                      <span className="inline-flex items-center rounded bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600 border border-slate-200">
                                         Additional
                                       </span>
                                     )}
@@ -945,7 +945,7 @@ function StaffProfileWizardPage() {
                           </table>
                         </div>
                       ) : (
-                        <div className="rounded-lg border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">
+                        <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center text-xs text-slate-500">
                           No department assignments registered. Faculty profile will not show up under department staff lists.
                         </div>
                       )}
@@ -958,45 +958,45 @@ function StaffProfileWizardPage() {
                   <div className="space-y-8">
                     
                     {/* Add qualifications */}
-                    <div className="rounded-xl border border-slate-850 bg-slate-900/10 p-5 space-y-4">
-                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 space-y-4">
+                      <h3 className="text-sm font-bold text-navy flex items-center gap-2">
                         <Plus className="h-4 w-4 text-crimson" /> Add Degree / Academic Qualification
                       </h3>
                       
                       <form onSubmit={handleAddQual} className="grid gap-4 sm:grid-cols-3 sm:items-end">
                         <div className="space-y-1">
-                          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Degree (e.g. Ph.D, M.Tech)</label>
+                          <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Degree (e.g. Ph.D, M.Tech)</label>
                           <input
                             type="text"
                             placeholder="e.g. M.Tech in Computer Science"
                             value={newQual.degree}
                             onChange={(e) => setNewQual(p => ({ ...p, degree: e.target.value }))}
                             required
-                            className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Institution / University</label>
+                          <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Institution / University</label>
                           <input
                             type="text"
                             placeholder="e.g. GTU, Ahmedabad"
                             value={newQual.institution}
                             onChange={(e) => setNewQual(p => ({ ...p, institution: e.target.value }))}
                             required
-                            className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                         </div>
 
                         <div className="flex gap-4 items-end">
                           <div className="space-y-1 flex-1">
-                            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Graduation Year</label>
+                            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Graduation Year</label>
                             <input
                               type="number"
                               value={newQual.year}
                               onChange={(e) => setNewQual(p => ({ ...p, year: Number(e.target.value) }))}
                               required
-                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                             />
                           </div>
 
@@ -1017,20 +1017,20 @@ function StaffProfileWizardPage() {
                       {qualifications.length > 0 ? (
                         <div className="space-y-3">
                           {qualifications.map((q) => (
-                            <div key={q.id} className="flex items-center justify-between rounded-xl border border-slate-850 bg-slate-900/5 p-4">
+                            <div key={q.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
                               <div className="flex gap-3">
                                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-crimson/10 text-crimson border border-crimson/25">
                                   <BookOpen className="h-5 w-5" />
                                 </div>
                                 <div>
-                                  <h4 className="text-sm font-semibold text-slate-200">{q.degree}</h4>
+                                  <h4 className="text-sm font-semibold text-slate-800">{q.degree}</h4>
                                   <p className="text-xs text-slate-500">{q.institution} · Class of {q.year}</p>
                                 </div>
                               </div>
 
                               <button
                                 onClick={() => handleDeleteQual(q.id)}
-                                className="rounded p-1.5 text-slate-650 hover:bg-rose-500/10 hover:text-red-400 transition"
+                                className="rounded p-1.5 text-slate-500 hover:bg-rose-500/10 hover:text-red-400 transition"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -1038,7 +1038,7 @@ function StaffProfileWizardPage() {
                           ))}
                         </div>
                       ) : (
-                        <div className="rounded-lg border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">
+                        <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center text-xs text-slate-500">
                           No qualifications listed.
                         </div>
                       )}
@@ -1051,56 +1051,56 @@ function StaffProfileWizardPage() {
                   <div className="space-y-8">
                     
                     {/* Add Experience form */}
-                    <div className="rounded-xl border border-slate-850 bg-slate-900/10 p-5 space-y-4">
-                      <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 space-y-4">
+                      <h3 className="text-sm font-bold text-navy flex items-center gap-2">
                         <Plus className="h-4 w-4 text-crimson" /> Add Professional Experience
                       </h3>
                       
                       <form onSubmit={handleAddExp} className="space-y-4">
                         <div className="grid gap-4 sm:grid-cols-2">
                           <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Organization / College</label>
+                            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Organization / College</label>
                             <input
                               type="text"
                               placeholder="e.g. SVIT Engineering College"
                               value={newExp.organization}
                               onChange={(e) => setNewExp(p => ({ ...p, organization: e.target.value }))}
                               required
-                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                             />
                           </div>
 
                           <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Role / Title</label>
+                            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Role / Title</label>
                             <input
                               type="text"
                               placeholder="e.g. Associate Professor"
                               value={newExp.role}
                               onChange={(e) => setNewExp(p => ({ ...p, role: e.target.value }))}
                               required
-                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                             />
                           </div>
                         </div>
 
                         <div className="grid gap-4 sm:grid-cols-3 sm:items-end">
                           <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Start Date</label>
+                            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Start Date</label>
                             <input
                               type="date"
                               value={newExp.start_date}
                               onChange={(e) => setNewExp(p => ({ ...p, start_date: e.target.value }))}
-                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                             />
                           </div>
 
                           <div className="space-y-1">
-                            <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">End Date (Leave blank if present)</label>
+                            <label className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">End Date (Leave blank if present)</label>
                             <input
                               type="date"
                               value={newExp.end_date}
                               onChange={(e) => setNewExp(p => ({ ...p, end_date: e.target.value }))}
-                              className="w-full rounded font-mono px-3 py-2 text-xs text-slate-300 focus:outline-none"
+                              className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                             />
                           </div>
 
@@ -1111,9 +1111,9 @@ function StaffProfileWizardPage() {
                                 id="is_academic"
                                 checked={newExp.is_academic}
                                 onChange={(e) => setNewExp(p => ({ ...p, is_academic: e.target.checked }))}
-                                className="h-4 w-4 rounded border-slate-800 bg-slate-950 text-crimson"
+                                className="h-4 w-4 rounded border-slate-200 bg-white text-crimson"
                               />
-                              <label htmlFor="is_academic" className="ml-2 text-xs font-semibold text-slate-400">Teaching / Academic</label>
+                              <label htmlFor="is_academic" className="ml-2 text-xs font-semibold text-slate-500">Teaching / Academic</label>
                             </div>
 
                             <button
@@ -1132,18 +1132,18 @@ function StaffProfileWizardPage() {
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Employment Timeline</h3>
                       
                       {experiences.length > 0 ? (
-                        <div className="relative border-l-2 border-slate-800 pl-4 ml-3 space-y-6">
+                        <div className="relative border-l-2 border-slate-200 pl-4 ml-3 space-y-6">
                           {experiences.map((exp) => (
                             <div key={exp.id} className="relative">
                               {/* Icon dot */}
-                              <div className="absolute -left-[25px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-slate-950 border border-slate-800">
+                              <div className="absolute -left-[25px] top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-white border border-slate-200">
                                 <div className="h-2 w-2 rounded-full bg-crimson" />
                               </div>
 
-                              <div className="flex items-start justify-between rounded-xl border border-slate-850 bg-slate-900/5 p-4">
+                              <div className="flex items-start justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
                                 <div>
-                                  <h4 className="text-sm font-semibold text-slate-200">{exp.role}</h4>
-                                  <p className="text-xs text-slate-400">{exp.organization}</p>
+                                  <h4 className="text-sm font-semibold text-slate-800">{exp.role}</h4>
+                                  <p className="text-xs text-slate-500">{exp.organization}</p>
                                   <p className="mt-1 text-[10px] text-slate-500 font-semibold uppercase tracking-wider">
                                     {exp.start_date ? exp.start_date : "?"} — {exp.end_date ? exp.end_date : "Present"}
                                     {exp.is_academic && <span className="ml-2 text-crimson">(Academic)</span>}
@@ -1152,7 +1152,7 @@ function StaffProfileWizardPage() {
 
                                 <button
                                   onClick={() => handleDeleteExp(exp.id)}
-                                  className="rounded p-1 text-slate-650 hover:bg-rose-500/10 hover:text-red-400 transition"
+                                  className="rounded p-1 text-slate-500 hover:bg-rose-500/10 hover:text-red-400 transition"
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </button>
@@ -1161,7 +1161,7 @@ function StaffProfileWizardPage() {
                           ))}
                         </div>
                       ) : (
-                        <div className="rounded-lg border border-dashed border-slate-800 p-8 text-center text-xs text-slate-500">
+                        <div className="rounded-lg border border-dashed border-slate-200 p-8 text-center text-xs text-slate-500">
                           No work experience listed.
                         </div>
                       )}
@@ -1183,7 +1183,7 @@ function StaffProfileWizardPage() {
                           placeholder="e.g. Artificial Intelligence, Cryptography"
                           value={newInterest}
                           onChange={(e) => setNewInterest(e.target.value)}
-                          className="flex-1 rounded font-mono px-3 py-1.5 text-xs text-slate-300 focus:outline-none"
+                          className="flex-1 rounded-md border border-slate-200 bg-white font-mono px-3 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         />
                         <button
                           type="submit"
@@ -1198,12 +1198,12 @@ function StaffProfileWizardPage() {
                           {interests.map((int) => (
                             <span
                               key={int.id}
-                              className="inline-flex items-center gap-1 rounded bg-slate-900 pl-2.5 pr-1.5 py-1 text-xs font-semibold text-slate-350 border border-slate-800"
+                              className="inline-flex items-center gap-1 rounded bg-slate-100 pl-2.5 pr-1.5 py-1 text-xs font-semibold text-slate-600 border border-slate-200"
                             >
                               <span>{int.interest_name}</span>
                               <button
                                 onClick={() => handleDeleteInterest(int.id)}
-                                className="rounded-full p-0.5 text-slate-550 hover:bg-slate-800 hover:text-red-400 transition"
+                                className="rounded-full p-0.5 text-slate-500 hover:bg-slate-200 hover:text-red-500 transition"
                               >
                                 <X className="h-3 w-3" />
                               </button>
@@ -1216,12 +1216,12 @@ function StaffProfileWizardPage() {
                     </div>
 
                     {/* Part B: Publications CRUD */}
-                    <div className="space-y-4 pt-6 border-t border-slate-900">
+                    <div className="space-y-4 pt-6 border-t border-slate-200">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Journal & Conference Publications</h3>
                       
                       {/* Add publication panel */}
-                      <form onSubmit={handleAddPub} className="rounded-xl border border-slate-850 bg-slate-900/10 p-4 space-y-3">
-                        <h4 className="text-xs font-bold text-white">Add New Publication & Link</h4>
+                      <form onSubmit={handleAddPub} className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                        <h4 className="text-xs font-bold text-navy">Add New Publication & Link</h4>
                         <div className="grid gap-3 sm:grid-cols-2">
                           <input
                             type="text"
@@ -1229,7 +1229,7 @@ function StaffProfileWizardPage() {
                             value={newPub.title}
                             onChange={(e) => setNewPub(p => ({ ...p, title: e.target.value }))}
                             required
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                           <input
                             type="text"
@@ -1237,20 +1237,20 @@ function StaffProfileWizardPage() {
                             value={newPub.journal_conference}
                             onChange={(e) => setNewPub(p => ({ ...p, journal_conference: e.target.value }))}
                             required
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                           <input
                             type="date"
                             value={newPub.publish_date}
                             onChange={(e) => setNewPub(p => ({ ...p, publish_date: e.target.value }))}
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                           <input
                             type="text"
                             placeholder="DOI or Website link URL"
                             value={newPub.doi_url}
                             onChange={(e) => setNewPub(p => ({ ...p, doi_url: e.target.value }))}
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                         </div>
                         <textarea
@@ -1258,7 +1258,7 @@ function StaffProfileWizardPage() {
                           value={newPub.abstract}
                           onChange={(e) => setNewPub(p => ({ ...p, abstract: e.target.value }))}
                           rows={2}
-                          className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                          className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                         />
                         <div className="flex justify-end">
                           <button
@@ -1273,10 +1273,10 @@ function StaffProfileWizardPage() {
                       {publications.length > 0 ? (
                         <div className="space-y-3.5">
                           {publications.map((pub) => (
-                            <div key={pub.id} className="flex items-start justify-between rounded-xl border border-slate-850 bg-slate-900/5 p-4">
+                            <div key={pub.id} className="flex items-start justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
                               <div className="space-y-1">
-                                <h4 className="text-sm font-semibold text-slate-200">{pub.title}</h4>
-                                <p className="text-xs text-slate-400">{pub.journal_conference}</p>
+                                <h4 className="text-sm font-semibold text-slate-800">{pub.title}</h4>
+                                <p className="text-xs text-slate-500">{pub.journal_conference}</p>
                                 {pub.publish_date && <p className="text-[10px] text-slate-500 font-medium">Published on: {pub.publish_date}</p>}
                                 {pub.doi_url && (
                                   <a href={pub.doi_url} target="_blank" rel="noreferrer" className="text-xs text-crimson hover:underline inline-block mt-1">
@@ -1286,7 +1286,7 @@ function StaffProfileWizardPage() {
                               </div>
                               <button
                                 onClick={() => handleDeletePub(pub.id)}
-                                className="rounded p-1.5 text-slate-650 hover:bg-rose-500/10 hover:text-red-400 transition"
+                                className="rounded p-1.5 text-slate-500 hover:bg-rose-500/10 hover:text-red-400 transition"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -1299,11 +1299,11 @@ function StaffProfileWizardPage() {
                     </div>
 
                     {/* Part C: Patents CRUD */}
-                    <div className="space-y-4 pt-6 border-t border-slate-900">
+                    <div className="space-y-4 pt-6 border-t border-slate-200">
                       <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">Patents Published or Filed</h3>
                       
-                      <form onSubmit={handleAddPatent} className="rounded-xl border border-slate-850 bg-slate-900/10 p-4 space-y-3">
-                        <h4 className="text-xs font-bold text-white">Add New Patent</h4>
+                      <form onSubmit={handleAddPatent} className="rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
+                        <h4 className="text-xs font-bold text-navy">Add New Patent</h4>
                         <div className="grid gap-3 sm:grid-cols-2">
                           <input
                             type="text"
@@ -1311,19 +1311,19 @@ function StaffProfileWizardPage() {
                             value={newPatent.title}
                             onChange={(e) => setNewPatent(p => ({ ...p, title: e.target.value }))}
                             required
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                           <input
                             type="text"
                             placeholder="Patent Number"
                             value={newPatent.patent_number}
                             onChange={(e) => setNewPatent(p => ({ ...p, patent_number: e.target.value }))}
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                           <select
                             value={newPatent.patent_status}
                             onChange={(e) => setNewPatent(p => ({ ...p, patent_status: e.target.value }))}
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           >
                             <option value="filed">Filed</option>
                             <option value="published">Published</option>
@@ -1333,7 +1333,7 @@ function StaffProfileWizardPage() {
                             type="date"
                             value={newPatent.publication_date}
                             onChange={(e) => setNewPatent(p => ({ ...p, publication_date: e.target.value }))}
-                            className="w-full rounded font-mono px-2.5 py-1.5 text-xs text-slate-300 focus:outline-none"
+                            className="w-full rounded-md border border-slate-200 bg-white font-mono px-2.5 py-1.5 text-xs text-slate-700 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                           />
                         </div>
                         <div className="flex justify-end">
@@ -1349,17 +1349,17 @@ function StaffProfileWizardPage() {
                       {patents.length > 0 ? (
                         <div className="space-y-3">
                           {patents.map((pat) => (
-                            <div key={pat.id} className="flex items-center justify-between rounded-xl border border-slate-850 bg-slate-900/5 p-4">
+                            <div key={pat.id} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4">
                               <div>
-                                <h4 className="text-sm font-semibold text-slate-200">{pat.title}</h4>
-                                <p className="text-xs text-slate-400">
+                                <h4 className="text-sm font-semibold text-slate-800">{pat.title}</h4>
+                                <p className="text-xs text-slate-500">
                                   {pat.patent_number ? `No: ${pat.patent_number}` : "No number"} · Status: 
                                   <span className="ml-1 text-crimson font-semibold uppercase">{pat.patent_status}</span>
                                 </p>
                               </div>
                               <button
                                 onClick={() => handleDeletePatent(pat.id)}
-                                className="rounded p-1.5 text-slate-650 hover:bg-rose-500/10 hover:text-red-400 transition"
+                                className="rounded p-1.5 text-slate-500 hover:bg-rose-500/10 hover:text-red-400 transition"
                               >
                                 <Trash2 className="h-4 w-4" />
                               </button>
@@ -1376,10 +1376,10 @@ function StaffProfileWizardPage() {
             </div>
           )
         ) : (
-          <div className="flex flex-1 flex-col items-center justify-center p-8 text-center border-l border-slate-850">
+          <div className="flex flex-1 flex-col items-center justify-center p-8 text-center border-l border-slate-200">
             <Users className="h-16 w-16 text-slate-800" />
-            <h3 className="mt-4 text-base font-bold text-white">No Profile Selected</h3>
-            <p className="mt-2 max-w-sm text-xs text-slate-400">
+            <h3 className="mt-4 text-base font-bold text-navy">No Profile Selected</h3>
+            <p className="mt-2 max-w-sm text-xs text-slate-500">
               Select an existing staff member from the left side panel to edit their profile tabs, qualifications, experience, and publications.
             </p>
           </div>
@@ -1389,17 +1389,17 @@ function StaffProfileWizardPage() {
       {/* ➕ MODAL: Add New Staff Member Dialog */}
       {isNewStaffOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-md rounded-lg font-mono p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-white mb-4">Create Staff Profile</h3>
+          <div className="w-full max-w-md rounded-lg border border-slate-200 bg-white font-mono p-6 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-navy mb-4">Create Staff Profile</h3>
             
             <form onSubmit={handleCreateStaff} className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">Title</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Title</label>
                   <select
                     value={newStaffValues.title}
                     onChange={(e) => setNewStaffValues(p => ({ ...p, title: e.target.value }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                   >
                     <option value="Dr.">Dr.</option>
                     <option value="Prof.">Prof.</option>
@@ -1408,54 +1408,54 @@ function StaffProfileWizardPage() {
                   </select>
                 </div>
                 <div className="col-span-2 space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-450 uppercase">First Name</label>
+                  <label className="text-[11px] font-semibold text-slate-500 uppercase">First Name</label>
                   <input
                     type="text"
                     required
                     value={newStaffValues.first_name}
                     onChange={(e) => setNewStaffValues(p => ({ ...p, first_name: e.target.value }))}
-                    className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                    className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Last Name</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Last Name</label>
                 <input
                   type="text"
                   required
                   value={newStaffValues.last_name}
                   onChange={(e) => setNewStaffValues(p => ({ ...p, last_name: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Email Address</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Email Address</label>
                 <input
                   type="email"
                   required
                   value={newStaffValues.email}
                   onChange={(e) => setNewStaffValues(p => ({ ...p, email: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-450 uppercase">Phone Number</label>
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Phone Number</label>
                 <input
                   type="text"
                   value={newStaffValues.phone}
                   onChange={(e) => setNewStaffValues(p => ({ ...p, phone: e.target.value }))}
-                  className="w-full rounded font-mono px-3 py-2 text-xs text-slate-200 focus:outline-none"
+                  className="w-full rounded-md border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/30"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-900">
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
                 <button
                   type="button"
                   onClick={() => setIsNewStaffOpen(false)}
-                  className="rounded border border-slate-800 px-4 py-2 text-xs text-slate-400 hover:text-white"
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
                 >
                   Cancel
                 </button>

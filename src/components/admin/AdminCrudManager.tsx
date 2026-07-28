@@ -5,6 +5,7 @@ import { MediaUploader } from "@/components/admin/MediaUploader";
 import { SeoEditor } from "@/components/admin/SeoEditor";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateTableCache } from "@/lib/cache-utils";
+import { sendPasswordResetForUser } from "@/lib/admin-users.functions";
 import {
   useReactTable,
   getCoreRowModel,
@@ -23,7 +24,8 @@ import {
   Search,
   X,
   Loader2,
-  AlertTriangle
+  AlertTriangle,
+  KeyRound
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -494,6 +496,28 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
     }
   };
 
+  // Send a password-reset email for a user_profiles row. Auth-only action —
+  // never touches any table (besides the standard audit log entry).
+  const handleResetPassword = async (record: any) => {
+    if (!schema) return;
+    const pkVal = record[schema.primary_key];
+
+    const confirmed = window.confirm("Send a password reset email to this user?");
+    if (!confirmed) return;
+
+    setDataLoading(true);
+    try {
+      const result = await sendPasswordResetForUser({ data: pkVal });
+      toast.success(`Password reset email sent to ${result.email}`);
+      await logAuditAction("UPDATE", pkVal, null, { action: "password_reset_requested" });
+    } catch (err: any) {
+      console.error("Password reset failed:", err);
+      toast.error(`Failed to send reset email: ${err.message}`);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
   // Generate Table Columns dynamically from Schema
   const tableColumns = useMemo(() => {
     if (!schema?.columns) return [];
@@ -744,6 +768,15 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                     {hasWritePermission && (
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-2">
+                          {tableId === "user_profiles" && (
+                            <button
+                              onClick={() => handleResetPassword(row.original)}
+                              className="rounded p-1 text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition"
+                              title="Send password reset email"
+                            >
+                              <KeyRound className="h-4 w-4" />
+                            </button>
+                          )}
                           <button
                             onClick={() => handleOpenModal(row.original)}
                             className="rounded p-1 text-slate-600 hover:bg-slate-100 hover:text-navy transition"
