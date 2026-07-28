@@ -318,7 +318,7 @@ function AdminHomepageLayoutPage() {
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "sections"
               ? "border-crimson text-navy"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              : "border-transparent text-slate-600 hover:text-slate-900"
           }`}
         >
           <Layers className="h-4 w-4" />
@@ -330,7 +330,7 @@ function AdminHomepageLayoutPage() {
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "widgets"
               ? "border-crimson text-navy"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              : "border-transparent text-slate-600 hover:text-slate-900"
           }`}
         >
           <Sliders className="h-4 w-4" />
@@ -342,7 +342,7 @@ function AdminHomepageLayoutPage() {
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
             activeTab === "items"
               ? "border-crimson text-navy"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              : "border-transparent text-slate-600 hover:text-slate-900"
           }`}
         >
           <Grid className="h-4 w-4" />
@@ -404,27 +404,27 @@ function AdminHomepageLayoutPage() {
                       <button
                         onClick={() => handleShiftSection(sec, "up")}
                         disabled={idx === 0}
-                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
+                        className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
                       >
                         <ArrowUp className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleShiftSection(sec, "down")}
                         disabled={idx === sections.length - 1}
-                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
+                        className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
                       >
                         <ArrowDown className="h-4 w-4" />
                       </button>
                       <span className="h-4 w-px bg-slate-100" />
                       <button
                         onClick={() => handleOpenEditSection(sec)}
-                        className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy"
+                        className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy"
                       >
                         <Edit2 className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteSection(sec)}
-                        className="rounded p-1.5 text-slate-500 hover:bg-rose-500/15 hover:text-rose-400"
+                        className="rounded p-1.5 text-slate-600 hover:bg-rose-500/15 hover:text-rose-400"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -489,13 +489,13 @@ function AdminHomepageLayoutPage() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleOpenEditWidget(widget)}
-                          className="rounded p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy"
+                          className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy"
                         >
                           <Edit2 className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteWidget(widget)}
-                          className="rounded p-1.5 text-slate-500 hover:bg-rose-500/15 hover:text-rose-400"
+                          className="rounded p-1.5 text-slate-600 hover:bg-rose-500/15 hover:text-rose-400"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -531,7 +531,7 @@ function AdminHomepageLayoutPage() {
             
             <form onSubmit={handleSaveSection} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase">Section title / Label</label>
+                <label className="text-[11px] font-semibold text-slate-700 uppercase">Section title / Label</label>
                 <input
                   type="text"
                   required
@@ -544,7 +544,7 @@ function AdminHomepageLayoutPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Section Type</label>
+                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Section Type</label>
                   <select
                     value={sectionForm.section_type}
                     onChange={(e) => setSectionForm(p => ({ ...p, section_type: e.target.value }))}
@@ -559,7 +559,7 @@ function AdminHomepageLayoutPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Sort Order</label>
+                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Sort Order</label>
                   <input
                     type="number"
                     value={sectionForm.sort_order}
@@ -570,7 +570,7 @@ function AdminHomepageLayoutPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase flex items-center gap-1">
+                <label className="text-[11px] font-semibold text-slate-700 uppercase flex items-center gap-1">
                   <span>Configuration settings (JSON format)</span>
                 </label>
                 <textarea
@@ -613,7 +613,7 @@ function AdminHomepageLayoutPage() {
             
             <form onSubmit={handleSaveWidget} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase">Widget Name / Title</label>
+                <label className="text-[11px] font-semibold text-slate-700 uppercase">Widget Name / Title</label>
                 <input
                   type="text"
                   required
@@ -626,7 +626,7 @@ function AdminHomepageLayoutPage() {
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Parent Section Group</label>
+                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Parent Section Group</label>
                   <select
                     value={widgetForm.section_id}
                     onChange={(e) => setWidgetForm(p => ({ ...p, section_id: e.target.value }))}
@@ -641,7 +641,7 @@ function AdminHomepageLayoutPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-500 uppercase">Widget Type</label>
+                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Widget Type</label>
                   <select
                     value={widgetForm.widget_type}
                     onChange={(e) => setWidgetForm(p => ({ ...p, widget_type: e.target.value }))}
@@ -656,7 +656,7 @@ function AdminHomepageLayoutPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase">Sort Order</label>
+                <label className="text-[11px] font-semibold text-slate-700 uppercase">Sort Order</label>
                 <input
                   type="number"
                   value={widgetForm.sort_order}
@@ -666,7 +666,7 @@ function AdminHomepageLayoutPage() {
               </div>
 
               <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase flex items-center gap-1">
+                <label className="text-[11px] font-semibold text-slate-700 uppercase flex items-center gap-1">
                   <span>Widget configuration settings (JSON format)</span>
                 </label>
                 <textarea
@@ -857,10 +857,10 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
     <div className="space-y-4">
       {/* Scope selector */}
       <div className="flex flex-wrap items-center gap-2 rounded-xl border border-slate-200 bg-white p-4">
-        <span className="text-xs font-bold text-slate-500 uppercase tracking-wider mr-1">Scope:</span>
+        <span className="text-xs font-bold text-slate-700 uppercase tracking-wider mr-1">Scope:</span>
         <button
           onClick={() => setSelectedScope("global")}
-          className={`rounded px-3 py-1.5 text-xs font-semibold transition ${selectedScope === "global" ? "bg-navy text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+          className={`rounded px-3 py-1.5 text-xs font-semibold transition ${selectedScope === "global" ? "bg-navy text-white" : "bg-slate-100 text-slate-800 hover:bg-slate-200"}`}
         >
           Global
         </button>
@@ -868,7 +868,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
           <button
             key={c.id}
             onClick={() => setSelectedScope(c.id)}
-            className={`rounded px-3 py-1.5 text-xs font-semibold transition ${selectedScope === c.id ? "bg-navy text-white" : "bg-slate-100 text-slate-600 hover:bg-slate-200"}`}
+            className={`rounded px-3 py-1.5 text-xs font-semibold transition ${selectedScope === c.id ? "bg-navy text-white" : "bg-slate-100 text-slate-800 hover:bg-slate-200"}`}
           >
             {c.code}
           </button>
@@ -910,7 +910,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                   <div key={item.id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition">
                     <div>
                       <div className="text-sm font-semibold text-slate-800">{item.title || "(no title)"}</div>
-                      {item.subtitle && <div className="text-xs text-slate-500">{item.subtitle}</div>}
+                      {item.subtitle && <div className="text-xs text-slate-600">{item.subtitle}</div>}
                       {item.icon_name && (
                         <div className="mt-0.5 font-mono text-[10px] text-slate-400">{item.icon_name}</div>
                       )}

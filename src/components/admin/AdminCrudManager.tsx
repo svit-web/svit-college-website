@@ -49,7 +49,7 @@ function DepartmentMetaEditor({ value, onChange }: { value: any; onChange: (val:
           value={meta.about || ""}
           onChange={(e) => set("about", e.target.value)}
           placeholder="Brief description of the department..."
-          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
         />
       </div>
       <div className="grid grid-cols-2 gap-3">
@@ -60,7 +60,7 @@ function DepartmentMetaEditor({ value, onChange }: { value: any; onChange: (val:
             value={meta.vision || ""}
             onChange={(e) => set("vision", e.target.value)}
             placeholder="Department vision..."
-            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
           />
         </div>
         <div className="space-y-1.5">
@@ -70,7 +70,7 @@ function DepartmentMetaEditor({ value, onChange }: { value: any; onChange: (val:
             value={meta.mission || ""}
             onChange={(e) => set("mission", e.target.value)}
             placeholder="Department mission..."
-            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
           />
         </div>
       </div>
@@ -81,7 +81,7 @@ function DepartmentMetaEditor({ value, onChange }: { value: any; onChange: (val:
           value={meta.intake ?? ""}
           onChange={(e) => set("intake", e.target.value ? Number(e.target.value) : "")}
           placeholder="e.g. 60"
-          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
         />
       </div>
     </div>
@@ -711,7 +711,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
       <div className="flex h-96 items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-crimson" />
-          <p className="text-sm text-slate-600">Analyzing schema & references...</p>
+          <p className="text-sm text-slate-700">Analyzing schema & references...</p>
         </div>
       </div>
     );
@@ -724,6 +724,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
         <h3 className="mt-4 text-lg font-bold text-navy">Schema Analysis Error</h3>
         <p className="mt-2 text-sm text-slate-600">
           The requested table <code className="text-rose-600 font-mono">"{tableId}"</code> was not found in the public database schema.
+
         </p>
       </div>
     );
@@ -737,7 +738,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl">
             {formatLabel(tableId)} Manager
           </h1>
-          <p className="text-sm text-slate-600">
+          <p className="text-sm text-slate-700">
             {recordCount} total rows found in database
           </p>
         </div>
@@ -781,7 +782,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
         </div>
 
         {/* Info */}
-        <div className="text-right text-xs text-slate-500 font-medium">
+        <div className="text-right text-xs text-slate-600 font-medium">
           Active Schema: <code className="text-crimson font-mono">{tableId}</code>
         </div>
       </div>
@@ -800,14 +801,14 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="border-b border-slate-200 bg-slate-50">
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="px-6 py-4 text-sm font-semibold text-slate-700">
+                    <th key={header.id} className="px-6 py-4 text-sm font-semibold text-slate-900">
                       {header.isPlaceholder
                         ? null
                         : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
                   {hasWritePermission && (
-                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-700">
+                    <th className="px-6 py-4 text-right text-sm font-semibold text-slate-900">
                       Actions
                     </th>
                   )}
@@ -819,7 +820,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                 table.getRowModel().rows.map((row) => (
                   <tr key={row.id} className="border-b border-slate-200 hover:bg-slate-50 transition">
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="px-6 py-4 text-sm text-slate-700 font-medium">
+                      <td key={cell.id} className="px-6 py-4 text-sm text-slate-900 font-medium">
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
@@ -829,7 +830,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                           {tableId === "user_profiles" && (
                             <button
                               onClick={() => handleResetPassword(row.original)}
-                              className="rounded p-1 text-slate-600 hover:bg-blue-50 hover:text-blue-600 transition"
+                              className="rounded p-1 text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition"
                               title="Send password reset email"
                             >
                               <KeyRound className="h-4 w-4" />
@@ -837,14 +838,14 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                           )}
                           <button
                             onClick={() => handleOpenModal(row.original)}
-                            className="rounded p-1 text-slate-600 hover:bg-slate-100 hover:text-navy transition"
+                            className="rounded p-1 text-slate-700 hover:bg-slate-100 hover:text-navy transition"
                             title="Edit record"
                           >
                             <Edit2 className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(row.original)}
-                            className="rounded p-1 text-slate-600 hover:bg-red-50 hover:text-red-600 transition"
+                            className="rounded p-1 text-slate-700 hover:bg-red-50 hover:text-red-600 transition"
                             title="Delete record"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -858,7 +859,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                 <tr>
                   <td
                     colSpan={tableColumns.length + (hasWritePermission ? 1 : 0)}
-                    className="px-6 py-12 text-center text-slate-500"
+                    className="px-6 py-12 text-center text-slate-600"
                   >
                     No matching records found.
                   </td>
@@ -871,24 +872,24 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
         {/* Pagination Toolbar */}
         {recordCount > 0 && (
           <div className="flex flex-col gap-4 items-center justify-between border-t border-slate-200 bg-slate-50 px-6 py-4 sm:flex-row">
-            <span className="text-sm text-slate-500">
-              Showing <span className="font-semibold text-slate-700">{page * pageSize + 1}</span> to{" "}
-              <span className="font-semibold text-slate-700">
+            <span className="text-sm text-slate-700">
+              Showing <span className="font-semibold text-slate-900">{page * pageSize + 1}</span> to{" "}
+              <span className="font-semibold text-slate-900">
                 {Math.min((page + 1) * pageSize, recordCount)}
               </span>{" "}
-              of <span className="font-semibold text-slate-700">{recordCount}</span> results
+              of <span className="font-semibold text-slate-900">{recordCount}</span> results
             </span>
 
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-1">
-                <span className="text-xs text-slate-500">Rows per page:</span>
+                <span className="text-xs text-slate-700">Rows per page:</span>
                 <select
                   value={pageSize}
                   onChange={(e) => {
                     setPageSize(Number(e.target.value));
                     setPage(0);
                   }}
-                  className="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-700 focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                  className="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-900 focus:outline-none focus:ring-1 focus:ring-crimson/50"
                 >
                   {[5, 10, 20, 50].map((size) => (
                     <option key={size} value={size}>
@@ -971,7 +972,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
                 return (
                   <div key={col.name} className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-800 uppercase tracking-wider flex items-center justify-between">
+                    <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center justify-between">
                       <span>{formatLabel(col.name)}</span>
                       {!col.is_nullable && (
                         <span className="text-[10px] text-crimson font-medium font-mono">Required</span>
@@ -1010,7 +1011,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         value={formValues[col.name] || ""}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
                       >
                         <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
                         {fkOptions[fk.foreign_table]?.map((opt) => (
@@ -1024,7 +1025,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                       <select
                         value={formValues[col.name] || ""}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                       >
                         {/* Different tables use different status enums (e.g. events has
                             draft/published/cancelled, not draft/published/archived) —
@@ -1039,7 +1040,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         value={formValues[col.name] || ""}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                       >
                         <option value="">-- Select --</option>
                         {col.enum_values.map((v: string) => (
@@ -1053,7 +1054,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
                         rows={3}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
                       />
                     ) : /* Date Picker inputs */
                     col.type.startsWith("timestamp") || col.type === "date" ? (
@@ -1062,7 +1063,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         value={formValues[col.name] ? formValues[col.name].split("T")[0] : ""}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                       />
                     ) : /* JSON / metadata textarea editor */
                     col.name === "metadata" && tableId === "departments" ? (
@@ -1081,7 +1082,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         required={!col.is_nullable}
                         rows={4}
                         placeholder="{}"
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-800 focus:border-crimson focus:outline-none"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-crimson focus:outline-none"
                       />
                     ) : /* Default Numbers or Standard text inputs */
                     (
@@ -1092,7 +1093,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                           value={formValues[col.name] ?? ""}
                           onChange={(e) => handleFieldChange(col.name, e.target.value)}
                           required={!col.is_nullable}
-                          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
                         />
                         {col.type === "ARRAY" && (
                           <p className="text-[10px] text-slate-500 font-medium">

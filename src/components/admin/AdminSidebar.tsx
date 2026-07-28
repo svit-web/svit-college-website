@@ -207,7 +207,7 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
                 onClick={() => toggleGroup(group.label)}
                 className={cn(
                   "flex w-full items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition hover:bg-navy-light/30 hover:text-white",
-                  groupHasActiveChild ? "text-gold" : "text-white/80"
+                  groupHasActiveChild ? "text-gold" : "text-white/90"
                 )}
               >
                 <div className="flex items-center gap-3">
@@ -234,7 +234,7 @@ export function AdminSidebar({ profile, roles, logout }: SidebarProps) {
                           "block rounded-md px-3 py-1.5 text-xs font-medium transition",
                           isActive
                             ? "bg-gold/15 text-gold font-semibold"
-                            : "text-white/70 hover:text-white hover:bg-navy-light/20"
+                            : "text-white/85 hover:text-white hover:bg-navy-light/20"
                         )}
                       >
                         {item.label}

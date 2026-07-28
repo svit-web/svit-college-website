@@ -216,7 +216,7 @@ function AdminTrashPanelPage() {
       <div className="flex flex-col gap-4 rounded-xl bg-white p-5 border border-slate-200 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4 flex-1">
           <div className="space-y-1">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Target Table Bin</span>
+            <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">Target Table Bin</span>
             <select
               value={selectedTable}
               onChange={(e) => setSelectedTable(e.target.value)}
@@ -231,7 +231,7 @@ function AdminTrashPanelPage() {
           </div>
 
           <div className="space-y-1 flex-1 max-w-sm sm:mt-0">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">Search Deleted Items</span>
+            <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider block">Search Deleted Items</span>
             <div className="relative">
               <Search className="absolute top-2.5 left-3 h-4 w-4 text-slate-500" />
               <input
@@ -287,10 +287,10 @@ function AdminTrashPanelPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-100">
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Record Info</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">Deleted At</th>
-                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-500">UUID Ref</th>
-                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-500">Actions</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-700">Record Info</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-700">Deleted At</th>
+                  <th className="px-6 py-4 text-xs font-bold uppercase tracking-wider text-slate-700">UUID Ref</th>
+                  <th className="px-6 py-4 text-right text-xs font-bold uppercase tracking-wider text-slate-700">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -299,13 +299,13 @@ function AdminTrashPanelPage() {
                   return (
                     <tr key={r.id} className="hover:bg-slate-100 transition">
                       <td className="px-6 py-4">
-                        <div className="font-semibold text-slate-800 text-sm">{label}</div>
-                        {r.code && <div className="text-xs text-slate-500 mt-0.5">Code: {r.code}</div>}
+                        <div className="font-semibold text-slate-900 text-sm">{label}</div>
+                        {r.code && <div className="text-xs text-slate-600 mt-0.5">Code: {r.code}</div>}
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-500 font-semibold font-mono">
+                      <td className="px-6 py-4 text-xs text-slate-700 font-semibold font-mono">
                         {r.deleted_at ? new Date(r.deleted_at).toLocaleString() : "Unknown"}
                       </td>
-                      <td className="px-6 py-4 text-xs text-slate-500 font-mono">
+                      <td className="px-6 py-4 text-xs text-slate-600 font-mono">
                         {r.id}
                       </td>
                       <td className="px-6 py-4 text-right">
@@ -359,7 +359,7 @@ function AdminTrashPanelPage() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between text-xs text-slate-500">
+        <div className="flex items-center justify-between text-xs text-slate-700">
           <span>Page {page + 1} of {totalPages} ({totalCount} total)</span>
           <div className="flex gap-2">
             <button
