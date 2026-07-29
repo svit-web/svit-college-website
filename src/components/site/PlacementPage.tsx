@@ -187,30 +187,39 @@ export function PlacementPage({ content }: Props) {
               {/* 3. Summary — Placed Students */}
               <section id="summary" className="space-y-6">
                 <SectionHeading eyebrow="Summary" title="Placed Students" variant="eyebrow" />
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                   {(content.summary.placedStudents.length > 0 ? content.summary.placedStudents : [
                     { studentName: "Student Name", companyName: "Company Name", photo: null },
                     { studentName: "Student Name", companyName: "Company Name", photo: null },
                     { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", photo: null },
                   ]).map((s, i) => (
-                    <Reveal key={`${s.studentName}-${i}`} delay={i * 0.04}>
-                      <div className="card-lift flex items-center gap-4 rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
-                        {s.photo || content.defaultStudentPlaceholderUrl ? (
-                          <img src={s.photo || content.defaultStudentPlaceholderUrl!} alt={s.studentName} className="h-16 w-16 rounded-full object-cover shrink-0" />
-                        ) : (
-                          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-secondary/60 text-muted-foreground">
-                            <ImageIcon className="h-8 w-8" />
-                          </div>
-                        )}
-                        <div className="min-w-0">
-                          <div className="font-semibold text-navy truncate">{s.studentName}</div>
-                          <div className="text-xs text-muted-foreground truncate">Placed at {s.companyName}</div>
+                    <Reveal key={`${s.studentName}-${i}`} delay={i * 0.03}>
+                      <div className="card-lift flex flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white hover:border-gold transition-colors">
+                        <div className="aspect-square w-full bg-secondary/30 flex items-center justify-center relative overflow-hidden">
+                          {s.photo || content.defaultStudentPlaceholderUrl ? (
+                            <img src={s.photo || content.defaultStudentPlaceholderUrl!} alt={s.studentName} className="h-full w-full object-cover" />
+                          ) : (
+                            <div className="text-muted-foreground flex items-center justify-center">
+                              <ImageIcon className="h-10 w-10" />
+                            </div>
+                          )}
+                        </div>
+                        <div className="p-3 min-w-0 border-t border-navy/10 text-center">
+                          <div className="font-semibold text-navy truncate text-sm">{s.studentName}</div>
+                          <div className="text-[11px] text-muted-foreground truncate mt-0.5">Placed at {s.companyName}</div>
                         </div>
                       </div>
                     </Reveal>
                   ))}
                   {content.summary.placedStudents.length === 0 && (
-                    <div className="sm:col-span-2 lg:col-span-3 rounded-2xl border-2 border-dashed border-navy/15 bg-secondary/40 p-5 text-center text-[11px] font-semibold uppercase tracking-widest text-muted-foreground flex items-center justify-center">
+                    <div className="col-span-2 sm:col-span-3 md:col-span-4 lg:col-span-5 rounded-2xl border-2 border-dashed border-navy/15 bg-secondary/40 p-5 text-center text-[11px] font-semibold uppercase tracking-widest text-muted-foreground flex items-center justify-center">
                       Placeholder items — editable via admin cells config
                     </div>
                   )}
