@@ -73,7 +73,7 @@ export function PlacementPage({ content }: Props) {
                 <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
                   Placements Dashboard
                 </div>
-                <ul className="flex flex-col gap-1">
+                <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible scrollbar-none pb-2 lg:pb-0">
                   {collegesList.map((item) => {
                     const isActive = 
                       content.slug === item.slug ||
@@ -81,11 +81,11 @@ export function PlacementPage({ content }: Props) {
                       (item.slug === "svit-coa" && content.slug === "coa");
                     const Icon = item.icon;
                     return (
-                      <li key={item.slug}>
+                      <li key={item.slug} className="shrink-0 lg:shrink">
                         <Link
                           to="/placement/$college"
                           params={{ college: item.slug }}
-                          className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all ${
+                          className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all whitespace-nowrap lg:whitespace-normal ${
                             isActive
                               ? "border-gold bg-navy text-white shadow-sm"
                               : "border-transparent text-navy hover:border-navy/15 hover:bg-secondary/60"
@@ -158,24 +158,26 @@ export function PlacementPage({ content }: Props) {
                       Students placed shown per bar
                     </span>
                   </div>
-                  <div className="mt-6 flex h-64 items-end gap-3 md:gap-5">
-                    {content.details.graphicalData.map((d) => {
-                      const h = Math.max(6, Math.round((d.placementPercentage / maxPct) * 100));
-                      return (
-                        <div key={d.year} className="flex flex-1 flex-col items-center gap-2">
-                          <div className="text-[11px] font-bold text-navy">{d.placementPercentage}%</div>
-                          <div className="flex w-full flex-1 items-end">
-                            <div
-                              className="w-full rounded-t-md bg-gradient-to-t from-navy to-navy-light transition-all hover:from-crimson hover:to-gold"
-                              style={{ height: `${h}%` }}
-                              aria-label={`${d.year}: ${d.placementPercentage}% placement, ${d.studentsPlaced} students placed`}
-                            />
+                  <div className="mt-6 overflow-x-auto pb-2 scrollbar-thin">
+                    <div className="flex h-64 min-w-[600px] md:min-w-0 items-end gap-3 md:gap-5">
+                      {content.details.graphicalData.map((d) => {
+                        const h = Math.max(6, Math.round((d.placementPercentage / maxPct) * 100));
+                        return (
+                          <div key={d.year} className="flex flex-1 flex-col items-center gap-2">
+                            <div className="text-[11px] font-bold text-navy">{d.placementPercentage}%</div>
+                            <div className="flex w-full flex-1 items-end">
+                              <div
+                                className="w-full rounded-t-md bg-gradient-to-t from-navy to-navy-light transition-all hover:from-crimson hover:to-gold"
+                                style={{ height: `${h}%` }}
+                                aria-label={`${d.year}: ${d.placementPercentage}% placement, ${d.studentsPlaced} students placed`}
+                              />
+                            </div>
+                            <div className="text-xs font-semibold text-navy">{d.year}</div>
+                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.studentsPlaced} placed</div>
                           </div>
-                          <div className="text-xs font-semibold text-navy">{d.year}</div>
-                          <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.studentsPlaced} placed</div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
+                    </div>
                   </div>
                 </div>
               </section>
