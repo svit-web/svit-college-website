@@ -195,8 +195,8 @@ export function PlacementPage({ content }: Props) {
                           {s.photo || content.defaultStudentPlaceholderUrl ? (
                             <img src={s.photo || content.defaultStudentPlaceholderUrl!} alt={s.studentName} className="h-16 w-16 rounded-full object-cover shrink-0" />
                           ) : (
-                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy/40">
-                              <User className="h-8 w-8" />
+                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-secondary/60 text-muted-foreground">
+                              <ImageIcon className="h-8 w-8" />
                             </div>
                           )}
                           <div className="min-w-0">
