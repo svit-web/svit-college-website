@@ -1045,8 +1045,8 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {/* Image upload — hero, carousel_slide, promo_card, hero_slide */}
-              {["hero", "carousel_slide", "promo_card", "hero_slide"].includes(form.item_type) && (
+              {/* Image upload — hero, carousel_slide, promo_card, highlight_card, hero_slide */}
+              {["hero", "carousel_slide", "promo_card", "highlight_card", "hero_slide"].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Image</label>
                   <MediaUploader
