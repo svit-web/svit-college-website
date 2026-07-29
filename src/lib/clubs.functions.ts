@@ -84,29 +84,30 @@ export const getStudentClubBySlug = createServerFn({ method: 'GET' })
 
 export interface ClubEvent {
   id: string;
-  slug: string;
   title: string;
-  tag: string | null;
-  startDate: string;
+  description: string | null;
+  eventDate: string;
   imageUrl: string | null;
 }
 
 /**
- * Fetch a club's events (admin-managed at /admin/events via the Club Id
- * field). A database trigger keeps at most 3 published events per club —
- * adding a 4th auto-archives the oldest one by start_date — so this is
- * just a plain published-events read, capped defensively at 3.
+ * Fetch a club's own events — a dedicated table (club_events), separate
+ * from the general campus-life events. Admin-managed at
+ * /admin/tables/club_events via the Club Id field. A database trigger keeps
+ * at most 3 published events per club — adding a 4th auto-archives the
+ * oldest one by event_date — so this is just a plain published-events read,
+ * capped defensively at 3.
  */
-export const getEventsByClubId = createServerFn({ method: 'GET' })
+export const getClubEvents = createServerFn({ method: 'GET' })
   .validator((clubId: string) => clubId)
   .handler(async (ctx) => {
     const clubId = ctx.data;
     const { data, error } = await supabase
-      .from('events')
-      .select('id, slug, title, tag, start_date, featured_image_url')
+      .from('club_events')
+      .select('id, title, description, event_date, image_url')
       .eq('club_id', clubId)
       .eq('status', 'published')
-      .order('start_date', { ascending: false })
+      .order('event_date', { ascending: false })
       .limit(3);
 
     if (error) {
@@ -116,10 +117,9 @@ export const getEventsByClubId = createServerFn({ method: 'GET' })
 
     return (data ?? []).map((e): ClubEvent => ({
       id: e.id,
-      slug: e.slug,
       title: e.title,
-      tag: e.tag,
-      startDate: e.start_date,
-      imageUrl: e.featured_image_url,
+      description: e.description,
+      eventDate: e.event_date,
+      imageUrl: e.image_url,
     }));
   });

@@ -3,7 +3,7 @@ import { CampusLeafPage } from "@/components/site/CampusLeafPage";
 import { PillTabs } from "@/components/site/PillTabs";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { EventsNewsSlider, type EventSlide } from "@/components/site/EventsNewsSlider";
-import { getAllStudentClubs, getStudentClubBySlug, getEventsByClubId } from "@/lib/clubs.functions";
+import { getAllStudentClubs, getStudentClubBySlug, getClubEvents } from "@/lib/clubs.functions";
 
 export const Route = createFileRoute("/campus-life/clubs/$slug")({
   loader: async ({ params }) => {
@@ -14,7 +14,7 @@ export const Route = createFileRoute("/campus-life/clubs/$slug")({
 
     if (!item) throw notFound();
 
-    const events = await getEventsByClubId({ data: item.id });
+    const events = await getClubEvents({ data: item.id });
 
     // Transform to match CampusLeafPage interface
     const transformedItem = {
@@ -40,12 +40,14 @@ export const Route = createFileRoute("/campus-life/clubs/$slug")({
 function ClubLeaf() {
   const { item, allClubs, events } = Route.useLoaderData();
 
+  // Club events are self-contained (no shared detail page to link to) —
+  // slug: null renders these slides as plain, non-clickable cards.
   const slides: EventSlide[] = events.map((e) => ({
     id: e.id,
-    slug: e.slug,
+    slug: null,
     title: e.title,
-    tag: e.tag ?? "Event",
-    date: new Date(e.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+    tag: "Event",
+    date: new Date(e.eventDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
     imageUrl: e.imageUrl,
   }));
 
