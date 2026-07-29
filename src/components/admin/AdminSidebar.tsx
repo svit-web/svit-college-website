@@ -83,6 +83,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Gallery Albums", to: "/admin/tables/gallery_albums" },
       { label: "Gallery Media", to: "/admin/tables/gallery_media" },
       { label: "Student Clubs", to: "/admin/tables/student_clubs" },
+      { label: "Club Events", to: "/admin/tables/club_events" },
       { label: "MOUs", to: "/admin/tables/mous" },
     ],
   },
