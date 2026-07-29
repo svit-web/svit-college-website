@@ -42,7 +42,10 @@ interface PlacedStudent {
   college_code: string;
   student_name: string;
   company_name: string;
+  department: string | null;
   photo_url: string | null;
+  batch_year: string | null;
+  package_lpa: number | null;
   status: string;
   created_at: string;
 }
@@ -50,8 +53,11 @@ interface PlacedStudent {
 const emptyForm = {
   student_name: "",
   company_name: "",
+  department: "",
   college_code: "svit-degree",
   photo_url: "",
+  batch_year: "",
+  package_lpa: "",
   status: "published",
 };
 
@@ -111,8 +117,11 @@ function PlacedStudentsAdmin() {
     setForm({
       student_name: s.student_name,
       company_name: s.company_name,
+      department: s.department || "",
       college_code: s.college_code,
       photo_url: s.photo_url || "",
+      batch_year: s.batch_year || "",
+      package_lpa: s.package_lpa != null ? String(s.package_lpa) : "",
       status: s.status,
     });
     setShowForm(true);
@@ -125,8 +134,11 @@ function PlacedStudentsAdmin() {
     const payload = {
       student_name: form.student_name.trim(),
       company_name: form.company_name.trim(),
+      department: form.department.trim() || null,
       college_code: form.college_code,
       photo_url: form.photo_url || null,
+      batch_year: form.batch_year.trim() || null,
+      package_lpa: form.package_lpa ? parseFloat(form.package_lpa) : null,
       status: form.status,
     };
     if (editingId) {
@@ -353,6 +365,18 @@ function PlacedStudentsAdmin() {
                 />
               </div>
 
+              {/* Department */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Department / Programme</label>
+                <input
+                  type="text"
+                  value={form.department}
+                  onChange={(e) => setForm(f => ({ ...f, department: e.target.value }))}
+                  placeholder="e.g. Computer Engineering, B.Arch, MCA..."
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
+                />
+              </div>
+
               {/* College */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Institution / College <span className="text-rose-500">*</span></label>
@@ -365,6 +389,31 @@ function PlacedStudentsAdmin() {
                     <option key={c.value} value={c.value}>{c.label}</option>
                   ))}
                 </select>
+              </div>
+
+              {/* Batch Year + Package */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Batch Year</label>
+                  <input
+                    type="text"
+                    value={form.batch_year}
+                    onChange={(e) => setForm(f => ({ ...f, batch_year: e.target.value }))}
+                    placeholder="e.g. 2024"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Package (LPA)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={form.package_lpa}
+                    onChange={(e) => setForm(f => ({ ...f, package_lpa: e.target.value }))}
+                    placeholder="e.g. 12.5"
+                    className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
+                  />
+                </div>
               </div>
 
               {/* Status */}

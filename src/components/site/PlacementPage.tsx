@@ -10,8 +10,10 @@ interface PlacementPageContent {
   collegeName: string;
   shortCode: string;
   aboutText: string;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
   details: { graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[]; statHighlights: { label: string; value: string }[] };
-  summary: { placedStudents: { studentName: string; companyName: string; photo: string | null }[] };
+  summary: { placedStudents: { studentName: string; companyName: string; department: string | null; photo: string | null; batchYear: string | null; packageLpa: number | null }[] };
   recruiters: { companyName: string; logo: string | null }[];
   placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
   defaultStudentPlaceholderUrl: string | null;
@@ -51,9 +53,9 @@ export function PlacementPage({ content }: Props) {
   return (
     <>
       <PageHero
-        title={`${content.shortCode} — Placements`}
+        title={content.heroTitle || `${content.shortCode} — Placements`}
         accent="Training & Placement"
-        subtitle={`Placement outcomes, recruiters and support at ${content.collegeName}.`}
+        subtitle={content.heroSubtitle || `Placement outcomes, recruiters and support at ${content.collegeName}.`}
         crumbs={[
           { label: "Home", to: "/" },
           { label: "Placement" },
@@ -195,16 +197,16 @@ export function PlacementPage({ content }: Props) {
                 <SectionHeading eyebrow="Summary" title="Placed Students" variant="eyebrow" />
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
                   {(content.summary.placedStudents.length > 0 ? content.summary.placedStudents : [
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
-                    { studentName: "Student Name", companyName: "Company Name", photo: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
+                    { studentName: "Student Name", companyName: "Company Name", department: null, photo: null, batchYear: null, packageLpa: null },
                   ]).map((s, i) => (
                     <Reveal key={`${s.studentName}-${i}`} delay={i * 0.03}>
                       <div className="card-lift flex flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white hover:border-gold transition-colors">
@@ -219,7 +221,20 @@ export function PlacementPage({ content }: Props) {
                         </div>
                         <div className="p-3 min-w-0 border-t border-navy/10 text-center">
                           <div className="font-semibold text-navy truncate text-sm">{s.studentName}</div>
-                          <div className="text-[11px] text-muted-foreground truncate mt-0.5">Placed at {s.companyName}</div>
+                          {s.department && (
+                            <div className="mt-0.5 text-[10px] font-medium text-crimson/80 truncate">{s.department}</div>
+                          )}
+                          <div className="text-[11px] text-muted-foreground truncate mt-0.5">@ {s.companyName}</div>
+                          {((s as any).batchYear || (s as any).packageLpa) && (
+                            <div className="mt-1.5 flex items-center justify-center gap-1.5 flex-wrap">
+                              {(s as any).batchYear && (
+                                <span className="rounded-full bg-navy/8 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-navy/60">{(s as any).batchYear}</span>
+                              )}
+                              {(s as any).packageLpa && (
+                                <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">₹{(s as any).packageLpa} LPA</span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </Reveal>

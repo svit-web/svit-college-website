@@ -5,8 +5,9 @@ import { getPlacementStatsByCollege, getAllRecruiters, getPlacementCell, getColl
 type PlacementSlug = string;
 interface PlacementPageContent {
   slug: PlacementSlug; collegeId: string; collegeName: string; shortCode: string; aboutText: string;
+  heroTitle: string | null; heroSubtitle: string | null;
   details: { graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[]; statHighlights: { label: string; value: string }[] };
-  summary: { placedStudents: { studentName: string; companyName: string; photo: string | null }[] };
+  summary: { placedStudents: { studentName: string; companyName: string; department: string | null; photo: string | null; batchYear: string | null; packageLpa: number | null }[] };
   recruiters: { companyName: string; logo: string | null }[];
   placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
   defaultStudentPlaceholderUrl: string | null;
@@ -154,7 +155,10 @@ export const Route = createFileRoute("/placement/$college")({
         placedStudents: dbPlacedStudents.map(s => ({
           studentName: s.student_name,
           companyName: s.company_name,
-          photo: s.photo_url
+          department: s.department ?? null,
+          photo: s.photo_url,
+          batchYear: s.batch_year ?? null,
+          packageLpa: s.package_lpa ?? null,
         }))
       },
       recruiters: collegeRecruiters,
@@ -163,9 +167,11 @@ export const Route = createFileRoute("/placement/$college")({
         designation: placementCell?.officer_designation ?? 'Training & Placement Officer',
         phone: placementCell?.officer_phone ?? '',
         email: placementCell?.officer_email ?? '',
-        photo: placementCell?.officer_photo_url ?? null,
+        photo: (placementCell as any)?.officer_photo_url ?? null,
       },
-      defaultStudentPlaceholderUrl: placementCell?.default_student_placeholder_url ?? null,
+      heroTitle: (placementCell as any)?.hero_title ?? null,
+      heroSubtitle: (placementCell as any)?.hero_subtitle ?? null,
+      defaultStudentPlaceholderUrl: (placementCell as any)?.default_student_placeholder_url ?? null,
     };
 
     return { content };

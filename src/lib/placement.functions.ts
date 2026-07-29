@@ -152,7 +152,10 @@ export interface PlacedStudent {
   college_code: string;
   student_name: string;
   company_name: string;
+  department: string | null;
   photo_url: string | null;
+  batch_year: string | null;
+  package_lpa: number | null;
   status: 'draft' | 'published' | 'archived';
   created_at: string;
   updated_at: string;
@@ -160,7 +163,7 @@ export interface PlacedStudent {
 
 /**
  * Fetch published placed students for a college by its code.
- * If overview, returns all published placed students.
+ * If overview, returns all published placed students across all colleges.
  */
 export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
   .validator((collegeCode: string) => collegeCode)
@@ -168,7 +171,9 @@ export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
     let query = supabase
       .from('placed_students' as any)
       .select('*')
-      .eq('status', 'published');
+      .eq('status', 'published')
+      .order('batch_year', { ascending: false })
+      .order('created_at', { ascending: false });
 
     if (ctx.data !== 'overview') {
       query = query.eq('college_code', ctx.data);
@@ -182,3 +187,4 @@ export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
 
     return (data ?? []) as unknown as PlacedStudent[];
   });
+
