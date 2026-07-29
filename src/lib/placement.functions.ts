@@ -39,11 +39,16 @@ export interface Recruiter {
 export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
   .validator((collegeSlug: string) => collegeSlug)
   .handler(async (ctx) => {
-    const { data: depts } = await supabase
+    let query = supabase
       .from('departments')
       .select('id, colleges!inner(slug)')
-      .eq('colleges.slug' as any, ctx.data)
       .eq('status', 'published');
+
+    if (ctx.data !== 'overview') {
+      query = query.eq('colleges.slug' as any, ctx.data);
+    }
+
+    const { data: depts } = await query;
 
     if (!depts?.length) return [] as PlacementStatistics[];
 
@@ -92,6 +97,7 @@ export interface PlacementCell {
   officer_phone: string;
   officer_email: string;
   officer_photo_url: string | null;
+  placed_students: { studentName: string; companyName: string; photo: string | null }[];
 }
 
 /**

@@ -27,8 +27,17 @@ export const Route = createFileRoute("/placement/$college")({
     };
   },
   loader: async ({ params }) => {
-    const college = await getCollegeBySlug({ data: params.college });
-    if (!college) throw notFound();
+    let college;
+    if (params.college === 'overview') {
+      college = {
+        code: 'overview',
+        name: 'SVIT Group of Institutions',
+        shortCode: 'Overview'
+      };
+    } else {
+      college = await getCollegeBySlug({ data: params.college });
+      if (!college) throw notFound();
+    }
 
     const [stats, allRecruiters, placementCell] = await Promise.all([
       getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
@@ -42,7 +51,67 @@ export const Route = createFileRoute("/placement/$college")({
       return part.length === 2 ? '20' + part : part;
     }
 
-    const graphicalData = [...stats]
+    let processedStats = stats;
+    if (params.college === 'overview') {
+      const yearMap = new Map<string, {
+        academic_year: string;
+        placed_students: number;
+        total_students: number;
+        highest_package: number;
+        average_package_sum: number;
+        average_package_count: number;
+        recruiters_count: number;
+      }>();
+
+      for (const s of stats) {
+        const year = s.academic_year;
+        if (!yearMap.has(year)) {
+          yearMap.set(year, {
+            academic_year: year,
+            placed_students: 0,
+            total_students: 0,
+            highest_package: 0,
+            average_package_sum: 0,
+            average_package_count: 0,
+            recruiters_count: 0,
+          });
+        }
+        const current = yearMap.get(year)!;
+        current.placed_students += s.placed_students;
+        current.total_students += s.total_students;
+        if (s.highest_package && s.highest_package > current.highest_package) {
+          current.highest_package = s.highest_package;
+        }
+        if (s.average_package) {
+          current.average_package_sum += s.average_package;
+          current.average_package_count += 1;
+        }
+        if (s.recruiters_count) {
+          current.recruiters_count += s.recruiters_count;
+        }
+      }
+
+      processedStats = Array.from(yearMap.values()).map(yearData => ({
+        id: yearData.academic_year,
+        department_id: null,
+        academic_year: yearData.academic_year,
+        placed_students: yearData.placed_students,
+        total_students: yearData.total_students,
+        highest_package: yearData.highest_package || null,
+        average_package: yearData.average_package_count > 0 
+          ? Math.round((yearData.average_package_sum / yearData.average_package_count) * 10) / 10 
+          : null,
+        recruiters_count: yearData.recruiters_count || null,
+        status: 'published',
+        metadata: {},
+        created_at: '',
+        updated_at: '',
+      } as any));
+      
+      processedStats.sort((a, b) => b.academic_year.localeCompare(a.academic_year));
+    }
+
+    const graphicalData = [...processedStats]
       .reverse()
       .map(s => ({
         year: toDisplayYear(s.academic_year),
@@ -52,7 +121,7 @@ export const Route = createFileRoute("/placement/$college")({
           : 0,
       }));
 
-    const latest = stats[0] ?? null;
+    const latest = processedStats[0] ?? null;
     const statHighlights = latest
       ? [
           { label: 'Students Placed', value: `${latest.placed_students}+` },
@@ -64,6 +133,7 @@ export const Route = createFileRoute("/placement/$college")({
 
     const collegeRecruiters = allRecruiters
       .filter(r => {
+        if (params.college === 'overview') return true;
         const cols = (r.metadata as any)?.colleges as string[] | undefined;
         return !cols || cols.includes(college.code);
       })
@@ -74,9 +144,11 @@ export const Route = createFileRoute("/placement/$college")({
       collegeId: college.code,
       collegeName: college.name,
       shortCode: college.shortCode,
-      aboutText: placementCell?.about_text ?? '',
+      aboutText: placementCell?.about_text ?? (params.college === 'overview'
+        ? 'The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges, including Engineering, Architecture, Nursing, and Applied Sciences. We collaborate with national and multinational companies to bridge academic training and corporate demands.'
+        : ''),
       details: { graphicalData, statHighlights },
-      summary: { placedStudents: [] },
+      summary: { placedStudents: (placementCell?.placed_students || []) as { studentName: string; companyName: string; photo: string | null }[] },
       recruiters: collegeRecruiters,
       placementOfficer: {
         name: placementCell?.officer_name ?? '',

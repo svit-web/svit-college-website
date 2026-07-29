@@ -70,6 +70,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Recruiters", to: "/admin/recruiters" },
       { label: "Accreditations", to: "/admin/tables/accreditations" },
       { label: "Placement Stats", to: "/admin/tables/placement_statistics" },
+      { label: "Placement Cells Content", to: "/admin/tables/placement_cells" },
       { label: "Downloads / Forms", to: "/admin/tables/downloads" },
       { label: "Media Library", to: "/admin/media" },
     ],

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Mail, Phone, User, Image as ImageIcon, Info, BarChart3, GraduationCap, Building2, UserCircle2 } from "lucide-react";
+import { Mail, Phone, User, Image as ImageIcon, Info, BarChart3, GraduationCap, Building2, UserCircle2, LayoutDashboard } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { CTABanner } from "./CTABanner";
 import { Reveal } from "./Reveal";
@@ -19,6 +19,14 @@ interface PlacementPageContent {
 interface Props {
   content: PlacementPageContent;
 }
+
+const collegesList = [
+  { slug: "overview", label: "Overview", icon: LayoutDashboard },
+  { slug: "svit-degree", label: "SVIT (Degree)", icon: Building2 },
+  { slug: "svit-coa", label: "COA (Architecture)", icon: Building2 },
+  { slug: "svica", label: "SVICA (Applied Sciences)", icon: Building2 },
+  { slug: "svion", label: "SVION (Nursing)", icon: Building2 },
+];
 
 const sectionLinks = [
   { id: "about", label: "About T&P Cell", icon: Info },
@@ -54,8 +62,44 @@ export function PlacementPage({ content }: Props) {
 
       <div className="bg-secondary/30">
         <div className="container-page py-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
+          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[300px_minmax(0,1fr)]">
+            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start space-y-6">
+              {/* College Divisions List (Dashboard) */}
+              <nav
+                aria-label="College placement divisions"
+                className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
+              >
+                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                  Placements Dashboard
+                </div>
+                <ul className="flex flex-col gap-1">
+                  {collegesList.map((item) => {
+                    const isActive = 
+                      content.slug === item.slug ||
+                      (item.slug === "svit-degree" && content.slug === "svit") ||
+                      (item.slug === "svit-coa" && content.slug === "coa");
+                    const Icon = item.icon;
+                    return (
+                      <li key={item.slug}>
+                        <Link
+                          to="/placement/$college"
+                          params={{ college: item.slug }}
+                          className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all ${
+                            isActive
+                              ? "border-gold bg-navy text-white shadow-sm"
+                              : "border-transparent text-navy hover:border-navy/15 hover:bg-secondary/60"
+                          }`}
+                        >
+                          <Icon className="h-4 w-4 shrink-0" />
+                          <span>{item.label}</span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </nav>
+
+              {/* On this page sections navigation */}
               <nav
                 aria-label="Placement sections"
                 className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
