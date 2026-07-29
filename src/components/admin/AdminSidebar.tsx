@@ -79,6 +79,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Trophy,
     items: [
       { label: "Events", to: "/admin/events" },
+      { label: "Sports & Athletics", to: "/admin/sports" },
       { label: "Achievements", to: "/admin/tables/achievements" },
       { label: "Gallery Albums", to: "/admin/tables/gallery_albums" },
       { label: "Gallery Media", to: "/admin/tables/gallery_media" },
