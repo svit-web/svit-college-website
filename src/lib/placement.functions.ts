@@ -98,6 +98,7 @@ export interface PlacementCell {
   officer_email: string;
   officer_photo_url: string | null;
   placed_students: { studentName: string; companyName: string; photo: string | null }[];
+  default_student_placeholder_url: string | null;
 }
 
 /**

@@ -9,6 +9,7 @@ interface PlacementPageContent {
   summary: { placedStudents: { studentName: string; companyName: string; photo: string | null }[] };
   recruiters: { companyName: string; logo: string | null }[];
   placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
+  defaultStudentPlaceholderUrl: string | null;
 }
 
 export const Route = createFileRoute("/placement/$college")({
@@ -157,6 +158,7 @@ export const Route = createFileRoute("/placement/$college")({
         email: placementCell?.officer_email ?? '',
         photo: placementCell?.officer_photo_url ?? null,
       },
+      defaultStudentPlaceholderUrl: placementCell?.default_student_placeholder_url ?? null,
     };
 
     return { content };
