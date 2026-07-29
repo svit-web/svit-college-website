@@ -26,21 +26,21 @@ export const Route = createFileRoute("/admin/")({
 });
 
 const PRIMARY_CARDS = [
-  { key: "events", label: "Events", icon: Calendar, link: "/admin/events", color: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20" },
-  { key: "posts", label: "Blog & News", icon: FileText, link: "/admin/posts", color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20" },
-  { key: "faculty", label: "Faculty & Staff", icon: Users, link: "/admin/staff-wizards", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20" },
-  { key: "recruiters", label: "Recruiters", icon: ShieldCheck, link: "/admin/recruiters", color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
-  { key: "placedStudents", label: "Placed Students", icon: GraduationCap, link: "/admin/placements", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  { key: "placementCells", label: "Placement Cells", icon: UserSquare2, link: "/admin/tables/placement_cells", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
+  { key: "events",          label: "Events",           icon: Calendar,      link: "/admin/events",            color: "text-rose-400",    bg: "bg-rose-500/10 border-rose-500/20" },
+  { key: "posts",           label: "Blog & News",       icon: FileText,      link: "/admin/posts",             color: "text-cyan-400",    bg: "bg-cyan-500/10 border-cyan-500/20" },
+  { key: "faculty",         label: "Faculty & Staff",   icon: Users,         link: "/admin/staff-wizards",     color: "text-blue-400",    bg: "bg-blue-500/10 border-blue-500/20" },
+  { key: "recruiters",      label: "Recruiters",        icon: ShieldCheck,   link: "/admin/recruiters",        color: "text-violet-400",  bg: "bg-violet-500/10 border-violet-500/20" },
+  { key: "placedStudents",  label: "Placed Students",   icon: GraduationCap, link: "/admin/placements",        color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { key: "placementCells",  label: "Placement Cells",   icon: UserSquare2,   link: "/admin/placement-cells",  color: "text-amber-400",   bg: "bg-amber-500/10 border-amber-500/20" },
 ];
 
 const SECONDARY_CARDS = [
-  { key: "colleges", label: "Colleges", icon: School, link: "/admin/colleges", color: "text-crimson", bg: "bg-crimson/10 border-crimson/20" },
-  { key: "departments", label: "Departments", icon: BookOpen, link: "/admin/tables/departments", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
-  { key: "courses", label: "Courses", icon: BookOpen, link: "/admin/tables/courses", color: "text-teal-400", bg: "bg-teal-500/10 border-teal-500/20" },
-  { key: "trusts", label: "Trusts", icon: Building, link: "/admin/tables/trusts", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
-  { key: "homepageItems", label: "Homepage Items", icon: Home, link: "/admin/homepage", color: "text-pink-400", bg: "bg-pink-500/10 border-pink-500/20" },
-  { key: "placementStats", label: "Placement Data", icon: TrendingUp, link: "/admin/tables/placement_statistics", color: "text-sky-400", bg: "bg-sky-500/10 border-sky-500/20" },
+  { key: "colleges",       label: "Colleges",         icon: School,      link: "/admin/colleges",              color: "text-crimson",    bg: "bg-crimson/10 border-crimson/20" },
+  { key: "departments",    label: "Departments",       icon: BookOpen,    link: "/admin/tables/departments",    color: "text-emerald-400",bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { key: "courses",        label: "Courses",           icon: BookOpen,    link: "/admin/tables/courses",        color: "text-teal-400",   bg: "bg-teal-500/10 border-teal-500/20" },
+  { key: "trusts",         label: "Trusts",            icon: Building,    link: "/admin/tables/trusts",         color: "text-amber-400",  bg: "bg-amber-500/10 border-amber-500/20" },
+  { key: "homepageItems",  label: "Homepage Items",    icon: Home,        link: "/admin/homepage",              color: "text-pink-400",   bg: "bg-pink-500/10 border-pink-500/20" },
+  { key: "placementStats", label: "Placement Stats",   icon: TrendingUp,  link: "/admin/placement-stats",      color: "text-sky-400",    bg: "bg-sky-500/10 border-sky-500/20" },
 ];
 
 const ACTION_MAP: Record<string, string> = {
@@ -242,13 +242,14 @@ function AdminDashboardHome() {
           <div className="rounded-xl border admin-border admin-card p-4 space-y-2">
             <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Quick Links</p>
             {[
-              { label: "Add New Event", link: "/admin/events" },
-              { label: "Staff Profiles", link: "/admin/staff-wizards" },
-              { label: "Placed Students Album", link: "/admin/placements" },
-              { label: "Placement Cells Content", link: "/admin/tables/placement_cells" },
-              { label: "Homepage Layout", link: "/admin/homepage" },
-              { label: "Trash & Recovery", link: "/admin/trash" },
-              { label: "Media Library", link: "/admin/media" },
+              { label: "Add New Event",            link: "/admin/events" },
+              { label: "Staff Profiles",            link: "/admin/staff-wizards" },
+              { label: "Placed Students Album",     link: "/admin/placements" },
+              { label: "Placement Cell Info",       link: "/admin/placement-cells" },
+              { label: "Placement Statistics",      link: "/admin/placement-stats" },
+              { label: "Homepage Layout",           link: "/admin/homepage" },
+              { label: "Trash & Recovery",          link: "/admin/trash" },
+              { label: "Media Library",             link: "/admin/media" },
             ].map((item) => (
               <Link
                 key={item.link}

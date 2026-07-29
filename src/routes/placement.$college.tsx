@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
-import { getPlacementStatsByCollege, getAllRecruiters, getPlacementCell, getCollegeBySlug, getPlacedStudentsByCollege, type PlacementStatistics } from "@/lib/placement.functions";
+import { getPlacementStatsByCollege, getRecruitersByCollege, getPlacementCell, getCollegeBySlug, getPlacedStudentsByCollege, type PlacementStatistics } from "@/lib/placement.functions";
 
 type PlacementSlug = string;
 interface PlacementPageContent {
@@ -41,9 +41,9 @@ export const Route = createFileRoute("/placement/$college")({
       if (!college) throw notFound();
     }
 
-    const [stats, allRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
+    const [stats, collegeRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
       getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
-      getAllRecruiters(),
+      getRecruitersByCollege({ data: params.college }),
       getPlacementCell({ data: college.code }),
       getPlacedStudentsByCollege({ data: college.code }),
     ]);
@@ -134,14 +134,6 @@ export const Route = createFileRoute("/placement/$college")({
         ]
       : [];
 
-    const collegeRecruiters = allRecruiters
-      .filter(r => {
-        if (params.college === 'overview') return true;
-        const cols = (r.metadata as any)?.colleges as string[] | undefined;
-        return !cols || cols.includes(college.code);
-      })
-      .map(r => ({ companyName: r.company_name, logo: r.logo_url || null }));
-
     const content: PlacementPageContent = {
       slug: params.college as PlacementSlug,
       collegeId: college.code,
@@ -161,7 +153,7 @@ export const Route = createFileRoute("/placement/$college")({
           packageLpa: s.package_lpa ?? null,
         }))
       },
-      recruiters: collegeRecruiters,
+      recruiters: collegeRecruiters.map(r => ({ companyName: r.company_name, logo: r.logo_url || null })),
       placementOfficer: {
         name: placementCell?.officer_name ?? '',
         designation: placementCell?.officer_designation ?? 'Training & Placement Officer',

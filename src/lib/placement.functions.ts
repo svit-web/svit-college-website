@@ -23,6 +23,7 @@ export interface Recruiter {
   logo_url: string;
   website_url: string | null;
   sort_order: number;
+  college_codes?: string[] | null;
   metadata: {
     colleges?: string[];
     [key: string]: any;
@@ -70,7 +71,7 @@ export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
   });
 
 /**
- * Fetch published recruiters, optionally filtered by college slug via metadata.colleges array.
+ * Fetch all published recruiters (used by overview page).
  */
 export const getAllRecruiters = createServerFn({ method: 'GET' })
   .handler(async () => {
@@ -83,6 +84,47 @@ export const getAllRecruiters = createServerFn({ method: 'GET' })
     if (error) {
       console.error('Error fetching recruiters:', error);
       throw error;
+    }
+
+    return (data ?? []) as Recruiter[];
+  });
+
+/**
+ * Fetch published recruiters scoped to a specific college.
+ * Returns recruiters where college_codes contains the given slug,
+ * OR where college_codes is NULL/empty (visible on all pages).
+ */
+export const getRecruitersByCollege = createServerFn({ method: 'GET' })
+  .validator((collegeSlug: string) => collegeSlug)
+  .handler(async (ctx) => {
+    if (ctx.data === 'overview') {
+      // Overview shows all recruiters
+      const { data, error } = await supabase
+        .from('recruiters')
+        .select('*')
+        .eq('status', 'published')
+        .order('sort_order', { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as Recruiter[];
+    }
+
+    // College-specific: get recruiters scoped to this college OR global (no college_codes set)
+    const { data, error } = await (supabase as any)
+      .from('recruiters')
+      .select('*')
+      .eq('status', 'published')
+      .or(`college_codes.cs.{${ctx.data}},college_codes.is.null`)
+      .order('sort_order', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching recruiters by college:', error);
+      // Fallback to all recruiters
+      const { data: all } = await supabase
+        .from('recruiters')
+        .select('*')
+        .eq('status', 'published')
+        .order('sort_order', { ascending: true });
+      return (all ?? []) as Recruiter[];
     }
 
     return (data ?? []) as Recruiter[];
