@@ -37,7 +37,7 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('staff_profiles')
-      .select('id, title, first_name, last_name, email, bio, office_hours, social_links, metadata, expertise')
+      .select('id, title, first_name, last_name, email, phone, bio, office_hours, social_links, metadata, expertise, joining_year, past_experience_years')
       .eq('status', 'published')
       .filter('metadata->>employeeCode', 'eq', ctx.data)
       .maybeSingle();
@@ -99,13 +99,13 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
       employeeCode: meta.employeeCode ?? '',
       expertise: (data as any).expertise ?? [],
       email: data.email,
-      phone: meta.phone ?? null,
+      phone: data.phone ?? meta.phone ?? null,
       photoUrl: meta.photoUrl ?? null,
       bio: (data as any).bio ?? null,
       officeHours: (data as any).office_hours ?? null,
       socialLinks: (data as any).social_links ?? null,
-      joiningYear: (data as any).joining_year ?? null,
-      pastExperienceYears: (data as any).past_experience_years ?? null,
+      joiningYear: data.joining_year ?? null,
+      pastExperienceYears: data.past_experience_years ?? null,
       department: dept ? { id: dept.id, name: dept.name, code: dept.code } : null,
       achievements,
     };
