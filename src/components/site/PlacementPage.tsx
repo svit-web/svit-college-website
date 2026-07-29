@@ -102,87 +102,93 @@ export function PlacementPage({ content }: Props) {
               </nav>
 
               {/* On this page sections navigation */}
-              <nav
-                aria-label="Placement sections"
-                className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
-              >
-                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                  On this page
-                </div>
-                <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-                  {sectionLinks.map((s) => {
-                    const Icon = s.icon;
-                    return (
-                      <li key={s.id} className="shrink-0 lg:shrink">
-                        <a
-                          href={`#${s.id}`}
-                          title={s.label}
-                          className="flex items-center gap-2.5 rounded-xl border-2 border-transparent px-3 py-2.5 text-sm font-semibold text-navy transition-all hover:border-navy/15 hover:bg-secondary/60"
-                        >
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span className="whitespace-nowrap lg:whitespace-normal">{s.label}</span>
-                        </a>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
+              {content.slug === "overview" && (
+                <nav
+                  aria-label="Placement sections"
+                  className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
+                >
+                  <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                    On this page
+                  </div>
+                  <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+                    {sectionLinks.map((s) => {
+                      const Icon = s.icon;
+                      return (
+                        <li key={s.id} className="shrink-0 lg:shrink">
+                          <a
+                            href={`#${s.id}`}
+                            title={s.label}
+                            className="flex items-center gap-2.5 rounded-xl border-2 border-transparent px-3 py-2.5 text-sm font-semibold text-navy transition-all hover:border-navy/15 hover:bg-secondary/60"
+                          >
+                            <Icon className="h-4 w-4 shrink-0" />
+                            <span className="whitespace-nowrap lg:whitespace-normal">{s.label}</span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </nav>
+              )}
             </aside>
 
-            <div className="min-w-0 space-y-8 [&>section]:scroll-mt-24">
+            <div className="min-w-0 flex-1 space-y-8 [&>section]:scroll-mt-24">
               {/* 1. About T&P Cell */}
-              <section id="about" className="rounded-2xl border-2 border-navy/15 bg-white p-8">
-                <SectionHeading eyebrow="Training & Placement" title="About the T&P Cell" variant="eyebrow" />
-                <p className="mt-6 text-muted-foreground leading-relaxed">{content.aboutText}</p>
-              </section>
+              {content.slug === "overview" && (
+                <section id="about" className="rounded-2xl border-2 border-navy/15 bg-white p-8">
+                  <SectionHeading eyebrow="Training & Placement" title="About the T&P Cell" variant="eyebrow" />
+                  <p className="mt-6 text-muted-foreground leading-relaxed">{content.aboutText}</p>
+                </section>
+              )}
 
               {/* 2. Details */}
-              <section id="details" className="space-y-6">
-                <SectionHeading eyebrow="Placement statistics" title="Details" variant="eyebrow" />
+              {content.slug === "overview" && (
+                <section id="details" className="space-y-6">
+                  <SectionHeading eyebrow="Placement statistics" title="Details" variant="eyebrow" />
 
-                {/* Stat highlights */}
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-                  {content.details.statHighlights.map((s, i) => (
-                    <Reveal key={s.label} delay={i * 0.04}>
-                      <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 text-center hover:border-gold transition-colors">
-                        <div className="font-display text-3xl md:text-4xl font-bold text-navy">{s.value}</div>
-                        <div className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{s.label}</div>
-                      </div>
-                    </Reveal>
-                  ))}
-                </div>
-
-                {/* Graphical Data (bar chart) */}
-                <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8">
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <h3 className="font-display text-lg font-bold text-navy">Year-wise Placement Percentage</h3>
-                    <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                      Students placed shown per bar
-                    </span>
+                  {/* Stat highlights */}
+                  <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+                    {content.details.statHighlights.map((s, i) => (
+                      <Reveal key={s.label} delay={i * 0.04}>
+                        <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 text-center hover:border-gold transition-colors">
+                          <div className="font-display text-3xl md:text-4xl font-bold text-navy">{s.value}</div>
+                          <div className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{s.label}</div>
+                        </div>
+                      </Reveal>
+                    ))}
                   </div>
-                  <div className="mt-6 overflow-x-auto pb-2 scrollbar-thin">
-                    <div className="flex h-64 min-w-[600px] md:min-w-0 items-end gap-3 md:gap-5">
-                      {content.details.graphicalData.map((d) => {
-                        const h = Math.max(6, Math.round((d.placementPercentage / maxPct) * 100));
-                        return (
-                          <div key={d.year} className="flex flex-1 flex-col items-center gap-2">
-                            <div className="text-[11px] font-bold text-navy">{d.placementPercentage}%</div>
-                            <div className="flex w-full flex-1 items-end">
-                              <div
-                                className="w-full rounded-t-md bg-gradient-to-t from-navy to-navy-light transition-all hover:from-crimson hover:to-gold"
-                                style={{ height: `${h}%` }}
-                                aria-label={`${d.year}: ${d.placementPercentage}% placement, ${d.studentsPlaced} students placed`}
-                              />
+
+                  {/* Graphical Data (bar chart) */}
+                  <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8">
+                    <div className="flex flex-wrap items-baseline justify-between gap-2">
+                      <h3 className="font-display text-lg font-bold text-navy">Year-wise Placement Percentage</h3>
+                      <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                        Students placed shown per bar
+                      </span>
+                    </div>
+                    <div className="mt-6 overflow-x-auto pb-2 scrollbar-thin">
+                      <div className="flex h-64 min-w-[600px] md:min-w-0 items-end gap-3 md:gap-5">
+                        {content.details.graphicalData.map((d) => {
+                          const h = Math.max(6, Math.round((d.placementPercentage / maxPct) * 100));
+                          return (
+                            <div key={d.year} className="flex flex-1 flex-col items-center gap-2">
+                              <div className="text-[11px] font-bold text-navy">{d.placementPercentage}%</div>
+                              <div className="flex w-full flex-1 items-end">
+                                <div
+                                  className="w-full rounded-t-md bg-gradient-to-t from-navy to-navy-light transition-all hover:from-crimson hover:to-gold"
+                                  style={{ height: `${h}%` }}
+                                  aria-label={`${d.year}: ${d.placementPercentage}% placement, ${d.studentsPlaced} students placed`}
+                                />
+                              </div>
+                              <div className="text-xs font-semibold text-navy">{d.year}</div>
+                              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.studentsPlaced} placed</div>
                             </div>
-                            <div className="text-xs font-semibold text-navy">{d.year}</div>
-                            <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{d.studentsPlaced} placed</div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </section>
+                </section>
+              )}
 
               {/* 3. Summary — Placed Students */}
               <section id="summary" className="space-y-6">
@@ -227,80 +233,84 @@ export function PlacementPage({ content }: Props) {
               </section>
 
               {/* 4. Recruiters */}
-              <section id="recruiters" className="space-y-6">
-                <SectionHeading eyebrow="Recruiting partners" title="Recruiters" variant="eyebrow" />
-                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                  {content.recruiters.map((r) => (
-                    <Reveal key={r.companyName}>
-                      <div className="card-lift flex h-24 flex-col items-center justify-center gap-1 rounded-md border-2 border-navy/15 bg-white p-3 text-center hover:border-gold transition-colors">
-                        {r.logo ? (
-                          <img src={r.logo} alt={r.companyName} className="max-h-10 object-contain" />
-                        ) : (
-                          <div className="flex h-10 w-full items-center justify-center rounded bg-secondary/60 text-muted-foreground">
-                            <ImageIcon className="h-5 w-5" />
-                          </div>
-                        )}
-                        <div className="font-display text-sm font-bold text-navy truncate w-full">{r.companyName}</div>
-                      </div>
-                    </Reveal>
-                  ))}
-                </div>
-              </section>
+              {content.slug === "overview" && (
+                <section id="recruiters" className="space-y-6">
+                  <SectionHeading eyebrow="Recruiting partners" title="Recruiters" variant="eyebrow" />
+                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
+                    {content.recruiters.map((r) => (
+                      <Reveal key={r.companyName}>
+                        <div className="card-lift flex h-24 flex-col items-center justify-center gap-1 rounded-md border-2 border-navy/15 bg-white p-3 text-center hover:border-gold transition-colors">
+                          {r.logo ? (
+                            <img src={r.logo} alt={r.companyName} className="max-h-10 object-contain" />
+                          ) : (
+                            <div className="flex h-10 w-full items-center justify-center rounded bg-secondary/60 text-muted-foreground">
+                              <ImageIcon className="h-5 w-5" />
+                            </div>
+                          )}
+                          <div className="font-display text-sm font-bold text-navy truncate w-full">{r.companyName}</div>
+                        </div>
+                      </Reveal>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* 5. Placement Officer */}
-              <section id="officer" className="space-y-6">
-                <SectionHeading eyebrow="Get in touch" title="Placement Officer" variant="eyebrow" />
-                <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8">
-                  <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-                    {content.placementOfficer.photo ? (
-                      <img
-                        src={content.placementOfficer.photo}
-                        alt={content.placementOfficer.name || "Placement Officer"}
-                        className="h-24 w-24 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy">
-                        {content.placementOfficer.name ? (
-                          <span className="font-display text-2xl font-bold">
-                            {initials(content.placementOfficer.name)}
-                          </span>
-                        ) : (
-                          <User className="h-10 w-10" />
-                        )}
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="font-display text-xl font-bold text-navy">
-                        {content.placementOfficer.name || "To be announced"}
-                      </div>
-                      <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-crimson">
-                        {content.placementOfficer.designation}
-                      </div>
-                      <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-                        {content.placementOfficer.phone && (
-                          <a
-                            href={`tel:${content.placementOfficer.phone.replace(/\s/g, "")}`}
-                            className="inline-flex items-center gap-2 hover:text-navy"
-                          >
-                            <Phone className="h-4 w-4" /> {content.placementOfficer.phone}
-                          </a>
-                        )}
-                        {content.placementOfficer.email && (
-                          <a
-                            href={`mailto:${content.placementOfficer.email}`}
-                            className="inline-flex items-center gap-2 hover:text-navy"
-                          >
-                            <Mail className="h-4 w-4" /> {content.placementOfficer.email}
-                          </a>
-                        )}
-                        {!content.placementOfficer.phone && !content.placementOfficer.email && (
-                          <span className="italic">Contact details will be added soon.</span>
-                        )}
+              {content.slug === "overview" && (
+                <section id="officer" className="space-y-6">
+                  <SectionHeading eyebrow="Get in touch" title="Placement Officer" variant="eyebrow" />
+                  <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8">
+                    <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+                      {content.placementOfficer.photo ? (
+                        <img
+                          src={content.placementOfficer.photo}
+                          alt={content.placementOfficer.name || "Placement Officer"}
+                          className="h-24 w-24 rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy">
+                          {content.placementOfficer.name ? (
+                            <span className="font-display text-2xl font-bold">
+                              {initials(content.placementOfficer.name)}
+                            </span>
+                          ) : (
+                            <User className="h-10 w-10" />
+                          )}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <div className="font-display text-xl font-bold text-navy">
+                          {content.placementOfficer.name || "To be announced"}
+                        </div>
+                        <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-crimson">
+                          {content.placementOfficer.designation}
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
+                          {content.placementOfficer.phone && (
+                            <a
+                              href={`tel:${content.placementOfficer.phone.replace(/\s/g, "")}`}
+                              className="inline-flex items-center gap-2 hover:text-navy"
+                            >
+                              <Phone className="h-4 w-4" /> {content.placementOfficer.phone}
+                            </a>
+                          )}
+                          {content.placementOfficer.email && (
+                            <a
+                              href={`mailto:${content.placementOfficer.email}`}
+                              className="inline-flex items-center gap-2 hover:text-navy"
+                            >
+                              <Mail className="h-4 w-4" /> {content.placementOfficer.email}
+                            </a>
+                          )}
+                          {!content.placementOfficer.phone && !content.placementOfficer.email && (
+                            <span className="italic">Contact details will be added soon.</span>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </section>
+                </section>
+              )}
             </div>
           </div>
         </div>
