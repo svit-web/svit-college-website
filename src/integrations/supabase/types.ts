@@ -336,6 +336,86 @@ export type Database = {
           },
         ]
       }
+      club_events: {
+        Row: {
+          club_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          event_date: string
+          id: string
+          image_url: string | null
+          metadata: Json
+          status: Database["public"]["Enums"]["event_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          club_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          event_date: string
+          id?: string
+          image_url?: string | null
+          metadata?: Json
+          status?: Database["public"]["Enums"]["event_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          club_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          event_date?: string
+          id?: string
+          image_url?: string | null
+          metadata?: Json
+          status?: Database["public"]["Enums"]["event_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "club_events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "student_clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_events_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "club_events_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       colleges: {
         Row: {
           code: string
@@ -2472,6 +2552,63 @@ export type Database = {
           },
         ]
       }
+      placement_cells: {
+        Row: {
+          about_text: string
+          college_code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          officer_designation: string
+          officer_email: string
+          officer_name: string
+          officer_phone: string
+          officer_photo_url: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          about_text?: string
+          college_code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          officer_designation?: string
+          officer_email?: string
+          officer_name?: string
+          officer_phone?: string
+          officer_photo_url?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          about_text?: string
+          college_code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          officer_designation?: string
+          officer_email?: string
+          officer_name?: string
+          officer_phone?: string
+          officer_photo_url?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       placement_statistics: {
         Row: {
           academic_year: string
@@ -3002,6 +3139,134 @@ export type Database = {
           },
         ]
       }
+      sports: {
+        Row: {
+          category: string
+          cover_image_url: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          metadata: Json
+          name: string
+          slug: string
+          sort_order: number
+          status: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name: string
+          slug: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name?: string
+          slug?: string
+          sort_order?: number
+          status?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      sports_achievements: {
+        Row: {
+          achievement_date: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          level: string
+          metadata: Json
+          position: string | null
+          sort_order: number
+          sport_id: string | null
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          achievement_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          level?: string
+          metadata?: Json
+          position?: string | null
+          sort_order?: number
+          sport_id?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          achievement_date?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          level?: string
+          metadata?: Json
+          position?: string | null
+          sort_order?: number
+          sport_id?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sports_achievements_sport_id_fkey"
+            columns: ["sport_id"]
+            isOneToOne: false
+            referencedRelation: "sports"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       staff_achievements: {
         Row: {
           created_at: string
@@ -3254,6 +3519,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          department_id: string | null
           description: string | null
           featured: boolean | null
           id: string
@@ -3272,6 +3538,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           description?: string | null
           featured?: boolean | null
           id?: string
@@ -3290,6 +3557,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           description?: string | null
           featured?: boolean | null
           id?: string
@@ -3322,6 +3590,13 @@ export type Database = {
             columns: ["deleted_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {
@@ -3668,7 +3943,7 @@ export type Database = {
     Enums: {
       content_status: "draft" | "published" | "archived"
       degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
-      event_status: "draft" | "published" | "cancelled"
+      event_status: "draft" | "published" | "cancelled" | "archived"
       facility_type: "campus" | "building" | "laboratory"
       link_type: "internal" | "external"
       scope_level: "global" | "trust" | "institute" | "college" | "department"
@@ -3804,7 +4079,7 @@ export const Constants = {
     Enums: {
       content_status: ["draft", "published", "archived"],
       degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
-      event_status: ["draft", "published", "cancelled"],
+      event_status: ["draft", "published", "cancelled", "archived"],
       facility_type: ["campus", "building", "laboratory"],
       link_type: ["internal", "external"],
       scope_level: ["global", "trust", "institute", "college", "department"],
@@ -3814,4 +4089,3 @@ export const Constants = {
     },
   },
 } as const
-

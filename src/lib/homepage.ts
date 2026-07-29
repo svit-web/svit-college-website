@@ -6,6 +6,7 @@ import {
   getRecruiterLogos,
 } from "./homepage.functions";
 import { getAllProgrammes } from "./programmes.functions";
+import { getContactInfo } from "./pages.functions";
 
 export type HomepageItem = Awaited<ReturnType<typeof getGlobalHomepageItems>>[number];
 export type CollegeRow = Awaited<ReturnType<typeof getCollegesGrid>>[number];
@@ -47,6 +48,12 @@ export const eventsQuery = queryOptions({
 export const programmesQuery = queryOptions({
   queryKey: ["programmes"],
   queryFn: () => getAllProgrammes(),
+  staleTime: 60_000,
+});
+
+export const contactInfoQuery = queryOptions({
+  queryKey: ["contact_info"],
+  queryFn: () => getContactInfo(),
   staleTime: 60_000,
 });
 

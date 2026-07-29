@@ -1,9 +1,9 @@
 import { useRef, useState, useMemo } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
-const site = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
+const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About Us", to: "/about" },
@@ -13,25 +13,19 @@ const primaryNav = [
   { label: "Contact Us", to: "/contact" },
 ] as const;
 const topNav = [
-  { label: "Students", to: "/student-login" },
   { label: "Parents", to: "/parents" },
   { label: "Alumni", to: "/alumni" },
   { label: "Careers", to: "/careers" },
 ] as const;
-const placementDivisions = [
-  { slug: "svit", label: "SVIT" },
-  { slug: "svion", label: "SVION" },
-  { slug: "svica", label: "SVICA" },
-  { slug: "coa", label: "COA" },
-];
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllCenters } from "@/lib/centers.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { collegesQuery } from "@/lib/homepage";
+import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
+import { getSports } from "@/lib/sports.functions";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -41,6 +35,12 @@ export function Header() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const { data: dbColleges } = useQuery(collegesQuery);
+  const { data: contactInfo } = useQuery(contactInfoQuery);
+
+  const site = {
+    email: contactInfo?.email ?? fallbackSite.email,
+    phone: contactInfo?.phone ?? fallbackSite.phone,
+  };
 
   const displayColleges = useMemo(() => {
     return (dbColleges ?? []).map(c => ({
@@ -51,6 +51,10 @@ export function Header() {
       logo: c.logo_url ?? "",
     }));
   }, [dbColleges]);
+
+  const placementDivisions = useMemo(() => {
+    return displayColleges.map(c => ({ slug: c.id, label: c.shortCode }));
+  }, [displayColleges]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
@@ -362,6 +366,12 @@ function useCampusCategories(): MegaCategory[] {
     staleTime,
   });
 
+  const { data: sports } = useQuery({
+    queryKey: ['sports'],
+    queryFn: () => getSports(),
+    staleTime,
+  });
+
   return [
     {
       key: "facilities",
@@ -369,9 +379,22 @@ function useCampusCategories(): MegaCategory[] {
       icon: Building2,
       allLabel: "All facilities",
       allTo: "/campus-life/facilities",
-      items: (facilities ?? []).map((f) => ({
-        label: f.name,
-        to: `/campus-life/facilities/${f.metadata?.category ?? 'academic'}/${f.slug}`,
+      items: (facilities ?? [])
+        .filter((f) => f.metadata?.category !== "sports")
+        .map((f) => ({
+          label: f.name,
+          to: `/campus-life/facilities/${f.metadata?.category ?? 'academic'}/${f.slug}`,
+        })),
+    },
+    {
+      key: "sports",
+      title: "Sports",
+      icon: Trophy,
+      allLabel: "Sports & Athletics",
+      allTo: "/campus",
+      items: (sports ?? []).map((s) => ({
+        label: s.name,
+        to: "/campus",
       })),
     },
     {

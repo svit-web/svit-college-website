@@ -15,6 +15,7 @@ import {
   Sliders
 } from "lucide-react";
 import { toast } from "sonner";
+import { MediaUploader } from "@/components/admin/MediaUploader";
 
 export const Route = createFileRoute("/admin/homepage")({
   component: AdminHomepageLayoutPage
@@ -706,10 +707,15 @@ function AdminHomepageLayoutPage() {
 // ─── Per-college Homepage Items Manager ───────────────────────────────────────
 
 const ITEM_TYPE_LABELS: Record<string, string> = {
+  hero: "Hero Section",
+  carousel_slide: "Carousel Slides",
+  promo_card: "Promo / CTA Card",
   stat: "Stats Strip",
   why_choose: "Why Choose Us",
   trust_badge: "Trust Badges",
-  hero_slide: "Hero Slides",
+  highlight_card: "Highlight Cards",
+  quick_link: "Quick Links",
+  hero_slide: "Hero Slides (legacy)",
   job: "Job Listings",
 };
 
@@ -728,6 +734,8 @@ const EMPTY_FORM = {
   image_url: "",
   link_href: "",
   link_label: "",
+  secondary_link_href: "",
+  secondary_link_label: "",
   sort_order: 10,
   is_active: true,
   status: "published",
@@ -757,7 +765,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
     try {
       let query = (supabase as any)
         .from("homepage_items")
-        .select("id, item_type, scope_type, college_id, title, subtitle, body, icon_name, eyebrow, sort_order, is_active, status")
+        .select("id, item_type, scope_type, college_id, title, subtitle, body, icon_name, eyebrow, title_accent, image_url, link_href, link_label, secondary_link_href, secondary_link_label, metadata, sort_order, is_active, status")
         .is("deleted_at", null)
         .order("item_type", { ascending: true })
         .order("sort_order", { ascending: true });
@@ -803,6 +811,8 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
       image_url: item.image_url || "",
       link_href: item.link_href || "",
       link_label: item.link_label || "",
+      secondary_link_href: item.secondary_link_href || "",
+      secondary_link_label: item.secondary_link_label || "",
       sort_order: item.sort_order ?? 10,
       is_active: item.is_active ?? true,
       status: item.status || "published",
@@ -908,12 +918,18 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
               <div className="divide-y divide-slate-100">
                 {(typeItems as any[]).map((item) => (
                   <div key={item.id} className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition">
-                    <div>
-                      <div className="text-sm font-semibold text-slate-800">{item.title || "(no title)"}</div>
-                      {item.subtitle && <div className="text-xs text-slate-600">{item.subtitle}</div>}
-                      {item.icon_name && (
-                        <div className="mt-0.5 font-mono text-[10px] text-slate-400">{item.icon_name}</div>
+                    <div className="flex items-center gap-3 min-w-0">
+                      {item.image_url && (
+                        <img src={item.image_url} alt="" className="h-10 w-16 rounded object-cover shrink-0 border border-slate-200" />
                       )}
+                      <div className="min-w-0">
+                        {item.eyebrow && <div className="text-[10px] font-semibold uppercase tracking-widest text-gold">{item.eyebrow}</div>}
+                        <div className="text-sm font-semibold text-slate-800 truncate">{item.title || "(no title)"}</div>
+                        {item.subtitle && <div className="text-xs text-slate-500 truncate">{item.subtitle}</div>}
+                        {item.icon_name && (
+                          <div className="mt-0.5 font-mono text-[10px] text-slate-400">{item.icon_name}</div>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${item.status === "published" ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-amber-50 text-amber-600 border-amber-200"}`}>
@@ -956,6 +972,16 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </select>
               </div>
 
+              {/* Eyebrow — hero, carousel_slide, promo_card, hero_slide */}
+              {["hero", "carousel_slide", "promo_card", "hero_slide"].includes(form.item_type) && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Eyebrow / Kicker</label>
+                  <input value={form.eyebrow} onChange={(e) => f("eyebrow", e.target.value)}
+                    placeholder='e.g. "Admissions Open 2026–27"'
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+                </div>
+              )}
+
               {/* Title */}
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase text-slate-600">
@@ -969,8 +995,18 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 />
               </div>
 
-              {/* Subtitle — stat label or why_choose subtitle */}
-              {["stat", "why_choose"].includes(form.item_type) && (
+              {/* Title Accent — hero only */}
+              {form.item_type === "hero" && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Title Accent (highlighted word)</label>
+                  <input value={form.title_accent} onChange={(e) => f("title_accent", e.target.value)}
+                    placeholder="word in title to highlight in gold"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+                </div>
+              )}
+
+              {/* Subtitle */}
+              {["stat", "why_choose", "carousel_slide", "highlight_card", "hero", "promo_card"].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">
                     {form.item_type === "stat" ? 'Label (e.g. "Students")' : "Subtitle"}
@@ -984,7 +1020,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
               )}
 
               {/* Body */}
-              {["why_choose", "job", "hero_slide"].includes(form.item_type) && (
+              {["why_choose", "job", "hero_slide", "hero", "promo_card", "carousel_slide"].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Body / Description</label>
                   <textarea
@@ -997,7 +1033,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
               )}
 
               {/* Icon name */}
-              {["why_choose", "trust_badge"].includes(form.item_type) && (
+              {["why_choose", "trust_badge", "highlight_card", "quick_link"].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Icon Name (Lucide)</label>
                   <input
@@ -1009,34 +1045,52 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {/* Hero slide extras */}
-              {form.item_type === "hero_slide" && (
-                <>
+              {/* Image upload — hero, carousel_slide, promo_card, highlight_card, hero_slide */}
+              {["hero", "carousel_slide", "promo_card", "highlight_card", "hero_slide"].includes(form.item_type) && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Image</label>
+                  <MediaUploader
+                    value={form.image_url}
+                    onChange={(url) => f("image_url", url)}
+                    bucketName="media"
+                  />
+                </div>
+              )}
+
+              {/* Primary CTA link */}
+              {["hero", "carousel_slide", "promo_card", "highlight_card", "quick_link", "hero_slide"].includes(form.item_type) && (
+                <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase text-slate-600">Eyebrow (kicker text)</label>
-                    <input value={form.eyebrow} onChange={(e) => f("eyebrow", e.target.value)}
+                    <label className="text-xs font-semibold uppercase text-slate-600">CTA Link</label>
+                    <input value={form.link_href} onChange={(e) => f("link_href", e.target.value)}
+                      placeholder="/admissions"
                       className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
                   </div>
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase text-slate-600">Image URL</label>
-                    <input value={form.image_url} onChange={(e) => f("image_url", e.target.value)}
+                    <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
+                    <input value={form.link_label} onChange={(e) => f("link_label", e.target.value)}
+                      placeholder="Apply Now"
                       className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
                   </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold uppercase text-slate-600">CTA Link</label>
-                      <input value={form.link_href} onChange={(e) => f("link_href", e.target.value)}
-                        placeholder="/admissions"
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-                    </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
-                      <input value={form.link_label} onChange={(e) => f("link_label", e.target.value)}
-                        placeholder="Apply Now"
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-                    </div>
+                </div>
+              )}
+
+              {/* Secondary CTA — promo_card only */}
+              {form.item_type === "promo_card" && (
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold uppercase text-slate-600">Secondary Link</label>
+                    <input value={form.secondary_link_href} onChange={(e) => f("secondary_link_href", e.target.value)}
+                      placeholder="/downloads"
+                      className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
                   </div>
-                </>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold uppercase text-slate-600">Secondary Label</label>
+                    <input value={form.secondary_link_label} onChange={(e) => f("secondary_link_label", e.target.value)}
+                      placeholder="Download Brochure"
+                      className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+                  </div>
+                </div>
               )}
 
               {/* Sort order + Status */}

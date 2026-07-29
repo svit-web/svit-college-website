@@ -11,8 +11,11 @@ export interface DeptStaffMember {
   designation: string;
   rankGroup: 'HOD' | 'Faculty' | 'Support';
   email: string | null;
+  phone: string | null;
   avatarUrl: string | null;
   employeeCode: string | null;
+  joiningYear: number | null;
+  pastExperienceYears: number | null;
 }
 
 export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
@@ -25,7 +28,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
       .select(`
         is_primary,
         designations ( title ),
-        staff_profiles ( id, title, first_name, last_name, email, status, metadata )
+        staff_profiles ( id, title, first_name, last_name, email, phone, joining_year, past_experience_years, status, metadata )
       `)
       .eq('department_id', departmentId)
       .eq('status', 'published');
@@ -51,8 +54,11 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
           designation,
           rankGroup,
           email: s.email ?? null,
+          phone: s.phone ?? (s.metadata as any)?.phone ?? null,
           avatarUrl: (s.metadata as any)?.photoUrl || s.avatar_url || null,
           employeeCode: (s.metadata as any)?.employeeCode ?? null,
+          joiningYear: s.joining_year ?? null,
+          pastExperienceYears: s.past_experience_years ?? null,
         };
       });
   });
@@ -82,6 +88,45 @@ export const getAchievementsByDepartmentId = createServerFn({ method: 'GET' })
     }
 
     return (data ?? []) as DeptAchievement[];
+  });
+
+export interface DeptClub {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  logoUrl: string | null;
+}
+
+/**
+ * Clubs mapped to this department via student_clubs.department_id.
+ * Admin sets this on the club itself (/admin/tables/student_clubs) —
+ * same row also powers /campus-life/clubs, so one edit updates both.
+ */
+export const getClubsByDepartmentId = createServerFn({ method: 'GET' })
+  .validator((departmentId: string) => departmentId)
+  .handler(async (ctx) => {
+    const departmentId = ctx.data;
+
+    const { data, error } = await supabase
+      .from('student_clubs')
+      .select('id, name, slug, description, logo_url')
+      .eq('department_id', departmentId)
+      .eq('status', 'published')
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching department clubs:', error);
+      throw error;
+    }
+
+    return (data ?? []).map((c): DeptClub => ({
+      id: c.id,
+      name: c.name,
+      slug: c.slug,
+      description: c.description,
+      logoUrl: c.logo_url,
+    }));
   });
 
 export type DeptActivityType = 'sttp_fdp' | 'expert_lecture' | 'seminar_workshop' | 'mou' | 'industry_visit';

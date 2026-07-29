@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://svitvasad.ac.in/</loc><priority>1.0</priority></url>
+  <url><loc>https://svitvasad.ac.in/about</loc><priority>0.9</priority></url>
+  <url><loc>https://svitvasad.ac.in/admissions</loc><priority>0.9</priority></url>
+  <url><loc>https://svitvasad.ac.in/admissions/inquiry</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/contact</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/campus</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/news</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/gallery</loc><priority>0.6</priority></url>
+  <url><loc>https://svitvasad.ac.in/downloads</loc><priority>0.5</priority></url>
+  <url><loc>https://svitvasad.ac.in/careers</loc><priority>0.5</priority></url>
+  <url><loc>https://svitvasad.ac.in/alumni</loc><priority>0.6</priority></url>
+  <url><loc>https://svitvasad.ac.in/anti-ragging</loc><priority>0.4</priority></url>
+  <url><loc>https://svitvasad.ac.in/grievance</loc><priority>0.4</priority></url>
+  <url><loc>https://svitvasad.ac.in/parents</loc><priority>0.5</priority></url>
+
+  <!-- Colleges -->
+  <url><loc>https://svitvasad.ac.in/colleges</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/colleges/svit-degree</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/colleges/svica</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/colleges/svion</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/colleges/svit-coa</loc><priority>0.8</priority></url>
+  <url><loc>https://svitvasad.ac.in/colleges/svit-diploma</loc><priority>0.8</priority></url>
+
+  <!-- Placement -->
+  <url><loc>https://svitvasad.ac.in/placement/svit-degree</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/placement/svica</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/placement/svion</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/placement/svit-coa</loc><priority>0.7</priority></url>
+
+  <!-- Courses -->
+  <url><loc>https://svitvasad.ac.in/courses</loc><priority>0.8</priority></url>
+
+  <!-- Departments -->
+  <url><loc>https://svitvasad.ac.in/departments/CE</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/IT</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/ME</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/EE</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/EC</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/CIV</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/CSD</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/AE</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/MBA</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/MCA</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/CA</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/GN</loc><priority>0.7</priority></url>
+  <url><loc>https://svitvasad.ac.in/departments/ARCH</loc><priority>0.7</priority></url>
+
+  <!-- Campus Life -->
+  <url><loc>https://svitvasad.ac.in/campus-life/events</loc><priority>0.6</priority></url>
+  <url><loc>https://svitvasad.ac.in/campus-life/clubs</loc><priority>0.6</priority></url>
+  <url><loc>https://svitvasad.ac.in/campus-life/facilities</loc><priority>0.6</priority></url>
+  <url><loc>https://svitvasad.ac.in/campus-life/centre</loc><priority>0.6</priority></url>
+</urlset>

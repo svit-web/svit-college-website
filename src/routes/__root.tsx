@@ -15,7 +15,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { collegesQuery } from "@/lib/homepage";
+import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 
 function NotFoundComponent() {
   return (
@@ -61,9 +61,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   loader: ({ context }) => {
-    // Header's Colleges mega-menu appears on every route; warm the cache
-    // (non-blocking — pages with their own colleges loader already await it).
+    // Header's Colleges mega-menu + Footer contact info appear on every route; warm the cache
     void context.queryClient.prefetchQuery(collegesQuery);
+    void context.queryClient.prefetchQuery(contactInfoQuery);
   },
   head: () => ({
     meta: [
@@ -74,7 +74,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "SVIT Vasad — Institute of Technology" },
       { property: "og:description", content: "Empowering minds, inspiring innovation. Admissions open for 2026-27." },
       { property: "og:type", content: "website" },
+      { property: "og:image", content: "https://svitvasad.ac.in/og-image.jpg" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:image", content: "https://svitvasad.ac.in/og-image.jpg" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -90,10 +92,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+const GA4_ID = typeof window !== "undefined"
+  ? (import.meta as any).env?.VITE_GA4_ID
+  : undefined;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <head><HeadContent /></head>
+      <head>
+        <HeadContent />
+        {GA4_ID && (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`} />
+            <script dangerouslySetInnerHTML={{ __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${GA4_ID}');` }} />
+          </>
+        )}
+      </head>
       <body>{children}<Scripts /></body>
     </html>
   );

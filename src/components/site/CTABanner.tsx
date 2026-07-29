@@ -11,11 +11,20 @@ interface Promo {
   link_href?: string | null;
   secondary_link_label?: string | null;
   secondary_link_href?: string | null;
+  image_url?: string | null;
+  metadata?: unknown;
 }
 
 interface Props {
   promo?: Promo | null;
 }
+
+const defaultBullets = [
+  "7 undergraduate & postgraduate streams",
+  "Merit & need-based scholarships",
+  "Hostel accommodation available",
+  "95% placement track record",
+];
 
 export function CTABanner({ promo }: Props = {}) {
   const eyebrow = promo?.eyebrow ?? "Admissions Open 2026-27";
@@ -27,6 +36,9 @@ export function CTABanner({ promo }: Props = {}) {
   const primaryHref = promo?.link_href ?? "/admissions/inquiry";
   const secondaryLabel = promo?.secondary_link_label ?? "Download Brochure";
   const secondaryHref = promo?.secondary_link_href ?? "/downloads";
+  const imageUrl = promo?.image_url;
+  const meta = promo?.metadata as Record<string, unknown> | null | undefined;
+  const bullets: string[] = Array.isArray(meta?.bullets) ? meta.bullets : defaultBullets;
 
   return (
     <section className="container-page py-16 md:py-20">
@@ -44,10 +56,9 @@ export function CTABanner({ promo }: Props = {}) {
               </h3>
               <p className="mt-3 text-white/80 max-w-lg">{body}</p>
               <ul className="mt-4 grid gap-2 text-sm text-white/85 sm:grid-cols-2">
-                <li>• 7 undergraduate & postgraduate streams</li>
-                <li>• Merit & need-based scholarships</li>
-                <li>• Hostel accommodation available</li>
-                <li>• 95% placement track record</li>
+                {bullets.map((b) => (
+                  <li key={b}>&bull; {b}</li>
+                ))}
               </ul>
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link
@@ -67,12 +78,16 @@ export function CTABanner({ promo }: Props = {}) {
 
             <div className="mx-auto w-full max-w-sm lg:mx-0 lg:ml-auto">
               <div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border-2 border-gold/40 bg-white/5 shadow-2xl">
-                <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
-                  <ImageIcon className="h-14 w-14" />
-                  <span className="text-xs font-semibold uppercase tracking-[0.25em]">
-                    Hero Photo
-                  </span>
-                </div>
+                {imageUrl ? (
+                  <img src={imageUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="flex h-full w-full flex-col items-center justify-center gap-3 text-white/40">
+                    <ImageIcon className="h-14 w-14" />
+                    <span className="text-xs font-semibold uppercase tracking-[0.25em]">
+                      Hero Photo
+                    </span>
+                  </div>
+                )}
                 <div className="pointer-events-none absolute inset-0 rounded-2xl ring-1 ring-inset ring-white/10" />
               </div>
             </div>
@@ -82,4 +97,3 @@ export function CTABanner({ promo }: Props = {}) {
     </section>
   );
 }
-

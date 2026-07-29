@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { getContactInfo } from "@/lib/pages.functions";
-import { CheckCircle2, Mail, MapPin, Phone } from "lucide-react";
+import { submitForm } from "@/lib/submissions";
+import { CheckCircle2, Loader2, Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,6 +18,29 @@ export const Route = createFileRoute("/contact")({
 function Contact() {
   const { contact } = Route.useLoaderData();
   const [sent, setSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const fd = new FormData(e.currentTarget);
+      await submitForm("contact", {
+        name: fd.get("name"),
+        email: fd.get("email"),
+        phone: fd.get("phone"),
+        subject: fd.get("subject"),
+        message: fd.get("message"),
+      });
+      setSent(true);
+      toast.success("Message sent");
+    } catch (err: any) {
+      toast.error(err.message ?? "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
   return (
     <>
       <PageHero title="Contact Us" accent="Get In Touch" subtitle="Have a question? Our team is happy to help." crumbs={[{ label: "Home", to: "/" }, { label: "Contact" }]} />
@@ -45,15 +69,17 @@ function Contact() {
                 <p className="mt-2 text-sm text-muted-foreground">We'll reply within 1-2 business days.</p>
               </div>
             ) : (
-              <form onSubmit={(e) => { e.preventDefault(); setSent(true); toast.success("Message sent"); }} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4 sm:grid-cols-2">
-                  <input required placeholder="Name" className="input" />
-                  <input required type="email" placeholder="Email" className="input" />
-                  <input placeholder="Phone" className="input" />
-                  <input placeholder="Subject" className="input" />
+                  <input name="name" required placeholder="Name" className="input" />
+                  <input name="email" required type="email" placeholder="Email" className="input" />
+                  <input name="phone" placeholder="Phone" className="input" />
+                  <input name="subject" placeholder="Subject" className="input" />
                 </div>
-                <textarea required rows={5} placeholder="Message" className="input" />
-                <button className="w-full rounded-md bg-navy px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Send Message</button>
+                <textarea name="message" required rows={5} placeholder="Message" className="input" />
+                <button disabled={submitting} className="w-full rounded-md bg-navy px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light disabled:opacity-60">
+                  {submitting ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : "Send Message"}
+                </button>
               </form>
             )}
           </div>
@@ -68,7 +94,7 @@ function Contact() {
         </div>
 
         <div className="mt-12 overflow-hidden rounded-2xl border border-border">
-          <iframe title="SVIT Vasad location — satellite view" src="https://www.google.com/maps?q=22.470529860861355,73.07582292938241&t=k&z=18&output=embed" className="h-96 w-full" loading="lazy" />
+          <iframe title="SVIT Vasad location — satellite view" src={contact?.map_iframe_url ?? "https://www.google.com/maps?q=22.470529860861355,73.07582292938241&t=k&z=18&output=embed"} className="h-96 w-full" loading="lazy" />
         </div>
       </section>
       <style>{`.input{width:100%;border-radius:0.375rem;border:1px solid var(--input);background:transparent;padding:0.625rem 0.75rem;font-size:0.875rem}.input:focus{outline:none;box-shadow:0 0 0 2px var(--ring)}`}</style>

@@ -27,6 +27,8 @@ export const Route = createFileRoute("/colleges/$college")({
     const whyChoose = resolve("why_choose").map((w) => ({ title: w.title, desc: w.body ?? "", icon: w.icon_name ?? "BadgeCheck" }));
     const trustBadges = resolve("trust_badge").map((t) => ({ label: t.title, icon: t.icon_name ?? "BadgeCheck" }));
 
+    const heroItem = resolve("hero")[0];
+
     const college = {
       id: dbCollege.slug as any,
       name: dbCollege.name,
@@ -37,6 +39,7 @@ export const Route = createFileRoute("/colleges/$college")({
       hero: {
         kicker: dbCollege.metadata?.hero?.kicker ?? '',
         subhead: dbCollege.metadata?.hero?.subhead ?? '',
+        imageUrl: heroItem?.image_url ?? null,
       },
       stats: stats.length > 0 ? stats : null,
       whyChoose: whyChoose.length > 0 ? whyChoose : null,

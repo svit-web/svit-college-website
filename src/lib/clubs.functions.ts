@@ -81,3 +81,45 @@ export const getStudentClubBySlug = createServerFn({ method: 'GET' })
 
     return data as unknown as StudentClub | null;
   });
+
+export interface ClubEvent {
+  id: string;
+  title: string;
+  description: string | null;
+  eventDate: string;
+  imageUrl: string | null;
+}
+
+/**
+ * Fetch a club's own events — a dedicated table (club_events), separate
+ * from the general campus-life events. Admin-managed at
+ * /admin/tables/club_events via the Club Id field. A database trigger keeps
+ * at most 3 published events per club — adding a 4th auto-archives the
+ * oldest one by event_date — so this is just a plain published-events read,
+ * capped defensively at 3.
+ */
+export const getClubEvents = createServerFn({ method: 'GET' })
+  .validator((clubId: string) => clubId)
+  .handler(async (ctx) => {
+    const clubId = ctx.data;
+    const { data, error } = await supabase
+      .from('club_events')
+      .select('id, title, description, event_date, image_url')
+      .eq('club_id', clubId)
+      .eq('status', 'published')
+      .order('event_date', { ascending: false })
+      .limit(3);
+
+    if (error) {
+      console.error('Error fetching club events:', error);
+      throw error;
+    }
+
+    return (data ?? []).map((e): ClubEvent => ({
+      id: e.id,
+      title: e.title,
+      description: e.description,
+      eventDate: e.event_date,
+      imageUrl: e.image_url,
+    }));
+  });
