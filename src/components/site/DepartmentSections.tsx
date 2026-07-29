@@ -16,6 +16,7 @@ import {
   Mic,
   Image as ImageIcon,
   Mail,
+  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -228,10 +229,25 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
           {member.name}
         </h3>
         <div className="mt-1 text-sm font-semibold text-crimson">{member.designation}</div>
+        {/* Experience */}
+        {(member.joiningYear || member.pastExperienceYears != null) && (() => {
+          const totalExp = (member.pastExperienceYears ?? 0) + (member.joiningYear ? new Date().getFullYear() - member.joiningYear : 0);
+          return totalExp > 0 ? (
+            <div className="mt-2 text-xs text-muted-foreground">
+              <span className="font-semibold text-navy">{totalExp}</span> yrs experience
+            </div>
+          ) : null;
+        })()}
         {member.email && (
           <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Mail className="h-3.5 w-3.5 shrink-0 text-navy/40" />
             <span className="truncate">{member.email}</span>
+          </div>
+        )}
+        {member.phone && (
+          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Phone className="h-3.5 w-3.5 shrink-0 text-navy/40" />
+            <span>{member.phone}</span>
           </div>
         )}
         {member.employeeCode && (

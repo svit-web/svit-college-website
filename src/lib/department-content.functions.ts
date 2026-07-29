@@ -11,8 +11,11 @@ export interface DeptStaffMember {
   designation: string;
   rankGroup: 'HOD' | 'Faculty' | 'Support';
   email: string | null;
+  phone: string | null;
   avatarUrl: string | null;
   employeeCode: string | null;
+  joiningYear: number | null;
+  pastExperienceYears: number | null;
 }
 
 export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
@@ -25,7 +28,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
       .select(`
         is_primary,
         designations ( title ),
-        staff_profiles ( id, title, first_name, last_name, email, status, metadata )
+        staff_profiles ( id, title, first_name, last_name, email, phone, joining_year, past_experience_years, status, metadata )
       `)
       .eq('department_id', departmentId)
       .eq('status', 'published');
@@ -51,8 +54,11 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
           designation,
           rankGroup,
           email: s.email ?? null,
+          phone: s.phone ?? (s.metadata as any)?.phone ?? null,
           avatarUrl: (s.metadata as any)?.photoUrl || s.avatar_url || null,
           employeeCode: (s.metadata as any)?.employeeCode ?? null,
+          joiningYear: s.joining_year ?? null,
+          pastExperienceYears: s.past_experience_years ?? null,
         };
       });
   });
