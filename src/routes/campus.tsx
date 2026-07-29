@@ -3,7 +3,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
-import { getAllFacilities } from "@/lib/facilities.functions";
+import { getAllFacilities, type Facility } from "@/lib/facilities.functions";
 import { getSports, getSportsAchievements, type Sport, type SportAchievement } from "@/lib/sports.functions";
 import campusHero from "@/assets/campus-hero.jpg";
 import campusAerial from "@/assets/campus-aerial.jpg";
@@ -50,6 +50,8 @@ function formatDate(dateStr: string | null): string {
 
 function Campus() {
   const { facilities, sports, achievements } = Route.useLoaderData();
+  const regularFacilities = facilities.filter((f) => f.metadata?.category !== "sports");
+  const sportsFacilities  = facilities.filter((f) => f.metadata?.category === "sports");
 
   return (
     <>
@@ -73,7 +75,7 @@ function Campus() {
         <div className="container-page">
           <SectionHeading center eyebrow="Facilities" title="Everything you need, on campus" />
           <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {facilities.map((f, i) => (
+            {regularFacilities.map((f, i) => (
               <Reveal key={f.id} delay={i * 0.04}>
                 <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
                   <h4 className="font-display font-bold text-navy">{f.name}</h4>
@@ -104,14 +106,14 @@ function Campus() {
       </section>
 
       {/* Sports Section */}
-      <SportsSection sports={sports} achievements={achievements} />
+      <SportsSection sports={sports} achievements={achievements} sportsFacilities={sportsFacilities} />
 
       <CTABanner />
     </>
   );
 }
 
-function SportsSection({ sports, achievements }: { sports: Sport[]; achievements: SportAchievement[] }) {
+function SportsSection({ sports, achievements, sportsFacilities }: { sports: Sport[]; achievements: SportAchievement[]; sportsFacilities: Facility[] }) {
   const totalTrophies = achievements.length;
   const nationalPlus = achievements.filter((a) => ["national", "international"].includes(a.level)).length;
   const outdoorCount = sports.filter((s) => s.category === "outdoor").length;
@@ -187,6 +189,39 @@ function SportsSection({ sports, achievements }: { sports: Sport[]; achievements
                       </div>
                     )}
                   </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Sports Facilities / Courts */}
+      {sportsFacilities.length > 0 && (
+        <section className="container-page py-16">
+          <SectionHeading center eyebrow="Courts & Facilities" title="Where Champions Train" />
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {sportsFacilities.map((f, i) => (
+              <Reveal key={f.id} delay={i * 0.04}>
+                <div className="card-lift h-full rounded-2xl border border-border bg-white p-5">
+                  <div className="flex items-start justify-between gap-2">
+                    <h4 className="font-display font-bold text-navy">{f.name}</h4>
+                    {f.metadata?.accent && (
+                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                        f.metadata.accent === "Indoor"
+                          ? "bg-sky-100 text-sky-700"
+                          : "bg-emerald-100 text-emerald-700"
+                      }`}>
+                        {f.metadata.accent}
+                      </span>
+                    )}
+                  </div>
+                  {f.metadata?.subtitle && (
+                    <p className="mt-1 text-xs font-semibold text-crimson">{f.metadata.subtitle}</p>
+                  )}
+                  <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                    {f.metadata?.description ?? ""}
+                  </p>
                 </div>
               </Reveal>
             ))}

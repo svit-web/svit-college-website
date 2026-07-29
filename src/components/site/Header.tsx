@@ -1,7 +1,7 @@
 import { useRef, useState, useMemo } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Users, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
@@ -25,6 +25,7 @@ import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
 import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
+import { getSports } from "@/lib/sports.functions";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -365,6 +366,12 @@ function useCampusCategories(): MegaCategory[] {
     staleTime,
   });
 
+  const { data: sports } = useQuery({
+    queryKey: ['sports'],
+    queryFn: () => getSports(),
+    staleTime,
+  });
+
   return [
     {
       key: "facilities",
@@ -372,9 +379,22 @@ function useCampusCategories(): MegaCategory[] {
       icon: Building2,
       allLabel: "All facilities",
       allTo: "/campus-life/facilities",
-      items: (facilities ?? []).map((f) => ({
-        label: f.name,
-        to: `/campus-life/facilities/${f.metadata?.category ?? 'academic'}/${f.slug}`,
+      items: (facilities ?? [])
+        .filter((f) => f.metadata?.category !== "sports")
+        .map((f) => ({
+          label: f.name,
+          to: `/campus-life/facilities/${f.metadata?.category ?? 'academic'}/${f.slug}`,
+        })),
+    },
+    {
+      key: "sports",
+      title: "Sports",
+      icon: Trophy,
+      allLabel: "Sports & Athletics",
+      allTo: "/campus",
+      items: (sports ?? []).map((s) => ({
+        label: s.name,
+        to: "/campus",
       })),
     },
     {
