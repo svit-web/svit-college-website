@@ -18,6 +18,8 @@ export function MediaUploader({
 }: MediaUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
+  const [mode, setMode] = useState<"upload" | "url">("upload");
+  const [urlDraft, setUrlDraft] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Trigger file upload to Supabase Storage
@@ -99,9 +101,24 @@ export function MediaUploader({
     e.preventDefault();
     e.stopPropagation();
     onChange("");
+    setUrlDraft("");
+    setMode("upload");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
+  };
+
+  const handleUrlSubmit = (e?: React.SyntheticEvent) => {
+    e?.preventDefault();
+    const trimmed = urlDraft.trim();
+    if (!trimmed) return;
+    if (!/^https?:\/\//i.test(trimmed) && !trimmed.startsWith("data:")) {
+      toast.error("Enter a valid URL starting with http:// or https://");
+      return;
+    }
+    onChange(trimmed);
+    setUrlDraft("");
+    toast.success(`${type === "image" ? "Image" : "File"} URL set`);
   };
 
   return (
@@ -156,36 +173,83 @@ export function MediaUploader({
           </div>
         </div>
       ) : (
-        // Upload Dropzone
-        <div
-          onDragEnter={handleDrag}
-          onDragOver={handleDrag}
-          onDragLeave={handleDrag}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition ${
-            dragActive
-              ? "border-crimson bg-crimson/5 text-crimson"
-              : "border-slate-300 bg-slate-50 text-slate-600 hover:border-slate-400 hover:bg-slate-100"
-          }`}
-        >
-          {uploading ? (
-            <div className="flex flex-col items-center gap-2 py-2">
-              <Loader2 className="h-8 w-8 animate-spin text-crimson" />
-              <p className="text-sm font-medium text-slate-600">Uploading to storage...</p>
+        <div className="space-y-2">
+          {/* Mode toggle */}
+          <div className="inline-flex rounded-lg bg-slate-100 p-1 text-xs font-semibold">
+            <button
+              type="button"
+              onClick={() => setMode("upload")}
+              className={`rounded-md px-3 py-1 transition ${
+                mode === "upload" ? "bg-white text-navy shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              Upload File
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("url")}
+              className={`rounded-md px-3 py-1 transition ${
+                mode === "url" ? "bg-white text-navy shadow-sm" : "text-slate-500 hover:text-slate-700"
+              }`}
+            >
+              Paste URL
+            </button>
+          </div>
+
+          {mode === "upload" ? (
+            // Upload Dropzone
+            <div
+              onDragEnter={handleDrag}
+              onDragOver={handleDrag}
+              onDragLeave={handleDrag}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 text-center cursor-pointer transition ${
+                dragActive
+                  ? "border-crimson bg-crimson/5 text-crimson"
+                  : "border-slate-300 bg-slate-50 text-slate-600 hover:border-slate-400 hover:bg-slate-100"
+              }`}
+            >
+              {uploading ? (
+                <div className="flex flex-col items-center gap-2 py-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-crimson" />
+                  <p className="text-sm font-medium text-slate-600">Uploading to storage...</p>
+                </div>
+              ) : (
+                <>
+                  <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-600 border border-slate-200">
+                    {type === "image" ? <ImageIcon className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
+                  </div>
+                  <p className="text-sm font-semibold text-navy">
+                    Drag & drop or <span className="text-crimson">browse</span>
+                  </p>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Supports {type === "image" ? "PNG, JPG, WEBP" : "PDF, DOCX, ZIP"} up to 10MB
+                  </p>
+                </>
+              )}
             </div>
           ) : (
-            <>
-              <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-white text-slate-600 border border-slate-200">
-                {type === "image" ? <ImageIcon className="h-5 w-5" /> : <Upload className="h-5 w-5" />}
-              </div>
-              <p className="text-sm font-semibold text-navy">
-                Drag & drop or <span className="text-crimson">browse</span>
-              </p>
-              <p className="text-xs text-slate-500 mt-1">
-                {type === "image" ? "PNG, JPG, WEBP only — no HEIC" : "PDF, DOCX, ZIP"} · max 10MB
-              </p>
-            </>
+            // Paste URL (plain div, not <form> — this component can be nested inside other forms)
+            <div className="flex gap-2">
+              <input
+                type="url"
+                value={urlDraft}
+                onChange={(e) => setUrlDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleUrlSubmit(e);
+                }}
+                placeholder={`https://example.com/${type === "image" ? "photo.jpg" : "file.pdf"}`}
+                className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-crimson focus:bg-white focus:outline-none"
+              />
+              <button
+                type="button"
+                onClick={handleUrlSubmit}
+                className="shrink-0 rounded-lg bg-crimson px-3 py-2 text-xs font-semibold text-white hover:bg-crimson/90 transition"
+              >
+                Use URL
+              </button>
+            </div>
           )}
         </div>
       )}

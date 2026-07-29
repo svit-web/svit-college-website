@@ -93,12 +93,44 @@ export interface ClubEvent {
 /**
  * Fetch a club's own events — a dedicated table (club_events), separate
  * from the general campus-life events. Admin-managed at
- * /admin/tables/club_events via the Club Id field. A database trigger keeps
- * at most 3 published events per club — adding a 4th auto-archives the
- * oldest one by event_date — so this is just a plain published-events read,
- * capped defensively at 3.
+ * /admin/tables/club_events via the Club Id field. Events accumulate with
+ * no auto-archiving; this preview is capped at the 3 most recent for the
+ * slider, plus the true total so callers know whether to show "View more".
  */
 export const getClubEvents = createServerFn({ method: 'GET' })
+  .validator((clubId: string) => clubId)
+  .handler(async (ctx) => {
+    const clubId = ctx.data;
+    const { data, error, count } = await supabase
+      .from('club_events')
+      .select('id, title, description, event_date, image_url', { count: 'exact' })
+      .eq('club_id', clubId)
+      .eq('status', 'published')
+      .order('event_date', { ascending: false })
+      .limit(3);
+
+    if (error) {
+      console.error('Error fetching club events:', error);
+      throw error;
+    }
+
+    return {
+      events: (data ?? []).map((e): ClubEvent => ({
+        id: e.id,
+        title: e.title,
+        description: e.description,
+        eventDate: e.event_date,
+        imageUrl: e.image_url,
+      })),
+      total: count ?? 0,
+    };
+  });
+
+/**
+ * Fetch all of a club's published events (no cap) — backs the "View more"
+ * destination linked from the club page's events preview.
+ */
+export const getAllClubEvents = createServerFn({ method: 'GET' })
   .validator((clubId: string) => clubId)
   .handler(async (ctx) => {
     const clubId = ctx.data;
@@ -107,11 +139,10 @@ export const getClubEvents = createServerFn({ method: 'GET' })
       .select('id, title, description, event_date, image_url')
       .eq('club_id', clubId)
       .eq('status', 'published')
-      .order('event_date', { ascending: false })
-      .limit(3);
+      .order('event_date', { ascending: false });
 
     if (error) {
-      console.error('Error fetching club events:', error);
+      console.error('Error fetching all club events:', error);
       throw error;
     }
 
