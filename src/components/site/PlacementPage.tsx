@@ -192,10 +192,10 @@ export function PlacementPage({ content }: Props) {
                       <Reveal key={`${s.studentName}-${i}`} delay={i * 0.04}>
                         <div className="card-lift flex items-center gap-4 rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
                           {s.photo ? (
-                            <img src={s.photo} alt={s.studentName} className="h-16 w-16 rounded-full object-cover" />
+                            <img src={s.photo} alt={s.studentName} className="h-16 w-16 rounded-full object-cover shrink-0" />
                           ) : (
-                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-navy/10 font-display text-lg font-bold text-navy">
-                              {initials(s.studentName)}
+                            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy/40">
+                              <User className="h-8 w-8" />
                             </div>
                           )}
                           <div className="min-w-0">
