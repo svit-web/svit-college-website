@@ -30,7 +30,7 @@ const PRIMARY_CARDS = [
   { key: "posts", label: "Blog & News", icon: FileText, link: "/admin/posts", color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20" },
   { key: "faculty", label: "Faculty & Staff", icon: Users, link: "/admin/staff-wizards", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20" },
   { key: "recruiters", label: "Recruiters", icon: ShieldCheck, link: "/admin/recruiters", color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
-  { key: "placedStudents", label: "Placed Students", icon: GraduationCap, link: "/admin/tables/placed_students", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { key: "placedStudents", label: "Placed Students", icon: GraduationCap, link: "/admin/placements", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
   { key: "placementCells", label: "Placement Cells", icon: UserSquare2, link: "/admin/tables/placement_cells", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
 ];
 
@@ -244,7 +244,7 @@ function AdminDashboardHome() {
             {[
               { label: "Add New Event", link: "/admin/events" },
               { label: "Staff Profiles", link: "/admin/staff-wizards" },
-              { label: "Placed Students Album", link: "/admin/tables/placed_students" },
+              { label: "Placed Students Album", link: "/admin/placements" },
               { label: "Placement Cells Content", link: "/admin/tables/placement_cells" },
               { label: "Homepage Layout", link: "/admin/homepage" },
               { label: "Trash & Recovery", link: "/admin/trash" },
