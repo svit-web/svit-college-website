@@ -992,6 +992,7 @@ export type Database = {
       }
       events: {
         Row: {
+          club_id: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
@@ -1017,6 +1018,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          club_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1042,6 +1044,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          club_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1067,6 +1070,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "student_clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_created_by_fkey"
             columns: ["created_by"]
@@ -3735,7 +3745,7 @@ export type Database = {
     Enums: {
       content_status: "draft" | "published" | "archived"
       degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
-      event_status: "draft" | "published" | "cancelled"
+      event_status: "draft" | "published" | "cancelled" | "archived"
       facility_type: "campus" | "building" | "laboratory"
       link_type: "internal" | "external"
       scope_level: "global" | "trust" | "institute" | "college" | "department"
@@ -3871,7 +3881,7 @@ export const Constants = {
     Enums: {
       content_status: ["draft", "published", "archived"],
       degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
-      event_status: ["draft", "published", "cancelled"],
+      event_status: ["draft", "published", "cancelled", "archived"],
       facility_type: ["campus", "building", "laboratory"],
       link_type: ["internal", "external"],
       scope_level: ["global", "trust", "institute", "college", "department"],
