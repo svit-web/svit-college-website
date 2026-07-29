@@ -1,22 +1,20 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CampusLeafPage } from "@/components/site/CampusLeafPage";
 import { PillTabs } from "@/components/site/PillTabs";
-import { getAllStudentClubs, getStudentClubBySlug } from "@/lib/clubs.functions";
+import { SectionHeading } from "@/components/site/SectionHeading";
+import { EventsNewsSlider, type EventSlide } from "@/components/site/EventsNewsSlider";
+import { getAllStudentClubs, getStudentClubBySlug, getEventsByClubId } from "@/lib/clubs.functions";
 
 export const Route = createFileRoute("/campus-life/clubs/$slug")({
   loader: async ({ params }) => {
-    console.log('[Clubs $slug loader] params:', params);
-    console.log('[Clubs $slug loader] params.slug:', params.slug);
-
-    // Try calling with object syntax
     const [item, allClubs] = await Promise.all([
       getStudentClubBySlug({ data: params.slug }),
       getAllStudentClubs(),
     ]);
 
-    console.log('[Clubs $slug loader] item returned:', item?.name || null);
-
     if (!item) throw notFound();
+
+    const events = await getEventsByClubId({ data: item.id });
 
     // Transform to match CampusLeafPage interface
     const transformedItem = {
@@ -29,7 +27,7 @@ export const Route = createFileRoute("/campus-life/clubs/$slug")({
       image: item.logo_url || null,
     };
 
-    return { item: transformedItem, allClubs };
+    return { item: transformedItem, allClubs, events };
   },
   head: ({ loaderData }) =>
     loaderData
@@ -40,7 +38,17 @@ export const Route = createFileRoute("/campus-life/clubs/$slug")({
 });
 
 function ClubLeaf() {
-  const { item, allClubs } = Route.useLoaderData();
+  const { item, allClubs, events } = Route.useLoaderData();
+
+  const slides: EventSlide[] = events.map((e) => ({
+    id: e.id,
+    slug: e.slug,
+    title: e.title,
+    tag: e.tag ?? "Event",
+    date: new Date(e.startDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+    imageUrl: e.imageUrl,
+  }));
+
   return (
     <div>
       <PillTabs
@@ -48,6 +56,15 @@ function ClubLeaf() {
         items={allClubs.map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
       />
       <CampusLeafPage item={item} />
+
+      {slides.length > 0 && (
+        <div className="mt-12">
+          <SectionHeading eyebrow={item.title} title="Recent Events" variant="eyebrow" />
+          <div className="mt-8">
+            <EventsNewsSlider items={slides} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
