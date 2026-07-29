@@ -50,8 +50,13 @@ function formatDate(dateStr: string | null): string {
 
 function Campus() {
   const { facilities, sports, achievements } = Route.useLoaderData();
-  const regularFacilities = facilities.filter((f) => f.metadata?.category !== "sports");
-  const sportsFacilities  = facilities.filter((f) => f.metadata?.category === "sports");
+
+  // Split facilities by category for better organization
+  const academicFacilities = facilities.filter((f) => f.metadata?.category === "academic");
+  const wellnessFacilities = facilities.filter((f) => f.metadata?.category === "wellness");
+  const amenityFacilities  = facilities.filter((f) => f.metadata?.category === "amenity");
+  const hostelFacilities   = facilities.filter((f) => f.metadata?.category === "hostel");
+  const sportsFacilities   = facilities.filter((f) => f.metadata?.category === "sports");
 
   return (
     <>
@@ -70,38 +75,102 @@ function Campus() {
         </div>
       </section>
 
-      {/* Facilities */}
-      <section className="bg-secondary/50 py-20">
-        <div className="container-page">
-          <SectionHeading center eyebrow="Facilities" title="Everything you need, on campus" />
-          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {regularFacilities.map((f, i) => (
+      {/* Academic Facilities */}
+      {academicFacilities.length > 0 && (
+        <section className="bg-secondary/50 py-20">
+          <div className="container-page">
+            <SectionHeading center eyebrow="Academic" title="World-Class Learning Infrastructure" />
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {academicFacilities.map((f, i) => (
+                <Reveal key={f.id} delay={i * 0.04}>
+                  <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
+                    <h4 className="font-display font-bold text-navy">{f.name}</h4>
+                    <p className="mt-2 text-sm text-muted-foreground">{f.metadata?.description ?? f.metadata?.subtitle ?? ""}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Wellness & Student Support */}
+      {wellnessFacilities.length > 0 && (
+        <section className="container-page py-20">
+          <SectionHeading center eyebrow="Wellness" title="Your Health & Well-Being Matter" />
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {wellnessFacilities.map((f, i) => (
               <Reveal key={f.id} delay={i * 0.04}>
-                <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
-                  <h4 className="font-display font-bold text-navy">{f.name}</h4>
-                  <p className="mt-2 text-sm text-muted-foreground">{f.metadata?.description ?? f.metadata?.subtitle ?? ""}</p>
+                <div className="card-lift h-full rounded-2xl border-2 border-emerald-100 bg-white p-6">
+                  {f.metadata?.accent && (
+                    <div className="mb-3 inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
+                      {f.metadata.accent}
+                    </div>
+                  )}
+                  <h4 className="font-display text-lg font-bold text-navy">{f.name}</h4>
+                  {f.metadata?.subtitle && (
+                    <p className="mt-1 text-xs font-semibold text-crimson">{f.metadata.subtitle}</p>
+                  )}
+                  <p className="mt-3 text-sm text-muted-foreground">{f.metadata?.description ?? ""}</p>
                 </div>
               </Reveal>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* Hostel */}
+      {/* Campus Amenities */}
+      {amenityFacilities.length > 0 && (
+        <section className="bg-secondary/50 py-20">
+          <div className="container-page">
+            <SectionHeading center eyebrow="Amenities" title="Everyday Conveniences On Campus" />
+            <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+              {amenityFacilities.map((f, i) => (
+                <Reveal key={f.id} delay={i * 0.04}>
+                  <div className="card-lift h-full rounded-2xl border border-border bg-white p-5">
+                    <h4 className="font-display text-base font-bold text-navy">{f.name}</h4>
+                    {f.metadata?.subtitle && (
+                      <p className="mt-1 text-xs font-semibold text-slate-500">{f.metadata.subtitle}</p>
+                    )}
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{f.metadata?.description ?? ""}</p>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Hostel & Living */}
       <section className="container-page py-20">
         <SectionHeading center eyebrow="Hostel & Living" title="A home away from home" />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {[
-            { t: "Boys' Hostel",  d: "600-bed capacity, mess, Wi-Fi, common room, gymnasium and 24×7 security." },
-            { t: "Girls' Hostel", d: "400-bed capacity, dedicated warden, mess, indoor games and safe environment." },
-          ].map((h) => (
-            <Reveal key={h.t}>
-              <div className="card-lift rounded-2xl border border-border bg-white p-8">
-                <h3 className="font-display text-2xl font-bold text-navy">{h.t}</h3>
-                <p className="mt-3 text-muted-foreground">{h.d}</p>
-              </div>
-            </Reveal>
-          ))}
+          {hostelFacilities.length > 0 ? (
+            hostelFacilities.map((h, i) => (
+              <Reveal key={h.id} delay={i * 0.05}>
+                <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
+                  <h3 className="font-display text-2xl font-bold text-navy">{h.name}</h3>
+                  {h.metadata?.subtitle && (
+                    <p className="mt-1 text-sm font-semibold text-crimson">{h.metadata.subtitle}</p>
+                  )}
+                  <p className="mt-3 text-muted-foreground">{h.metadata?.description ?? ""}</p>
+                </div>
+              </Reveal>
+            ))
+          ) : (
+            // Fallback if DB not populated yet
+            [
+              { t: "Boys' Hostel", d: "600-bed capacity, mess, Wi-Fi, common room, gymnasium and 24×7 security." },
+              { t: "Girls' Hostel", d: "400-bed capacity, dedicated warden, mess, indoor games and safe environment." },
+            ].map((h) => (
+              <Reveal key={h.t}>
+                <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
+                  <h3 className="font-display text-2xl font-bold text-navy">{h.t}</h3>
+                  <p className="mt-3 text-muted-foreground">{h.d}</p>
+                </div>
+              </Reveal>
+            ))
+          )}
         </div>
       </section>
 
