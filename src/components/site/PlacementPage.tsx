@@ -85,6 +85,7 @@ export function PlacementPage({ content }: Props) {
                         <Link
                           to="/placement/$college"
                           params={{ college: item.slug }}
+                          title={item.label}
                           className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all whitespace-nowrap lg:whitespace-normal ${
                             isActive
                               ? "border-gold bg-navy text-white shadow-sm"
@@ -115,6 +116,7 @@ export function PlacementPage({ content }: Props) {
                       <li key={s.id} className="shrink-0 lg:shrink">
                         <a
                           href={`#${s.id}`}
+                          title={s.label}
                           className="flex items-center gap-2.5 rounded-xl border-2 border-transparent px-3 py-2.5 text-sm font-semibold text-navy transition-all hover:border-navy/15 hover:bg-secondary/60"
                         >
                           <Icon className="h-4 w-4 shrink-0" />
