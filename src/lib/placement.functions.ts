@@ -39,11 +39,16 @@ export interface Recruiter {
 export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
   .validator((collegeSlug: string) => collegeSlug)
   .handler(async (ctx) => {
-    const { data: depts } = await supabase
+    let query = supabase
       .from('departments')
       .select('id, colleges!inner(slug)')
-      .eq('colleges.slug' as any, ctx.data)
       .eq('status', 'published');
+
+    if (ctx.data !== 'overview') {
+      query = query.eq('colleges.slug' as any, ctx.data);
+    }
+
+    const { data: depts } = await query;
 
     if (!depts?.length) return [] as PlacementStatistics[];
 
@@ -81,4 +86,62 @@ export const getAllRecruiters = createServerFn({ method: 'GET' })
     }
 
     return (data ?? []) as Recruiter[];
+  });
+
+export interface PlacementCell {
+  id: string;
+  college_code: string;
+  about_text: string;
+  officer_name: string;
+  officer_designation: string;
+  officer_phone: string;
+  officer_email: string;
+  officer_photo_url: string | null;
+  placed_students: { studentName: string; companyName: string; photo: string | null }[];
+}
+
+/**
+ * Fetch placement cell info for a college by its code/slug.
+ */
+export const getPlacementCell = createServerFn({ method: 'GET' })
+  .validator((collegeCode: string) => collegeCode)
+  .handler(async (ctx) => {
+    const { data, error } = await (supabase as any)
+      .from('placement_cells')
+      .select('*')
+      .eq('college_code', ctx.data)
+      .eq('status', 'published')
+      .is('deleted_at', null)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching placement cell:', error);
+      return null;
+    }
+
+    return data as PlacementCell | null;
+  });
+
+/**
+ * Fetch a college by slug for placement page routing.
+ */
+export const getCollegeBySlug = createServerFn({ method: 'GET' })
+  .validator((slug: string) => slug)
+  .handler(async (ctx) => {
+    const { data, error } = await supabase
+      .from('colleges')
+      .select('slug, code, name, metadata')
+      .eq('slug', ctx.data)
+      .eq('status', 'published')
+      .is('deleted_at', null)
+      .maybeSingle();
+
+    if (error) return null;
+    if (!data) return null;
+
+    return {
+      code: data.slug,
+      name: data.name,
+      shortCode: (data.metadata as any)?.shortCode ?? data.code,
+    };
   });

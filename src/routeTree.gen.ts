@@ -34,6 +34,7 @@ import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminMenusRouteImport } from './routes/admin.menus'
 import { Route as AdminPostsRouteImport } from './routes/admin.posts'
 import { Route as AdminRecruitersRouteImport } from './routes/admin.recruiters'
+import { Route as AdminSportsRouteImport } from './routes/admin.sports'
 import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
 import { Route as AdminTrashRouteImport } from './routes/admin.trash'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
@@ -192,6 +193,11 @@ const AdminPostsRoute = AdminPostsRouteImport.update({
 const AdminRecruitersRoute = AdminRecruitersRouteImport.update({
   id: '/recruiters',
   path: '/recruiters',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSportsRoute = AdminSportsRouteImport.update({
+  id: '/sports',
+  path: '/sports',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminStaffWizardsRoute = AdminStaffWizardsRouteImport.update({
@@ -397,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/admin/menus': typeof AdminMenusRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/trash': typeof AdminTrashRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
@@ -455,6 +462,7 @@ export interface FileRoutesByTo {
   '/admin/menus': typeof AdminMenusRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/trash': typeof AdminTrashRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
@@ -515,6 +523,7 @@ export interface FileRoutesById {
   '/admin/menus': typeof AdminMenusRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/trash': typeof AdminTrashRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
@@ -578,6 +587,7 @@ export interface FileRouteTypes {
     | '/admin/menus'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/trash'
     | '/admissions/inquiry'
@@ -636,6 +646,7 @@ export interface FileRouteTypes {
     | '/admin/menus'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/trash'
     | '/admissions/inquiry'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/admin/menus'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/trash'
     | '/admissions/inquiry'
@@ -937,6 +949,13 @@ declare module '@tanstack/react-router' {
       path: '/recruiters'
       fullPath: '/admin/recruiters'
       preLoaderRoute: typeof AdminRecruitersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/sports': {
+      id: '/admin/sports'
+      path: '/sports'
+      fullPath: '/admin/sports'
+      preLoaderRoute: typeof AdminSportsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/staff-wizards': {
@@ -1190,6 +1209,7 @@ interface AdminRouteChildren {
   AdminMenusRoute: typeof AdminMenusRoute
   AdminPostsRoute: typeof AdminPostsRoute
   AdminRecruitersRoute: typeof AdminRecruitersRoute
+  AdminSportsRoute: typeof AdminSportsRoute
   AdminStaffWizardsRoute: typeof AdminStaffWizardsRoute
   AdminTrashRoute: typeof AdminTrashRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1206,6 +1226,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMenusRoute: AdminMenusRoute,
   AdminPostsRoute: AdminPostsRoute,
   AdminRecruitersRoute: AdminRecruitersRoute,
+  AdminSportsRoute: AdminSportsRoute,
   AdminStaffWizardsRoute: AdminStaffWizardsRoute,
   AdminTrashRoute: AdminTrashRoute,
   AdminIndexRoute: AdminIndexRoute,

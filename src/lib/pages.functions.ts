@@ -26,7 +26,7 @@ function serverClient() {
 }
 
 export interface AboutPageData {
-  hero: { accent: string; title: string; introText: string };
+  hero: { accent: string; title: string; introText: string; portraitUrl?: string };
   quickFacts: { label: string; value: string }[];
   coreValues: string[];
   history: {
