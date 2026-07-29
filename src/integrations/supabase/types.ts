@@ -2472,6 +2472,63 @@ export type Database = {
           },
         ]
       }
+      placement_cells: {
+        Row: {
+          about_text: string
+          college_code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          officer_designation: string
+          officer_email: string
+          officer_name: string
+          officer_phone: string
+          officer_photo_url: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          about_text?: string
+          college_code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          officer_designation?: string
+          officer_email?: string
+          officer_name?: string
+          officer_phone?: string
+          officer_photo_url?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          about_text?: string
+          college_code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          officer_designation?: string
+          officer_email?: string
+          officer_name?: string
+          officer_phone?: string
+          officer_photo_url?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       placement_statistics: {
         Row: {
           academic_year: string
@@ -3254,6 +3311,7 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          department_id: string | null
           description: string | null
           featured: boolean | null
           id: string
@@ -3272,6 +3330,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           description?: string | null
           featured?: boolean | null
           id?: string
@@ -3290,6 +3349,7 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           description?: string | null
           featured?: boolean | null
           id?: string
@@ -3322,6 +3382,13 @@ export type Database = {
             columns: ["deleted_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
             referencedColumns: ["id"]
           },
           {
@@ -3814,4 +3881,3 @@ export const Constants = {
     },
   },
 } as const
-

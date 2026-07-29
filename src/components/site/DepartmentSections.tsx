@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import type { Department, DeptCourse } from "@/lib/departments.functions";
-import type { DeptStaffMember, DeptAchievement, DeptActivity, DeptActivityType } from "@/lib/department-content.functions";
+import type { DeptStaffMember, DeptAchievement, DeptActivity, DeptActivityType, DeptClub } from "@/lib/department-content.functions";
 import {
   GraduationCap,
   Users,
@@ -25,6 +25,7 @@ interface Props {
   staff?: DeptStaffMember[];
   achievements?: DeptAchievement[];
   activities?: DeptActivity[];
+  clubs?: DeptClub[];
 }
 
 function initials(name: string): string {
@@ -311,11 +312,8 @@ export function DeptStaffView({ staff = [] }: Props) {
 }
 
 // -------- Achievements & Clubs --------
-export function DeptAchievementsView({ achievements = [] }: Props) {
+export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
   const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
-  // Student clubs have no department scoping in the schema (global table) —
-  // left empty here rather than showing unrelated clubs from other departments.
-  const clubs: { id: string; name: string; description?: string | null }[] = [];
   return (
     <div>
       <SectionHeading eyebrow="Achievements & Clubs" title="Milestones and Student Groups" />
@@ -352,14 +350,28 @@ export function DeptAchievementsView({ achievements = [] }: Props) {
           ) : (
             <ul className="space-y-3">
               {clubs.map((c) => (
-                <li key={c.id} className="rounded-2xl border-2 border-navy/15 bg-white p-4">
-                  <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy/5 text-navy">
-                      <GraduationCap className="h-5 w-5" />
+                <li key={c.id}>
+                  <Link
+                    to="/campus-life/clubs/$slug"
+                    params={{ slug: c.slug }}
+                    className="card-lift block rounded-2xl border-2 border-navy/15 bg-white p-4 hover:border-gold"
+                  >
+                    <div className="flex items-center gap-3">
+                      {c.logoUrl ? (
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary/40 p-1">
+                          <img src={c.logoUrl} alt="" className="h-full w-full object-contain" />
+                        </div>
+                      ) : (
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-navy/5 text-navy">
+                          <GraduationCap className="h-5 w-5" />
+                        </div>
+                      )}
+                      <div className="font-display font-bold text-navy">{c.name}</div>
                     </div>
-                    <div className="font-display font-bold text-navy">{c.name}</div>
-                  </div>
-                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{c.description}</p>
+                    {c.description && (
+                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{c.description}</p>
+                    )}
+                  </Link>
                 </li>
               ))}
             </ul>
