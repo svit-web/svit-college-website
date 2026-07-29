@@ -16,6 +16,8 @@ import {
   TrendingUp,
   ShieldCheck,
   Home,
+  GraduationCap,
+  UserSquare2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +30,8 @@ const PRIMARY_CARDS = [
   { key: "posts", label: "Blog & News", icon: FileText, link: "/admin/posts", color: "text-cyan-400", bg: "bg-cyan-500/10 border-cyan-500/20" },
   { key: "faculty", label: "Faculty & Staff", icon: Users, link: "/admin/staff-wizards", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20" },
   { key: "recruiters", label: "Recruiters", icon: ShieldCheck, link: "/admin/recruiters", color: "text-violet-400", bg: "bg-violet-500/10 border-violet-500/20" },
+  { key: "placedStudents", label: "Placed Students", icon: GraduationCap, link: "/admin/placements", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20" },
+  { key: "placementCells", label: "Placement Cells", icon: UserSquare2, link: "/admin/tables/placement_cells", color: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20" },
 ];
 
 const SECONDARY_CARDS = [
@@ -70,8 +74,10 @@ function AdminDashboardHome() {
         sb.from("homepage_items").select("*", { count: "exact", head: true }),
         sb.from("posts").select("*", { count: "exact", head: true }),
         sb.from("placement_statistics").select("*", { count: "exact", head: true }),
+        sb.from("placed_students").select("*", { count: "exact", head: true }),
+        sb.from("placement_cells").select("*", { count: "exact", head: true }),
       ]);
-      const [colleges, departments, courses, events, recruiters, faculty, trusts, homepageItems, posts, placementStats] = results;
+      const [colleges, departments, courses, events, recruiters, faculty, trusts, homepageItems, posts, placementStats, placedStudents, placementCells] = results;
       return {
         colleges: colleges.count || 0,
         departments: departments.count || 0,
@@ -83,6 +89,8 @@ function AdminDashboardHome() {
         homepageItems: homepageItems.count || 0,
         posts: posts.count || 0,
         placementStats: placementStats.count || 0,
+        placedStudents: placedStudents.count || 0,
+        placementCells: placementCells.count || 0,
       };
     },
     refetchInterval: 60000,
@@ -119,10 +127,10 @@ function AdminDashboardHome() {
         </div>
       </div>
 
-      {/* Primary stat cards — Events, Posts, Staff, Recruiters */}
+      {/* Primary stat cards */}
       <div>
         <p className="mb-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Frequently Updated</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
           {PRIMARY_CARDS.map((card) => {
             const Icon = card.icon;
             const value = metrics?.[card.key as keyof typeof metrics];
@@ -236,6 +244,8 @@ function AdminDashboardHome() {
             {[
               { label: "Add New Event", link: "/admin/events" },
               { label: "Staff Profiles", link: "/admin/staff-wizards" },
+              { label: "Placed Students Album", link: "/admin/placements" },
+              { label: "Placement Cells Content", link: "/admin/tables/placement_cells" },
               { label: "Homepage Layout", link: "/admin/homepage" },
               { label: "Trash & Recovery", link: "/admin/trash" },
               { label: "Media Library", link: "/admin/media" },

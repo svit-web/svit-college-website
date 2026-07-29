@@ -1,6 +1,6 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
-import { getPlacementStatsByCollege, getAllRecruiters, getPlacementCell, getCollegeBySlug, type PlacementStatistics } from "@/lib/placement.functions";
+import { getPlacementStatsByCollege, getAllRecruiters, getPlacementCell, getCollegeBySlug, getPlacedStudentsByCollege, type PlacementStatistics } from "@/lib/placement.functions";
 
 type PlacementSlug = string;
 interface PlacementPageContent {
@@ -40,10 +40,11 @@ export const Route = createFileRoute("/placement/$college")({
       if (!college) throw notFound();
     }
 
-    const [stats, allRecruiters, placementCell] = await Promise.all([
+    const [stats, allRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
       getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
       getAllRecruiters(),
-      getPlacementCell({ data: params.college }),
+      getPlacementCell({ data: college.code }),
+      getPlacedStudentsByCollege({ data: college.code }),
     ]);
 
     function toDisplayYear(academicYear: string): string {
@@ -149,7 +150,13 @@ export const Route = createFileRoute("/placement/$college")({
         ? 'The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges, including Engineering, Architecture, Nursing, and Applied Sciences. We collaborate with national and multinational companies to bridge academic training and corporate demands.'
         : ''),
       details: { graphicalData, statHighlights },
-      summary: { placedStudents: (placementCell?.placed_students || []) as { studentName: string; companyName: string; photo: string | null }[] },
+      summary: {
+        placedStudents: dbPlacedStudents.map(s => ({
+          studentName: s.student_name,
+          companyName: s.company_name,
+          photo: s.photo_url
+        }))
+      },
       recruiters: collegeRecruiters,
       placementOfficer: {
         name: placementCell?.officer_name ?? '',

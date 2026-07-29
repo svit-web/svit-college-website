@@ -146,3 +146,39 @@ export const getCollegeBySlug = createServerFn({ method: 'GET' })
       shortCode: (data.metadata as any)?.shortCode ?? data.code,
     };
   });
+
+export interface PlacedStudent {
+  id: string;
+  college_code: string;
+  student_name: string;
+  company_name: string;
+  photo_url: string | null;
+  status: 'draft' | 'published' | 'archived';
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Fetch published placed students for a college by its code.
+ * If overview, returns all published placed students.
+ */
+export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
+  .validator((collegeCode: string) => collegeCode)
+  .handler(async (ctx) => {
+    let query = supabase
+      .from('placed_students' as any)
+      .select('*')
+      .eq('status', 'published');
+
+    if (ctx.data !== 'overview') {
+      query = query.eq('college_code', ctx.data);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      console.error('Error fetching placed students:', error);
+      return [] as PlacedStudent[];
+    }
+
+    return (data ?? []) as unknown as PlacedStudent[];
+  });
