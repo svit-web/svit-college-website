@@ -43,7 +43,7 @@ export const Route = createFileRoute("/placement/$college")({
     const [stats, allRecruiters, placementCell] = await Promise.all([
       getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
       getAllRecruiters(),
-      getPlacementCell({ data: params.college }),
+      getPlacementCell({ data: college.code }),
     ]);
 
     function toDisplayYear(academicYear: string): string {
