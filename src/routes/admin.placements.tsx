@@ -1,114 +1,137 @@
 import { useState, useEffect, useCallback } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { MediaUploader } from "@/components/admin/MediaUploader";
 import { toast } from "sonner";
 import {
-  Plus,
-  Pencil,
-  Trash2,
-  X,
-  GraduationCap,
-  Loader2,
-  ImageIcon,
-  Search,
-  Building2,
-  CheckCircle2,
-  AlertCircle,
-  Filter,
+  Plus, Pencil, Trash2, Loader2, X,
+  GraduationCap, Building2, Search, Filter,
+  ImageIcon, User,
 } from "lucide-react";
+import { MediaUploader } from "@/components/admin/MediaUploader";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/admin/placements")(({
-  component: PlacedStudentsAdmin,
-}));
+export const Route = createFileRoute("/admin/placements")({
+  component: PlacementsAdmin,
+});
 
-const COLLEGE_OPTIONS = [
-  { value: "overview", label: "Overview (All Colleges)" },
-  { value: "svit-degree", label: "SVIT (Degree)" },
-  { value: "svit-coa", label: "COA (Architecture)" },
-  { value: "svica", label: "SVICA (Applied Sciences)" },
-  { value: "svion", label: "SVION (Nursing)" },
-];
-
-const STATUS_OPTIONS = [
-  { value: "published", label: "Published" },
-  { value: "draft", label: "Draft" },
-  { value: "archived", label: "Archived" },
-];
-
+// ── Types ──────────────────────────────────────────────────────
+interface College { id: string; slug: string; name: string }
+interface Department { id: string; name: string; slug: string }
 interface PlacedStudent {
   id: string;
-  college_code: string;
+  college_id: string;
+  department_id: string | null;
   student_name: string;
   company_name: string;
-  department: string | null;
   photo_url: string | null;
   batch_year: string | null;
   package_lpa: number | null;
   status: string;
   created_at: string;
+  college?: { id: string; slug: string; name: string; short_code: string } | null;
+  department?: { id: string; name: string } | null;
 }
 
 const emptyForm = {
   student_name: "",
   company_name: "",
-  department: "",
-  college_code: "svit-degree",
+  college_id: "",
+  department_id: "",
   photo_url: "",
   batch_year: "",
   package_lpa: "",
   status: "published",
 };
 
-function PlacedStudentsAdmin() {
+function initials(name: string) {
+  const parts = name.trim().split(/\s+/);
+  return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase() || "?";
+}
+
+// ── Main Component ─────────────────────────────────────────────
+function PlacementsAdmin() {
   const sb = supabase as any;
 
+  // ── State ────────────────────────────────────────────────────
+  const [colleges, setColleges] = useState<College[]>([]);
+  const [departments, setDepartments] = useState<Department[]>([]);
   const [students, setStudents] = useState<PlacedStudent[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filterCollege, setFilterCollege] = useState("all");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [search, setSearch] = useState("");
-  const [showForm, setShowForm] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [filterCollege, setFilterCollege] = useState("all");
+  const [search, setSearch] = useState("");
 
+  // ── Load colleges once ───────────────────────────────────────
+  useEffect(() => {
+    supabase
+      .from("colleges")
+      .select("id, slug, name")
+      .eq("status", "published")
+      .order("sort_order")
+      .then(({ data }) => setColleges((data as unknown as College[]) ?? []));
+  }, []);
+
+  // ── Load departments when form college changes ────────────────
+  useEffect(() => {
+    if (!form.college_id) { setDepartments([]); return; }
+    supabase
+      .from("departments")
+      .select("id, name, slug")
+      .eq("college_id", form.college_id)
+      .eq("status", "published")
+      .order("name")
+      .then(({ data }) => setDepartments((data as Department[]) ?? []));
+  }, [form.college_id]);
+
+  // ── Fetch students ───────────────────────────────────────────
   const fetchStudents = useCallback(async () => {
     setLoading(true);
     const { data, error } = await sb
       .from("placed_students")
-      .select("*")
+      .select("*, college:colleges(id, slug, name, short_code), department:departments(id, name)")
+      .order("batch_year", { ascending: false })
       .order("created_at", { ascending: false });
-    if (error) toast.error("Failed to load students: " + error.message);
-    else setStudents(data || []);
+
+    if (error) {
+      if (error.code === "PGRST205" || error.code === "42P01") {
+        toast.error("placed_students table not found — run the SQL script first");
+      } else {
+        toast.error("Failed to load students: " + error.message);
+      }
+      setStudents([]);
+    } else {
+      setStudents((data ?? []) as PlacedStudent[]);
+    }
     setLoading(false);
-  }, []);
+  }, [sb]);
 
   useEffect(() => { fetchStudents(); }, [fetchStudents]);
 
-  const filtered = students.filter((s) => {
-    const matchCollege = filterCollege === "all" || s.college_code === filterCollege;
-    const matchStatus = filterStatus === "all" || s.status === filterStatus;
-    const matchSearch =
-      search === "" ||
+  // ── Filtered view ────────────────────────────────────────────
+  const filtered = students.filter(s => {
+    const matchCollege = filterCollege === "all" || s.college_id === filterCollege;
+    const matchSearch = search === "" ||
       s.student_name.toLowerCase().includes(search.toLowerCase()) ||
-      s.company_name.toLowerCase().includes(search.toLowerCase());
-    return matchCollege && matchStatus && matchSearch;
+      s.company_name.toLowerCase().includes(search.toLowerCase()) ||
+      (s.department?.name ?? "").toLowerCase().includes(search.toLowerCase());
+    return matchCollege && matchSearch;
   });
 
-  // Group by college
-  const grouped: Record<string, PlacedStudent[]> = {};
-  filtered.forEach((s) => {
-    const key = s.college_code;
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(s);
-  });
+  // ── Group by college for display ─────────────────────────────
+  const grouped = filtered.reduce<Record<string, PlacedStudent[]>>((acc, s) => {
+    const key = s.college?.name ?? s.college_id;
+    acc[key] = [...(acc[key] ?? []), s];
+    return acc;
+  }, {});
 
+  // ── Form open/close ──────────────────────────────────────────
   const openAdd = () => {
     setEditingId(null);
-    setForm(emptyForm);
+    setForm({ ...emptyForm, college_id: colleges[0]?.id ?? "" });
     setShowForm(true);
   };
 
@@ -117,53 +140,57 @@ function PlacedStudentsAdmin() {
     setForm({
       student_name: s.student_name,
       company_name: s.company_name,
-      department: s.department || "",
-      college_code: s.college_code,
-      photo_url: s.photo_url || "",
-      batch_year: s.batch_year || "",
+      college_id: s.college_id,
+      department_id: s.department_id ?? "",
+      photo_url: s.photo_url ?? "",
+      batch_year: s.batch_year ?? "",
       package_lpa: s.package_lpa != null ? String(s.package_lpa) : "",
       status: s.status,
     });
     setShowForm(true);
   };
 
+  // ── Save ─────────────────────────────────────────────────────
   const handleSave = async () => {
     if (!form.student_name.trim()) { toast.error("Student name is required"); return; }
     if (!form.company_name.trim()) { toast.error("Company name is required"); return; }
+    if (!form.college_id) { toast.error("Select an institute"); return; }
+
     setSaving(true);
     const payload = {
       student_name: form.student_name.trim(),
       company_name: form.company_name.trim(),
-      department: form.department.trim() || null,
-      college_code: form.college_code,
-      photo_url: form.photo_url || null,
+      college_id: form.college_id,
+      department_id: form.department_id || null,
+      photo_url: form.photo_url?.trim() || null,
       batch_year: form.batch_year.trim() || null,
       package_lpa: form.package_lpa ? parseFloat(form.package_lpa) : null,
       status: form.status,
     };
+
     if (editingId) {
       const { error } = await sb.from("placed_students").update(payload).eq("id", editingId);
-      if (error) toast.error("Update failed: " + error.message);
-      else { toast.success("Student updated successfully"); setShowForm(false); fetchStudents(); }
+      if (error) { toast.error("Update failed: " + error.message); }
+      else { toast.success("Student updated!"); setShowForm(false); fetchStudents(); }
     } else {
       const { error } = await sb.from("placed_students").insert(payload);
-      if (error) toast.error("Insert failed: " + error.message);
-      else { toast.success("Student added successfully"); setShowForm(false); fetchStudents(); }
+      if (error) { toast.error("Insert failed: " + error.message); }
+      else { toast.success("Student added!"); setShowForm(false); fetchStudents(); }
     }
     setSaving(false);
   };
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Delete student "${name}"? This cannot be undone.`)) return;
+  // ── Delete ───────────────────────────────────────────────────
+  const handleDelete = async (id: string) => {
+    if (!confirm("Delete this student record? This cannot be undone.")) return;
     setDeleting(id);
     const { error } = await sb.from("placed_students").delete().eq("id", id);
     if (error) toast.error("Delete failed: " + error.message);
-    else { toast.success("Student deleted"); fetchStudents(); }
+    else { toast.success("Deleted"); fetchStudents(); }
     setDeleting(null);
   };
 
-  const collegeLabelMap = Object.fromEntries(COLLEGE_OPTIONS.map(c => [c.value, c.label]));
-
+  // ── Render ───────────────────────────────────────────────────
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Header */}
@@ -171,18 +198,17 @@ function PlacedStudentsAdmin() {
         <div>
           <h1 className="text-xl font-bold text-navy flex items-center gap-2">
             <GraduationCap className="h-5 w-5 text-emerald-500" />
-            Placed Students Album
+            Placed Students
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Manage student records and photos for each institution's placement page
+            Manage student placements — linked to institutes &amp; departments
           </p>
         </div>
         <button
           onClick={openAdd}
           className="inline-flex items-center gap-2 rounded-lg bg-navy px-4 py-2 text-sm font-semibold text-white hover:bg-navy/90 transition"
         >
-          <Plus className="h-4 w-4" />
-          Add Student
+          <Plus className="h-4 w-4" /> Add Student
         </button>
       </div>
 
@@ -191,148 +217,137 @@ function PlacedStudentsAdmin() {
         <div className="relative flex-1 min-w-[160px]">
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
           <input
-            type="text"
-            placeholder="Search student or company..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-md border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Search name, company, dept..."
+            className="w-full rounded-md border border-slate-200 bg-slate-50 pl-8 pr-3 py-1.5 text-sm focus:border-crimson focus:outline-none"
           />
         </div>
         <div className="flex items-center gap-1.5">
           <Filter className="h-3.5 w-3.5 text-slate-400" />
           <select
             value={filterCollege}
-            onChange={(e) => setFilterCollege(e.target.value)}
+            onChange={e => setFilterCollege(e.target.value)}
             className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 focus:border-crimson focus:outline-none"
           >
-            <option value="all">All Colleges</option>
-            {COLLEGE_OPTIONS.filter(c => c.value !== "overview").map(c => (
-              <option key={c.value} value={c.value}>{c.label}</option>
-            ))}
-          </select>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs font-medium text-slate-700 focus:border-crimson focus:outline-none"
-          >
-            <option value="all">All Statuses</option>
-            {STATUS_OPTIONS.map(s => (
-              <option key={s.value} value={s.value}>{s.label}</option>
-            ))}
+            <option value="all">All Institutes</option>
+            {colleges.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         </div>
-        <div className="text-xs text-slate-400 self-center ml-auto">{filtered.length} record{filtered.length !== 1 ? "s" : ""}</div>
+        <div className="text-xs text-slate-400 self-center ml-auto">
+          {filtered.length} student{filtered.length !== 1 ? "s" : ""}
+        </div>
       </div>
 
-      {/* Content */}
+      {/* Student Grid */}
       {loading ? (
         <div className="flex h-48 items-center justify-center">
           <Loader2 className="h-8 w-8 animate-spin text-crimson" />
         </div>
       ) : filtered.length === 0 ? (
-        <div className="flex h-48 flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-slate-200 bg-white text-center">
-          <GraduationCap className="h-10 w-10 text-slate-300" />
-          <p className="text-sm font-medium text-slate-500">No students found</p>
-          <button onClick={openAdd} className="text-xs text-crimson underline hover:no-underline">Add the first student</button>
+        <div className="rounded-xl border-2 border-dashed border-slate-200 py-16 text-center text-sm text-slate-400">
+          No students found.{" "}
+          <button onClick={openAdd} className="text-crimson underline">Add one</button>
         </div>
       ) : (
-        <div className="space-y-8">
-          {Object.entries(grouped).map(([code, list]) => (
-            <div key={code}>
-              <div className="mb-3 flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-navy/50" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-navy">
-                  {collegeLabelMap[code] ?? code}
-                </h2>
-                <span className="ml-1 rounded-full bg-navy/10 px-2 py-0.5 text-[10px] font-bold text-navy">
-                  {list.length}
-                </span>
-              </div>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                {list.map((s) => (
-                  <div
-                    key={s.id}
-                    className="group relative overflow-hidden rounded-2xl border-2 border-slate-200 bg-white transition hover:border-navy/40 hover:shadow-md"
-                  >
-                    {/* Status badge */}
-                    <div className={cn(
-                      "absolute top-2 left-2 z-10 rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide",
-                      s.status === "published" ? "bg-emerald-500/20 text-emerald-700" :
-                      s.status === "draft" ? "bg-amber-500/20 text-amber-700" :
-                      "bg-slate-400/20 text-slate-600"
-                    )}>
-                      {s.status}
-                    </div>
+        Object.entries(grouped).map(([collegeName, list]) => (
+          <div key={collegeName} className="space-y-3">
+            {/* College heading */}
+            <div className="flex items-center gap-2">
+              <Building2 className="h-4 w-4 text-crimson shrink-0" />
+              <h2 className="text-sm font-bold text-navy">{collegeName}</h2>
+              <span className="rounded-full bg-navy/8 px-2 py-0.5 text-[10px] font-bold text-navy/50">
+                {list.length}
+              </span>
+            </div>
 
-                    {/* Action buttons */}
-                    <div className="absolute top-1 right-1 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition">
+            {/* Cards */}
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+              {list.map(s => (
+                <div
+                  key={s.id}
+                  className="group relative flex flex-col overflow-hidden rounded-xl border-2 border-navy/10 bg-white hover:border-navy/30 transition-colors"
+                >
+                  {/* Photo */}
+                  <div className="aspect-square w-full bg-slate-100 flex items-center justify-center overflow-hidden relative">
+                    {s.photo_url ? (
+                      <img src={s.photo_url} alt={s.student_name} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-navy/5 to-navy/15">
+                        <span className="text-2xl font-bold text-navy/40">{initials(s.student_name)}</span>
+                      </div>
+                    )}
+                    {/* Status badge */}
+                    {s.status !== "published" && (
+                      <span className="absolute top-1.5 right-1.5 rounded-full bg-amber-400 px-1.5 py-0.5 text-[9px] font-bold text-white uppercase">
+                        {s.status}
+                      </span>
+                    )}
+                    {/* Hover actions */}
+                    <div className="absolute inset-0 flex items-end justify-center gap-1.5 p-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-black/60 to-transparent">
                       <button
                         onClick={() => openEdit(s)}
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-white shadow border border-slate-200 text-navy hover:bg-navy hover:text-white transition"
-                        title="Edit"
+                        className="rounded-lg bg-white/90 px-2.5 py-1 text-[10px] font-bold text-navy hover:bg-white transition"
                       >
-                        <Pencil className="h-3 w-3" />
+                        <Pencil className="h-3 w-3 inline mr-0.5" />Edit
                       </button>
                       <button
-                        onClick={() => handleDelete(s.id, s.student_name)}
+                        onClick={() => handleDelete(s.id)}
                         disabled={deleting === s.id}
-                        className="flex h-6 w-6 items-center justify-center rounded-full bg-white shadow border border-slate-200 text-rose-500 hover:bg-rose-500 hover:text-white transition"
-                        title="Delete"
+                        className="rounded-lg bg-rose-500/90 px-2 py-1 text-[10px] font-bold text-white hover:bg-rose-500 transition"
                       >
-                        {deleting === s.id ? <Loader2 className="h-3 w-3 animate-spin" /> : <Trash2 className="h-3 w-3" />}
+                        {deleting === s.id
+                          ? <Loader2 className="h-3 w-3 animate-spin" />
+                          : <Trash2 className="h-3 w-3" />}
                       </button>
                     </div>
+                  </div>
 
-                    {/* Photo */}
-                    <div className="aspect-square w-full bg-slate-100 flex items-center justify-center overflow-hidden">
-                      {s.photo_url ? (
-                        <img src={s.photo_url} alt={s.student_name} className="h-full w-full object-cover" />
-                      ) : (
-                        <ImageIcon className="h-10 w-10 text-slate-300" />
+                  {/* Info */}
+                  <div className="p-2.5 text-center border-t border-navy/8">
+                    <div className="font-semibold text-navy truncate text-xs">{s.student_name}</div>
+                    {s.department?.name && (
+                      <div className="text-[10px] font-medium text-crimson/80 truncate mt-0.5">{s.department.name}</div>
+                    )}
+                    <div className="text-[10px] text-slate-500 truncate mt-0.5">@ {s.company_name}</div>
+                    <div className="mt-1.5 flex items-center justify-center gap-1 flex-wrap">
+                      {s.batch_year && (
+                        <span className="rounded-full bg-navy/8 px-1.5 py-0.5 text-[9px] font-bold text-navy/60">{s.batch_year}</span>
+                      )}
+                      {s.package_lpa && (
+                        <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">₹{s.package_lpa} LPA</span>
                       )}
                     </div>
-
-                    {/* Info */}
-                    <div className="p-3 border-t border-slate-100 text-center">
-                      <p className="font-semibold text-navy text-sm truncate">{s.student_name}</p>
-                      <p className="text-[11px] text-slate-500 truncate mt-0.5">@ {s.company_name}</p>
-                    </div>
                   </div>
-                ))}
-
-                {/* Add new card shortcut */}
-                <button
-                  onClick={openAdd}
-                  className="aspect-square flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 text-slate-400 hover:border-emerald-400 hover:text-emerald-500 hover:bg-emerald-50 transition"
-                >
-                  <Plus className="h-6 w-6" />
-                  <span className="mt-1 text-[10px] font-semibold uppercase tracking-wide">Add</span>
-                </button>
-              </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))
       )}
 
-      {/* Form Modal */}
+      {/* ── Add / Edit Form Modal ─────────────────────────────── */}
       {showForm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-y-auto max-h-[90vh]">
-            {/* Modal header */}
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white shadow-2xl max-h-[95vh] overflow-y-auto">
             <div className="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-              <h2 className="font-bold text-navy text-base flex items-center gap-2">
-                <GraduationCap className="h-5 w-5 text-emerald-500" />
-                {editingId ? "Edit Student" : "Add New Student"}
+              <h2 className="font-bold text-navy text-base">
+                {editingId ? "Edit Student" : "Add Placed Student"}
               </h2>
-              <button onClick={() => setShowForm(false)} className="rounded-full p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition">
+              <button
+                onClick={() => setShowForm(false)}
+                className="rounded-full p-1 text-slate-400 hover:bg-slate-100 transition"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="p-6 space-y-5">
+            <div className="p-6 space-y-4">
               {/* Photo uploader */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Student Photo</label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                  <ImageIcon className="h-3 w-3" /> Student Photo
+                </label>
                 <MediaUploader
                   value={form.photo_url}
                   onChange={(url) => setForm(f => ({ ...f, photo_url: url }))}
@@ -341,64 +356,77 @@ function PlacedStudentsAdmin() {
                 />
               </div>
 
-              {/* Student Name */}
+              {/* Student name */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Student Name <span className="text-rose-500">*</span></label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                  <User className="h-3 w-3" /> Student Name <span className="text-rose-500">*</span>
+                </label>
                 <input
-                  type="text"
                   value={form.student_name}
-                  onChange={(e) => setForm(f => ({ ...f, student_name: e.target.value }))}
+                  onChange={e => setForm(f => ({ ...f, student_name: e.target.value }))}
                   placeholder="e.g. Raj Patel"
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                 />
               </div>
 
-              {/* Company Name */}
+              {/* Institute dropdown — from DB */}
               <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Placed At (Company) <span className="text-rose-500">*</span></label>
-                <input
-                  type="text"
-                  value={form.company_name}
-                  onChange={(e) => setForm(f => ({ ...f, company_name: e.target.value }))}
-                  placeholder="e.g. Google, Amazon, TCS..."
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-                />
-              </div>
-
-              {/* Department */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Department / Programme</label>
-                <input
-                  type="text"
-                  value={form.department}
-                  onChange={(e) => setForm(f => ({ ...f, department: e.target.value }))}
-                  placeholder="e.g. Computer Engineering, B.Arch, MCA..."
-                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-                />
-              </div>
-
-              {/* College */}
-              <div className="space-y-1.5">
-                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Institution / College <span className="text-rose-500">*</span></label>
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                  <Building2 className="h-3 w-3" /> Institute <span className="text-rose-500">*</span>
+                </label>
                 <select
-                  value={form.college_code}
-                  onChange={(e) => setForm(f => ({ ...f, college_code: e.target.value }))}
+                  value={form.college_id}
+                  onChange={e => setForm(f => ({ ...f, college_id: e.target.value, department_id: "" }))}
                   className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                 >
-                  {COLLEGE_OPTIONS.filter(c => c.value !== "overview").map(c => (
-                    <option key={c.value} value={c.value}>{c.label}</option>
+                  <option value="">— Select institute —</option>
+                  {colleges.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
               </div>
 
-              {/* Batch Year + Package */}
+              {/* Department dropdown — filtered by selected college, from DB */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500 flex items-center gap-1">
+                  <GraduationCap className="h-3 w-3" /> Department / Programme
+                </label>
+                <select
+                  value={form.department_id}
+                  onChange={e => setForm(f => ({ ...f, department_id: e.target.value }))}
+                  disabled={!form.college_id || departments.length === 0}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none disabled:opacity-50"
+                >
+                  <option value="">— Select department (optional) —</option>
+                  {departments.map(d => (
+                    <option key={d.id} value={d.id}>{d.name}</option>
+                  ))}
+                </select>
+                {form.college_id && departments.length === 0 && (
+                  <p className="text-[10px] text-slate-400">No departments found for this institute</p>
+                )}
+              </div>
+
+              {/* Company */}
+              <div className="space-y-1.5">
+                <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">
+                  Placed At (Company) <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  value={form.company_name}
+                  onChange={e => setForm(f => ({ ...f, company_name: e.target.value }))}
+                  placeholder="e.g. Google, Amazon, Apollo Hospitals..."
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
+                />
+              </div>
+
+              {/* Batch year + Package */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Batch Year</label>
                   <input
-                    type="text"
                     value={form.batch_year}
-                    onChange={(e) => setForm(f => ({ ...f, batch_year: e.target.value }))}
+                    onChange={e => setForm(f => ({ ...f, batch_year: e.target.value }))}
                     placeholder="e.g. 2024"
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                   />
@@ -409,7 +437,7 @@ function PlacedStudentsAdmin() {
                     type="number"
                     step="0.1"
                     value={form.package_lpa}
-                    onChange={(e) => setForm(f => ({ ...f, package_lpa: e.target.value }))}
+                    onChange={e => setForm(f => ({ ...f, package_lpa: e.target.value }))}
                     placeholder="e.g. 12.5"
                     className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                   />
@@ -419,28 +447,18 @@ function PlacedStudentsAdmin() {
               {/* Status */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Status</label>
-                <div className="flex gap-2">
-                  {STATUS_OPTIONS.map(opt => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => setForm(f => ({ ...f, status: opt.value }))}
-                      className={cn(
-                        "flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition",
-                        form.status === opt.value
-                          ? "border-navy bg-navy text-white"
-                          : "border-slate-200 bg-slate-50 text-slate-600 hover:border-navy/40"
-                      )}
-                    >
-                      {form.status === opt.value ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertCircle className="h-3.5 w-3.5 opacity-30" />}
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
+                <select
+                  value={form.status}
+                  onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
+                >
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
               </div>
             </div>
 
-            {/* Modal footer */}
             <div className="flex items-center justify-end gap-2 border-t border-slate-100 px-6 py-4">
               <button
                 onClick={() => setShowForm(false)}

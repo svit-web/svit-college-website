@@ -1,4 +1,4 @@
-// Server functions for placement statistics and recruiters from Supabase
+// Server functions for placement statistics, recruiters and placed students from Supabase
 import { createServerFn } from '@tanstack/react-start';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -24,19 +24,13 @@ export interface Recruiter {
   website_url: string | null;
   sort_order: number;
   college_codes?: string[] | null;
-  metadata: {
-    colleges?: string[];
-    [key: string]: any;
-  };
+  metadata: { colleges?: string[]; [key: string]: any };
   created_at: string;
   updated_at: string;
 }
 
-/**
- * Fetch published placement statistics for a college (by slug).
- * Aggregates across all departments belonging to that college.
- * Returns rows ordered newest-first.
- */
+// ── Placement Statistics ──────────────────────────────────────
+
 export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
   .validator((collegeSlug: string) => collegeSlug)
   .handler(async (ctx) => {
@@ -50,7 +44,6 @@ export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
     }
 
     const { data: depts } = await query;
-
     if (!depts?.length) return [] as PlacementStatistics[];
 
     const deptIds = depts.map((d: any) => d.id);
@@ -64,35 +57,24 @@ export const getPlacementStatsByCollege = createServerFn({ method: 'GET' })
 
     if (error) {
       console.error('Error fetching placement statistics:', error);
-      throw error;
+      return [] as PlacementStatistics[];
     }
 
     return (data ?? []) as unknown as PlacementStatistics[];
   });
 
-/**
- * Fetch all published recruiters (used by overview page).
- */
+// ── Recruiters ────────────────────────────────────────────────
+
 export const getAllRecruiters = createServerFn({ method: 'GET' })
   .handler(async () => {
-    const { data, error } = await supabase
+    const { data } = await supabase
       .from('recruiters')
       .select('*')
       .eq('status', 'published')
       .order('sort_order', { ascending: true });
-
-    if (error) {
-      console.error('Error fetching recruiters:', error);
-      return [] as Recruiter[];
-    }
-
     return (data ?? []) as unknown as Recruiter[];
   });
 
-/**
- * Fetch published recruiters scoped to a specific college.
- * Falls back to all recruiters if college_codes column doesn't exist yet.
- */
 export const getRecruitersByCollege = createServerFn({ method: 'GET' })
   .validator((collegeSlug: string) => collegeSlug)
   .handler(async (ctx) => {
@@ -108,7 +90,6 @@ export const getRecruitersByCollege = createServerFn({ method: 'GET' })
     if (ctx.data === 'overview') return fetchAll();
 
     try {
-      // Try college_codes scoping — column may not exist yet in live DB
       const { data, error } = await (supabase as any)
         .from('recruiters')
         .select('*')
@@ -117,7 +98,6 @@ export const getRecruitersByCollege = createServerFn({ method: 'GET' })
         .order('sort_order', { ascending: true });
 
       if (error) {
-        // Column missing — gracefully return all recruiters
         console.warn('college_codes not available, falling back:', error.message);
         return fetchAll();
       }
@@ -127,22 +107,22 @@ export const getRecruitersByCollege = createServerFn({ method: 'GET' })
     }
   });
 
+// ── Placement Cell ────────────────────────────────────────────
+
 export interface PlacementCell {
   id: string;
   college_code: string;
   about_text: string;
-  officer_name: string;
-  officer_designation: string;
-  officer_phone: string;
-  officer_email: string;
+  hero_title: string | null;
+  hero_subtitle: string | null;
+  officer_name: string | null;
+  officer_designation: string | null;
+  officer_phone: string | null;
+  officer_email: string | null;
   officer_photo_url: string | null;
-  placed_students: { studentName: string; companyName: string; photo: string | null }[];
   default_student_placeholder_url: string | null;
 }
 
-/**
- * Fetch placement cell info for a college by its code/slug.
- */
 export const getPlacementCell = createServerFn({ method: 'GET' })
   .validator((collegeCode: string) => collegeCode)
   .handler(async (ctx) => {
@@ -150,81 +130,107 @@ export const getPlacementCell = createServerFn({ method: 'GET' })
       .from('placement_cells')
       .select('*')
       .eq('college_code', ctx.data)
-      .eq('status', 'published')
-      .is('deleted_at', null)
       .maybeSingle();
 
     if (error) {
       console.error('Error fetching placement cell:', error);
       return null;
     }
-
     return data as PlacementCell | null;
   });
 
-/**
- * Fetch a college by slug for placement page routing.
- */
+// ── College Lookup ────────────────────────────────────────────
+
 export const getCollegeBySlug = createServerFn({ method: 'GET' })
   .validator((slug: string) => slug)
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('colleges')
-      .select('slug, code, name, metadata')
+      .select('id, slug, code, name, metadata')
       .eq('slug', ctx.data)
       .eq('status', 'published')
       .is('deleted_at', null)
       .maybeSingle();
 
-    if (error) return null;
-    if (!data) return null;
+    if (error || !data) return null;
 
     return {
+      id: data.id as string,                                        // UUID for FK queries
       code: data.slug,
       name: data.name,
       shortCode: (data.metadata as any)?.shortCode ?? data.code,
     };
   });
 
+/** Fetch all published colleges — used by admin dropdowns */
+export const getAllColleges = createServerFn({ method: 'GET' })
+  .handler(async () => {
+    const { data, error } = await supabase
+      .from('colleges')
+      .select('id, slug, name')
+      .eq('status', 'published')
+      .order('sort_order', { ascending: true });
+    if (error) return [];
+    return (data ?? []) as unknown as { id: string; slug: string; name: string; short_code: string }[];
+  });
+
+/** Fetch departments for a given college UUID — used by admin dropdowns */
+export const getDepartmentsByCollege = createServerFn({ method: 'GET' })
+  .validator((collegeId: string) => collegeId)
+  .handler(async (ctx) => {
+    const { data, error } = await supabase
+      .from('departments')
+      .select('id, name, slug')
+      .eq('college_id', ctx.data)
+      .eq('status', 'published')
+      .order('name', { ascending: true });
+    if (error) return [];
+    return (data ?? []) as { id: string; name: string; slug: string }[];
+  });
+
+// ── Placed Students ───────────────────────────────────────────
+
 export interface PlacedStudent {
   id: string;
-  college_code: string;
+  college_id: string;
+  department_id: string | null;
   student_name: string;
   company_name: string;
-  department: string | null;
   photo_url: string | null;
   batch_year: string | null;
   package_lpa: number | null;
-  status: 'draft' | 'published' | 'archived';
+  status: string;
   created_at: string;
   updated_at: string;
+  // From join:
+  college?: { id: string; slug: string; name: string } | null;
+  department?: { id: string; name: string; slug: string } | null;
 }
 
 /**
- * Fetch published placed students for a college by its code.
- * Returns [] gracefully if table doesn't exist yet in schema cache.
+ * Fetch published placed students for a college by its UUID.
+ * Joins college + department for display names.
+ * Returns [] gracefully if table is missing.
  */
 export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
-  .validator((collegeCode: string) => collegeCode)
+  .validator((input: { collegeId: string | null; isOverview: boolean }) => input)
   .handler(async (ctx) => {
     try {
       let query = (supabase as any)
         .from('placed_students')
-        .select('*')
+        .select('*, college:colleges(id, slug, name), department:departments(id, name, slug)')
         .eq('status', 'published')
         .order('batch_year', { ascending: false })
         .order('created_at', { ascending: false });
 
-      if (ctx.data !== 'overview') {
-        query = query.eq('college_code', ctx.data);
+      if (!ctx.data.isOverview && ctx.data.collegeId) {
+        query = query.eq('college_id', ctx.data.collegeId);
       }
 
       const { data, error } = await query;
+
       if (error) {
-        // Table missing or schema cache stale — return empty list silently
-        if (error.code === 'PGRST205' || error.code === '42P01') {
-          return [] as PlacedStudent[];
-        }
+        if (error.code === 'PGRST205' || error.code === '42P01') return [] as PlacedStudent[];
         console.error('Error fetching placed students:', error);
         return [] as PlacedStudent[];
       }

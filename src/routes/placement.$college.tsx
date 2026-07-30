@@ -1,13 +1,37 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
-import { getPlacementStatsByCollege, getRecruitersByCollege, getPlacementCell, getCollegeBySlug, getPlacedStudentsByCollege, type PlacementStatistics } from "@/lib/placement.functions";
+import {
+  getPlacementStatsByCollege,
+  getRecruitersByCollege,
+  getPlacementCell,
+  getCollegeBySlug,
+  getPlacedStudentsByCollege,
+  type PlacementStatistics,
+} from "@/lib/placement.functions";
 
 type PlacementSlug = string;
 interface PlacementPageContent {
-  slug: PlacementSlug; collegeId: string; collegeName: string; shortCode: string; aboutText: string;
-  heroTitle: string | null; heroSubtitle: string | null;
-  details: { graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[]; statHighlights: { label: string; value: string }[] };
-  summary: { placedStudents: { studentName: string; companyName: string; department: string | null; photo: string | null; batchYear: string | null; packageLpa: number | null }[] };
+  slug: PlacementSlug;
+  collegeId: string;
+  collegeName: string;
+  shortCode: string;
+  aboutText: string;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
+  details: {
+    graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[];
+    statHighlights: { label: string; value: string }[];
+  };
+  summary: {
+    placedStudents: {
+      studentName: string;
+      companyName: string;
+      department: string | null;
+      photo: string | null;
+      batchYear: string | null;
+      packageLpa: number | null;
+    }[];
+  };
   recruiters: { companyName: string; logo: string | null }[];
   placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
   defaultStudentPlaceholderUrl: string | null;
@@ -28,34 +52,40 @@ export const Route = createFileRoute("/placement/$college")({
       ],
     };
   },
+
   loader: async ({ params }) => {
-    let college;
-    if (params.college === 'overview') {
-      college = {
-        code: 'overview',
-        name: 'SVIT Group of Institutions',
-        shortCode: 'Overview'
-      };
+    // ── Resolve college ───────────────────────────────────────
+    let college: { id?: string; code: string; name: string; shortCode: string };
+
+    if (params.college === "overview") {
+      college = { code: "overview", name: "SVIT Group of Institutions", shortCode: "Overview" };
     } else {
-      college = await getCollegeBySlug({ data: params.college });
-      if (!college) throw notFound();
+      const found = await getCollegeBySlug({ data: params.college });
+      if (!found) throw notFound();
+      college = found;
     }
 
+    const isOverview = params.college === "overview";
+
+    // ── Parallel data fetch ───────────────────────────────────
     const [stats, collegeRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
       getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
       getRecruitersByCollege({ data: params.college }),
       getPlacementCell({ data: college.code }),
-      getPlacedStudentsByCollege({ data: college.code }),
+      getPlacedStudentsByCollege({
+        data: { collegeId: college.id ?? null, isOverview },
+      }),
     ]);
 
+    // ── Process stats ─────────────────────────────────────────
     function toDisplayYear(academicYear: string): string {
-      if (!academicYear.includes('-')) return academicYear;
-      const part = academicYear.split('-')[1];
-      return part.length === 2 ? '20' + part : part;
+      if (!academicYear.includes("-")) return academicYear;
+      const part = academicYear.split("-")[1];
+      return part.length === 2 ? "20" + part : part;
     }
 
     let processedStats = stats;
-    if (params.college === 'overview') {
+    if (isOverview) {
       const yearMap = new Map<string, {
         academic_year: string;
         placed_students: number;
@@ -79,91 +109,87 @@ export const Route = createFileRoute("/placement/$college")({
             recruiters_count: 0,
           });
         }
-        const current = yearMap.get(year)!;
-        current.placed_students += s.placed_students;
-        current.total_students += s.total_students;
-        if (s.highest_package && s.highest_package > current.highest_package) {
-          current.highest_package = s.highest_package;
-        }
-        if (s.average_package) {
-          current.average_package_sum += s.average_package;
-          current.average_package_count += 1;
-        }
-        if (s.recruiters_count) {
-          current.recruiters_count += s.recruiters_count;
-        }
+        const cur = yearMap.get(year)!;
+        cur.placed_students += s.placed_students;
+        cur.total_students += s.total_students;
+        if (s.highest_package && s.highest_package > cur.highest_package) cur.highest_package = s.highest_package;
+        if (s.average_package) { cur.average_package_sum += s.average_package; cur.average_package_count++; }
+        if (s.recruiters_count) cur.recruiters_count += s.recruiters_count;
       }
 
-      processedStats = Array.from(yearMap.values()).map(yearData => ({
-        id: yearData.academic_year,
+      processedStats = Array.from(yearMap.values()).map(y => ({
+        id: y.academic_year,
         department_id: null,
-        academic_year: yearData.academic_year,
-        placed_students: yearData.placed_students,
-        total_students: yearData.total_students,
-        highest_package: yearData.highest_package || null,
-        average_package: yearData.average_package_count > 0 
-          ? Math.round((yearData.average_package_sum / yearData.average_package_count) * 10) / 10 
+        academic_year: y.academic_year,
+        placed_students: y.placed_students,
+        total_students: y.total_students,
+        highest_package: y.highest_package || null,
+        average_package: y.average_package_count > 0
+          ? Math.round((y.average_package_sum / y.average_package_count) * 10) / 10
           : null,
-        recruiters_count: yearData.recruiters_count || null,
-        status: 'published',
+        recruiters_count: y.recruiters_count || null,
+        status: "published" as const,
         metadata: {},
-        created_at: '',
-        updated_at: '',
-      } as any));
-      
+        created_at: "",
+        updated_at: "",
+      }));
       processedStats.sort((a, b) => b.academic_year.localeCompare(a.academic_year));
     }
 
-    const graphicalData = [...processedStats]
-      .reverse()
-      .map(s => ({
-        year: toDisplayYear(s.academic_year),
-        studentsPlaced: s.placed_students,
-        placementPercentage: s.total_students > 0
-          ? Math.round((s.placed_students / s.total_students) * 100)
-          : 0,
-      }));
+    const graphicalData = [...processedStats].reverse().map(s => ({
+      year: toDisplayYear(s.academic_year),
+      studentsPlaced: s.placed_students,
+      placementPercentage: s.total_students > 0
+        ? Math.round((s.placed_students / s.total_students) * 100)
+        : 0,
+    }));
 
     const latest = processedStats[0] ?? null;
     const statHighlights = latest
       ? [
-          { label: 'Students Placed', value: `${latest.placed_students}+` },
-          ...(latest.highest_package ? [{ label: 'Highest Package', value: `₹${latest.highest_package} LPA` }] : []),
-          ...(latest.average_package ? [{ label: 'Average Package', value: `₹${latest.average_package} LPA` }] : []),
-          ...(latest.recruiters_count ? [{ label: 'Companies Visited', value: `${latest.recruiters_count}+` }] : []),
+          { label: "Students Placed", value: `${latest.placed_students}+` },
+          ...(latest.highest_package ? [{ label: "Highest Package", value: `₹${latest.highest_package} LPA` }] : []),
+          ...(latest.average_package ? [{ label: "Average Package", value: `₹${latest.average_package} LPA` }] : []),
+          ...(latest.recruiters_count ? [{ label: "Companies Visited", value: `${latest.recruiters_count}+` }] : []),
         ]
       : [];
 
+    // ── Build page content ────────────────────────────────────
     const content: PlacementPageContent = {
       slug: params.college as PlacementSlug,
       collegeId: college.code,
       collegeName: college.name,
       shortCode: college.shortCode,
-      aboutText: placementCell?.about_text ?? (params.college === 'overview'
-        ? 'The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges, including Engineering, Architecture, Nursing, and Applied Sciences. We collaborate with national and multinational companies to bridge academic training and corporate demands.'
-        : ''),
+      aboutText:
+        placementCell?.about_text ??
+        (isOverview
+          ? "The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges."
+          : ""),
+      heroTitle: placementCell?.hero_title ?? null,
+      heroSubtitle: placementCell?.hero_subtitle ?? null,
       details: { graphicalData, statHighlights },
       summary: {
         placedStudents: dbPlacedStudents.map(s => ({
           studentName: s.student_name,
           companyName: s.company_name,
-          department: s.department ?? null,
+          department: (s.department as any)?.name ?? null,
           photo: s.photo_url,
           batchYear: s.batch_year ?? null,
           packageLpa: s.package_lpa ?? null,
-        }))
+        })),
       },
-      recruiters: collegeRecruiters.map(r => ({ companyName: r.company_name, logo: r.logo_url?.trim() || null })),
+      recruiters: collegeRecruiters.map(r => ({
+        companyName: r.company_name,
+        logo: r.logo_url?.trim() || null,
+      })),
       placementOfficer: {
-        name: placementCell?.officer_name ?? '',
-        designation: placementCell?.officer_designation ?? 'Training & Placement Officer',
-        phone: placementCell?.officer_phone ?? '',
-        email: placementCell?.officer_email ?? '',
-        photo: (placementCell as any)?.officer_photo_url ?? null,
+        name: placementCell?.officer_name ?? "",
+        designation: placementCell?.officer_designation ?? "Training & Placement Officer",
+        phone: placementCell?.officer_phone ?? "",
+        email: placementCell?.officer_email ?? "",
+        photo: placementCell?.officer_photo_url ?? null,
       },
-      heroTitle: (placementCell as any)?.hero_title ?? null,
-      heroSubtitle: (placementCell as any)?.hero_subtitle ?? null,
-      defaultStudentPlaceholderUrl: (placementCell as any)?.default_student_placeholder_url ?? null,
+      defaultStudentPlaceholderUrl: placementCell?.default_student_placeholder_url ?? null,
     };
 
     return { content };
