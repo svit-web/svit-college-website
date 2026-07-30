@@ -43,9 +43,9 @@ export function Header() {
   };
 
   const displayColleges = useMemo(() => {
-    const ACADEMIC_COLLEGE_SLUGS = ["svit-degree", "svit-coa", "svica", "svion", "svit-diploma"];
+    const EXCLUDED_SLUGS = ["abc123", "thesilicon", "the-silicon", "overview"];
     return (dbColleges ?? [])
-      .filter(c => ACADEMIC_COLLEGE_SLUGS.includes(c.slug))
+      .filter(c => !EXCLUDED_SLUGS.includes(c.slug?.toLowerCase()))
       .map(c => ({
         id: c.slug,
         shortCode: (c as any).metadata?.shortCode ?? c.code,

@@ -338,11 +338,12 @@ export const getDynamicPlacementDivisions = createServerFn({ method: 'GET' })
   .handler(async (): Promise<PlacementDivisionItem[]> => {
     try {
       const ORDER = ["svit-degree", "svit-coa", "svica", "svion"];
-      // Fetch dynamic placement divisions from placement_cells table
-      const { data, error } = await supabase
-        .from('placement_cells')
-        .select('college_code')
-        .neq('college_code', 'overview');
+      
+      // Query both colleges table and placement_cells table
+      const [collegesRes, cellsRes] = await Promise.all([
+        supabase.from('colleges').select('slug, name, code, metadata').eq('status', 'published').is('deleted_at', null).order('sort_order', { ascending: true }),
+        supabase.from('placement_cells').select('college_code').neq('college_code', 'overview')
+      ]);
 
       const divisionMap = new Map<string, PlacementDivisionItem>([
         ['svit-degree', { slug: 'svit-degree', label: 'SVIT (Degree)' }],
@@ -351,10 +352,26 @@ export const getDynamicPlacementDivisions = createServerFn({ method: 'GET' })
         ['svion', { slug: 'svion', label: 'SVION (Nursing)' }],
       ]);
 
-      if (!error && data && data.length > 0) {
-        data.forEach((pc: any) => {
-          if (!EXCLUDED_PLACEMENT_SLUGS.includes(pc.college_code)) {
-            const slug = pc.college_code;
+      // 1. Add colleges from main Colleges table
+      if (collegesRes.data && collegesRes.data.length > 0) {
+        collegesRes.data.forEach((c: any) => {
+          if (!EXCLUDED_PLACEMENT_SLUGS.includes(c.slug)) {
+            const short = c.metadata?.shortCode || c.code || c.name;
+            let label = short;
+            if (c.slug === 'svit-degree') label = 'SVIT (Degree)';
+            else if (c.slug === 'svit-coa') label = 'COA (Architecture)';
+            else if (c.slug === 'svica') label = 'SVICA (Comp. Apps)';
+            else if (c.slug === 'svion') label = 'SVION (Nursing)';
+            divisionMap.set(c.slug, { slug: c.slug, label });
+          }
+        });
+      }
+
+      // 2. Add custom placement divisions from placement_cells table
+      if (cellsRes.data && cellsRes.data.length > 0) {
+        cellsRes.data.forEach((pc: any) => {
+          const slug = pc.college_code;
+          if (!EXCLUDED_PLACEMENT_SLUGS.includes(slug) && !divisionMap.has(slug)) {
             let label = slug.toUpperCase();
             if (slug === 'svit-degree') label = 'SVIT (Degree)';
             else if (slug === 'svit-coa') label = 'COA (Architecture)';

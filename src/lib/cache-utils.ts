@@ -57,7 +57,8 @@ const TABLE_QUERY_MAP: Record<string, string[][]> = {
 
   // Placement & Recruiters
   recruiters: [["recruiters"]],
-  placement_statistics: [["placement_statistics"], ["placement"]],
+  placed_students: [["placed_students"], ["placement"]],
+  placement_cells: [["placement_cells"], ["placement"]],
   testimonials: [["testimonials"]],
 
   // Contact & Info

@@ -98,6 +98,7 @@ export function TnpMasterHub() {
   const [showStudentModal, setShowStudentModal] = useState(false);
   const [editingStudentId, setEditingStudentId] = useState<string | null>(null);
   const [studentForm, setStudentForm] = useState({
+    student_name: "",
     company_name: "",
     batch_year: "2024",
     college_id: "",
@@ -115,25 +116,15 @@ export function TnpMasterHub() {
   const [addCollegeSaving, setAddCollegeSaving] = useState(false);
   const [deletingDivision, setDeletingDivision] = useState(false);
 
-  // Fetch Placement Divisions from placement_cells table
+  // Fetch Placement Divisions from both colleges table and placement_cells table
   const fetchPlacementDivisions = useCallback(async () => {
-    const { data } = await sb
-      .from("placement_cells")
-      .select("college_code")
-      .neq("college_code", "overview");
+    const [collegesRes, cellsRes] = await Promise.all([
+      sb.from("colleges").select("id, slug, name").eq("status", "published").is("deleted_at", null),
+      sb.from("placement_cells").select("college_code").neq("college_code", "overview")
+    ]);
 
     const EXCLUDED_SLUGS = ["abc123", "svit-diploma", "thesilicon", "the-silicon", "diploma"];
-    const valid = (data ?? [])
-      .filter((pc: any) => !EXCLUDED_SLUGS.includes(pc.college_code))
-      .map((pc: any) => {
-        const slug = pc.college_code;
-        let label = slug;
-        if (slug === "svit-degree") label = "SVIT (Degree)";
-        else if (slug === "svit-coa") label = "COA (Architecture)";
-        else if (slug === "svica") label = "SVICA (Comp. Apps)";
-        else if (slug === "svion") label = "SVION (Nursing)";
-        return { id: slug, slug, name: label };
-      });
+    const map = new Map<string, CollegeRecord>();
 
     const defaults: CollegeRecord[] = [
       { id: "svit-degree", slug: "svit-degree", name: "SVIT (Degree)" },
@@ -141,9 +132,26 @@ export function TnpMasterHub() {
       { id: "svica", slug: "svica", name: "SVICA (Comp. Apps)" },
       { id: "svion", slug: "svion", name: "SVION (Nursing)" },
     ];
-    const map = new Map<string, CollegeRecord>();
     defaults.forEach(d => map.set(d.slug, d));
-    valid.forEach(v => map.set(v.slug, v));
+
+    (collegesRes.data ?? []).forEach((c: any) => {
+      if (!EXCLUDED_SLUGS.includes(c.slug)) {
+        let label = c.name;
+        if (c.slug === "svit-degree") label = "SVIT (Degree)";
+        else if (c.slug === "svit-coa") label = "COA (Architecture)";
+        else if (c.slug === "svica") label = "SVICA (Comp. Apps)";
+        else if (c.slug === "svion") label = "SVION (Nursing)";
+        map.set(c.slug, { id: c.id, slug: c.slug, name: label });
+      }
+    });
+
+    (cellsRes.data ?? []).forEach((pc: any) => {
+      const slug = pc.college_code;
+      if (!EXCLUDED_SLUGS.includes(slug) && !map.has(slug)) {
+        let label = slug.toUpperCase();
+        map.set(slug, { id: slug, slug, name: label });
+      }
+    });
 
     setColleges(Array.from(map.values()));
   }, [sb]);
@@ -187,10 +195,27 @@ export function TnpMasterHub() {
       pcErr = fallbackRes.error;
     }
 
-    if (pcErr) {
-      toast.error("Failed to create division: " + pcErr.message);
-      setAddCollegeSaving(false);
-      return;
+    // Also attempt inserting into colleges table if institute_id exists
+    let instituteId: string | null = null;
+    const { data: instData } = await sb.from("institutes").select("id").limit(1).maybeSingle();
+    if (instData?.id) {
+      instituteId = instData.id;
+    } else {
+      const { data: existingCol } = await sb.from("colleges").select("institute_id").not("institute_id", "is", null).limit(1).maybeSingle();
+      if (existingCol?.institute_id) {
+        instituteId = existingCol.institute_id;
+      }
+    }
+
+    if (instituteId) {
+      const cleanCode = (addCollegeForm.name.trim().replace(/[^a-zA-Z0-9]/g, "").toUpperCase() || "COLLEGE").slice(0, 10);
+      await sb.from("colleges").upsert({
+        name: addCollegeForm.name.trim(),
+        slug: rawSlug,
+        code: cleanCode,
+        institute_id: instituteId,
+        status: "published",
+      }, { onConflict: "slug" });
     }
 
     toast.success(`Created ${addCollegeForm.name.trim()} placement division!`);
@@ -325,13 +350,20 @@ export function TnpMasterHub() {
   // Save Student Card
   const handleSaveStudent = async () => {
     if (!studentForm.company_name.trim()) { toast.error("Company Name is required"); return; }
-    if (!studentForm.college_id) { toast.error("Select a college"); return; }
+
+    let targetCollegeId = studentForm.college_id || currentCollegeDbId;
+    if (!targetCollegeId) {
+      const found = colleges.find(c => c.slug === activeCollegeCode);
+      if (found?.id) targetCollegeId = found.id;
+    }
+
+    if (!targetCollegeId) { toast.error("Please select a college for this student card"); return; }
 
     const payload = {
-      student_name: "Student",
+      student_name: studentForm.student_name.trim() || "Student",
       company_name: studentForm.company_name.trim(),
       batch_year: studentForm.batch_year.trim() || "2024",
-      college_id: studentForm.college_id,
+      college_id: targetCollegeId,
       photo_url: studentForm.photo_url.trim() || null,
       status: "published",
     };
@@ -413,8 +445,13 @@ export function TnpMasterHub() {
   }, [colleges]);
 
   const activeCollegeObj = dynamicCollegePages.find(c => c.code === activeCollegeCode) || COLLEGE_PAGES[0];
-  const currentCollegeDbId = colleges.find(c => c.slug === activeCollegeCode)?.id;
-  const filteredStudentsForCollege = students.filter(s => s.college_id === currentCollegeDbId);
+  const currentCollegeObj = colleges.find(c => c.slug === activeCollegeCode);
+  const currentCollegeDbId = currentCollegeObj?.id;
+  const filteredStudentsForCollege = students.filter(s => 
+    s.college_id === currentCollegeDbId || 
+    (s.college as any)?.slug === activeCollegeCode ||
+    s.college_id === activeCollegeCode
+  );
 
   return (
     <div className="max-w-5xl space-y-6 pb-20">
@@ -719,6 +756,7 @@ export function TnpMasterHub() {
                       onClick={() => {
                         setEditingStudentId(null);
                         setStudentForm({
+                          student_name: "",
                           company_name: "",
                           batch_year: "2024",
                           college_id: currentCollegeDbId || "",
@@ -766,6 +804,7 @@ export function TnpMasterHub() {
                               onClick={() => {
                                 setEditingStudentId(s.id);
                                 setStudentForm({
+                                  student_name: s.student_name || "",
                                   company_name: s.company_name,
                                   batch_year: s.batch_year || "2024",
                                   college_id: s.college_id,
@@ -786,9 +825,12 @@ export function TnpMasterHub() {
                           </div>
                         </div>
 
-                        {/* Public Card Info (Company + Batch) */}
+                        {/* Public Card Info (Student Name + Company + Batch) */}
                         <div className="p-2 border-t border-slate-100">
-                          <div className="font-bold text-slate-900 truncate text-xs">{s.company_name}</div>
+                          {s.student_name && s.student_name !== "Student" && (
+                            <div className="font-bold text-navy truncate text-xs">{s.student_name}</div>
+                          )}
+                          <div className="font-medium text-slate-700 truncate text-[11px]">{s.company_name}</div>
                           <div className="text-[9px] font-bold text-slate-500 uppercase mt-0.5">
                             Batch {s.batch_year || "2024"}
                           </div>
@@ -817,6 +859,17 @@ export function TnpMasterHub() {
             </div>
 
             <div className="p-4 space-y-3">
+              {/* Student Name */}
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-600">Student Name (Optional)</label>
+                <input
+                  value={studentForm.student_name}
+                  onChange={e => setStudentForm(f => ({ ...f, student_name: e.target.value }))}
+                  placeholder="e.g. Rahul Sharma"
+                  className="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-900 focus:border-crimson focus:outline-none"
+                />
+              </div>
+
               {/* Company Name */}
               <div className="space-y-1">
                 <label className="text-[11px] font-semibold text-slate-600">Company Name <span className="text-rose-500">*</span></label>
