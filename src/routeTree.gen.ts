@@ -9,130 +9,71 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AlumniRouteImport } from './routes/alumni'
-import { Route as AntiRaggingRouteImport } from './routes/anti-ragging'
-import { Route as CampusRouteImport } from './routes/campus'
-import { Route as CampusLifeRouteImport } from './routes/campus-life'
-import { Route as CareersRouteImport } from './routes/careers'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as DownloadsRouteImport } from './routes/downloads'
-import { Route as GalleryRouteImport } from './routes/gallery'
-import { Route as GrievanceRouteImport } from './routes/grievance'
-import { Route as NewsRouteImport } from './routes/news'
-import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as StudentLoginRouteImport } from './routes/student-login'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
-import { Route as AdminEventsRouteImport } from './routes/admin.events'
-import { Route as AdminHomepageRouteImport } from './routes/admin.homepage'
-import { Route as AdminInquiriesRouteImport } from './routes/admin.inquiries'
-import { Route as AdminLoginRouteImport } from './routes/admin.login'
-import { Route as AdminMediaRouteImport } from './routes/admin.media'
-import { Route as AdminMenusRouteImport } from './routes/admin.menus'
-import { Route as AdminPostsRouteImport } from './routes/admin.posts'
-import { Route as AdminRecruitersRouteImport } from './routes/admin.recruiters'
-import { Route as AdminSportsRouteImport } from './routes/admin.sports'
-import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
-import { Route as AdminTrashRouteImport } from './routes/admin.trash'
-import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
-import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
-import { Route as CampusLifeIndexRouteImport } from './routes/campus-life.index'
-import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
-import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
-import { Route as CoursesIndexRouteImport } from './routes/courses.index'
-import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
-import { Route as DepartmentsDeptRouteImport } from './routes/departments.$dept'
-import { Route as GalleryIndexRouteImport } from './routes/gallery.index'
-import { Route as GalleryAlbumIdRouteImport } from './routes/gallery.$albumId'
+import { Route as ParentsRouteImport } from './routes/parents'
+import { Route as NewsRouteImport } from './routes/news'
+import { Route as GrievanceRouteImport } from './routes/grievance'
+import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as DownloadsRouteImport } from './routes/downloads'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CareersRouteImport } from './routes/careers'
+import { Route as CampusLifeRouteImport } from './routes/campus-life'
+import { Route as CampusRouteImport } from './routes/campus'
+import { Route as AntiRaggingRouteImport } from './routes/anti-ragging'
+import { Route as AlumniRouteImport } from './routes/alumni'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as PlacementIndexRouteImport } from './routes/placement.index'
-import { Route as PlacementCollegeRouteImport } from './routes/placement.$college'
-import { Route as ProgramsProgramRouteImport } from './routes/programs.$program'
+import { Route as GalleryIndexRouteImport } from './routes/gallery.index'
+import { Route as CoursesIndexRouteImport } from './routes/courses.index'
+import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
+import { Route as CampusLifeIndexRouteImport } from './routes/campus-life.index'
+import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as StaffStaffRouteImport } from './routes/staff.$staff'
-import { Route as AdminTablesTableIdRouteImport } from './routes/admin.tables.$tableId'
-import { Route as CampusLifeCentreIndexRouteImport } from './routes/campus-life.centre.index'
-import { Route as CampusLifeCentreSlugRouteImport } from './routes/campus-life.centre.$slug'
-import { Route as CampusLifeClubsIndexRouteImport } from './routes/campus-life.clubs.index'
-import { Route as CampusLifeClubsSlugRouteImport } from './routes/campus-life.clubs.$slug'
-import { Route as CampusLifeEventsIndexRouteImport } from './routes/campus-life.events.index'
-import { Route as CampusLifeEventsSlugRouteImport } from './routes/campus-life.events.$slug'
-import { Route as CampusLifeFacilitiesIndexRouteImport } from './routes/campus-life.facilities.index'
-import { Route as CampusLifeFacilitiesSplatRouteImport } from './routes/campus-life.facilities.$'
-import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
-import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
+import { Route as ProgramsProgramRouteImport } from './routes/programs.$program'
+import { Route as PlacementCollegeRouteImport } from './routes/placement.$college'
+import { Route as GalleryAlbumIdRouteImport } from './routes/gallery.$albumId'
+import { Route as DepartmentsDeptRouteImport } from './routes/departments.$dept'
+import { Route as CoursesCourseRouteImport } from './routes/courses.$course'
+import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
+import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
+import { Route as AdminTrashRouteImport } from './routes/admin.trash'
+import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
+import { Route as AdminSportsRouteImport } from './routes/admin.sports'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminRecruitersRouteImport } from './routes/admin.recruiters'
+import { Route as AdminPostsRouteImport } from './routes/admin.posts'
+import { Route as AdminMenusRouteImport } from './routes/admin.menus'
+import { Route as AdminMediaRouteImport } from './routes/admin.media'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminInquiriesRouteImport } from './routes/admin.inquiries'
+import { Route as AdminHomepageRouteImport } from './routes/admin.homepage'
+import { Route as AdminEventsRouteImport } from './routes/admin.events'
+import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
 import { Route as DepartmentsDeptIndexRouteImport } from './routes/departments.$dept.index'
-import { Route as DepartmentsDeptAchievementsRouteImport } from './routes/departments.$dept.achievements'
-import { Route as DepartmentsDeptActivitiesRouteImport } from './routes/departments.$dept.activities'
+import { Route as CampusLifeFacilitiesIndexRouteImport } from './routes/campus-life.facilities.index'
+import { Route as CampusLifeEventsIndexRouteImport } from './routes/campus-life.events.index'
+import { Route as CampusLifeClubsIndexRouteImport } from './routes/campus-life.clubs.index'
+import { Route as CampusLifeCentreIndexRouteImport } from './routes/campus-life.centre.index'
 import { Route as DepartmentsDeptStaffRouteImport } from './routes/departments.$dept.staff'
+import { Route as DepartmentsDeptActivitiesRouteImport } from './routes/departments.$dept.activities'
+import { Route as DepartmentsDeptAchievementsRouteImport } from './routes/departments.$dept.achievements'
+import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.engineering.$dept'
+import { Route as CoursesCourseFacultyRouteImport } from './routes/courses.$course.faculty'
+import { Route as CampusLifeFacilitiesSplatRouteImport } from './routes/campus-life.facilities.$'
+import { Route as CampusLifeEventsSlugRouteImport } from './routes/campus-life.events.$slug'
+import { Route as CampusLifeClubsSlugRouteImport } from './routes/campus-life.clubs.$slug'
+import { Route as CampusLifeCentreSlugRouteImport } from './routes/campus-life.centre.$slug'
+import { Route as AdminTablesTableIdRouteImport } from './routes/admin.tables.$tableId'
 import { Route as CampusLifeClubsSlugIndexRouteImport } from './routes/campus-life.clubs.$slug.index'
-import { Route as CampusLifeClubsSlugEventsRouteImport } from './routes/campus-life.clubs.$slug.events'
 import { Route as CoursesEngineeringDeptFacultyRouteImport } from './routes/courses.engineering.$dept.faculty'
+import { Route as CampusLifeClubsSlugEventsRouteImport } from './routes/campus-life.clubs.$slug.events'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AlumniRoute = AlumniRouteImport.update({
-  id: '/alumni',
-  path: '/alumni',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AntiRaggingRoute = AntiRaggingRouteImport.update({
-  id: '/anti-ragging',
-  path: '/anti-ragging',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CampusRoute = CampusRouteImport.update({
-  id: '/campus',
-  path: '/campus',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CampusLifeRoute = CampusLifeRouteImport.update({
-  id: '/campus-life',
-  path: '/campus-life',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersRoute = CareersRouteImport.update({
-  id: '/careers',
-  path: '/careers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DownloadsRoute = DownloadsRouteImport.update({
-  id: '/downloads',
-  path: '/downloads',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GalleryRoute = GalleryRouteImport.update({
-  id: '/gallery',
-  path: '/gallery',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GrievanceRoute = GrievanceRouteImport.update({
-  id: '/grievance',
-  path: '/grievance',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const NewsRoute = NewsRouteImport.update({
-  id: '/news',
-  path: '/news',
+const StudentLoginRoute = StudentLoginRouteImport.update({
+  id: '/student-login',
+  path: '/student-login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ParentsRoute = ParentsRouteImport.update({
@@ -140,114 +81,74 @@ const ParentsRoute = ParentsRouteImport.update({
   path: '/parents',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StudentLoginRoute = StudentLoginRouteImport.update({
-  id: '/student-login',
-  path: '/student-login',
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminIndexRoute = AdminIndexRouteImport.update({
+const GrievanceRoute = GrievanceRouteImport.update({
+  id: '/grievance',
+  path: '/grievance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GalleryRoute = GalleryRouteImport.update({
+  id: '/gallery',
+  path: '/gallery',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DownloadsRoute = DownloadsRouteImport.update({
+  id: '/downloads',
+  path: '/downloads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersRoute = CareersRouteImport.update({
+  id: '/careers',
+  path: '/careers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampusLifeRoute = CampusLifeRouteImport.update({
+  id: '/campus-life',
+  path: '/campus-life',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampusRoute = CampusRouteImport.update({
+  id: '/campus',
+  path: '/campus',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AntiRaggingRoute = AntiRaggingRouteImport.update({
+  id: '/anti-ragging',
+  path: '/anti-ragging',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlumniRoute = AlumniRouteImport.update({
+  id: '/alumni',
+  path: '/alumni',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCollegesRoute = AdminCollegesRouteImport.update({
-  id: '/colleges',
-  path: '/colleges',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminEventsRoute = AdminEventsRouteImport.update({
-  id: '/events',
-  path: '/events',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminHomepageRoute = AdminHomepageRouteImport.update({
-  id: '/homepage',
-  path: '/homepage',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminInquiriesRoute = AdminInquiriesRouteImport.update({
-  id: '/inquiries',
-  path: '/inquiries',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminLoginRoute = AdminLoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMediaRoute = AdminMediaRouteImport.update({
-  id: '/media',
-  path: '/media',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMenusRoute = AdminMenusRouteImport.update({
-  id: '/menus',
-  path: '/menus',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPostsRoute = AdminPostsRouteImport.update({
-  id: '/posts',
-  path: '/posts',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRecruitersRoute = AdminRecruitersRouteImport.update({
-  id: '/recruiters',
-  path: '/recruiters',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSportsRoute = AdminSportsRouteImport.update({
-  id: '/sports',
-  path: '/sports',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminStaffWizardsRoute = AdminStaffWizardsRouteImport.update({
-  id: '/staff-wizards',
-  path: '/staff-wizards',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminTrashRoute = AdminTrashRouteImport.update({
-  id: '/trash',
-  path: '/trash',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
-  id: '/admissions/',
-  path: '/admissions/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
-  id: '/admissions/inquiry',
-  path: '/admissions/inquiry',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CampusLifeIndexRoute = CampusLifeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => CampusLifeRoute,
-} as any)
-const CollegesIndexRoute = CollegesIndexRouteImport.update({
-  id: '/colleges/',
-  path: '/colleges/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CollegesCollegeRoute = CollegesCollegeRouteImport.update({
-  id: '/colleges/$college',
-  path: '/colleges/$college',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CoursesIndexRoute = CoursesIndexRouteImport.update({
-  id: '/courses/',
-  path: '/courses/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CoursesCourseRoute = CoursesCourseRouteImport.update({
-  id: '/courses/$course',
-  path: '/courses/$course',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DepartmentsDeptRoute = DepartmentsDeptRouteImport.update({
-  id: '/departments/$dept',
-  path: '/departments/$dept',
+const PlacementIndexRoute = PlacementIndexRouteImport.update({
+  id: '/placement/',
+  path: '/placement/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryIndexRoute = GalleryIndexRouteImport.update({
@@ -255,19 +156,34 @@ const GalleryIndexRoute = GalleryIndexRouteImport.update({
   path: '/',
   getParentRoute: () => GalleryRoute,
 } as any)
-const GalleryAlbumIdRoute = GalleryAlbumIdRouteImport.update({
-  id: '/$albumId',
-  path: '/$albumId',
-  getParentRoute: () => GalleryRoute,
-} as any)
-const PlacementIndexRoute = PlacementIndexRouteImport.update({
-  id: '/placement/',
-  path: '/placement/',
+const CoursesIndexRoute = CoursesIndexRouteImport.update({
+  id: '/courses/',
+  path: '/courses/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlacementCollegeRoute = PlacementCollegeRouteImport.update({
-  id: '/placement/$college',
-  path: '/placement/$college',
+const CollegesIndexRoute = CollegesIndexRouteImport.update({
+  id: '/colleges/',
+  path: '/colleges/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CampusLifeIndexRoute = CampusLifeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
+  id: '/admissions/',
+  path: '/admissions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const StaffStaffRoute = StaffStaffRouteImport.update({
+  id: '/staff/$staff',
+  path: '/staff/$staff',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ProgramsProgramRoute = ProgramsProgramRouteImport.update({
@@ -275,45 +191,105 @@ const ProgramsProgramRoute = ProgramsProgramRouteImport.update({
   path: '/programs/$program',
   getParentRoute: () => rootRouteImport,
 } as any)
-const StaffStaffRoute = StaffStaffRouteImport.update({
-  id: '/staff/$staff',
-  path: '/staff/$staff',
+const PlacementCollegeRoute = PlacementCollegeRouteImport.update({
+  id: '/placement/$college',
+  path: '/placement/$college',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminTablesTableIdRoute = AdminTablesTableIdRouteImport.update({
-  id: '/tables/$tableId',
-  path: '/tables/$tableId',
+const GalleryAlbumIdRoute = GalleryAlbumIdRouteImport.update({
+  id: '/$albumId',
+  path: '/$albumId',
+  getParentRoute: () => GalleryRoute,
+} as any)
+const DepartmentsDeptRoute = DepartmentsDeptRouteImport.update({
+  id: '/departments/$dept',
+  path: '/departments/$dept',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseRoute = CoursesCourseRouteImport.update({
+  id: '/courses/$course',
+  path: '/courses/$course',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CollegesCollegeRoute = CollegesCollegeRouteImport.update({
+  id: '/colleges/$college',
+  path: '/colleges/$college',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
+  id: '/admissions/inquiry',
+  path: '/admissions/inquiry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminTrashRoute = AdminTrashRouteImport.update({
+  id: '/trash',
+  path: '/trash',
   getParentRoute: () => AdminRoute,
 } as any)
-const CampusLifeCentreIndexRoute = CampusLifeCentreIndexRouteImport.update({
-  id: '/centre/',
-  path: '/centre/',
-  getParentRoute: () => CampusLifeRoute,
+const AdminStaffWizardsRoute = AdminStaffWizardsRouteImport.update({
+  id: '/staff-wizards',
+  path: '/staff-wizards',
+  getParentRoute: () => AdminRoute,
 } as any)
-const CampusLifeCentreSlugRoute = CampusLifeCentreSlugRouteImport.update({
-  id: '/centre/$slug',
-  path: '/centre/$slug',
-  getParentRoute: () => CampusLifeRoute,
+const AdminSportsRoute = AdminSportsRouteImport.update({
+  id: '/sports',
+  path: '/sports',
+  getParentRoute: () => AdminRoute,
 } as any)
-const CampusLifeClubsIndexRoute = CampusLifeClubsIndexRouteImport.update({
-  id: '/clubs/',
-  path: '/clubs/',
-  getParentRoute: () => CampusLifeRoute,
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
 } as any)
-const CampusLifeClubsSlugRoute = CampusLifeClubsSlugRouteImport.update({
-  id: '/clubs/$slug',
-  path: '/clubs/$slug',
-  getParentRoute: () => CampusLifeRoute,
+const AdminRecruitersRoute = AdminRecruitersRouteImport.update({
+  id: '/recruiters',
+  path: '/recruiters',
+  getParentRoute: () => AdminRoute,
 } as any)
-const CampusLifeEventsIndexRoute = CampusLifeEventsIndexRouteImport.update({
-  id: '/events/',
-  path: '/events/',
-  getParentRoute: () => CampusLifeRoute,
+const AdminPostsRoute = AdminPostsRouteImport.update({
+  id: '/posts',
+  path: '/posts',
+  getParentRoute: () => AdminRoute,
 } as any)
-const CampusLifeEventsSlugRoute = CampusLifeEventsSlugRouteImport.update({
-  id: '/events/$slug',
-  path: '/events/$slug',
-  getParentRoute: () => CampusLifeRoute,
+const AdminMenusRoute = AdminMenusRouteImport.update({
+  id: '/menus',
+  path: '/menus',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMediaRoute = AdminMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInquiriesRoute = AdminInquiriesRouteImport.update({
+  id: '/inquiries',
+  path: '/inquiries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHomepageRoute = AdminHomepageRouteImport.update({
+  id: '/homepage',
+  path: '/homepage',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminEventsRoute = AdminEventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCollegesRoute = AdminCollegesRouteImport.update({
+  id: '/colleges',
+  path: '/colleges',
+  getParentRoute: () => AdminRoute,
+} as any)
+const DepartmentsDeptIndexRoute = DepartmentsDeptIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => DepartmentsDeptRoute,
 } as any)
 const CampusLifeFacilitiesIndexRoute =
   CampusLifeFacilitiesIndexRouteImport.update({
@@ -321,43 +297,73 @@ const CampusLifeFacilitiesIndexRoute =
     path: '/facilities/',
     getParentRoute: () => CampusLifeRoute,
   } as any)
-const CampusLifeFacilitiesSplatRoute =
-  CampusLifeFacilitiesSplatRouteImport.update({
-    id: '/facilities/$',
-    path: '/facilities/$',
-    getParentRoute: () => CampusLifeRoute,
-  } as any)
-const CoursesCourseFacultyRoute = CoursesCourseFacultyRouteImport.update({
-  id: '/faculty',
-  path: '/faculty',
-  getParentRoute: () => CoursesCourseRoute,
+const CampusLifeEventsIndexRoute = CampusLifeEventsIndexRouteImport.update({
+  id: '/events/',
+  path: '/events/',
+  getParentRoute: () => CampusLifeRoute,
 } as any)
-const CoursesEngineeringDeptRoute = CoursesEngineeringDeptRouteImport.update({
-  id: '/courses/engineering/$dept',
-  path: '/courses/engineering/$dept',
-  getParentRoute: () => rootRouteImport,
+const CampusLifeClubsIndexRoute = CampusLifeClubsIndexRouteImport.update({
+  id: '/clubs/',
+  path: '/clubs/',
+  getParentRoute: () => CampusLifeRoute,
 } as any)
-const DepartmentsDeptIndexRoute = DepartmentsDeptIndexRouteImport.update({
-  id: '/',
-  path: '/',
+const CampusLifeCentreIndexRoute = CampusLifeCentreIndexRouteImport.update({
+  id: '/centre/',
+  path: '/centre/',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const DepartmentsDeptStaffRoute = DepartmentsDeptStaffRouteImport.update({
+  id: '/staff',
+  path: '/staff',
   getParentRoute: () => DepartmentsDeptRoute,
 } as any)
-const DepartmentsDeptAchievementsRoute =
-  DepartmentsDeptAchievementsRouteImport.update({
-    id: '/achievements',
-    path: '/achievements',
-    getParentRoute: () => DepartmentsDeptRoute,
-  } as any)
 const DepartmentsDeptActivitiesRoute =
   DepartmentsDeptActivitiesRouteImport.update({
     id: '/activities',
     path: '/activities',
     getParentRoute: () => DepartmentsDeptRoute,
   } as any)
-const DepartmentsDeptStaffRoute = DepartmentsDeptStaffRouteImport.update({
-  id: '/staff',
-  path: '/staff',
-  getParentRoute: () => DepartmentsDeptRoute,
+const DepartmentsDeptAchievementsRoute =
+  DepartmentsDeptAchievementsRouteImport.update({
+    id: '/achievements',
+    path: '/achievements',
+    getParentRoute: () => DepartmentsDeptRoute,
+  } as any)
+const CoursesEngineeringDeptRoute = CoursesEngineeringDeptRouteImport.update({
+  id: '/courses/engineering/$dept',
+  path: '/courses/engineering/$dept',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CoursesCourseFacultyRoute = CoursesCourseFacultyRouteImport.update({
+  id: '/faculty',
+  path: '/faculty',
+  getParentRoute: () => CoursesCourseRoute,
+} as any)
+const CampusLifeFacilitiesSplatRoute =
+  CampusLifeFacilitiesSplatRouteImport.update({
+    id: '/facilities/$',
+    path: '/facilities/$',
+    getParentRoute: () => CampusLifeRoute,
+  } as any)
+const CampusLifeEventsSlugRoute = CampusLifeEventsSlugRouteImport.update({
+  id: '/events/$slug',
+  path: '/events/$slug',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const CampusLifeClubsSlugRoute = CampusLifeClubsSlugRouteImport.update({
+  id: '/clubs/$slug',
+  path: '/clubs/$slug',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const CampusLifeCentreSlugRoute = CampusLifeCentreSlugRouteImport.update({
+  id: '/centre/$slug',
+  path: '/centre/$slug',
+  getParentRoute: () => CampusLifeRoute,
+} as any)
+const AdminTablesTableIdRoute = AdminTablesTableIdRouteImport.update({
+  id: '/tables/$tableId',
+  path: '/tables/$tableId',
+  getParentRoute: () => AdminRoute,
 } as any)
 const CampusLifeClubsSlugIndexRoute =
   CampusLifeClubsSlugIndexRouteImport.update({
@@ -365,17 +371,17 @@ const CampusLifeClubsSlugIndexRoute =
     path: '/',
     getParentRoute: () => CampusLifeClubsSlugRoute,
   } as any)
-const CampusLifeClubsSlugEventsRoute =
-  CampusLifeClubsSlugEventsRouteImport.update({
-    id: '/events',
-    path: '/events',
-    getParentRoute: () => CampusLifeClubsSlugRoute,
-  } as any)
 const CoursesEngineeringDeptFacultyRoute =
   CoursesEngineeringDeptFacultyRouteImport.update({
     id: '/faculty',
     path: '/faculty',
     getParentRoute: () => CoursesEngineeringDeptRoute,
+  } as any)
+const CampusLifeClubsSlugEventsRoute =
+  CampusLifeClubsSlugEventsRouteImport.update({
+    id: '/events',
+    path: '/events',
+    getParentRoute: () => CampusLifeClubsSlugRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -403,6 +409,7 @@ export interface FileRoutesByFullPath {
   '/admin/menus': typeof AdminMenusRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/trash': typeof AdminTrashRoute
@@ -462,6 +469,7 @@ export interface FileRoutesByTo {
   '/admin/menus': typeof AdminMenusRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/trash': typeof AdminTrashRoute
@@ -523,6 +531,7 @@ export interface FileRoutesById {
   '/admin/menus': typeof AdminMenusRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/trash': typeof AdminTrashRoute
@@ -587,6 +596,7 @@ export interface FileRouteTypes {
     | '/admin/menus'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/trash'
@@ -646,6 +656,7 @@ export interface FileRouteTypes {
     | '/admin/menus'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/trash'
@@ -706,6 +717,7 @@ export interface FileRouteTypes {
     | '/admin/menus'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/trash'
@@ -776,95 +788,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/alumni': {
-      id: '/alumni'
-      path: '/alumni'
-      fullPath: '/alumni'
-      preLoaderRoute: typeof AlumniRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/anti-ragging': {
-      id: '/anti-ragging'
-      path: '/anti-ragging'
-      fullPath: '/anti-ragging'
-      preLoaderRoute: typeof AntiRaggingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/campus': {
-      id: '/campus'
-      path: '/campus'
-      fullPath: '/campus'
-      preLoaderRoute: typeof CampusRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/campus-life': {
-      id: '/campus-life'
-      path: '/campus-life'
-      fullPath: '/campus-life'
-      preLoaderRoute: typeof CampusLifeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers': {
-      id: '/careers'
-      path: '/careers'
-      fullPath: '/careers'
-      preLoaderRoute: typeof CareersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/downloads': {
-      id: '/downloads'
-      path: '/downloads'
-      fullPath: '/downloads'
-      preLoaderRoute: typeof DownloadsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/gallery': {
-      id: '/gallery'
-      path: '/gallery'
-      fullPath: '/gallery'
-      preLoaderRoute: typeof GalleryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/grievance': {
-      id: '/grievance'
-      path: '/grievance'
-      fullPath: '/grievance'
-      preLoaderRoute: typeof GrievanceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/news': {
-      id: '/news'
-      path: '/news'
-      fullPath: '/news'
-      preLoaderRoute: typeof NewsRouteImport
+    '/student-login': {
+      id: '/student-login'
+      path: '/student-login'
+      fullPath: '/student-login'
+      preLoaderRoute: typeof StudentLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/parents': {
@@ -874,158 +802,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ParentsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/student-login': {
-      id: '/student-login'
-      path: '/student-login'
-      fullPath: '/student-login'
-      preLoaderRoute: typeof StudentLoginRouteImport
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/': {
-      id: '/admin/'
+    '/grievance': {
+      id: '/grievance'
+      path: '/grievance'
+      fullPath: '/grievance'
+      preLoaderRoute: typeof GrievanceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gallery': {
+      id: '/gallery'
+      path: '/gallery'
+      fullPath: '/gallery'
+      preLoaderRoute: typeof GalleryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/downloads': {
+      id: '/downloads'
+      path: '/downloads'
+      fullPath: '/downloads'
+      preLoaderRoute: typeof DownloadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers': {
+      id: '/careers'
+      path: '/careers'
+      fullPath: '/careers'
+      preLoaderRoute: typeof CareersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campus-life': {
+      id: '/campus-life'
+      path: '/campus-life'
+      fullPath: '/campus-life'
+      preLoaderRoute: typeof CampusLifeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campus': {
+      id: '/campus'
+      path: '/campus'
+      fullPath: '/campus'
+      preLoaderRoute: typeof CampusRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anti-ragging': {
+      id: '/anti-ragging'
+      path: '/anti-ragging'
+      fullPath: '/anti-ragging'
+      preLoaderRoute: typeof AntiRaggingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/alumni': {
+      id: '/alumni'
+      path: '/alumni'
+      fullPath: '/alumni'
+      preLoaderRoute: typeof AlumniRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
       path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/colleges': {
-      id: '/admin/colleges'
-      path: '/colleges'
-      fullPath: '/admin/colleges'
-      preLoaderRoute: typeof AdminCollegesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/events': {
-      id: '/admin/events'
-      path: '/events'
-      fullPath: '/admin/events'
-      preLoaderRoute: typeof AdminEventsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/homepage': {
-      id: '/admin/homepage'
-      path: '/homepage'
-      fullPath: '/admin/homepage'
-      preLoaderRoute: typeof AdminHomepageRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/inquiries': {
-      id: '/admin/inquiries'
-      path: '/inquiries'
-      fullPath: '/admin/inquiries'
-      preLoaderRoute: typeof AdminInquiriesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/login': {
-      id: '/admin/login'
-      path: '/login'
-      fullPath: '/admin/login'
-      preLoaderRoute: typeof AdminLoginRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/media': {
-      id: '/admin/media'
-      path: '/media'
-      fullPath: '/admin/media'
-      preLoaderRoute: typeof AdminMediaRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/menus': {
-      id: '/admin/menus'
-      path: '/menus'
-      fullPath: '/admin/menus'
-      preLoaderRoute: typeof AdminMenusRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/posts': {
-      id: '/admin/posts'
-      path: '/posts'
-      fullPath: '/admin/posts'
-      preLoaderRoute: typeof AdminPostsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/recruiters': {
-      id: '/admin/recruiters'
-      path: '/recruiters'
-      fullPath: '/admin/recruiters'
-      preLoaderRoute: typeof AdminRecruitersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/sports': {
-      id: '/admin/sports'
-      path: '/sports'
-      fullPath: '/admin/sports'
-      preLoaderRoute: typeof AdminSportsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/staff-wizards': {
-      id: '/admin/staff-wizards'
-      path: '/staff-wizards'
-      fullPath: '/admin/staff-wizards'
-      preLoaderRoute: typeof AdminStaffWizardsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/trash': {
-      id: '/admin/trash'
-      path: '/trash'
-      fullPath: '/admin/trash'
-      preLoaderRoute: typeof AdminTrashRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admissions/': {
-      id: '/admissions/'
-      path: '/admissions'
-      fullPath: '/admissions/'
-      preLoaderRoute: typeof AdmissionsIndexRouteImport
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admissions/inquiry': {
-      id: '/admissions/inquiry'
-      path: '/admissions/inquiry'
-      fullPath: '/admissions/inquiry'
-      preLoaderRoute: typeof AdmissionsInquiryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/campus-life/': {
-      id: '/campus-life/'
-      path: '/'
-      fullPath: '/campus-life/'
-      preLoaderRoute: typeof CampusLifeIndexRouteImport
-      parentRoute: typeof CampusLifeRoute
-    }
-    '/colleges/': {
-      id: '/colleges/'
-      path: '/colleges'
-      fullPath: '/colleges/'
-      preLoaderRoute: typeof CollegesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/colleges/$college': {
-      id: '/colleges/$college'
-      path: '/colleges/$college'
-      fullPath: '/colleges/$college'
-      preLoaderRoute: typeof CollegesCollegeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/courses/': {
-      id: '/courses/'
-      path: '/courses'
-      fullPath: '/courses/'
-      preLoaderRoute: typeof CoursesIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/courses/$course': {
-      id: '/courses/$course'
-      path: '/courses/$course'
-      fullPath: '/courses/$course'
-      preLoaderRoute: typeof CoursesCourseRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/departments/$dept': {
-      id: '/departments/$dept'
-      path: '/departments/$dept'
-      fullPath: '/departments/$dept'
-      preLoaderRoute: typeof DepartmentsDeptRouteImport
+    '/placement/': {
+      id: '/placement/'
+      path: '/placement'
+      fullPath: '/placement/'
+      preLoaderRoute: typeof PlacementIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery/': {
@@ -1035,25 +907,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryIndexRouteImport
       parentRoute: typeof GalleryRoute
     }
-    '/gallery/$albumId': {
-      id: '/gallery/$albumId'
-      path: '/$albumId'
-      fullPath: '/gallery/$albumId'
-      preLoaderRoute: typeof GalleryAlbumIdRouteImport
-      parentRoute: typeof GalleryRoute
-    }
-    '/placement/': {
-      id: '/placement/'
-      path: '/placement'
-      fullPath: '/placement/'
-      preLoaderRoute: typeof PlacementIndexRouteImport
+    '/courses/': {
+      id: '/courses/'
+      path: '/courses'
+      fullPath: '/courses/'
+      preLoaderRoute: typeof CoursesIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/placement/$college': {
-      id: '/placement/$college'
-      path: '/placement/$college'
-      fullPath: '/placement/$college'
-      preLoaderRoute: typeof PlacementCollegeRouteImport
+    '/colleges/': {
+      id: '/colleges/'
+      path: '/colleges'
+      fullPath: '/colleges/'
+      preLoaderRoute: typeof CollegesIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/campus-life/': {
+      id: '/campus-life/'
+      path: '/'
+      fullPath: '/campus-life/'
+      preLoaderRoute: typeof CampusLifeIndexRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/admissions/': {
+      id: '/admissions/'
+      path: '/admissions'
+      fullPath: '/admissions/'
+      preLoaderRoute: typeof AdmissionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/staff/$staff': {
+      id: '/staff/$staff'
+      path: '/staff/$staff'
+      fullPath: '/staff/$staff'
+      preLoaderRoute: typeof StaffStaffRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/programs/$program': {
@@ -1063,46 +956,151 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramsProgramRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/staff/$staff': {
-      id: '/staff/$staff'
-      path: '/staff/$staff'
-      fullPath: '/staff/$staff'
-      preLoaderRoute: typeof StaffStaffRouteImport
+    '/placement/$college': {
+      id: '/placement/$college'
+      path: '/placement/$college'
+      fullPath: '/placement/$college'
+      preLoaderRoute: typeof PlacementCollegeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/tables/$tableId': {
-      id: '/admin/tables/$tableId'
-      path: '/tables/$tableId'
-      fullPath: '/admin/tables/$tableId'
-      preLoaderRoute: typeof AdminTablesTableIdRouteImport
+    '/gallery/$albumId': {
+      id: '/gallery/$albumId'
+      path: '/$albumId'
+      fullPath: '/gallery/$albumId'
+      preLoaderRoute: typeof GalleryAlbumIdRouteImport
+      parentRoute: typeof GalleryRoute
+    }
+    '/departments/$dept': {
+      id: '/departments/$dept'
+      path: '/departments/$dept'
+      fullPath: '/departments/$dept'
+      preLoaderRoute: typeof DepartmentsDeptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$course': {
+      id: '/courses/$course'
+      path: '/courses/$course'
+      fullPath: '/courses/$course'
+      preLoaderRoute: typeof CoursesCourseRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/colleges/$college': {
+      id: '/colleges/$college'
+      path: '/colleges/$college'
+      fullPath: '/colleges/$college'
+      preLoaderRoute: typeof CollegesCollegeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admissions/inquiry': {
+      id: '/admissions/inquiry'
+      path: '/admissions/inquiry'
+      fullPath: '/admissions/inquiry'
+      preLoaderRoute: typeof AdmissionsInquiryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/trash': {
+      id: '/admin/trash'
+      path: '/trash'
+      fullPath: '/admin/trash'
+      preLoaderRoute: typeof AdminTrashRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/campus-life/centre/': {
-      id: '/campus-life/centre/'
-      path: '/centre'
-      fullPath: '/campus-life/centre/'
-      preLoaderRoute: typeof CampusLifeCentreIndexRouteImport
-      parentRoute: typeof CampusLifeRoute
+    '/admin/staff-wizards': {
+      id: '/admin/staff-wizards'
+      path: '/staff-wizards'
+      fullPath: '/admin/staff-wizards'
+      preLoaderRoute: typeof AdminStaffWizardsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/campus-life/centre/$slug': {
-      id: '/campus-life/centre/$slug'
-      path: '/centre/$slug'
-      fullPath: '/campus-life/centre/$slug'
-      preLoaderRoute: typeof CampusLifeCentreSlugRouteImport
-      parentRoute: typeof CampusLifeRoute
+    '/admin/sports': {
+      id: '/admin/sports'
+      path: '/sports'
+      fullPath: '/admin/sports'
+      preLoaderRoute: typeof AdminSportsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/campus-life/clubs/': {
-      id: '/campus-life/clubs/'
-      path: '/clubs'
-      fullPath: '/campus-life/clubs/'
-      preLoaderRoute: typeof CampusLifeClubsIndexRouteImport
-      parentRoute: typeof CampusLifeRoute
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/campus-life/clubs/$slug': {
-      id: '/campus-life/clubs/$slug'
-      path: '/clubs/$slug'
-      fullPath: '/campus-life/clubs/$slug'
-      preLoaderRoute: typeof CampusLifeClubsSlugRouteImport
+    '/admin/recruiters': {
+      id: '/admin/recruiters'
+      path: '/recruiters'
+      fullPath: '/admin/recruiters'
+      preLoaderRoute: typeof AdminRecruitersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/posts': {
+      id: '/admin/posts'
+      path: '/posts'
+      fullPath: '/admin/posts'
+      preLoaderRoute: typeof AdminPostsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/menus': {
+      id: '/admin/menus'
+      path: '/menus'
+      fullPath: '/admin/menus'
+      preLoaderRoute: typeof AdminMenusRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/media': {
+      id: '/admin/media'
+      path: '/media'
+      fullPath: '/admin/media'
+      preLoaderRoute: typeof AdminMediaRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inquiries': {
+      id: '/admin/inquiries'
+      path: '/inquiries'
+      fullPath: '/admin/inquiries'
+      preLoaderRoute: typeof AdminInquiriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/homepage': {
+      id: '/admin/homepage'
+      path: '/homepage'
+      fullPath: '/admin/homepage'
+      preLoaderRoute: typeof AdminHomepageRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/events': {
+      id: '/admin/events'
+      path: '/events'
+      fullPath: '/admin/events'
+      preLoaderRoute: typeof AdminEventsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/colleges': {
+      id: '/admin/colleges'
+      path: '/colleges'
+      fullPath: '/admin/colleges'
+      preLoaderRoute: typeof AdminCollegesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/departments/$dept/': {
+      id: '/departments/$dept/'
+      path: '/'
+      fullPath: '/departments/$dept/'
+      preLoaderRoute: typeof DepartmentsDeptIndexRouteImport
+      parentRoute: typeof DepartmentsDeptRoute
+    }
+    '/campus-life/facilities/': {
+      id: '/campus-life/facilities/'
+      path: '/facilities'
+      fullPath: '/campus-life/facilities/'
+      preLoaderRoute: typeof CampusLifeFacilitiesIndexRouteImport
       parentRoute: typeof CampusLifeRoute
     }
     '/campus-life/events/': {
@@ -1112,53 +1110,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampusLifeEventsIndexRouteImport
       parentRoute: typeof CampusLifeRoute
     }
-    '/campus-life/events/$slug': {
-      id: '/campus-life/events/$slug'
-      path: '/events/$slug'
-      fullPath: '/campus-life/events/$slug'
-      preLoaderRoute: typeof CampusLifeEventsSlugRouteImport
+    '/campus-life/clubs/': {
+      id: '/campus-life/clubs/'
+      path: '/clubs'
+      fullPath: '/campus-life/clubs/'
+      preLoaderRoute: typeof CampusLifeClubsIndexRouteImport
       parentRoute: typeof CampusLifeRoute
     }
-    '/campus-life/facilities/': {
-      id: '/campus-life/facilities/'
-      path: '/facilities'
-      fullPath: '/campus-life/facilities/'
-      preLoaderRoute: typeof CampusLifeFacilitiesIndexRouteImport
+    '/campus-life/centre/': {
+      id: '/campus-life/centre/'
+      path: '/centre'
+      fullPath: '/campus-life/centre/'
+      preLoaderRoute: typeof CampusLifeCentreIndexRouteImport
       parentRoute: typeof CampusLifeRoute
     }
-    '/campus-life/facilities/$': {
-      id: '/campus-life/facilities/$'
-      path: '/facilities/$'
-      fullPath: '/campus-life/facilities/$'
-      preLoaderRoute: typeof CampusLifeFacilitiesSplatRouteImport
-      parentRoute: typeof CampusLifeRoute
-    }
-    '/courses/$course/faculty': {
-      id: '/courses/$course/faculty'
-      path: '/faculty'
-      fullPath: '/courses/$course/faculty'
-      preLoaderRoute: typeof CoursesCourseFacultyRouteImport
-      parentRoute: typeof CoursesCourseRoute
-    }
-    '/courses/engineering/$dept': {
-      id: '/courses/engineering/$dept'
-      path: '/courses/engineering/$dept'
-      fullPath: '/courses/engineering/$dept'
-      preLoaderRoute: typeof CoursesEngineeringDeptRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/departments/$dept/': {
-      id: '/departments/$dept/'
-      path: '/'
-      fullPath: '/departments/$dept/'
-      preLoaderRoute: typeof DepartmentsDeptIndexRouteImport
-      parentRoute: typeof DepartmentsDeptRoute
-    }
-    '/departments/$dept/achievements': {
-      id: '/departments/$dept/achievements'
-      path: '/achievements'
-      fullPath: '/departments/$dept/achievements'
-      preLoaderRoute: typeof DepartmentsDeptAchievementsRouteImport
+    '/departments/$dept/staff': {
+      id: '/departments/$dept/staff'
+      path: '/staff'
+      fullPath: '/departments/$dept/staff'
+      preLoaderRoute: typeof DepartmentsDeptStaffRouteImport
       parentRoute: typeof DepartmentsDeptRoute
     }
     '/departments/$dept/activities': {
@@ -1168,12 +1138,61 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepartmentsDeptActivitiesRouteImport
       parentRoute: typeof DepartmentsDeptRoute
     }
-    '/departments/$dept/staff': {
-      id: '/departments/$dept/staff'
-      path: '/staff'
-      fullPath: '/departments/$dept/staff'
-      preLoaderRoute: typeof DepartmentsDeptStaffRouteImport
+    '/departments/$dept/achievements': {
+      id: '/departments/$dept/achievements'
+      path: '/achievements'
+      fullPath: '/departments/$dept/achievements'
+      preLoaderRoute: typeof DepartmentsDeptAchievementsRouteImport
       parentRoute: typeof DepartmentsDeptRoute
+    }
+    '/courses/engineering/$dept': {
+      id: '/courses/engineering/$dept'
+      path: '/courses/engineering/$dept'
+      fullPath: '/courses/engineering/$dept'
+      preLoaderRoute: typeof CoursesEngineeringDeptRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/courses/$course/faculty': {
+      id: '/courses/$course/faculty'
+      path: '/faculty'
+      fullPath: '/courses/$course/faculty'
+      preLoaderRoute: typeof CoursesCourseFacultyRouteImport
+      parentRoute: typeof CoursesCourseRoute
+    }
+    '/campus-life/facilities/$': {
+      id: '/campus-life/facilities/$'
+      path: '/facilities/$'
+      fullPath: '/campus-life/facilities/$'
+      preLoaderRoute: typeof CampusLifeFacilitiesSplatRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/events/$slug': {
+      id: '/campus-life/events/$slug'
+      path: '/events/$slug'
+      fullPath: '/campus-life/events/$slug'
+      preLoaderRoute: typeof CampusLifeEventsSlugRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/clubs/$slug': {
+      id: '/campus-life/clubs/$slug'
+      path: '/clubs/$slug'
+      fullPath: '/campus-life/clubs/$slug'
+      preLoaderRoute: typeof CampusLifeClubsSlugRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/campus-life/centre/$slug': {
+      id: '/campus-life/centre/$slug'
+      path: '/centre/$slug'
+      fullPath: '/campus-life/centre/$slug'
+      preLoaderRoute: typeof CampusLifeCentreSlugRouteImport
+      parentRoute: typeof CampusLifeRoute
+    }
+    '/admin/tables/$tableId': {
+      id: '/admin/tables/$tableId'
+      path: '/tables/$tableId'
+      fullPath: '/admin/tables/$tableId'
+      preLoaderRoute: typeof AdminTablesTableIdRouteImport
+      parentRoute: typeof AdminRoute
     }
     '/campus-life/clubs/$slug/': {
       id: '/campus-life/clubs/$slug/'
@@ -1182,19 +1201,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CampusLifeClubsSlugIndexRouteImport
       parentRoute: typeof CampusLifeClubsSlugRoute
     }
-    '/campus-life/clubs/$slug/events': {
-      id: '/campus-life/clubs/$slug/events'
-      path: '/events'
-      fullPath: '/campus-life/clubs/$slug/events'
-      preLoaderRoute: typeof CampusLifeClubsSlugEventsRouteImport
-      parentRoute: typeof CampusLifeClubsSlugRoute
-    }
     '/courses/engineering/$dept/faculty': {
       id: '/courses/engineering/$dept/faculty'
       path: '/faculty'
       fullPath: '/courses/engineering/$dept/faculty'
       preLoaderRoute: typeof CoursesEngineeringDeptFacultyRouteImport
       parentRoute: typeof CoursesEngineeringDeptRoute
+    }
+    '/campus-life/clubs/$slug/events': {
+      id: '/campus-life/clubs/$slug/events'
+      path: '/events'
+      fullPath: '/campus-life/clubs/$slug/events'
+      preLoaderRoute: typeof CampusLifeClubsSlugEventsRouteImport
+      parentRoute: typeof CampusLifeClubsSlugRoute
     }
   }
 }
@@ -1209,6 +1228,7 @@ interface AdminRouteChildren {
   AdminMenusRoute: typeof AdminMenusRoute
   AdminPostsRoute: typeof AdminPostsRoute
   AdminRecruitersRoute: typeof AdminRecruitersRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSportsRoute: typeof AdminSportsRoute
   AdminStaffWizardsRoute: typeof AdminStaffWizardsRoute
   AdminTrashRoute: typeof AdminTrashRoute
@@ -1226,6 +1246,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminMenusRoute: AdminMenusRoute,
   AdminPostsRoute: AdminPostsRoute,
   AdminRecruitersRoute: AdminRecruitersRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSportsRoute: AdminSportsRoute,
   AdminStaffWizardsRoute: AdminStaffWizardsRoute,
   AdminTrashRoute: AdminTrashRoute,
