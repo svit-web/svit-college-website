@@ -61,6 +61,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Globe,
     items: [
       { label: "Homepage Layout", to: "/admin/homepage" },
+      { label: "Hero Appearance", to: "/admin/appearance" },
       { label: "Pages & Content", to: "/admin/tables/pages" },
       { label: "Menus / Nav", to: "/admin/menus" },
       { label: "Menu Items", to: "/admin/tables/menu_items" },

@@ -7,6 +7,7 @@ import {
 } from "./homepage.functions";
 import { getAllProgrammes } from "./programmes.functions";
 import { getContactInfo } from "./pages.functions";
+import { getHeroAppearance } from "./theme.functions";
 
 export type HomepageItem = Awaited<ReturnType<typeof getGlobalHomepageItems>>[number];
 export type CollegeRow = Awaited<ReturnType<typeof getCollegesGrid>>[number];
@@ -55,6 +56,12 @@ export const contactInfoQuery = queryOptions({
   queryKey: ["contact_info"],
   queryFn: () => getContactInfo(),
   staleTime: 60_000,
+});
+
+export const heroAppearanceQuery = queryOptions({
+  queryKey: ["hero_appearance"],
+  queryFn: () => getHeroAppearance(),
+  staleTime: 30_000,
 });
 
 export function byType(items: HomepageItem[], type: string): HomepageItem[] {

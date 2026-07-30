@@ -24,11 +24,13 @@ import {
   byType,
   collegesQuery,
   eventsQuery,
+  heroAppearanceQuery,
   homepageItemsQuery,
   promoBySlot,
   recruitersQuery,
   type HomepageItem,
 } from "@/lib/homepage";
+import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles } from "@/lib/theme.functions";
 import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -37,6 +39,7 @@ export const Route = createFileRoute("/")({
     void context.queryClient.prefetchQuery(homepageItemsQuery);
     void context.queryClient.prefetchQuery(collegesQuery);
     void context.queryClient.prefetchQuery(recruitersQuery);
+    void context.queryClient.prefetchQuery(heroAppearanceQuery);
     // Awaited (unlike the above): the events/news slider is the section's
     // main content, not a progressive-enhancement extra, so first paint
     // shouldn't race the fetch and show an empty state.
@@ -74,6 +77,8 @@ function Hero() {
   const hero = byType(items, "hero")[0];
   const quickLinks = byType(items, "quick_link");
   const highlightCards = byType(items, "highlight_card");
+  const { data: appearance } = useQuery(heroAppearanceQuery);
+  const { imageStyle, overlayStyle } = heroOverlayStyles(appearance ?? DEFAULT_HERO_APPEARANCE);
 
   const eyebrow = hero?.eyebrow ?? "Est. 2005 · Vasad, Gujarat";
   const title = hero?.title ?? "Build Your Future.";
@@ -99,8 +104,8 @@ function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      <img src={hero?.image_url || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/30 via-navy-deep/40 to-navy/55 backdrop-blur-sm" />
+      <img src={hero?.image_url || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
+      <div className="absolute inset-0" style={overlayStyle} />
       <div className="container-page relative py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
