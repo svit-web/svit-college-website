@@ -83,51 +83,48 @@ export const getAllRecruiters = createServerFn({ method: 'GET' })
 
     if (error) {
       console.error('Error fetching recruiters:', error);
-      throw error;
+      return [] as Recruiter[];
     }
 
-    return (data ?? []) as Recruiter[];
+    return (data ?? []) as unknown as Recruiter[];
   });
 
 /**
  * Fetch published recruiters scoped to a specific college.
- * Returns recruiters where college_codes contains the given slug,
- * OR where college_codes is NULL/empty (visible on all pages).
+ * Falls back to all recruiters if college_codes column doesn't exist yet.
  */
 export const getRecruitersByCollege = createServerFn({ method: 'GET' })
   .validator((collegeSlug: string) => collegeSlug)
   .handler(async (ctx) => {
-    if (ctx.data === 'overview') {
-      // Overview shows all recruiters
-      const { data, error } = await supabase
+    const fetchAll = async () => {
+      const { data } = await supabase
         .from('recruiters')
         .select('*')
         .eq('status', 'published')
         .order('sort_order', { ascending: true });
-      if (error) throw error;
-      return (data ?? []) as Recruiter[];
-    }
+      return (data ?? []) as unknown as Recruiter[];
+    };
 
-    // College-specific: get recruiters scoped to this college OR global (no college_codes set)
-    const { data, error } = await (supabase as any)
-      .from('recruiters')
-      .select('*')
-      .eq('status', 'published')
-      .or(`college_codes.cs.{${ctx.data}},college_codes.is.null`)
-      .order('sort_order', { ascending: true });
+    if (ctx.data === 'overview') return fetchAll();
 
-    if (error) {
-      console.error('Error fetching recruiters by college:', error);
-      // Fallback to all recruiters
-      const { data: all } = await supabase
+    try {
+      // Try college_codes scoping — column may not exist yet in live DB
+      const { data, error } = await (supabase as any)
         .from('recruiters')
         .select('*')
         .eq('status', 'published')
+        .or(`college_codes.cs.{${ctx.data}},college_codes.is.null`)
         .order('sort_order', { ascending: true });
-      return (all ?? []) as Recruiter[];
-    }
 
-    return (data ?? []) as Recruiter[];
+      if (error) {
+        // Column missing — gracefully return all recruiters
+        console.warn('college_codes not available, falling back:', error.message);
+        return fetchAll();
+      }
+      return (data ?? []) as unknown as Recruiter[];
+    } catch {
+      return fetchAll();
+    }
   });
 
 export interface PlacementCell {
@@ -205,28 +202,35 @@ export interface PlacedStudent {
 
 /**
  * Fetch published placed students for a college by its code.
- * If overview, returns all published placed students across all colleges.
+ * Returns [] gracefully if table doesn't exist yet in schema cache.
  */
 export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
   .validator((collegeCode: string) => collegeCode)
   .handler(async (ctx) => {
-    let query = supabase
-      .from('placed_students' as any)
-      .select('*')
-      .eq('status', 'published')
-      .order('batch_year', { ascending: false })
-      .order('created_at', { ascending: false });
+    try {
+      let query = (supabase as any)
+        .from('placed_students')
+        .select('*')
+        .eq('status', 'published')
+        .order('batch_year', { ascending: false })
+        .order('created_at', { ascending: false });
 
-    if (ctx.data !== 'overview') {
-      query = query.eq('college_code', ctx.data);
-    }
+      if (ctx.data !== 'overview') {
+        query = query.eq('college_code', ctx.data);
+      }
 
-    const { data, error } = await query;
-    if (error) {
-      console.error('Error fetching placed students:', error);
+      const { data, error } = await query;
+      if (error) {
+        // Table missing or schema cache stale — return empty list silently
+        if (error.code === 'PGRST205' || error.code === '42P01') {
+          return [] as PlacedStudent[];
+        }
+        console.error('Error fetching placed students:', error);
+        return [] as PlacedStudent[];
+      }
+
+      return (data ?? []) as unknown as PlacedStudent[];
+    } catch {
       return [] as PlacedStudent[];
     }
-
-    return (data ?? []) as unknown as PlacedStudent[];
   });
-

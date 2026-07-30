@@ -153,7 +153,7 @@ export const Route = createFileRoute("/placement/$college")({
           packageLpa: s.package_lpa ?? null,
         }))
       },
-      recruiters: collegeRecruiters.map(r => ({ companyName: r.company_name, logo: r.logo_url || null })),
+      recruiters: collegeRecruiters.map(r => ({ companyName: r.company_name, logo: r.logo_url?.trim() || null })),
       placementOfficer: {
         name: placementCell?.officer_name ?? '',
         designation: placementCell?.officer_designation ?? 'Training & Placement Officer',
