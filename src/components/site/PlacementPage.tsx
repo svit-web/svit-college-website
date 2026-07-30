@@ -404,11 +404,6 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                     </Reveal>
                   ))}
                 </div>
-                {!hasStudents && (
-                  <p className="mt-4 text-center text-xs text-muted-foreground italic">
-                    Add students from <Link to="/admin/placements" className="text-crimson underline">admin → Placed Students</Link>
-                  </p>
-                )}
               </section>
 
               {/* ALL PAGES: Recruiters */}
