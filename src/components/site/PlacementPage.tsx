@@ -344,8 +344,8 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
             {/* ── Main content ─────────────────────────────── */}
             <div className="min-w-0 space-y-10 [&>section]:scroll-mt-24">
 
-              {/* OVERVIEW ONLY: About T&P Cell */}
-              {isOverview && content.aboutText && (
+              {/* About T&P Cell */}
+              {content.aboutText && (
                 <section id="about" className="rounded-2xl border-2 border-navy/15 bg-white p-8">
                   <SectionHeading eyebrow="Training & Placement" title="About the T&P Cell" variant="eyebrow" />
                   <p className="mt-6 text-muted-foreground leading-relaxed">{content.aboutText}</p>

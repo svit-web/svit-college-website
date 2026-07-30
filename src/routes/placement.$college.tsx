@@ -83,10 +83,10 @@ export const Route = createFileRoute("/placement/$college")({
       collegeName: college.name,
       shortCode: college.shortCode,
       aboutText:
-        placementCell?.about_text ??
+        placementCell?.about_text?.trim() ||
         (isOverview
-          ? "The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges — Engineering, Architecture, Nursing, and Applied Sciences."
-          : ""),
+          ? "The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges — Engineering, Architecture, Nursing, and Applied Sciences. We collaborate with national and multinational companies to bridge academic training and corporate demands."
+          : `The Training & Placement Cell at ${college.name} conducts career guidance programs, industry interactions, mock interviews, and campus placement drives with premier recruitment partners.`),
       heroTitle: placementCell?.hero_title ?? null,
       heroSubtitle: placementCell?.hero_subtitle ?? null,
       autoStats,
