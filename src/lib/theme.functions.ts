@@ -1,6 +1,11 @@
-// Server functions for site-wide appearance settings (stored in app_settings)
+// Server functions for site-wide appearance settings (stored in app_settings).
+// Reads are public (matches app_settings' RLS policy); writes are gated to
+// global admins, re-checked server-side — never trust a client-supplied
+// isAdmin flag for a privileged write. Mirrors setImageCompressionMode in
+// app-settings.functions.ts, the established pattern for this table.
 import type { CSSProperties } from 'react';
 import { createServerFn } from '@tanstack/react-start';
+import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
 import { supabase } from '@/integrations/supabase/client';
 
 const HERO_APPEARANCE_KEY = 'hero_appearance';
@@ -16,6 +21,15 @@ export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
   heroOverlayOpacity: 55,
   heroBlurPx: 4,
 };
+
+function parseHeroAppearance(value: unknown): HeroAppearance {
+  const v = (value ?? {}) as Partial<HeroAppearance>;
+  return {
+    heroImageOpacity: v.heroImageOpacity ?? DEFAULT_HERO_APPEARANCE.heroImageOpacity,
+    heroOverlayOpacity: v.heroOverlayOpacity ?? DEFAULT_HERO_APPEARANCE.heroOverlayOpacity,
+    heroBlurPx: v.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
+  };
+}
 
 /**
  * Fetch the hero appearance settings (image opacity / overlay strength / blur)
@@ -36,12 +50,49 @@ export const getHeroAppearance = createServerFn({ method: 'GET' })
     }
     if (!data) return DEFAULT_HERO_APPEARANCE;
 
-    const v = data.value as Partial<HeroAppearance> | null;
+    return parseHeroAppearance(data.value);
+  });
+
+export const setHeroAppearance = createServerFn({ method: 'POST' })
+  .middleware([requireSupabaseAuth])
+  .validator((appearance: unknown): HeroAppearance => {
+    const a = appearance as Partial<HeroAppearance> | null;
+    const clamp = (n: unknown, min: number, max: number, fallback: number) =>
+      typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
     return {
-      heroImageOpacity: v?.heroImageOpacity ?? DEFAULT_HERO_APPEARANCE.heroImageOpacity,
-      heroOverlayOpacity: v?.heroOverlayOpacity ?? DEFAULT_HERO_APPEARANCE.heroOverlayOpacity,
-      heroBlurPx: v?.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
+      heroImageOpacity: clamp(a?.heroImageOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroImageOpacity),
+      heroOverlayOpacity: clamp(a?.heroOverlayOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroOverlayOpacity),
+      heroBlurPx: clamp(a?.heroBlurPx, 0, 20, DEFAULT_HERO_APPEARANCE.heroBlurPx),
     };
+  })
+  .handler(async ({ data: appearance, context }) => {
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
+    // requireSupabaseAuth only proves who the caller is (context.userId) —
+    // role authorization for this privileged write still has to happen here.
+    const { data: roleRows, error: roleErr } = await supabaseAdmin
+      .from('user_roles')
+      .select('scope_type, role:role_id(code)')
+      .eq('user_id', context.userId)
+      .eq('status', 'published');
+    if (roleErr) throw new Error(roleErr.message);
+
+    const isGlobalAdmin = (roleRows ?? []).some(
+      (r: any) => r.role?.code === 'admin' && r.scope_type === 'global'
+    );
+    if (!isGlobalAdmin) {
+      throw new Error('Forbidden: only a global admin can change this setting.');
+    }
+
+    const { error: upsertErr } = await supabaseAdmin.from('app_settings').upsert({
+      key: HERO_APPEARANCE_KEY,
+      value: appearance as any,
+      updated_at: new Date().toISOString(),
+      updated_by: context.userId,
+    });
+    if (upsertErr) throw new Error(upsertErr.message);
+
+    return appearance;
   });
 
 /**

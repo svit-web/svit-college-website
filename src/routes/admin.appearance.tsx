@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
-import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles, type HeroAppearance } from "@/lib/theme.functions";
-import { Image, Layers, Loader2, Save, Sparkles } from "lucide-react";
+import { DEFAULT_HERO_APPEARANCE, getHeroAppearance, heroOverlayStyles, setHeroAppearance, type HeroAppearance } from "@/lib/theme.functions";
+import { Image, Layers, Loader2, Save, ShieldAlert, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import campusHero from "@/assets/campus-hero.jpg";
 
@@ -11,10 +11,9 @@ export const Route = createFileRoute("/admin/appearance")({
   component: AdminAppearancePage,
 });
 
-const HERO_APPEARANCE_KEY = "hero_appearance";
-
 function AdminAppearancePage() {
-  const { user } = useAdminAuth();
+  const { roles, loading: authLoading } = useAdminAuth();
+  const isAdmin = roles.some((r) => r.code === "admin");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [settings, setSettings] = useState<HeroAppearance>(DEFAULT_HERO_APPEARANCE);
@@ -26,20 +25,7 @@ function AdminAppearancePage() {
   async function load() {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from("app_settings")
-        .select("value")
-        .eq("key", HERO_APPEARANCE_KEY)
-        .maybeSingle();
-      if (error) throw error;
-      if (data?.value) {
-        const v = data.value as Partial<HeroAppearance>;
-        setSettings({
-          heroImageOpacity: v.heroImageOpacity ?? DEFAULT_HERO_APPEARANCE.heroImageOpacity,
-          heroOverlayOpacity: v.heroOverlayOpacity ?? DEFAULT_HERO_APPEARANCE.heroOverlayOpacity,
-          heroBlurPx: v.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
-        });
-      }
+      setSettings(await getHeroAppearance());
     } catch (err: any) {
       toast.error(`Failed to load appearance settings: ${err.message}`);
     } finally {
@@ -50,18 +36,14 @@ function AdminAppearancePage() {
   async function handleSave() {
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("app_settings")
-        .upsert(
-          {
-            key: HERO_APPEARANCE_KEY,
-            value: settings as any,
-            updated_at: new Date().toISOString(),
-            updated_by: user?.id,
-          },
-          { onConflict: "key" }
-        );
-      if (error) throw error;
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      await setHeroAppearance({
+        data: settings,
+        headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+      });
       toast.success("Hero appearance updated — live on the site now.");
     } catch (err: any) {
       toast.error(err.message);
@@ -76,10 +58,24 @@ function AdminAppearancePage() {
 
   const { imageStyle, overlayStyle } = heroOverlayStyles(settings);
 
-  if (loading) {
+  if (loading || authLoading) {
     return (
       <div className="flex h-64 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-crimson" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-6">
+        <p className="flex items-center gap-2 text-sm font-semibold text-amber-600">
+          <ShieldAlert className="h-4 w-4" />
+          Global Admin access required
+        </p>
+        <p className="mt-1 text-sm text-slate-500">
+          You don't have permission to view or change site-wide appearance settings.
+        </p>
       </div>
     );
   }
