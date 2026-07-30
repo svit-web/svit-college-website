@@ -100,7 +100,7 @@ function Hero() {
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
       <img src={hero?.image_url || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/30 via-navy-deep/40 to-navy/55" />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/30 via-navy-deep/40 to-navy/55 backdrop-blur-sm" />
       <div className="container-page relative py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
