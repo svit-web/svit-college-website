@@ -3,7 +3,7 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CTABanner } from "@/components/site/CTABanner";
 import { getProgrammeBySlug } from "@/lib/programmes.functions";
-import { getAllRecruiters } from "@/lib/placement.functions";
+import { getAllRecruiters, type Recruiter } from "@/lib/placement.functions";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
 
 export const Route = createFileRoute("/courses/$course")({
@@ -11,7 +11,7 @@ export const Route = createFileRoute("/courses/$course")({
     const programme = await getProgrammeBySlug({ data: params.course });
     if (!programme) throw notFound();
     const recruitersData = await getAllRecruiters();
-    return { course: programme, recruiters: recruitersData.map((r) => r.company_name) };
+    return { course: programme, recruiters: recruitersData.map((r: Recruiter) => r.company_name) };
   },
   head: ({ loaderData }) => ({
     meta: [

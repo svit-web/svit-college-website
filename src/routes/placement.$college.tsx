@@ -1,14 +1,41 @@
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { PlacementPage, PlacementPageNotFound } from "@/components/site/PlacementPage";
-import { getPlacementStatsByCollege, getAllRecruiters, getPlacementCell, getCollegeBySlug, type PlacementStatistics } from "@/lib/placement.functions";
+import {
+  getAutoStatsByCollege,
+  getRecruitersByCollege,
+  getPlacementCell,
+  getCollegeBySlug,
+  getPlacedStudentsByCollege,
+  type AutoStats,
+} from "@/lib/placement.functions";
 
-type PlacementSlug = string;
-interface PlacementPageContent {
-  slug: PlacementSlug; collegeId: string; collegeName: string; shortCode: string; aboutText: string;
-  details: { graphicalData: { year: string; studentsPlaced: number; placementPercentage: number }[]; statHighlights: { label: string; value: string }[] };
-  summary: { placedStudents: { studentName: string; companyName: string; photo: string | null }[] };
+// ── Page content shape ─────────────────────────────────────────
+export interface PlacementPageContent {
+  slug: string;
+  collegeId: string;
+  collegeName: string;
+  shortCode: string;
+  aboutText: string;
+  heroTitle: string | null;
+  heroSubtitle: string | null;
+  /** All auto-calculated from placed_students — no manual entry */
+  autoStats: AutoStats;
+  placedStudents: {
+    studentName: string;
+    companyName: string;
+    department: string | null;
+    photo: string | null;
+    batchYear: string | null;
+    packageLpa: number | null;
+  }[];
   recruiters: { companyName: string; logo: string | null }[];
-  placementOfficer: { name: string; designation: string; phone: string; email: string; photo: string | null };
+  placementOfficer: {
+    name: string;
+    designation: string;
+    phone: string;
+    email: string;
+    photo: string | null;
+  };
   defaultStudentPlaceholderUrl: string | null;
 }
 
@@ -27,135 +54,59 @@ export const Route = createFileRoute("/placement/$college")({
       ],
     };
   },
+
   loader: async ({ params }) => {
-    let college;
-    if (params.college === 'overview') {
-      college = {
-        code: 'overview',
-        name: 'SVIT Group of Institutions',
-        shortCode: 'Overview'
-      };
+    const isOverview = params.college === "overview";
+
+    // ── Resolve college ───────────────────────────────────────
+    let college: { id?: string; code: string; name: string; shortCode: string };
+    if (isOverview) {
+      college = { code: "overview", name: "SVIT Group of Institutions", shortCode: "Overview" };
     } else {
-      college = await getCollegeBySlug({ data: params.college });
-      if (!college) throw notFound();
+      const found = await getCollegeBySlug({ data: params.college });
+      if (!found) throw notFound();
+      college = found;
     }
 
-    const [stats, allRecruiters, placementCell] = await Promise.all([
-      getPlacementStatsByCollege({ data: params.college }) as Promise<PlacementStatistics[]>,
-      getAllRecruiters(),
+    // ── Parallel fetch ────────────────────────────────────────
+    const [autoStats, collegeRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
+      getAutoStatsByCollege({ data: { collegeId: college.id ?? null, isOverview, collegeSlug: params.college } }),
+      getRecruitersByCollege({ data: params.college }),
       getPlacementCell({ data: college.code }),
+      getPlacedStudentsByCollege({ data: { collegeId: college.id ?? null, isOverview } }),
     ]);
 
-    function toDisplayYear(academicYear: string): string {
-      if (!academicYear.includes('-')) return academicYear;
-      const part = academicYear.split('-')[1];
-      return part.length === 2 ? '20' + part : part;
-    }
-
-    let processedStats = stats;
-    if (params.college === 'overview') {
-      const yearMap = new Map<string, {
-        academic_year: string;
-        placed_students: number;
-        total_students: number;
-        highest_package: number;
-        average_package_sum: number;
-        average_package_count: number;
-        recruiters_count: number;
-      }>();
-
-      for (const s of stats) {
-        const year = s.academic_year;
-        if (!yearMap.has(year)) {
-          yearMap.set(year, {
-            academic_year: year,
-            placed_students: 0,
-            total_students: 0,
-            highest_package: 0,
-            average_package_sum: 0,
-            average_package_count: 0,
-            recruiters_count: 0,
-          });
-        }
-        const current = yearMap.get(year)!;
-        current.placed_students += s.placed_students;
-        current.total_students += s.total_students;
-        if (s.highest_package && s.highest_package > current.highest_package) {
-          current.highest_package = s.highest_package;
-        }
-        if (s.average_package) {
-          current.average_package_sum += s.average_package;
-          current.average_package_count += 1;
-        }
-        if (s.recruiters_count) {
-          current.recruiters_count += s.recruiters_count;
-        }
-      }
-
-      processedStats = Array.from(yearMap.values()).map(yearData => ({
-        id: yearData.academic_year,
-        department_id: null,
-        academic_year: yearData.academic_year,
-        placed_students: yearData.placed_students,
-        total_students: yearData.total_students,
-        highest_package: yearData.highest_package || null,
-        average_package: yearData.average_package_count > 0 
-          ? Math.round((yearData.average_package_sum / yearData.average_package_count) * 10) / 10 
-          : null,
-        recruiters_count: yearData.recruiters_count || null,
-        status: 'published',
-        metadata: {},
-        created_at: '',
-        updated_at: '',
-      } as any));
-      
-      processedStats.sort((a, b) => b.academic_year.localeCompare(a.academic_year));
-    }
-
-    const graphicalData = [...processedStats]
-      .reverse()
-      .map(s => ({
-        year: toDisplayYear(s.academic_year),
-        studentsPlaced: s.placed_students,
-        placementPercentage: s.total_students > 0
-          ? Math.round((s.placed_students / s.total_students) * 100)
-          : 0,
-      }));
-
-    const latest = processedStats[0] ?? null;
-    const statHighlights = latest
-      ? [
-          { label: 'Students Placed', value: `${latest.placed_students}+` },
-          ...(latest.highest_package ? [{ label: 'Highest Package', value: `₹${latest.highest_package} LPA` }] : []),
-          ...(latest.average_package ? [{ label: 'Average Package', value: `₹${latest.average_package} LPA` }] : []),
-          ...(latest.recruiters_count ? [{ label: 'Companies Visited', value: `${latest.recruiters_count}+` }] : []),
-        ]
-      : [];
-
-    const collegeRecruiters = allRecruiters
-      .filter(r => {
-        if (params.college === 'overview') return true;
-        const cols = (r.metadata as any)?.colleges as string[] | undefined;
-        return !cols || cols.includes(college.code);
-      })
-      .map(r => ({ companyName: r.company_name, logo: r.logo_url || null }));
-
+    // ── Build content ─────────────────────────────────────────
     const content: PlacementPageContent = {
-      slug: params.college as PlacementSlug,
+      slug: params.college,
       collegeId: college.code,
       collegeName: college.name,
       shortCode: college.shortCode,
-      aboutText: placementCell?.about_text ?? (params.college === 'overview'
-        ? 'The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges, including Engineering, Architecture, Nursing, and Applied Sciences. We collaborate with national and multinational companies to bridge academic training and corporate demands.'
-        : ''),
-      details: { graphicalData, statHighlights },
-      summary: { placedStudents: (placementCell?.placed_students || []) as { studentName: string; companyName: string; photo: string | null }[] },
-      recruiters: collegeRecruiters,
+      aboutText:
+        placementCell?.about_text?.trim() ||
+        (isOverview
+          ? "The Central Training & Placement (T&P) Cell at SVIT Group of Institutions facilitates student growth and placement opportunities across all colleges — Engineering, Architecture, Nursing, and Applied Sciences. We collaborate with national and multinational companies to bridge academic training and corporate demands."
+          : `The Training & Placement Cell at ${college.name} conducts career guidance programs, industry interactions, mock interviews, and campus placement drives with premier recruitment partners.`),
+      heroTitle: placementCell?.hero_title ?? null,
+      heroSubtitle: placementCell?.hero_subtitle ?? null,
+      autoStats,
+      placedStudents: dbPlacedStudents.map((s) => ({
+        studentName: s.student_name,
+        companyName: s.company_name,
+        department: (s.department as any)?.name ?? null,
+        photo: s.photo_url,
+        batchYear: s.batch_year ?? null,
+        packageLpa: s.package_lpa != null ? Number(s.package_lpa) : null,
+      })),
+      recruiters: collegeRecruiters.map((r) => ({
+        companyName: r.company_name,
+        logo: r.logo_url?.trim() || null,
+      })),
       placementOfficer: {
-        name: placementCell?.officer_name ?? '',
-        designation: placementCell?.officer_designation ?? 'Training & Placement Officer',
-        phone: placementCell?.officer_phone ?? '',
-        email: placementCell?.officer_email ?? '',
+        name: placementCell?.officer_name ?? "",
+        designation: placementCell?.officer_designation ?? "Training & Placement Officer",
+        phone: placementCell?.officer_phone ?? "",
+        email: placementCell?.officer_email ?? "",
         photo: placementCell?.officer_photo_url ?? null,
       },
       defaultStudentPlaceholderUrl: placementCell?.default_student_placeholder_url ?? null,
@@ -163,6 +114,7 @@ export const Route = createFileRoute("/placement/$college")({
 
     return { content };
   },
+
   notFoundComponent: PlacementPageNotFound,
   errorComponent: PlacementPageNotFound,
   component: PlacementRouteComponent,

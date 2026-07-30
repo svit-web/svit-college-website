@@ -19,6 +19,8 @@ import {
   FileText
 } from "lucide-react";
 import { toast } from "sonner";
+import { uploadMediaFile } from "@/lib/upload-media";
+import { useImageCompressionMode } from "@/hooks/useImageCompressionMode";
 
 export const Route = createFileRoute("/admin/media")({
   component: AdminMediaPage
@@ -37,6 +39,7 @@ function formatBytes(bytes: number, decimals = 2) {
 
 function AdminMediaPage() {
   const { user, roles } = useAdminAuth();
+  const { mode: compressionMode } = useImageCompressionMode();
 
   // Navigation states
   const [currentFolderId, setCurrentFolderId] = useState<string | null>(null);
@@ -215,27 +218,21 @@ function AdminMediaPage() {
 
     setUploading(true);
     try {
-      // 1. Upload file object to Supabase storage bucket 'media'
-      const fileExt = file.name.split(".").pop();
-      const cleanFileName = file.name.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
-      const storagePath = `media-library/${Date.now()}-${cleanFileName}.${fileExt}`;
+      // 1. Upload (and, for images, compress) the file to Supabase storage bucket 'media'
+      const uploaded = await uploadMediaFile(file, {
+        bucketName: "media",
+        folderPrefix: "media-library/",
+        mode: compressionMode,
+      });
 
-      const { data: storageData, error: storageErr } = await supabase.storage
-        .from("media")
-        .upload(storagePath, file, { cacheControl: "3600", upsert: false });
-
-      if (storageErr) throw storageErr;
-
-      // 2. Fetch public URL
-      const { data: urlData } = supabase.storage.from("media").getPublicUrl(storageData.path);
-
-      // 3. Register file record in media_files
+      // 2. Register file record in media_files, using the post-compression
+      // size/mime type so the library reflects what's actually stored.
       const payload = {
         folder_id: currentFolderId,
         filename: file.name,
-        file_path: urlData.publicUrl,
-        mime_type: file.type || "application/octet-stream",
-        file_size: file.size,
+        file_path: uploaded.publicUrl,
+        mime_type: uploaded.mimeType || "application/octet-stream",
+        file_size: uploaded.size,
         scope_type: userScope.level === "global" ? "global" : userScope.level,
         department_id: userScope.level === "department" ? userScope.departmentId : null,
         status: "published"

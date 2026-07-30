@@ -1,7 +1,8 @@
 import { useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Upload, X, File, ImageIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { uploadMediaFile } from "@/lib/upload-media";
+import { useImageCompressionMode } from "@/hooks/useImageCompressionMode";
 
 interface MediaUploaderProps {
   value: string;
@@ -21,6 +22,7 @@ export function MediaUploader({
   const [mode, setMode] = useState<"upload" | "url">("upload");
   const [urlDraft, setUrlDraft] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { mode: compressionMode } = useImageCompressionMode();
 
   // Trigger file upload to Supabase Storage
   const uploadFile = async (file: File) => {
@@ -41,29 +43,14 @@ export function MediaUploader({
 
     setUploading(true);
     try {
-      // Create a unique file name under a folder matching the type
-      const fileExt = file.name.split(".").pop();
-      const fileName = `${type}s/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+      const { publicUrl } = await uploadMediaFile(file, {
+        bucketName,
+        folderPrefix: `${type}s/`,
+        mode: compressionMode,
+      });
 
-      // Upload using Supabase Client
-      const { data, error } = await supabase.storage
-        .from(bucketName)
-        .upload(fileName, file, {
-          cacheControl: "3600",
-          upsert: false
-        });
-
-      if (error) throw error;
-
-      // Fetch public URL
-      const { data: urlData } = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(data.path);
-
-      if (urlData?.publicUrl) {
-        onChange(urlData.publicUrl);
-        toast.success("File uploaded successfully!");
-      }
+      onChange(publicUrl);
+      toast.success("File uploaded successfully!");
     } catch (err: any) {
       console.error("Storage upload error:", err);
       toast.error(`Upload failed: ${err.message}`);

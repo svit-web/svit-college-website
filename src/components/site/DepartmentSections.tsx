@@ -5,6 +5,7 @@ import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import type { Department, DeptCourse } from "@/lib/departments.functions";
 import type { DeptStaffMember, DeptAchievement, DeptActivity, DeptActivityType, DeptClub } from "@/lib/department-content.functions";
+import type { Facility } from "@/lib/facilities.functions";
 import {
   GraduationCap,
   Users,
@@ -27,6 +28,7 @@ interface Props {
   achievements?: DeptAchievement[];
   activities?: DeptActivity[];
   clubs?: DeptClub[];
+  labs?: Facility[];
 }
 
 function initials(name: string): string {
@@ -73,7 +75,7 @@ const DEGREE_LABEL: Record<string, string> = {
 };
 
 // -------- About + Programs --------
-export function DeptAboutView({ department, courses = [] }: Props) {
+export function DeptAboutView({ department, courses = [], labs = [] }: Props) {
   const m = department.metadata;
   const aboutText = m.about ?? m.description;
   const vision = m.vision;
@@ -182,6 +184,42 @@ export function DeptAboutView({ department, courses = [] }: Props) {
           )}
         </div>
       </section>
+
+      {labs.length > 0 && (
+        <section>
+          <SectionHeading eyebrow="Laboratories" title="Our Labs & Facilities" />
+          <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+            {labs.map((lab, i) => (
+              <Reveal key={lab.id} delay={i * 0.04}>
+                <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white p-6">
+                  {lab.metadata?.accent && (
+                    <div className="mb-3 inline-block rounded-full bg-navy/5 px-3 py-1 text-xs font-bold text-navy">
+                      {lab.metadata.accent}
+                    </div>
+                  )}
+                  <h3 className="font-display text-base font-bold text-navy">{lab.name}</h3>
+                  {lab.metadata?.subtitle && (
+                    <p className="mt-1 text-xs font-semibold text-crimson">{lab.metadata.subtitle}</p>
+                  )}
+                  {lab.metadata?.description && (
+                    <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{lab.metadata.description}</p>
+                  )}
+                  {lab.metadata?.highlights && lab.metadata.highlights.length > 0 && (
+                    <ul className="mt-3 space-y-1.5">
+                      {lab.metadata.highlights.map((h, j) => (
+                        <li key={j} className="flex items-start gap-2 text-xs text-muted-foreground">
+                          <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                          <span><span className="font-semibold text-navy">{h.title}:</span> {h.description}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

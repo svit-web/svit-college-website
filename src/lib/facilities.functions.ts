@@ -86,3 +86,24 @@ export const getFacilityBySlug = createServerFn({ method: 'GET' })
 
     return data as Facility | null;
   });
+
+/**
+ * Fetch labs for a specific department
+ */
+export const getLabsByDepartmentId = createServerFn({ method: 'GET' })
+  .validator((departmentId: string) => departmentId)
+  .handler(async ({ data: departmentId }) => {
+    const { data, error } = await supabase
+      .from('facilities')
+      .select('*')
+      .eq('status', 'published')
+      .eq('department_id', departmentId)
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching labs for department:', error);
+      throw error;
+    }
+
+    return (data ?? []) as Facility[];
+  });
