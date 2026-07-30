@@ -17,7 +17,6 @@ import {
   Mic,
   Image as ImageIcon,
   Mail,
-  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -280,12 +279,6 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
           <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Mail className="h-3.5 w-3.5 shrink-0 text-navy/40" />
             <span className="truncate">{member.email}</span>
-          </div>
-        )}
-        {member.phone && (
-          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Phone className="h-3.5 w-3.5 shrink-0 text-navy/40" />
-            <span>{member.phone}</span>
           </div>
         )}
         {member.employeeCode && (
