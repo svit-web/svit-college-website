@@ -123,7 +123,7 @@ export function TnpMasterHub() {
       .neq("college_code", "overview");
 
     const EXCLUDED_SLUGS = ["abc123", "svit-diploma", "thesilicon", "the-silicon", "diploma"];
-    const valid = (data ?? [])
+    const valid: CollegeRecord[] = (data ?? [])
       .filter((pc: any) => !EXCLUDED_SLUGS.includes(pc.college_code))
       .map((pc: any) => {
         const slug = pc.college_code;
