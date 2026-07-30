@@ -106,32 +106,21 @@ function StudentCard({
         {student.photo || placeholder ? (
           <img
             src={student.photo || placeholder!}
-            alt={student.studentName}
+            alt={student.companyName}
             className="h-full w-full object-cover"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-navy/5 to-navy/15">
-            <span className="text-2xl font-bold text-navy/30">{initials(student.studentName)}</span>
+            <UserCircle2 className="h-14 w-14 text-navy/20" />
           </div>
         )}
       </div>
-      <div className="p-3 border-t border-navy/8 text-center min-w-0">
-        <div className="font-semibold text-navy truncate text-sm">{student.studentName}</div>
-        {student.department && (
-          <div className="text-[10px] font-medium text-crimson/80 truncate mt-0.5">{student.department}</div>
-        )}
-        <div className="text-[11px] text-muted-foreground truncate mt-0.5">@ {student.companyName}</div>
-        <div className="mt-1.5 flex items-center justify-center gap-1 flex-wrap">
-          {student.batchYear && (
-            <span className="rounded-full bg-navy/8 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-navy/60">
-              {student.batchYear}
-            </span>
-          )}
-          {student.packageLpa && (
-            <span className="rounded-full bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">
-              ₹{student.packageLpa} LPA
-            </span>
-          )}
+      <div className="p-3.5 border-t border-navy/8 text-center min-w-0">
+        <div className="font-semibold text-navy truncate text-sm">{student.companyName}</div>
+        <div className="mt-1 flex items-center justify-center">
+          <span className="rounded-full bg-navy/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy/60">
+            Batch {student.batchYear || "2024"}
+          </span>
         </div>
       </div>
     </div>
@@ -178,41 +167,41 @@ function TopStudentCard({ s }: { s: PlacementPageContent["autoStats"]["topStuden
   );
 }
 
-/** Placement officer card */
+/** Placement officer & coordinator card */
 function OfficerCard({ officer }: { officer: PlacementPageContent["placementOfficer"] }) {
-  if (!officer.name && !officer.phone && !officer.email) return null;
+  const name = officer.name || "Training & Placement Officer";
+  const designation = officer.designation || "Head - Training & Placement Cell";
+  const phone = officer.phone || "+91 2692 274489";
+  const email = officer.email || "tnp@svitvasad.ac.in";
+  const photo = officer.photo;
+
   return (
-    <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8">
+    <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8 hover:border-gold transition-colors">
       <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-        {officer.photo ? (
+        {photo ? (
           <img
-            src={officer.photo}
-            alt={officer.name || "Placement Officer"}
-            className="h-24 w-24 shrink-0 rounded-full object-cover"
+            src={photo}
+            alt={name}
+            className="h-24 w-24 shrink-0 rounded-full object-cover border-2 border-navy/10"
           />
         ) : (
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy">
-            {officer.name
-              ? <span className="font-display text-2xl font-bold">{initials(officer.name)}</span>
-              : <User className="h-10 w-10" />}
+          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy font-display text-2xl font-bold">
+            {name ? initials(name) : <User className="h-10 w-10 text-navy" />}
           </div>
         )}
         <div className="min-w-0 flex-1">
-          <div className="font-display text-xl font-bold text-navy">{officer.name || "To be announced"}</div>
-          <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-crimson">{officer.designation}</div>
+          <div className="font-display text-xl font-bold text-navy">{name}</div>
+          <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-crimson">{designation}</div>
           <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-            {officer.phone && (
-              <a href={`tel:${officer.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:text-navy">
-                <Phone className="h-4 w-4" /> {officer.phone}
+            {phone && (
+              <a href={`tel:${phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:text-navy font-medium">
+                <Phone className="h-4 w-4 text-crimson" /> {phone}
               </a>
             )}
-            {officer.email && (
-              <a href={`mailto:${officer.email}`} className="inline-flex items-center gap-2 hover:text-navy">
-                <Mail className="h-4 w-4" /> {officer.email}
+            {email && (
+              <a href={`mailto:${email}`} className="inline-flex items-center gap-2 hover:text-navy font-medium">
+                <Mail className="h-4 w-4 text-crimson" /> {email}
               </a>
-            )}
-            {!officer.phone && !officer.email && (
-              <span className="italic">Contact details will be added soon.</span>
             )}
           </div>
         </div>
@@ -296,7 +285,7 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                       { id: "stats", label: "Statistics", icon: BarChart3 },
                       { id: "highlights", label: "Top Performers", icon: Award },
                       { id: "recruiters", label: "Recruiters", icon: Building2 },
-                      { id: "officer", label: "Placement Officer", icon: UserCircle2 },
+                      { id: "officer", label: "TNP Officer & Coordinator", icon: UserCircle2 },
                     ].map((s) => {
                       const Icon = s.icon;
                       return (
@@ -344,8 +333,8 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
             {/* ── Main content ─────────────────────────────── */}
             <div className="min-w-0 space-y-10 [&>section]:scroll-mt-24">
 
-              {/* About T&P Cell */}
-              {content.aboutText && (
+              {/* OVERVIEW ONLY: About T&P Cell */}
+              {isOverview && content.aboutText && (
                 <section id="about" className="rounded-2xl border-2 border-navy/15 bg-white p-8">
                   <SectionHeading eyebrow="Training & Placement" title="About the T&P Cell" variant="eyebrow" />
                   <p className="mt-6 text-muted-foreground leading-relaxed">{content.aboutText}</p>
@@ -391,15 +380,15 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                     {(hasStudents
                       ? content.placedStudents
                       : Array.from({ length: 8 }, (_, i) => ({
-                          studentName: "Student Name",
+                          studentName: "Student",
                           companyName: "Company",
                           department: null,
                           photo: null,
-                          batchYear: null,
+                          batchYear: "2024",
                           packageLpa: null,
                         }))
                     ).map((s, i) => (
-                      <Reveal key={`${s.studentName}-${i}`} delay={i * 0.03}>
+                      <Reveal key={`${s.companyName}-${i}`} delay={i * 0.03}>
                         <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
                       </Reveal>
                     ))}
@@ -407,8 +396,8 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                 </section>
               )}
 
-              {/* ALL PAGES: Recruiters */}
-              {content.recruiters.length > 0 && (
+              {/* OVERVIEW ONLY: Recruiters */}
+              {isOverview && content.recruiters.length > 0 && (
                 <section id="recruiters">
                   <SectionHeading eyebrow="Recruiting partners" title="Recruiters" variant="eyebrow" />
                   <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
@@ -430,10 +419,10 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                 </section>
               )}
 
-              {/* ALL PAGES: Placement Officer */}
-              {(content.placementOfficer.name || content.placementOfficer.phone || content.placementOfficer.email) && (
+              {/* OVERVIEW ONLY: TNP Officer & Coordinator (Last section) */}
+              {isOverview && (
                 <section id="officer">
-                  <SectionHeading eyebrow="Get in touch" title="Placement Officer" variant="eyebrow" />
+                  <SectionHeading eyebrow="Get in touch" title="TNP Officer & Coordinator" variant="eyebrow" />
                   <div className="mt-6">
                     <OfficerCard officer={content.placementOfficer} />
                   </div>
