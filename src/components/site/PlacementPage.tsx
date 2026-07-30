@@ -295,7 +295,6 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                       { id: "about", label: "About T&P Cell", icon: Info },
                       { id: "stats", label: "Statistics", icon: BarChart3 },
                       { id: "highlights", label: "Top Performers", icon: Award },
-                      { id: "students", label: "Placed Students", icon: GraduationCap },
                       { id: "recruiters", label: "Recruiters", icon: Building2 },
                       { id: "officer", label: "Placement Officer", icon: UserCircle2 },
                     ].map((s) => {
@@ -380,31 +379,33 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                 </section>
               )}
 
-              {/* ALL PAGES: Student Album */}
-              <section id="students">
-                <SectionHeading
-                  eyebrow={isOverview ? "All placements" : "Placed Students"}
-                  title={isOverview ? "All Placed Students" : `${content.shortCode} Placed Students`}
-                  variant="eyebrow"
-                />
-                <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                  {(hasStudents
-                    ? content.placedStudents
-                    : Array.from({ length: 8 }, (_, i) => ({
-                        studentName: "Student Name",
-                        companyName: "Company",
-                        department: null,
-                        photo: null,
-                        batchYear: null,
-                        packageLpa: null,
-                      }))
-                  ).map((s, i) => (
-                    <Reveal key={`${s.studentName}-${i}`} delay={i * 0.03}>
-                      <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
-                    </Reveal>
-                  ))}
-                </div>
-              </section>
+              {/* PER-COLLEGE ONLY: Student Album */}
+              {!isOverview && (
+                <section id="students">
+                  <SectionHeading
+                    eyebrow="Placed Students"
+                    title={`${content.shortCode} Placed Students`}
+                    variant="eyebrow"
+                  />
+                  <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                    {(hasStudents
+                      ? content.placedStudents
+                      : Array.from({ length: 8 }, (_, i) => ({
+                          studentName: "Student Name",
+                          companyName: "Company",
+                          department: null,
+                          photo: null,
+                          batchYear: null,
+                          packageLpa: null,
+                        }))
+                    ).map((s, i) => (
+                      <Reveal key={`${s.studentName}-${i}`} delay={i * 0.03}>
+                        <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
+                      </Reveal>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* ALL PAGES: Recruiters */}
               {content.recruiters.length > 0 && (
