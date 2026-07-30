@@ -12,8 +12,11 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 import campusHero from "@/assets/campus-hero.jpg";
+import { heroAppearanceQuery } from "@/lib/homepage";
+import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles } from "@/lib/theme.functions";
 import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
@@ -75,10 +78,13 @@ export function CollegeLandingPage({ college }: { college: College }) {
 }
 
 function Hero({ college }: { college: College }) {
+  const { data: appearance } = useQuery(heroAppearanceQuery);
+  const { imageStyle, overlayStyle } = heroOverlayStyles(appearance ?? DEFAULT_HERO_APPEARANCE);
+
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      <img src={college.hero.imageUrl || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/55 via-navy-deep/70 to-navy/90" />
+      <img src={college.hero.imageUrl || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
+      <div className="absolute inset-0" style={overlayStyle} />
       <div className="container-page relative py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 24 }}

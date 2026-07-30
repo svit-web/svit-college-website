@@ -2,9 +2,12 @@ import { createFileRoute, notFound } from "@tanstack/react-router";
 import { CollegeLandingPage } from "@/components/site/CollegeLandingPage";
 import { getCollegeBySlug, getDepartmentsByCollegeSlug } from "@/lib/colleges.functions";
 import { getGlobalHomepageItems, getCollegeHomepageItems, getRecruiterLogos } from "@/lib/homepage.functions";
+import { heroAppearanceQuery } from "@/lib/homepage";
 
 export const Route = createFileRoute("/colleges/$college")({
-  loader: async ({ params }) => {
+  loader: async ({ params, context }) => {
+    void context.queryClient.prefetchQuery(heroAppearanceQuery);
+
     const [dbCollege, departments, globalItems, collegeItems, recruiters] = await Promise.all([
       getCollegeBySlug({ data: params.college }),
       getDepartmentsByCollegeSlug({ data: params.college }),
