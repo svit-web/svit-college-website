@@ -1,8 +1,10 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { Home, Building2, Sparkles, Users, CalendarDays } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { CTABanner } from "./CTABanner";
 import { cn } from "@/lib/utils";
+import { heroAppearanceQuery } from "@/lib/homepage";
 
 const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
   { to: "/campus-life", label: "Overview", icon: Home, exact: true },
@@ -14,6 +16,7 @@ const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] =
 
 export function CampusLifeLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: appearance } = useQuery(heroAppearanceQuery);
 
   return (
     <>
@@ -22,6 +25,7 @@ export function CampusLifeLayout() {
         accent="Beyond the Classroom"
         subtitle="Facilities, centres, clubs and events that make SVIT more than a college."
         crumbs={[{ label: "Home", to: "/" }, { label: "Campus Life" }]}
+        backgroundImage={appearance?.campusLifePhoto}
       />
 
       <div className="bg-secondary/30">

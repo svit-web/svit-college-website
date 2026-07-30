@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { getContactInfo } from "@/lib/pages.functions";
+import { heroAppearanceQuery } from "@/lib/homepage";
 import { submitForm } from "@/lib/submissions";
 import { CheckCircle2, Facebook, Instagram, Linkedin, Loader2, Mail, MapPin, Phone, Twitter, Youtube } from "lucide-react";
 import { useState } from "react";
@@ -26,6 +28,7 @@ export const Route = createFileRoute("/contact")({
 
 function Contact() {
   const { contact } = Route.useLoaderData();
+  const { data: appearance } = useQuery(heroAppearanceQuery);
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const socialLinks = contact?.social_links ?? {};
@@ -53,7 +56,7 @@ function Contact() {
 
   return (
     <>
-      <PageHero title="Contact Us" accent="Get In Touch" subtitle="Have a question? Our team is happy to help." crumbs={[{ label: "Home", to: "/" }, { label: "Contact" }]} />
+      <PageHero title="Contact Us" accent="Get In Touch" subtitle="Have a question? Our team is happy to help." crumbs={[{ label: "Home", to: "/" }, { label: "Contact" }]} backgroundImage={appearance?.contactPhoto} />
 
       <section className="container-page py-20">
         <div className="grid gap-6 md:grid-cols-3">

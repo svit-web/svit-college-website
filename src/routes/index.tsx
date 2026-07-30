@@ -30,7 +30,8 @@ import {
   recruitersQuery,
   type HomepageItem,
 } from "@/lib/homepage";
-import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles } from "@/lib/theme.functions";
+import { DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS } from "@/lib/theme.functions";
+import { HeroPhotoLayer } from "@/components/site/HeroPhotoLayer";
 import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/")({
@@ -78,7 +79,11 @@ function Hero() {
   const quickLinks = byType(items, "quick_link");
   const highlightCards = byType(items, "highlight_card");
   const { data: appearance } = useQuery(heroAppearanceQuery);
-  const { imageStyle, overlayStyle } = heroOverlayStyles(appearance ?? DEFAULT_HERO_APPEARANCE);
+  const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
+  const photos =
+    resolvedAppearance.homepagePhotos.length > 0
+      ? resolvedAppearance.homepagePhotos
+      : [hero?.image_url || campusHero];
 
   const eyebrow = hero?.eyebrow ?? "Est. 2005 · Vasad, Gujarat";
   const title = hero?.title ?? "Build Your Future.";
@@ -104,8 +109,7 @@ function Hero() {
 
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      <img src={hero?.image_url || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
-      <div className="absolute inset-0" style={overlayStyle} />
+      <HeroPhotoLayer photos={photos} appearance={resolvedAppearance} rotateMs={HOMEPAGE_ROTATE_MS} />
       <div className="container-page relative py-20 md:py-28">
         <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
