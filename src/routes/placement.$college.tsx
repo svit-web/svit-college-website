@@ -70,7 +70,7 @@ export const Route = createFileRoute("/placement/$college")({
 
     // ── Parallel fetch ────────────────────────────────────────
     const [autoStats, collegeRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
-      getAutoStatsByCollege({ data: { collegeId: college.id ?? null, isOverview } }),
+      getAutoStatsByCollege({ data: { collegeId: college.id ?? null, isOverview, collegeSlug: params.college } }),
       getRecruitersByCollege({ data: params.college }),
       getPlacementCell({ data: college.code }),
       getPlacedStudentsByCollege({ data: { collegeId: college.id ?? null, isOverview } }),

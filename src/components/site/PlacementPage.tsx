@@ -281,6 +281,41 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                 </ul>
               </nav>
 
+              {/* On this page section navigation for overview */}
+              {isOverview && (
+                <nav
+                  aria-label="Placement sections"
+                  className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
+                >
+                  <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                    On this page
+                  </div>
+                  <ul className="flex flex-col gap-1">
+                    {[
+                      { id: "about", label: "About T&P Cell", icon: Info },
+                      { id: "stats", label: "Statistics", icon: BarChart3 },
+                      { id: "highlights", label: "Top Performers", icon: Award },
+                      { id: "students", label: "Placed Students", icon: GraduationCap },
+                      { id: "recruiters", label: "Recruiters", icon: Building2 },
+                      { id: "officer", label: "Placement Officer", icon: UserCircle2 },
+                    ].map((s) => {
+                      const Icon = s.icon;
+                      return (
+                        <li key={s.id}>
+                          <a
+                            href={`#${s.id}`}
+                            className="flex items-center gap-2.5 rounded-xl border-2 border-transparent px-3 py-2 text-sm font-semibold text-navy transition-all hover:border-navy/15 hover:bg-secondary/60"
+                          >
+                            <Icon className="h-4 w-4 shrink-0" />
+                            <span>{s.label}</span>
+                          </a>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </nav>
+              )}
+
               {/* Quick stats in sidebar */}
               {content.autoStats.total > 0 && (
                 <div className="rounded-2xl border-2 border-navy/15 bg-white p-4 shadow-sm space-y-3">
