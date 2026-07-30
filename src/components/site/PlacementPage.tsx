@@ -316,7 +316,7 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
               )}
 
               {/* Quick stats in sidebar */}
-              {content.autoStats.total > 0 && (
+              {isOverview && content.autoStats.total > 0 && (
                 <div className="rounded-2xl border-2 border-navy/15 bg-white p-4 shadow-sm space-y-3">
                   <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">Quick Stats</div>
                   <div className="space-y-2">
@@ -352,12 +352,12 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                 </section>
               )}
 
-              {/* ALL PAGES: Auto-Stats bar */}
-              {content.autoStats.total > 0 && (
+              {/* OVERVIEW ONLY: Auto-Stats bar & chart */}
+              {isOverview && content.autoStats.total > 0 && (
                 <section id="stats">
                   <SectionHeading
                     eyebrow="Placement statistics"
-                    title={isOverview ? "Group-wide Statistics" : `${content.shortCode} Statistics`}
+                    title="Group-wide Statistics"
                     variant="eyebrow"
                   />
                   <div className="mt-6 space-y-6">
