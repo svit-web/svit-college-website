@@ -37,6 +37,7 @@ import { Route as AdminPlacementStatsRouteImport } from './routes/admin.placemen
 import { Route as AdminPlacementsRouteImport } from './routes/admin.placements'
 import { Route as AdminPostsRouteImport } from './routes/admin.posts'
 import { Route as AdminRecruitersRouteImport } from './routes/admin.recruiters'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSportsRouteImport } from './routes/admin.sports'
 import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
 import { Route as AdminTnpHubRouteImport } from './routes/admin.tnp-hub'
@@ -212,6 +213,11 @@ const AdminPostsRoute = AdminPostsRouteImport.update({
 const AdminRecruitersRoute = AdminRecruitersRouteImport.update({
   id: '/recruiters',
   path: '/recruiters',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminSportsRoute = AdminSportsRouteImport.update({
@@ -430,6 +436,7 @@ export interface FileRoutesByFullPath {
   '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
@@ -493,6 +500,7 @@ export interface FileRoutesByTo {
   '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
@@ -558,6 +566,7 @@ export interface FileRoutesById {
   '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
@@ -626,6 +635,7 @@ export interface FileRouteTypes {
     | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
@@ -689,6 +699,7 @@ export interface FileRouteTypes {
     | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
@@ -753,6 +764,7 @@ export interface FileRouteTypes {
     | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
@@ -1018,6 +1030,13 @@ declare module '@tanstack/react-router' {
       path: '/recruiters'
       fullPath: '/admin/recruiters'
       preLoaderRoute: typeof AdminRecruitersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/sports': {
@@ -1288,6 +1307,7 @@ interface AdminRouteChildren {
   AdminPlacementsRoute: typeof AdminPlacementsRoute
   AdminPostsRoute: typeof AdminPostsRoute
   AdminRecruitersRoute: typeof AdminRecruitersRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSportsRoute: typeof AdminSportsRoute
   AdminStaffWizardsRoute: typeof AdminStaffWizardsRoute
   AdminTnpHubRoute: typeof AdminTnpHubRoute
@@ -1309,6 +1329,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPlacementsRoute: AdminPlacementsRoute,
   AdminPostsRoute: AdminPostsRoute,
   AdminRecruitersRoute: AdminRecruitersRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminSportsRoute: AdminSportsRoute,
   AdminStaffWizardsRoute: AdminStaffWizardsRoute,
   AdminTnpHubRoute: AdminTnpHubRoute,

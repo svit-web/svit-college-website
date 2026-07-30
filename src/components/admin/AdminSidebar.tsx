@@ -29,6 +29,7 @@ interface SidebarProps {
 interface NavItem {
   label: string;
   to: string;
+  adminOnly?: boolean;
 }
 
 interface NavGroup {
@@ -97,6 +98,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "User Roles", to: "/admin/tables/user_roles" },
       { label: "Audit Logs", to: "/admin/tables/audit_logs" },
       { label: "Trash & Recovery", to: "/admin/trash" },
+      { label: "Settings", to: "/admin/settings", adminOnly: true },
     ],
   },
 ];
@@ -220,6 +222,7 @@ export function AdminSidebar({
         {NAV_GROUPS.map((group) => {
           const hasActive = groupHasActive(group);
           const expanded = expandedGroups[group.label] || hasActive;
+          const visibleItems = group.items.filter((item) => !item.adminOnly || isAdmin);
 
           if (collapsed && !isMobile) {
             // Icon-only mode: show group icon as a separator-style button with tooltip
@@ -235,7 +238,7 @@ export function AdminSidebar({
                   <group.icon className="h-4 w-4" />
                 </div>
                 {/* Show individual icons for items in collapsed mode */}
-                {group.items.map((item) => (
+                {visibleItems.map((item) => (
                   <Link
                     key={item.to}
                     to={item.to}
@@ -277,7 +280,7 @@ export function AdminSidebar({
 
               {expanded && (
                 <div className="mt-0.5 space-y-0.5 pl-2">
-                  {group.items.map((item) => (
+                  {visibleItems.map((item) => (
                     <Link
                       key={item.to}
                       to={item.to}
