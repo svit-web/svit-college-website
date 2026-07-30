@@ -36,7 +36,7 @@ export function Footer() {
     { label: "About Us", to: "/about" },
     { label: "Admissions", to: "/admissions" },
     { label: "Campus Life", to: "/campus-life" },
-    { label: "Placement", to: "/placement/svit-degree" },
+    { label: "Placement", to: "/placement/overview" },
     { label: "News & Events", to: "/news" },
     { label: "Contact", to: "/contact" },
   ];

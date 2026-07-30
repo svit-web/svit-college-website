@@ -99,7 +99,7 @@ export const getAutoStatsByCollege = createServerFn({ method: 'GET' })
           batchYear: "2024",
         },
         {
-          collegeName: "SVICA (Applied Sci.)",
+          collegeName: "SVICA (Comp. Apps)",
           collegeSlug: "svica",
           studentName: "Kriti Joshi",
           companyName: "HCL",
@@ -232,10 +232,11 @@ export const getAutoStatsByCollege = createServerFn({ method: 'GET' })
 
       let topStudents: AutoStats['topStudents'] = [];
       if (ctx.data.isOverview) {
+        const VALID_COLLEGE_SLUGS = ["svit-degree", "svit-coa", "svica", "svion"];
         const best = new Map<string, any>();
         for (const s of students) {
           const slug = s.college?.slug;
-          if (!slug || slug === 'overview') continue;
+          if (!slug || !VALID_COLLEGE_SLUGS.includes(slug)) continue;
           const prev = best.get(slug);
           const isPkgBetter = !prev
             || (s.package_lpa != null && (prev.package_lpa == null || Number(s.package_lpa) > Number(prev.package_lpa)));
@@ -325,13 +326,75 @@ export const getCollegeBySlug = createServerFn({ method: 'GET' })
     };
   });
 
+/** Dynamic placement divisions list for left dashboard navigation */
+export interface PlacementDivisionItem {
+  slug: string;
+  label: string;
+}
+
+const EXCLUDED_PLACEMENT_SLUGS = ["abc123", "svit-diploma", "thesilicon", "the-silicon", "diploma"];
+
+export const getDynamicPlacementDivisions = createServerFn({ method: 'GET' })
+  .handler(async (): Promise<PlacementDivisionItem[]> => {
+    try {
+      const ORDER = ["svit-degree", "svit-coa", "svica", "svion"];
+      // Fetch dynamic placement divisions from placement_cells table
+      const { data, error } = await supabase
+        .from('placement_cells')
+        .select('college_code')
+        .neq('college_code', 'overview');
+
+      const divisionMap = new Map<string, PlacementDivisionItem>([
+        ['svit-degree', { slug: 'svit-degree', label: 'SVIT (Degree)' }],
+        ['svit-coa', { slug: 'svit-coa', label: 'COA (Architecture)' }],
+        ['svica', { slug: 'svica', label: 'SVICA (Comp. Apps)' }],
+        ['svion', { slug: 'svion', label: 'SVION (Nursing)' }],
+      ]);
+
+      if (!error && data && data.length > 0) {
+        data.forEach((pc: any) => {
+          if (!EXCLUDED_PLACEMENT_SLUGS.includes(pc.college_code)) {
+            const slug = pc.college_code;
+            let label = slug.toUpperCase();
+            if (slug === 'svit-degree') label = 'SVIT (Degree)';
+            else if (slug === 'svit-coa') label = 'COA (Architecture)';
+            else if (slug === 'svica') label = 'SVICA (Comp. Apps)';
+            else if (slug === 'svion') label = 'SVION (Nursing)';
+            divisionMap.set(slug, { slug, label });
+          }
+        });
+      }
+
+      const collegeItems = Array.from(divisionMap.values());
+      collegeItems.sort((a, b) => {
+        const idxA = ORDER.indexOf(a.slug);
+        const idxB = ORDER.indexOf(b.slug);
+        return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
+      });
+
+      return [{ slug: 'overview', label: 'Overview' }, ...collegeItems];
+    } catch {
+      return [
+        { slug: 'overview', label: 'Overview' },
+        { slug: 'svit-degree', label: 'SVIT (Degree)' },
+        { slug: 'svit-coa', label: 'COA (Architecture)' },
+        { slug: 'svica', label: 'SVICA (Comp. Apps)' },
+        { slug: 'svion', label: 'SVION (Nursing)' },
+      ];
+    }
+  });
+
 /** All colleges for admin dropdowns */
 export const getAllColleges = createServerFn({ method: 'GET' })
   .handler(async () => {
     const { data, error } = await supabase
-      .from('colleges').select('id, slug, name').eq('status', 'published').order('sort_order', { ascending: true });
+      .from('colleges')
+      .select('id, slug, name')
+      .eq('status', 'published')
+      .order('sort_order', { ascending: true });
     if (error) return [];
-    return (data ?? []) as unknown as { id: string; slug: string; name: string }[];
+    const valid = (data ?? []).filter((c: any) => !EXCLUDED_PLACEMENT_SLUGS.includes(c.slug));
+    return valid as unknown as { id: string; slug: string; name: string }[];
   });
 
 /** Departments for a college — admin dropdowns */
