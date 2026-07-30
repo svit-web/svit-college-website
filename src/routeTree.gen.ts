@@ -45,6 +45,9 @@ import { Route as AdminSportsRouteImport } from './routes/admin.sports'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminRecruitersRouteImport } from './routes/admin.recruiters'
 import { Route as AdminPostsRouteImport } from './routes/admin.posts'
+import { Route as AdminPlacementsRouteImport } from './routes/admin.placements'
+import { Route as AdminPlacementStatsRouteImport } from './routes/admin.placement-stats'
+import { Route as AdminPlacementCellsRouteImport } from './routes/admin.placement-cells'
 import { Route as AdminMenusRouteImport } from './routes/admin.menus'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
@@ -251,6 +254,21 @@ const AdminPostsRoute = AdminPostsRouteImport.update({
   path: '/posts',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPlacementsRoute = AdminPlacementsRouteImport.update({
+  id: '/placements',
+  path: '/placements',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPlacementStatsRoute = AdminPlacementStatsRouteImport.update({
+  id: '/placement-stats',
+  path: '/placement-stats',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPlacementCellsRoute = AdminPlacementCellsRouteImport.update({
+  id: '/placement-cells',
+  path: '/placement-cells',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminMenusRoute = AdminMenusRouteImport.update({
   id: '/menus',
   path: '/menus',
@@ -407,6 +425,9 @@ export interface FileRoutesByFullPath {
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menus': typeof AdminMenusRoute
+  '/admin/placement-cells': typeof AdminPlacementCellsRoute
+  '/admin/placement-stats': typeof AdminPlacementStatsRoute
+  '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -467,6 +488,9 @@ export interface FileRoutesByTo {
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menus': typeof AdminMenusRoute
+  '/admin/placement-cells': typeof AdminPlacementCellsRoute
+  '/admin/placement-stats': typeof AdminPlacementStatsRoute
+  '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -529,6 +553,9 @@ export interface FileRoutesById {
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menus': typeof AdminMenusRoute
+  '/admin/placement-cells': typeof AdminPlacementCellsRoute
+  '/admin/placement-stats': typeof AdminPlacementStatsRoute
+  '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
   '/admin/settings': typeof AdminSettingsRoute
@@ -594,6 +621,9 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/media'
     | '/admin/menus'
+    | '/admin/placement-cells'
+    | '/admin/placement-stats'
+    | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
     | '/admin/settings'
@@ -654,6 +684,9 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/media'
     | '/admin/menus'
+    | '/admin/placement-cells'
+    | '/admin/placement-stats'
+    | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
     | '/admin/settings'
@@ -715,6 +748,9 @@ export interface FileRouteTypes {
     | '/admin/login'
     | '/admin/media'
     | '/admin/menus'
+    | '/admin/placement-cells'
+    | '/admin/placement-stats'
+    | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
     | '/admin/settings'
@@ -1040,6 +1076,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPostsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/placements': {
+      id: '/admin/placements'
+      path: '/placements'
+      fullPath: '/admin/placements'
+      preLoaderRoute: typeof AdminPlacementsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/placement-stats': {
+      id: '/admin/placement-stats'
+      path: '/placement-stats'
+      fullPath: '/admin/placement-stats'
+      preLoaderRoute: typeof AdminPlacementStatsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/placement-cells': {
+      id: '/admin/placement-cells'
+      path: '/placement-cells'
+      fullPath: '/admin/placement-cells'
+      preLoaderRoute: typeof AdminPlacementCellsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/menus': {
       id: '/admin/menus'
       path: '/menus'
@@ -1226,6 +1283,9 @@ interface AdminRouteChildren {
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminMenusRoute: typeof AdminMenusRoute
+  AdminPlacementCellsRoute: typeof AdminPlacementCellsRoute
+  AdminPlacementStatsRoute: typeof AdminPlacementStatsRoute
+  AdminPlacementsRoute: typeof AdminPlacementsRoute
   AdminPostsRoute: typeof AdminPostsRoute
   AdminRecruitersRoute: typeof AdminRecruitersRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
@@ -1244,6 +1304,9 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminLoginRoute: AdminLoginRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminMenusRoute: AdminMenusRoute,
+  AdminPlacementCellsRoute: AdminPlacementCellsRoute,
+  AdminPlacementStatsRoute: AdminPlacementStatsRoute,
+  AdminPlacementsRoute: AdminPlacementsRoute,
   AdminPostsRoute: AdminPostsRoute,
   AdminRecruitersRoute: AdminRecruitersRoute,
   AdminSettingsRoute: AdminSettingsRoute,
