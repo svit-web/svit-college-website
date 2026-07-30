@@ -77,8 +77,8 @@ export function CollegeLandingPage({ college }: { college: College }) {
 function Hero({ college }: { college: College }) {
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      <img src={college.hero.imageUrl || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-50" />
-      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/55 via-navy-deep/70 to-navy/90" />
+      <img src={college.hero.imageUrl || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy-deep/30 via-navy-deep/40 to-navy/55" />
       <div className="container-page relative py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
