@@ -13,7 +13,7 @@ const collegesList = [
   { slug: "overview",   label: "Overview",              icon: LayoutDashboard },
   { slug: "svit-degree",label: "SVIT (Degree)",         icon: Building2 },
   { slug: "svit-coa",   label: "COA (Architecture)",    icon: Building2 },
-  { slug: "svica",      label: "SVICA (Applied Sci.)",  icon: Building2 },
+  { slug: "svica",      label: "SVICA (Comp. Apps)",    icon: Building2 },
   { slug: "svion",      label: "SVION (Nursing)",       icon: Building2 },
 ];
 
@@ -214,18 +214,32 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
   const isOverview = content.slug === "overview";
   const hasStudents = content.placedStudents.length > 0;
   const hasTopStudents = content.autoStats.topStudents.length > 0;
+  const activeDivisions = (content.divisions && content.divisions.length > 0)
+    ? content.divisions
+    : collegesList;
 
   return (
     <>
       <PageHero
-        title={content.heroTitle || `${content.shortCode} — Placements`}
+        title={
+          isOverview
+            ? (content.heroTitle?.replace(/OVERVIEW\s*—\s*/i, "") || "Training & Placement Cell")
+            : (content.heroTitle || `${content.shortCode} — Placements`)
+        }
         accent="Training & Placement"
-        subtitle={content.heroSubtitle || `Placement outcomes, recruiters and support at ${content.collegeName}.`}
-        crumbs={[
-          { label: "Home", to: "/" },
-          { label: "Placement" },
-          { label: content.shortCode },
-        ]}
+        subtitle={content.heroSubtitle || `Placement outcomes, recruiters and support across all SVIT institutions.`}
+        crumbs={
+          isOverview
+            ? [
+                { label: "Home", to: "/" },
+                { label: "Placements" },
+              ]
+            : [
+                { label: "Home", to: "/" },
+                { label: "Placements", to: "/placement/overview" },
+                { label: content.shortCode },
+              ]
+        }
       />
 
       <div className="bg-secondary/30">
@@ -242,12 +256,12 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                   Placements Dashboard
                 </div>
                 <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible scrollbar-none pb-1 lg:pb-0">
-                  {collegesList.map((item) => {
+                  {activeDivisions.map((item) => {
                     const isActive =
                       content.slug === item.slug ||
                       (item.slug === "svit-degree" && content.slug === "svit") ||
                       (item.slug === "svit-coa" && content.slug === "coa");
-                    const Icon = item.icon;
+                    const Icon = item.slug === "overview" ? LayoutDashboard : Building2;
                     return (
                       <li key={item.slug} className="shrink-0 lg:shrink">
                         <Link
@@ -261,7 +275,7 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                           }`}
                         >
                           <Icon className="h-4 w-4 shrink-0" />
-                          <span>{item.label}</span>
+                          <span className="truncate">{item.label}</span>
                         </Link>
                       </li>
                     );

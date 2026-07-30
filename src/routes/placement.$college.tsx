@@ -6,6 +6,7 @@ import {
   getPlacementCell,
   getCollegeBySlug,
   getPlacedStudentsByCollege,
+  getDynamicPlacementDivisions,
   type AutoStats,
 } from "@/lib/placement.functions";
 
@@ -61,7 +62,7 @@ export const Route = createFileRoute("/placement/$college")({
     // ── Resolve college ───────────────────────────────────────
     let college: { id?: string; code: string; name: string; shortCode: string };
     if (isOverview) {
-      college = { code: "overview", name: "SVIT Group of Institutions", shortCode: "Overview" };
+      college = { code: "overview", name: "SVIT Group of Institutions", shortCode: "Placements" };
     } else {
       const found = await getCollegeBySlug({ data: params.college });
       if (!found) throw notFound();
@@ -69,11 +70,12 @@ export const Route = createFileRoute("/placement/$college")({
     }
 
     // ── Parallel fetch ────────────────────────────────────────
-    const [autoStats, collegeRecruiters, placementCell, dbPlacedStudents] = await Promise.all([
+    const [autoStats, collegeRecruiters, placementCell, dbPlacedStudents, dynamicDivisions] = await Promise.all([
       getAutoStatsByCollege({ data: { collegeId: college.id ?? null, isOverview, collegeSlug: params.college } }),
       getRecruitersByCollege({ data: params.college }),
       getPlacementCell({ data: college.code }),
       getPlacedStudentsByCollege({ data: { collegeId: college.id ?? null, isOverview } }),
+      getDynamicPlacementDivisions(),
     ]);
 
     // ── Build content ─────────────────────────────────────────
@@ -110,6 +112,7 @@ export const Route = createFileRoute("/placement/$college")({
         photo: placementCell?.officer_photo_url ?? null,
       },
       defaultStudentPlaceholderUrl: placementCell?.default_student_placeholder_url ?? null,
+      divisions: dynamicDivisions,
     };
 
     return { content };
