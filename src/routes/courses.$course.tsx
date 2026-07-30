@@ -1,7 +1,6 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { CTABanner } from "@/components/site/CTABanner";
 import { getProgrammeBySlug } from "@/lib/programmes.functions";
 import { getAllRecruiters, type Recruiter } from "@/lib/placement.functions";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
@@ -90,8 +89,6 @@ function CoursePage() {
           ))}
         </div>
       </section>
-
-      <CTABanner />
     </>
   );
 }

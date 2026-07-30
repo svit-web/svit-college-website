@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { Quote } from "lucide-react";
 import { getAlumniPage, getAllTestimonials } from "@/lib/pages.functions";
@@ -56,8 +55,6 @@ function Alumni() {
           ))}
         </div>
       </section>
-
-      <CTABanner />
     </>
   );
 }

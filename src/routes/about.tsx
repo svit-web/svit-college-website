@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { CTABanner } from "@/components/site/CTABanner";
 import { HeroPhotoLayer } from "@/components/site/HeroPhotoLayer";
 import { heroAppearanceQuery } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme.functions";
@@ -750,8 +749,6 @@ function AboutPage() {
           </div>
         </div>
       </div>
-
-      <CTABanner />
     </>
   );
 }

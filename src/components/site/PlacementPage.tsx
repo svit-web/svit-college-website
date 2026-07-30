@@ -5,7 +5,6 @@ import {
   LayoutDashboard, TrendingUp, Award, Users,
 } from "lucide-react";
 import { PageHero } from "./PageHero";
-import { CTABanner } from "./CTABanner";
 import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
 import type { PlacementPageContent } from "@/routes/placement.$college";
@@ -433,8 +432,6 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
           </div>
         </div>
       </div>
-
-      <CTABanner />
     </>
   );
 }

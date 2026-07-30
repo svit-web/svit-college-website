@@ -2,7 +2,6 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Home, Building2, Sparkles, Users, CalendarDays } from "lucide-react";
 import { PageHero } from "./PageHero";
-import { CTABanner } from "./CTABanner";
 import { cn } from "@/lib/utils";
 import { heroAppearanceQuery } from "@/lib/homepage";
 
@@ -72,8 +71,6 @@ export function CampusLifeLayout() {
           </div>
         </div>
       </div>
-
-      <CTABanner />
     </>
   );
 }

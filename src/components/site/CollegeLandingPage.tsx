@@ -17,7 +17,6 @@ import { toast } from "sonner";
 import campusHero from "@/assets/campus-hero.jpg";
 import { heroAppearanceQuery } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles } from "@/lib/theme.functions";
-import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
@@ -72,7 +71,6 @@ export function CollegeLandingPage({ college }: { college: College }) {
       <TrustBand items={college.trustBadges} />
       <EventsAndEnquiry college={college} />
       <RecruitersStrip data={displayRecruiters} />
-      <CTABanner />
     </>
   );
 }

@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
-import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { getAllFacilities, type Facility } from "@/lib/facilities.functions";
 import { getSports, getSportsAchievements, type Sport, type SportAchievement } from "@/lib/sports.functions";
@@ -176,8 +175,6 @@ function Campus() {
 
       {/* Sports Section */}
       <SportsSection sports={sports} achievements={achievements} sportsFacilities={sportsFacilities} />
-
-      <CTABanner />
     </>
   );
 }
