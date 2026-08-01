@@ -408,6 +408,7 @@ export const getAllColleges = createServerFn({ method: 'GET' })
       .from('colleges')
       .select('id, slug, name')
       .eq('status', 'published')
+      .is('deleted_at', null)
       .order('sort_order', { ascending: true });
     if (error) return [];
     const valid = (data ?? []).filter((c: any) => !EXCLUDED_PLACEMENT_SLUGS.includes(c.slug));

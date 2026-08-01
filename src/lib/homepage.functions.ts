@@ -46,6 +46,8 @@ export const getCollegesGrid = createServerFn({ method: "GET" }).handler(
     const { data, error } = await supabase
       .from("colleges")
       .select("slug, code, name, logo_url, sort_order, metadata")
+      .eq("status", "published")
+      .is("deleted_at", null)
       .order("sort_order", { ascending: true });
     if (error) throw new Error(error.message);
     return data ?? [];

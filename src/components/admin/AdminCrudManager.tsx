@@ -167,10 +167,17 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
   // Determine user scoping parameters
   const userScope = useMemo(() => {
     if (!roles || roles.length === 0) return { level: "none" };
-    
-    // Find active role configuration
+
     const isGlobalAdmin = roles.some(r => r.code === "admin");
-    const userRoleMapping = roles[0]; // Take primary role
+
+    // Pick the broadest-scoped active role rather than an arbitrary array order
+    const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, department: 3 };
+    const userRoleMapping = roles.reduce((best, r) => {
+      const rank = SCOPE_RANK[r.scope_type] ?? 99;
+      const bestRank = SCOPE_RANK[best.scope_type] ?? 99;
+      return rank < bestRank ? r : best;
+    }, roles[0]);
+
     return {
       level: isGlobalAdmin ? "global" : userRoleMapping.scope_type || "none",
       trustId: userRoleMapping.trust_id,
@@ -342,7 +349,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
   // Load data on paging/sort changes
   useEffect(() => {
     loadData();
-  }, [schema, page, pageSize, sorting, debouncedSearch]);
+  }, [schema, page, pageSize, sorting, debouncedSearch, userScope]);
 
   // Open creation/edit modal
   const handleOpenModal = (record: any = null) => {
@@ -503,6 +510,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
     if (!schema) return;
     const pkVal = record[schema.primary_key];
     const isSoftDelete = schema.columns.some((c: any) => c.name === "deleted_at");
+    const hasStatusCol = schema.columns.some((c: any) => c.name === "status");
 
     const confirmed = window.confirm(
       `Are you sure you want to delete this record?${
@@ -518,7 +526,8 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           .from(tableId)
           .update({
             deleted_at: new Date().toISOString(),
-            deleted_by: user?.id
+            deleted_by: user?.id,
+            ...(hasStatusCol ? { status: "archived" } : {})
           })
           .eq(schema.primary_key, pkVal);
 
@@ -1203,6 +1212,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                 const selectedIds = selectedRows.map((r: any) => r[schema.primary_key]);
                 if (selectedIds.length === 0) return;
                 const isSoftDelete = schema.columns.some((c: any) => c.name === "deleted_at");
+                const hasStatusCol = schema.columns.some((c: any) => c.name === "status");
                 const confirmed = window.confirm(
                   `Are you sure you want to delete these ${selectedIds.length} records?${
                     isSoftDelete ? " (They will move to the trash bin)." : " (This action is permanent)."
@@ -1216,7 +1226,8 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                       .from(tableId)
                       .update({
                         deleted_at: new Date().toISOString(),
-                        deleted_by: user?.id
+                        deleted_by: user?.id,
+                        ...(hasStatusCol ? { status: "archived" } : {})
                       })
                       .in(schema.primary_key, selectedIds);
                     if (error) throw error;
