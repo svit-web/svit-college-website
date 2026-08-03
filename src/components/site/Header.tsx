@@ -462,7 +462,7 @@ function CollegesMega({
 
   return (
     <div className="flex" onMouseLeave={scheduleDeactivate}>
-      <ul className="w-[280px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
+      <ul className="w-[320px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
         {colleges.map((c) => {
           const isActive = c.id === active?.id;
           return (
@@ -484,8 +484,8 @@ function CollegesMega({
                   className="h-9 w-9 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
                 />
                 <div className="min-w-0">
-                  <div className="truncate text-sm font-semibold text-navy">{c.name}</div>
-                  <div className="truncate text-xs text-muted-foreground">{c.shortCode} — {c.tagline}</div>
+                  <div className="text-sm font-semibold leading-snug text-navy">{c.name}</div>
+                  <div className="mt-0.5 truncate text-xs text-muted-foreground">{c.shortCode} — {c.tagline}</div>
                 </div>
               </Link>
             </li>
