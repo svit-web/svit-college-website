@@ -62,18 +62,18 @@ export function DepartmentLayout({ department }: Props) {
       <div className="bg-secondary/30">
         <div className="container-page py-10">
           <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="lg:sticky lg:top-24 lg:self-start">
+            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
               <nav aria-label="Department sections" className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm">
                 <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
                   In this department
                 </div>
-                <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
+                <ul className="flex flex-col gap-1">
                   {NAV.map((item) => {
                     const href = item.to === "/departments/$dept" ? base : `${base}${item.to.replace("/departments/$dept", "")}`;
                     const isActive = item.exact ? pathname === href : pathname === href || pathname.startsWith(href + "/");
                     const Icon = item.icon;
                     return (
-                      <li key={item.to} className="shrink-0 lg:shrink">
+                      <li key={item.to}>
                         <Link
                           to={item.to}
                           params={{ dept: department.code }}
@@ -85,7 +85,7 @@ export function DepartmentLayout({ department }: Props) {
                           )}
                         >
                           <Icon className="h-4 w-4 shrink-0" />
-                          <span className="whitespace-nowrap lg:whitespace-normal">{item.label}</span>
+                          <span>{item.label}</span>
                         </Link>
                       </li>
                     );
