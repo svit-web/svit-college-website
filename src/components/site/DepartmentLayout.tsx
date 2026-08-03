@@ -1,5 +1,5 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { Info, Users, Award, Briefcase } from "lucide-react";
+import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { CollegeLogo } from "./CollegeLogo";
 import { CTABanner } from "./CTABanner";
@@ -22,6 +22,7 @@ interface Props {
 const NAV = [
   { to: "/departments/$dept", label: "About & Programs", icon: Info, exact: true },
   { to: "/departments/$dept/staff", label: "Staff", icon: Users, exact: false },
+  { to: "/departments/$dept/labs", label: "Labs & Facilities", icon: FlaskConical, exact: false },
   { to: "/departments/$dept/achievements", label: "Achievements & Clubs", icon: Award, exact: false },
   { to: "/departments/$dept/activities", label: "Industry Interaction & Activities", icon: Briefcase, exact: false },
 ] as const;

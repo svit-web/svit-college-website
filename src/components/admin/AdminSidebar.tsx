@@ -11,7 +11,8 @@ import {
   LogOut,
   BookOpen,
   PanelLeft,
-  X
+  X,
+  FlaskConical,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,6 +48,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Departments", to: "/admin/tables/departments" },
       { label: "Courses", to: "/admin/tables/courses" },
       { label: "Facilities", to: "/admin/tables/facilities" },
+      { label: "Labs", to: "/admin/labs" },
       { label: "Dept Activities", to: "/admin/tables/department_activities" },
     ],
   },
