@@ -20,6 +20,7 @@ const topNav = [
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllCenters } from "@/lib/centers.functions";
 import { getAllEvents } from "@/lib/events.functions";
+import { getAllDepartments, type Department } from "@/lib/departments.functions";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -61,6 +62,19 @@ export function Header() {
       .filter(c => ALLOWED_PLACEMENT_SLUGS.includes(c.id))
       .map(c => ({ slug: c.id, label: c.shortCode }));
   }, [displayColleges]);
+
+  const { data: allDepartments } = useQuery({
+    queryKey: ["departments", "all-for-nav"],
+    queryFn: () => getAllDepartments(),
+    staleTime: 1000 * 60 * 5,
+  });
+  const departmentsByCollege = useMemo(() => {
+    const map: Record<string, Department[]> = {};
+    for (const d of allDepartments ?? []) {
+      (map[d.college_slug] ??= []).push(d);
+    }
+    return map;
+  }, [allDepartments]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
@@ -115,28 +129,13 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 rounded-2xl border border-border bg-white p-4 shadow-xl"
+                        className="absolute left-1/2 top-full z-50 w-[760px] max-w-[92vw] -translate-x-1/2 overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
                       >
-                        <div className="grid grid-cols-1 gap-2">
-                          {displayColleges.map((c) => (
-                            <Link
-                              key={c.id}
-                              to="/colleges/$college"
-                              params={{ college: c.id }}
-                              className="flex items-start gap-3 rounded-md p-3 hover:bg-secondary transition-colors"
-                            >
-                              <CollegeLogo
-                                shortCode={c.shortCode}
-                                src={c.logo}
-                                className="h-10 w-10 shrink-0 rounded-md border border-border bg-secondary/50 p-1 text-navy"
-                              />
-                              <div className="min-w-0">
-                                <div className="font-semibold text-sm text-navy truncate">{c.name}</div>
-                                <div className="text-xs text-muted-foreground truncate">{c.shortCode} — {c.tagline}</div>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
+                        <CollegesMega
+                          colleges={displayColleges}
+                          departmentsByCollege={departmentsByCollege}
+                          onNavigate={() => setCoursesOpen(false)}
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -427,6 +426,124 @@ function useCampusCategories(): MegaCategory[] {
       items: (events ?? []).map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
     },
   ];
+}
+
+type NavCollege = { id: string; shortCode: string; name: string; tagline: string; logo: string };
+
+/**
+ * Desktop-only "Colleges" mega-menu: hovering a college on the left reveals
+ * its departments (with logos) on the right; clicking a department goes
+ * straight to /departments/$dept. The college row itself still links to
+ * /colleges/$college like before — hover only adds the flyout.
+ */
+function CollegesMega({
+  colleges,
+  departmentsByCollege,
+  onNavigate,
+}: {
+  colleges: NavCollege[];
+  departmentsByCollege: Record<string, Department[]>;
+  onNavigate: () => void;
+}) {
+  const [activeId, setActiveId] = useState(colleges[0]?.id ?? "");
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleActivate = (id: string) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveId(id), 100);
+  };
+  const cancelSchedule = () => {
+    if (hoverTimer.current) {
+      clearTimeout(hoverTimer.current);
+      hoverTimer.current = null;
+    }
+  };
+
+  const active = colleges.find((c) => c.id === activeId) ?? colleges[0];
+
+  if (!active) return null;
+
+  const depts = departmentsByCollege[active.id] ?? [];
+
+  return (
+    <div className="grid grid-cols-[280px_minmax(0,1fr)]">
+      <ul className="max-h-[440px] overflow-y-auto border-r border-border bg-secondary/40 py-3" role="menu">
+        {colleges.map((c) => {
+          const isActive = c.id === active.id;
+          return (
+            <li key={c.id}>
+              <Link
+                to="/colleges/$college"
+                params={{ college: c.id }}
+                onMouseEnter={() => scheduleActivate(c.id)}
+                onMouseLeave={cancelSchedule}
+                onFocus={() => setActiveId(c.id)}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-start gap-3 border-l-4 px-4 py-2.5 transition-colors",
+                  isActive ? "border-crimson bg-white" : "border-transparent hover:bg-white/60"
+                )}
+              >
+                <CollegeLogo
+                  shortCode={c.shortCode}
+                  src={c.logo}
+                  className="h-9 w-9 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
+                />
+                <div className="min-w-0">
+                  <div className="truncate text-sm font-semibold text-navy">{c.name}</div>
+                  <div className="truncate text-xs text-muted-foreground">{c.shortCode} — {c.tagline}</div>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <div className="min-h-[280px] max-h-[440px] overflow-y-auto p-5">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={active.id}
+            initial={{ opacity: 0, x: 6 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -6 }}
+            transition={{ duration: 0.15 }}
+          >
+            <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+              {active.shortCode} Departments
+            </div>
+            {depts.length > 0 ? (
+              <ul className="mt-3 grid grid-cols-2 gap-1.5">
+                {depts.map((d) => (
+                  <li key={d.id}>
+                    <Link
+                      to="/departments/$dept"
+                      params={{ dept: d.code }}
+                      onClick={onNavigate}
+                      className="flex items-center gap-2.5 rounded-md p-2 transition-colors hover:bg-secondary"
+                    >
+                      {d.logo_url ? (
+                        <img
+                          src={d.logo_url}
+                          alt=""
+                          className="h-8 w-8 shrink-0 rounded-md border border-border bg-white object-contain p-1"
+                        />
+                      ) : (
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary/60 text-[10px] font-bold text-navy">
+                          {d.code}
+                        </div>
+                      )}
+                      <span className="truncate text-sm text-ink/80">{d.name}</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-muted-foreground">No departments listed yet.</p>
+            )}
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    </div>
+  );
 }
 
 function CampusMega({ onNavigate }: { onNavigate: () => void }) {
