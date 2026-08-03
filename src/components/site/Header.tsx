@@ -461,7 +461,7 @@ function CollegesMega({
   const depts = active ? departmentsByCollege[active.id] ?? [] : [];
 
   return (
-    <div className="flex">
+    <div className="flex" onMouseLeave={scheduleDeactivate}>
       <ul className="w-[280px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
         {colleges.map((c) => {
           const isActive = c.id === active?.id;
@@ -471,7 +471,6 @@ function CollegesMega({
                 to="/colleges/$college"
                 params={{ college: c.id }}
                 onMouseEnter={() => scheduleActivate(c.id)}
-                onMouseLeave={scheduleDeactivate}
                 onFocus={() => setActiveId(c.id)}
                 onClick={onNavigate}
                 className={cn(
