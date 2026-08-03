@@ -445,38 +445,33 @@ function CollegesMega({
   departmentsByCollege: Record<string, Department[]>;
   onNavigate: () => void;
 }) {
-  const [activeId, setActiveId] = useState(colleges[0]?.id ?? "");
+  const [activeId, setActiveId] = useState<string | null>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scheduleActivate = (id: string) => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setActiveId(id), 100);
+    hoverTimer.current = setTimeout(() => setActiveId(id), 80);
   };
-  const cancelSchedule = () => {
-    if (hoverTimer.current) {
-      clearTimeout(hoverTimer.current);
-      hoverTimer.current = null;
-    }
+  const scheduleDeactivate = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveId(null), 150);
   };
 
-  const active = colleges.find((c) => c.id === activeId) ?? colleges[0];
-
-  if (!active) return null;
-
-  const depts = departmentsByCollege[active.id] ?? [];
+  const active = colleges.find((c) => c.id === activeId) ?? null;
+  const depts = active ? departmentsByCollege[active.id] ?? [] : [];
 
   return (
     <div className="grid grid-cols-[280px_minmax(0,1fr)]">
       <ul className="max-h-[440px] overflow-y-auto border-r border-border bg-secondary/40 py-3" role="menu">
         {colleges.map((c) => {
-          const isActive = c.id === active.id;
+          const isActive = c.id === active?.id;
           return (
             <li key={c.id}>
               <Link
                 to="/colleges/$college"
                 params={{ college: c.id }}
                 onMouseEnter={() => scheduleActivate(c.id)}
-                onMouseLeave={cancelSchedule}
+                onMouseLeave={scheduleDeactivate}
                 onFocus={() => setActiveId(c.id)}
                 onClick={onNavigate}
                 className={cn(
@@ -500,46 +495,59 @@ function CollegesMega({
       </ul>
       <div className="min-h-[280px] max-h-[440px] overflow-y-auto p-5">
         <AnimatePresence mode="wait">
-          <motion.div
-            key={active.id}
-            initial={{ opacity: 0, x: 6 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -6 }}
-            transition={{ duration: 0.15 }}
-          >
-            <div className="text-xs font-bold uppercase tracking-widest text-crimson">
-              {active.shortCode} Departments
-            </div>
-            {depts.length > 0 ? (
-              <ul className="mt-3 grid grid-cols-2 gap-1.5">
-                {depts.map((d) => (
-                  <li key={d.id}>
-                    <Link
-                      to="/departments/$dept"
-                      params={{ dept: d.code }}
-                      onClick={onNavigate}
-                      className="flex items-center gap-2.5 rounded-md p-2 transition-colors hover:bg-secondary"
-                    >
-                      {d.logo_url ? (
-                        <img
-                          src={d.logo_url}
-                          alt=""
-                          className="h-8 w-8 shrink-0 rounded-md border border-border bg-white object-contain p-1"
-                        />
-                      ) : (
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary/60 text-[10px] font-bold text-navy">
-                          {d.code}
-                        </div>
-                      )}
-                      <span className="truncate text-sm text-ink/80">{d.name}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-3 text-sm text-muted-foreground">No departments listed yet.</p>
-            )}
-          </motion.div>
+          {active ? (
+            <motion.div
+              key={active.id}
+              initial={{ opacity: 0, x: 6 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -6 }}
+              transition={{ duration: 0.15 }}
+            >
+              <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                {active.shortCode} Departments
+              </div>
+              {depts.length > 0 ? (
+                <ul className="mt-3 grid grid-cols-2 gap-1.5">
+                  {depts.map((d) => (
+                    <li key={d.id}>
+                      <Link
+                        to="/departments/$dept"
+                        params={{ dept: d.code }}
+                        onClick={onNavigate}
+                        className="flex items-center gap-2.5 rounded-md p-2 transition-colors hover:bg-secondary"
+                      >
+                        {d.logo_url ? (
+                          <img
+                            src={d.logo_url}
+                            alt=""
+                            className="h-8 w-8 shrink-0 rounded-md border border-border bg-white object-contain p-1"
+                          />
+                        ) : (
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary/60 text-[10px] font-bold text-navy">
+                            {d.code}
+                          </div>
+                        )}
+                        <span className="truncate text-sm text-ink/80">{d.name}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="mt-3 text-sm text-muted-foreground">No departments listed yet.</p>
+              )}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="flex h-full min-h-[200px] items-center justify-center text-center text-sm text-muted-foreground"
+            >
+              Hover a college to see its departments
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
     </div>
