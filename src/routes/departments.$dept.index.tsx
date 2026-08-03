@@ -8,6 +8,6 @@ export const Route = createFileRoute("/departments/$dept/")({
 });
 
 function AboutRoute() {
-  const { department, courses, labs } = parent.useLoaderData();
-  return <DeptAboutView department={department} courses={courses} labs={labs} />;
+  const { department, courses } = parent.useLoaderData();
+  return <DeptAboutView department={department} courses={courses} />;
 }

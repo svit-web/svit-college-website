@@ -30,6 +30,7 @@ import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
 import { Route as AdminEventsRouteImport } from './routes/admin.events'
 import { Route as AdminHomepageRouteImport } from './routes/admin.homepage'
 import { Route as AdminInquiriesRouteImport } from './routes/admin.inquiries'
+import { Route as AdminLabsRouteImport } from './routes/admin.labs'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as AdminMediaRouteImport } from './routes/admin.media'
 import { Route as AdminMenusRouteImport } from './routes/admin.menus'
@@ -71,6 +72,7 @@ import { Route as CoursesEngineeringDeptRouteImport } from './routes/courses.eng
 import { Route as DepartmentsDeptIndexRouteImport } from './routes/departments.$dept.index'
 import { Route as DepartmentsDeptAchievementsRouteImport } from './routes/departments.$dept.achievements'
 import { Route as DepartmentsDeptActivitiesRouteImport } from './routes/departments.$dept.activities'
+import { Route as DepartmentsDeptLabsRouteImport } from './routes/departments.$dept.labs'
 import { Route as DepartmentsDeptStaffRouteImport } from './routes/departments.$dept.staff'
 import { Route as CampusLifeClubsSlugIndexRouteImport } from './routes/campus-life.clubs.$slug.index'
 import { Route as CampusLifeClubsSlugEventsRouteImport } from './routes/campus-life.clubs.$slug.events'
@@ -179,6 +181,11 @@ const AdminHomepageRoute = AdminHomepageRouteImport.update({
 const AdminInquiriesRoute = AdminInquiriesRouteImport.update({
   id: '/inquiries',
   path: '/inquiries',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminLabsRoute = AdminLabsRouteImport.update({
+  id: '/labs',
+  path: '/labs',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
@@ -390,6 +397,11 @@ const DepartmentsDeptActivitiesRoute =
     path: '/activities',
     getParentRoute: () => DepartmentsDeptRoute,
   } as any)
+const DepartmentsDeptLabsRoute = DepartmentsDeptLabsRouteImport.update({
+  id: '/labs',
+  path: '/labs',
+  getParentRoute: () => DepartmentsDeptRoute,
+} as any)
 const DepartmentsDeptStaffRoute = DepartmentsDeptStaffRouteImport.update({
   id: '/staff',
   path: '/staff',
@@ -435,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AdminEventsRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/inquiries': typeof AdminInquiriesRoute
+  '/admin/labs': typeof AdminLabsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menus': typeof AdminMenusRoute
@@ -472,6 +485,7 @@ export interface FileRoutesByFullPath {
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
   '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
+  '/departments/$dept/labs': typeof DepartmentsDeptLabsRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
   '/campus-life/centre/': typeof CampusLifeCentreIndexRoute
   '/campus-life/clubs/': typeof CampusLifeClubsIndexRoute
@@ -500,6 +514,7 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AdminEventsRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/inquiries': typeof AdminInquiriesRoute
+  '/admin/labs': typeof AdminLabsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menus': typeof AdminMenusRoute
@@ -535,6 +550,7 @@ export interface FileRoutesByTo {
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
   '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
+  '/departments/$dept/labs': typeof DepartmentsDeptLabsRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
   '/campus-life/centre': typeof CampusLifeCentreIndexRoute
   '/campus-life/clubs': typeof CampusLifeClubsIndexRoute
@@ -567,6 +583,7 @@ export interface FileRoutesById {
   '/admin/events': typeof AdminEventsRoute
   '/admin/homepage': typeof AdminHomepageRoute
   '/admin/inquiries': typeof AdminInquiriesRoute
+  '/admin/labs': typeof AdminLabsRoute
   '/admin/login': typeof AdminLoginRoute
   '/admin/media': typeof AdminMediaRoute
   '/admin/menus': typeof AdminMenusRoute
@@ -604,6 +621,7 @@ export interface FileRoutesById {
   '/courses/engineering/$dept': typeof CoursesEngineeringDeptRouteWithChildren
   '/departments/$dept/achievements': typeof DepartmentsDeptAchievementsRoute
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
+  '/departments/$dept/labs': typeof DepartmentsDeptLabsRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
   '/campus-life/centre/': typeof CampusLifeCentreIndexRoute
   '/campus-life/clubs/': typeof CampusLifeClubsIndexRoute
@@ -637,6 +655,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/homepage'
     | '/admin/inquiries'
+    | '/admin/labs'
     | '/admin/login'
     | '/admin/media'
     | '/admin/menus'
@@ -674,6 +693,7 @@ export interface FileRouteTypes {
     | '/courses/engineering/$dept'
     | '/departments/$dept/achievements'
     | '/departments/$dept/activities'
+    | '/departments/$dept/labs'
     | '/departments/$dept/staff'
     | '/campus-life/centre/'
     | '/campus-life/clubs/'
@@ -702,6 +722,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/homepage'
     | '/admin/inquiries'
+    | '/admin/labs'
     | '/admin/login'
     | '/admin/media'
     | '/admin/menus'
@@ -737,6 +758,7 @@ export interface FileRouteTypes {
     | '/courses/engineering/$dept'
     | '/departments/$dept/achievements'
     | '/departments/$dept/activities'
+    | '/departments/$dept/labs'
     | '/departments/$dept/staff'
     | '/campus-life/centre'
     | '/campus-life/clubs'
@@ -768,6 +790,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/homepage'
     | '/admin/inquiries'
+    | '/admin/labs'
     | '/admin/login'
     | '/admin/media'
     | '/admin/menus'
@@ -805,6 +828,7 @@ export interface FileRouteTypes {
     | '/courses/engineering/$dept'
     | '/departments/$dept/achievements'
     | '/departments/$dept/activities'
+    | '/departments/$dept/labs'
     | '/departments/$dept/staff'
     | '/campus-life/centre/'
     | '/campus-life/clubs/'
@@ -993,6 +1017,13 @@ declare module '@tanstack/react-router' {
       path: '/inquiries'
       fullPath: '/admin/inquiries'
       preLoaderRoute: typeof AdminInquiriesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/labs': {
+      id: '/admin/labs'
+      path: '/labs'
+      fullPath: '/admin/labs'
+      preLoaderRoute: typeof AdminLabsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/login': {
@@ -1282,6 +1313,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DepartmentsDeptActivitiesRouteImport
       parentRoute: typeof DepartmentsDeptRoute
     }
+    '/departments/$dept/labs': {
+      id: '/departments/$dept/labs'
+      path: '/labs'
+      fullPath: '/departments/$dept/labs'
+      preLoaderRoute: typeof DepartmentsDeptLabsRouteImport
+      parentRoute: typeof DepartmentsDeptRoute
+    }
     '/departments/$dept/staff': {
       id: '/departments/$dept/staff'
       path: '/staff'
@@ -1319,6 +1357,7 @@ interface AdminRouteChildren {
   AdminEventsRoute: typeof AdminEventsRoute
   AdminHomepageRoute: typeof AdminHomepageRoute
   AdminInquiriesRoute: typeof AdminInquiriesRoute
+  AdminLabsRoute: typeof AdminLabsRoute
   AdminLoginRoute: typeof AdminLoginRoute
   AdminMediaRoute: typeof AdminMediaRoute
   AdminMenusRoute: typeof AdminMenusRoute
@@ -1342,6 +1381,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminEventsRoute: AdminEventsRoute,
   AdminHomepageRoute: AdminHomepageRoute,
   AdminInquiriesRoute: AdminInquiriesRoute,
+  AdminLabsRoute: AdminLabsRoute,
   AdminLoginRoute: AdminLoginRoute,
   AdminMediaRoute: AdminMediaRoute,
   AdminMenusRoute: AdminMenusRoute,
@@ -1430,6 +1470,7 @@ const CoursesCourseRouteWithChildren = CoursesCourseRoute._addFileChildren(
 interface DepartmentsDeptRouteChildren {
   DepartmentsDeptAchievementsRoute: typeof DepartmentsDeptAchievementsRoute
   DepartmentsDeptActivitiesRoute: typeof DepartmentsDeptActivitiesRoute
+  DepartmentsDeptLabsRoute: typeof DepartmentsDeptLabsRoute
   DepartmentsDeptStaffRoute: typeof DepartmentsDeptStaffRoute
   DepartmentsDeptIndexRoute: typeof DepartmentsDeptIndexRoute
 }
@@ -1437,6 +1478,7 @@ interface DepartmentsDeptRouteChildren {
 const DepartmentsDeptRouteChildren: DepartmentsDeptRouteChildren = {
   DepartmentsDeptAchievementsRoute: DepartmentsDeptAchievementsRoute,
   DepartmentsDeptActivitiesRoute: DepartmentsDeptActivitiesRoute,
+  DepartmentsDeptLabsRoute: DepartmentsDeptLabsRoute,
   DepartmentsDeptStaffRoute: DepartmentsDeptStaffRoute,
   DepartmentsDeptIndexRoute: DepartmentsDeptIndexRoute,
 }

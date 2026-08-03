@@ -115,7 +115,10 @@ function StudentCard({
         )}
       </div>
       <div className="p-3.5 border-t border-navy/8 text-center min-w-0">
-        <div className="font-semibold text-navy truncate text-sm">{student.companyName}</div>
+        {student.studentName && student.studentName !== "Student" && (
+          <div className="font-bold text-navy truncate text-xs mb-0.5">{student.studentName}</div>
+        )}
+        <div className="font-semibold text-slate-800 truncate text-sm">{student.companyName}</div>
         <div className="mt-1 flex items-center justify-center">
           <span className="rounded-full bg-navy/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy/60">
             Batch {student.batchYear || "2024"}
@@ -389,23 +392,19 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                     title={`${content.shortCode} Placed Students`}
                     variant="eyebrow"
                   />
-                  <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {(hasStudents
-                      ? content.placedStudents
-                      : Array.from({ length: 8 }, (_, i) => ({
-                          studentName: "Student",
-                          companyName: "Company",
-                          department: null,
-                          photo: null,
-                          batchYear: "2024",
-                          packageLpa: null,
-                        }))
-                    ).map((s, i) => (
-                      <Reveal key={`${s.companyName}-${i}`} delay={i * 0.03}>
-                        <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
-                      </Reveal>
-                    ))}
-                  </div>
+                  {content.placedStudents.length > 0 ? (
+                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                      {content.placedStudents.map((s, i) => (
+                        <Reveal key={`${s.companyName}-${i}`} delay={i * 0.03}>
+                          <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
+                        </Reveal>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 py-10 text-center text-xs text-slate-400">
+                      No placement student cards added yet for {content.shortCode}.
+                    </div>
+                  )}
                 </section>
               )}
 

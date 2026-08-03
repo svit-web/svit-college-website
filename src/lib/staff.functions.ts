@@ -18,7 +18,6 @@ export interface StaffMember {
   employeeCode: string;
   expertise: string[];
   email?: string | null;
-  phone?: string | null;
   photoUrl?: string | null;
   bio?: string | null;
   officeHours?: { day: string; time: string }[] | null;
@@ -37,7 +36,7 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('staff_profiles')
-      .select('id, title, first_name, last_name, email, phone, bio, office_hours, social_links, metadata, expertise, joining_year, past_experience_years')
+      .select('id, title, first_name, last_name, email, bio, office_hours, social_links, metadata, expertise, joining_year, past_experience_years')
       .eq('status', 'published')
       .filter('metadata->>employeeCode', 'eq', ctx.data)
       .maybeSingle();
@@ -99,7 +98,6 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
       employeeCode: meta.employeeCode ?? '',
       expertise: (data as any).expertise ?? [],
       email: data.email,
-      phone: data.phone ?? meta.phone ?? null,
       photoUrl: meta.photoUrl ?? null,
       bio: (data as any).bio ?? null,
       officeHours: (data as any).office_hours ?? null,
@@ -165,7 +163,6 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
         employeeCode: meta.employeeCode ?? '',
         expertise: (sp as any)?.expertise ?? [],
         email: sp?.email ?? null,
-        phone: meta.phone ?? null,
         photoUrl: meta.photoUrl ?? null,
         isHod: Boolean(a.is_primary) && (assignMeta.rankGroup === 'HOD' || meta.rankGroup === 'HOD'),
         achievements: [],

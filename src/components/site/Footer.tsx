@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter, Youtube } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter, Youtube, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
 import { useQuery } from "@tanstack/react-query";
 import { programmesQuery, contactInfoQuery } from "@/lib/homepage";
@@ -50,9 +51,9 @@ export function Footer() {
 
   return (
     <footer className="bg-navy-deep text-white/80">
-      <div className="container-page py-14">
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-5">
-          <div className="lg:col-span-2">
+      <div className="container-page py-8 md:py-14">
+        <div className="grid gap-0 md:gap-10 md:grid-cols-2 lg:grid-cols-5">
+          <div className="lg:col-span-2 mb-2 md:mb-0">
             <Logo light />
             <p className="mt-4 text-sm text-white/70 max-w-sm">
               {site.fullName} — a premier institute committed to excellence in education, research and community impact since 2005.
@@ -91,10 +92,25 @@ export function Footer() {
 }
 
 function FooterCol({ title, links }: { title: string; links: { label: string; to: string }[] }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <div>
-      <h4 className="font-display text-sm font-bold uppercase tracking-widest text-white">{title}</h4>
-      <ul className="mt-4 space-y-2 text-sm">
+    <div className="border-b border-white/10 md:border-none">
+      {/* Mobile: tappable header */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="flex w-full items-center justify-between py-3 md:hidden"
+      >
+        <h4 className="font-display text-sm font-bold uppercase tracking-widest text-white">{title}</h4>
+        <ChevronDown className={`h-4 w-4 text-white/50 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+      </button>
+
+      {/* Desktop: always visible heading */}
+      <h4 className="hidden md:block font-display text-sm font-bold uppercase tracking-widest text-white">{title}</h4>
+
+      {/* Links: hidden on mobile until open, always visible on desktop */}
+      <ul className={`space-y-2 text-sm pb-3 md:pb-0 md:mt-4 md:block ${open ? "block mt-1" : "hidden"}`}>
         {links.map((l) => (
           <li key={l.to}>
             <Link to={l.to} className="hover:text-gold transition-colors">{l.label}</Link>

@@ -71,11 +71,10 @@ function AdminDashboardHome() {
         sb.from("trusts").select("*", { count: "exact", head: true }),
         sb.from("homepage_items").select("*", { count: "exact", head: true }),
         sb.from("posts").select("*", { count: "exact", head: true }),
-        sb.from("placement_statistics").select("*", { count: "exact", head: true }),
         sb.from("placed_students").select("*", { count: "exact", head: true }),
         sb.from("placement_cells").select("*", { count: "exact", head: true }),
       ]);
-      const [colleges, departments, courses, events, recruiters, faculty, trusts, homepageItems, posts, placementStats, placedStudents, placementCells] = results;
+      const [colleges, departments, courses, events, recruiters, faculty, trusts, homepageItems, posts, placedStudents, placementCells] = results;
       return {
         colleges: colleges.count || 0,
         departments: departments.count || 0,
@@ -86,7 +85,6 @@ function AdminDashboardHome() {
         trusts: trusts.count || 0,
         homepageItems: homepageItems.count || 0,
         posts: posts.count || 0,
-        placementStats: placementStats.count || 0,
         placedStudents: placedStudents.count || 0,
         placementCells: placementCells.count || 0,
       };

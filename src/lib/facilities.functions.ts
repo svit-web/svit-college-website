@@ -37,6 +37,7 @@ export const getAllFacilities = createServerFn({ method: 'GET' })
       .from('facilities')
       .select('*')
       .eq('status', 'published')
+      .is('department_id', null)
       .order('name', { ascending: true });
 
     if (error) {
@@ -97,6 +98,7 @@ export const getLabsByDepartmentId = createServerFn({ method: 'GET' })
       .from('facilities')
       .select('*')
       .eq('status', 'published')
+      .eq('facility_type', 'laboratory')
       .eq('department_id', departmentId)
       .order('name', { ascending: true });
 

@@ -17,7 +17,6 @@ import {
   Mic,
   Image as ImageIcon,
   Mail,
-  Phone,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -185,41 +184,6 @@ export function DeptAboutView({ department, courses = [], labs = [] }: Props) {
         </div>
       </section>
 
-      {labs.length > 0 && (
-        <section>
-          <SectionHeading eyebrow="Laboratories" title="Our Labs & Facilities" />
-          <div className="mt-8 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-            {labs.map((lab, i) => (
-              <Reveal key={lab.id} delay={i * 0.04}>
-                <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white p-6">
-                  {lab.metadata?.accent && (
-                    <div className="mb-3 inline-block rounded-full bg-navy/5 px-3 py-1 text-xs font-bold text-navy">
-                      {lab.metadata.accent}
-                    </div>
-                  )}
-                  <h3 className="font-display text-base font-bold text-navy">{lab.name}</h3>
-                  {lab.metadata?.subtitle && (
-                    <p className="mt-1 text-xs font-semibold text-crimson">{lab.metadata.subtitle}</p>
-                  )}
-                  {lab.metadata?.description && (
-                    <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{lab.metadata.description}</p>
-                  )}
-                  {lab.metadata?.highlights && lab.metadata.highlights.length > 0 && (
-                    <ul className="mt-3 space-y-1.5">
-                      {lab.metadata.highlights.map((h, j) => (
-                        <li key={j} className="flex items-start gap-2 text-xs text-muted-foreground">
-                          <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                          <span><span className="font-semibold text-navy">{h.title}:</span> {h.description}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </section>
-      )}
     </div>
   );
 }
@@ -280,12 +244,6 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
           <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Mail className="h-3.5 w-3.5 shrink-0 text-navy/40" />
             <span className="truncate">{member.email}</span>
-          </div>
-        )}
-        {member.phone && (
-          <div className="mt-1.5 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Phone className="h-3.5 w-3.5 shrink-0 text-navy/40" />
-            <span>{member.phone}</span>
           </div>
         )}
         {member.employeeCode && (
@@ -515,6 +473,69 @@ export function DeptActivitiesView({ activities = [] }: Props) {
             <ActivityList items={items} />
           </motion.div>
         </AnimatePresence>
+      </div>
+    </div>
+  );
+}
+
+// -------- Labs & Facilities --------
+export function DeptLabsView({ labs = [] }: Props) {
+  if (labs.length === 0) {
+    return (
+      <div>
+        <SectionHeading eyebrow="Labs & Facilities" title="Our Laboratories" />
+        <p className="mt-10 text-center text-muted-foreground">
+          Lab information will be published soon.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <SectionHeading eyebrow="Labs & Facilities" title="Our Laboratories" />
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+        {labs.map((lab, i) => (
+          <Reveal key={lab.id} delay={i * 0.04}>
+            <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden">
+              {(lab.metadata as any)?.imageUrl && (
+                <img
+                  src={(lab.metadata as any).imageUrl}
+                  alt={lab.name}
+                  className="h-40 w-full object-cover"
+                />
+              )}
+              <div className="p-6">
+                {(lab.metadata as any)?.accent && (
+                  <div className="mb-2 inline-block rounded-full bg-navy/5 px-3 py-1 text-xs font-bold text-navy">
+                    {(lab.metadata as any).accent}
+                  </div>
+                )}
+                <h3 className="font-display text-base font-bold text-navy">{lab.name}</h3>
+                {(lab.metadata as any)?.subtitle && (
+                  <p className="mt-1 text-xs font-semibold text-crimson">{(lab.metadata as any).subtitle}</p>
+                )}
+                {(lab.metadata as any)?.description && (
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                    {(lab.metadata as any).description}
+                  </p>
+                )}
+                {(lab.metadata as any)?.highlights?.length > 0 && (
+                  <ul className="mt-3 space-y-1.5">
+                    {((lab.metadata as any).highlights as { title: string; description: string }[]).map((h, j) => (
+                      <li key={j} className="flex items-start gap-2 text-xs text-muted-foreground">
+                        <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                        <span>
+                          <span className="font-semibold text-navy">{h.title}:</span> {h.description}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </div>
     </div>
   );
