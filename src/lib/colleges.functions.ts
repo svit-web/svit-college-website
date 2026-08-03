@@ -32,6 +32,7 @@ export const getAllColleges = createServerFn({ method: 'GET' })
       .from('colleges')
       .select('*')
       .eq('status', 'published')
+      .is('deleted_at', null)
       .order('sort_order', { ascending: true });
 
     if (error) {
@@ -80,6 +81,7 @@ export const getCollegeBySlug = createServerFn({ method: 'GET' })
       .select('*')
       .eq('slug', slug)
       .eq('status', 'published')
+      .is('deleted_at', null)
       .maybeSingle();
 
     if (error) throw error;
