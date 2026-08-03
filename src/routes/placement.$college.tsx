@@ -8,6 +8,7 @@ import {
   getPlacedStudentsByCollege,
   getDynamicPlacementDivisions,
   type AutoStats,
+  type PlacementDivisionItem,
 } from "@/lib/placement.functions";
 
 // ── Page content shape ─────────────────────────────────────────
@@ -38,6 +39,7 @@ export interface PlacementPageContent {
     photo: string | null;
   };
   defaultStudentPlaceholderUrl: string | null;
+  divisions: PlacementDivisionItem[];
 }
 
 export const Route = createFileRoute("/placement/$college")({

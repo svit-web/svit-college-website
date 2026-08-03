@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
-import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { CalendarCheck, MessageCircle, Shield, TrendingUp } from "lucide-react";
 
@@ -44,8 +43,6 @@ function Parents() {
           <Link to="/contact" className="rounded-md bg-navy px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Get in Touch</Link>
         </div>
       </section>
-
-      <CTABanner />
     </>
   );
 }

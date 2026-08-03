@@ -2,8 +2,17 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
-import { DEFAULT_HERO_APPEARANCE, getHeroAppearance, heroOverlayStyles, setHeroAppearance, type HeroAppearance } from "@/lib/theme.functions";
-import { Image, Layers, Loader2, Save, ShieldAlert, Sparkles } from "lucide-react";
+import { MediaUploader } from "@/components/admin/MediaUploader";
+import {
+  DEFAULT_HERO_APPEARANCE,
+  getHeroAppearance,
+  heroOverlayStyles,
+  setHeroAppearance,
+  MAX_HOMEPAGE_PHOTOS,
+  HOMEPAGE_ROTATE_MS,
+  type HeroAppearance,
+} from "@/lib/theme.functions";
+import { Image, Images, Layers, Loader2, Save, ShieldAlert, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import campusHero from "@/assets/campus-hero.jpg";
 
@@ -40,10 +49,11 @@ function AdminAppearancePage() {
         data: { session },
       } = await supabase.auth.getSession();
 
-      await setHeroAppearance({
+      const saved = await setHeroAppearance({
         data: settings,
         headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
       });
+      setSettings(saved);
       toast.success("Hero appearance updated — live on the site now.");
     } catch (err: any) {
       toast.error(err.message);
@@ -56,7 +66,16 @@ function AdminAppearancePage() {
     setSettings(DEFAULT_HERO_APPEARANCE);
   }
 
+  function setHomepagePhoto(index: number, url: string) {
+    setSettings((s) => {
+      const slots = Array.from({ length: MAX_HOMEPAGE_PHOTOS }, (_, i) => s.homepagePhotos[i] ?? "");
+      slots[index] = url;
+      return { ...s, homepagePhotos: slots.filter(Boolean) };
+    });
+  }
+
   const { imageStyle, overlayStyle } = heroOverlayStyles(settings);
+  const homepageSlots = Array.from({ length: MAX_HOMEPAGE_PHOTOS }, (_, i) => settings.homepagePhotos[i] ?? "");
 
   if (loading || authLoading) {
     return (
@@ -88,7 +107,8 @@ function AdminAppearancePage() {
             Hero Appearance
           </h1>
           <p className="text-sm text-slate-500">
-            Controls the campus photo overlay on the homepage and college landing page heroes — no code changes needed.
+            One place to control every hero photo across the site — homepage slideshow, about,
+            campus life and contact — plus the shared tint/blur overlay. No code changes needed.
           </p>
         </div>
         <div className="flex gap-2">
@@ -110,12 +130,15 @@ function AdminAppearancePage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
-        {/* Controls */}
+        {/* Overlay controls */}
         <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">
+            Overlay Settings (applies to every hero below)
+          </span>
           <SliderField
             icon={Image}
             label="Photo Visibility"
-            hint="How visible the campus photo is behind the tint. Higher = clearer photo."
+            hint="How visible the photo is behind the tint. Higher = clearer photo."
             value={settings.heroImageOpacity}
             min={0}
             max={100}
@@ -161,8 +184,69 @@ function AdminAppearancePage() {
             </div>
           </div>
           <p className="text-xs text-slate-500">
-            This preview mirrors the homepage and college page heroes exactly — save to publish it live.
+            This preview mirrors every hero below exactly — save to publish it live.
           </p>
+        </div>
+      </div>
+
+      {/* Homepage slideshow */}
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex items-center gap-2">
+          <Images className="h-4 w-4 text-crimson" />
+          <h2 className="text-sm font-semibold text-navy">Homepage Slideshow Photos</h2>
+        </div>
+        <p className="mt-1 text-xs text-slate-500">
+          Up to {MAX_HOMEPAGE_PHOTOS} photos — the homepage hero automatically rotates between them
+          every {HOMEPAGE_ROTATE_MS / 1000} seconds with a fade transition. Leave slots empty to use
+          fewer photos (a single photo just stays static).
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          {homepageSlots.map((url, i) => (
+            <div key={i}>
+              <span className="text-[11px] font-semibold text-slate-500 uppercase">Photo {i + 1}</span>
+              <div className="mt-1">
+                <MediaUploader value={url} onChange={(newUrl) => setHomepagePhoto(i, newUrl)} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Per-page backgrounds */}
+      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="text-sm font-semibold text-navy">Page Background Photos</h2>
+        <p className="mt-1 text-xs text-slate-500">
+          These pages have a plain navy hero until you add a photo here — once set, it uses the same
+          overlay/blur settings above.
+        </p>
+        <div className="mt-4 grid gap-4 sm:grid-cols-3">
+          <div>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase">About Page</span>
+            <div className="mt-1">
+              <MediaUploader
+                value={settings.aboutPhoto ?? ""}
+                onChange={(url) => setSettings((s) => ({ ...s, aboutPhoto: url || null }))}
+              />
+            </div>
+          </div>
+          <div>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase">Campus Life Page</span>
+            <div className="mt-1">
+              <MediaUploader
+                value={settings.campusLifePhoto ?? ""}
+                onChange={(url) => setSettings((s) => ({ ...s, campusLifePhoto: url || null }))}
+              />
+            </div>
+          </div>
+          <div>
+            <span className="text-[11px] font-semibold text-slate-500 uppercase">Contact Page</span>
+            <div className="mt-1">
+              <MediaUploader
+                value={settings.contactPhoto ?? ""}
+                onChange={(url) => setSettings((s) => ({ ...s, contactPhoto: url || null }))}
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>

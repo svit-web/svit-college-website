@@ -1,7 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { CTABanner } from "@/components/site/CTABanner";
+import { HeroPhotoLayer } from "@/components/site/HeroPhotoLayer";
+import { heroAppearanceQuery } from "@/lib/homepage";
+import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme.functions";
 import { getAllCommittees } from "@/lib/committees.functions";
 import { getAllAccreditations } from "@/lib/accreditations.functions";
 import { getAboutPage } from "@/lib/pages.functions";
@@ -94,12 +97,18 @@ const sectionLinks = [
 
 function AboutPage() {
   const { aboutPage: c, committees, accreditations, mous } = Route.useLoaderData();
+  const { data: appearance } = useQuery(heroAppearanceQuery);
+  const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
 
   return (
     <>
       {/* Hero: portrait left, brief on right */}
-      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep text-white">
-        <div className="container-page py-14 md:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-navy via-navy to-navy-deep text-white">
+        <HeroPhotoLayer
+          photos={resolvedAppearance.aboutPhoto ? [resolvedAppearance.aboutPhoto] : []}
+          appearance={resolvedAppearance}
+        />
+        <div className="container-page relative py-14 md:py-20">
           <div className="grid items-center gap-10 lg:grid-cols-[1.15fr_1fr]">
             {/* Brief about (left) */}
             <div className="min-w-0">
@@ -740,8 +749,6 @@ function AboutPage() {
           </div>
         </div>
       </div>
-
-      <CTABanner />
     </>
   );
 }

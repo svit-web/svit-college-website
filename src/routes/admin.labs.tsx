@@ -166,11 +166,11 @@ function AdminLabsPage() {
       };
 
       if (editingId) {
-        const { error } = await supabase.from("facilities").update(payload).eq("id", editingId);
+        const { error } = await supabase.from("facilities").update(payload as any).eq("id", editingId);
         if (error) throw error;
         toast.success("Lab updated!");
       } else {
-        const { error } = await supabase.from("facilities").insert({ ...payload, created_by: user?.id });
+        const { error } = await supabase.from("facilities").insert({ ...payload, created_by: user?.id } as any);
         if (error) throw error;
         toast.success("Lab created!");
       }

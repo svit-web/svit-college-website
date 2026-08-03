@@ -2,7 +2,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { CTABanner } from "@/components/site/CTABanner";
 import { getAllProgrammes } from "@/lib/programmes.functions";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
@@ -105,8 +104,6 @@ function Admissions() {
           </div>
         </div>
       </section>
-
-      <CTABanner />
     </>
   );
 }

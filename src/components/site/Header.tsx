@@ -1,4 +1,4 @@
-import { useRef, useState, useMemo } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Trophy, Users, X } from "lucide-react";
@@ -20,6 +20,7 @@ const topNav = [
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllCenters } from "@/lib/centers.functions";
 import { getAllEvents } from "@/lib/events.functions";
+import { getAllDepartments, type Department } from "@/lib/departments.functions";
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -32,6 +33,24 @@ export function Header() {
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [placementOpen, setPlacementOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
+
+  // Mobile accordion states — all collapsed by default
+  const [mobileCollegesOpen, setMobileCollegesOpen] = useState(false);
+  const [mobilePlacementOpen, setMobilePlacementOpen] = useState(false);
+  const [mobileCampusOpen, setMobileCampusOpen] = useState(false);
+
+  // Lock body scroll while mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = open ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [open]);
+
+  function closeMobileMenu() {
+    setOpen(false);
+    setMobileCollegesOpen(false);
+    setMobilePlacementOpen(false);
+    setMobileCampusOpen(false);
+  }
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
   const { data: dbColleges } = useQuery(collegesQuery);
@@ -61,6 +80,19 @@ export function Header() {
       .filter(c => ALLOWED_PLACEMENT_SLUGS.includes(c.id))
       .map(c => ({ slug: c.id, label: c.shortCode }));
   }, [displayColleges]);
+
+  const { data: allDepartments } = useQuery({
+    queryKey: ["departments", "all-for-nav"],
+    queryFn: () => getAllDepartments(),
+    staleTime: 1000 * 60 * 5,
+  });
+  const departmentsByCollege = useMemo(() => {
+    const map: Record<string, Department[]> = {};
+    for (const d of allDepartments ?? []) {
+      (map[d.college_slug] ??= []).push(d);
+    }
+    return map;
+  }, [allDepartments]);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
@@ -115,28 +147,13 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 w-[520px] -translate-x-1/2 rounded-2xl border border-border bg-white p-4 shadow-xl"
+                        className="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
                       >
-                        <div className="grid grid-cols-1 gap-2">
-                          {displayColleges.map((c) => (
-                            <Link
-                              key={c.id}
-                              to="/colleges/$college"
-                              params={{ college: c.id }}
-                              className="flex items-start gap-3 rounded-md p-3 hover:bg-secondary transition-colors"
-                            >
-                              <CollegeLogo
-                                shortCode={c.shortCode}
-                                src={c.logo}
-                                className="h-10 w-10 shrink-0 rounded-md border border-border bg-secondary/50 p-1 text-navy"
-                              />
-                              <div className="min-w-0">
-                                <div className="font-semibold text-sm text-navy truncate">{c.name}</div>
-                                <div className="text-xs text-muted-foreground truncate">{c.shortCode} — {c.tagline}</div>
-                              </div>
-                            </Link>
-                          ))}
-                        </div>
+                        <CollegesMega
+                          colleges={displayColleges}
+                          departmentsByCollege={departmentsByCollege}
+                          onNavigate={() => setCoursesOpen(false)}
+                        />
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -263,57 +280,102 @@ export function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.15 }}
             className="overflow-hidden border-t border-border bg-white lg:hidden"
           >
+            <div className="max-h-[calc(100dvh-116px)] overflow-y-auto">
             <div className="container-page flex flex-col gap-1 py-4">
-              {primaryNav.map((n) => (
-                <div key={n.to}>
+              {primaryNav.map((n) => {
+                if (n.label === "Colleges") {
+                  return (
+                    <div key={n.to}>
+                      <button
+                        type="button"
+                        onClick={() => setMobileCollegesOpen((o) => !o)}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                      >
+                        {n.label}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileCollegesOpen && "rotate-180")} />
+                      </button>
+                      {mobileCollegesOpen && (
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+                          {displayColleges.map((c) => (
+                            <Link
+                              key={c.id}
+                              to="/colleges/$college"
+                              params={{ college: c.id }}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+                            >
+                              {c.shortCode} — {c.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                if (n.label === "Placement") {
+                  return (
+                    <div key={n.to}>
+                      <button
+                        type="button"
+                        onClick={() => setMobilePlacementOpen((o) => !o)}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                      >
+                        {n.label}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobilePlacementOpen && "rotate-180")} />
+                      </button>
+                      {mobilePlacementOpen && (
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+                          {placementDivisions.map((d) => (
+                            <Link
+                              key={d.slug}
+                              to="/placement/$college"
+                              params={{ college: d.slug }}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+                            >
+                              {d.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                if (n.label === "Campus Life") {
+                  return (
+                    <div key={n.to}>
+                      <button
+                        type="button"
+                        onClick={() => setMobileCampusOpen((o) => !o)}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                      >
+                        {n.label}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileCampusOpen && "rotate-180")} />
+                      </button>
+                      {mobileCampusOpen && <MobileCampusAccordion onNavigate={closeMobileMenu} />}
+                    </div>
+                  );
+                }
+                return (
                   <Link
+                    key={n.to}
                     to={n.to}
-                    onClick={() => setOpen(false)}
+                    onClick={closeMobileMenu}
                     className="block rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                   >
                     {n.label}
                   </Link>
-                  {n.label === "Placement" && (
-                    <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                      {placementDivisions.map((d) => (
-                        <Link
-                          key={d.slug}
-                          to="/placement/$college"
-                          params={{ college: d.slug }}
-                          onClick={() => setOpen(false)}
-                          className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                        >
-                          {d.label}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                  {n.label === "Colleges" && (
-                    <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                      {displayColleges.map((c) => (
-                        <Link
-                          key={c.id}
-                          to="/colleges/$college"
-                          params={{ college: c.id }}
-                          onClick={() => setOpen(false)}
-                          className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                        >
-                          {c.shortCode} — {c.name}
-                        </Link>
-                      ))}
-                    </div>
-                  )}
-                  {n.label === "Campus Life" && <MobileCampusAccordion onNavigate={() => setOpen(false)} />}
-                </div>
-              ))}
+                );
+              })}
               <div className="my-2 border-t border-border" />
               {topNav.map((n) => (
                 <Link
                   key={n.to}
                   to={n.to}
-                  onClick={() => setOpen(false)}
+                  onClick={closeMobileMenu}
                   className="rounded-md px-3 py-2 text-xs text-muted-foreground hover:bg-secondary"
                 >
                   {n.label}
@@ -321,11 +383,12 @@ export function Header() {
               ))}
               <Link
                 to="/admissions/inquiry"
-                onClick={() => setOpen(false)}
+                onClick={closeMobileMenu}
                 className="mt-3 rounded-md bg-gold px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.08em] text-navy-deep"
               >
                 Apply Now
               </Link>
+            </div>
             </div>
           </motion.nav>
         )}
@@ -427,6 +490,131 @@ function useCampusCategories(): MegaCategory[] {
       items: (events ?? []).map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
     },
   ];
+}
+
+type NavCollege = { id: string; shortCode: string; name: string; tagline: string; logo: string };
+
+/**
+ * Desktop-only "Colleges" mega-menu: hovering a college on the left reveals
+ * its departments (with logos) on the right; clicking a department goes
+ * straight to /departments/$dept. The college row itself still links to
+ * /colleges/$college like before — hover only adds the flyout.
+ */
+function CollegesMega({
+  colleges,
+  departmentsByCollege,
+  onNavigate,
+}: {
+  colleges: NavCollege[];
+  departmentsByCollege: Record<string, Department[]>;
+  onNavigate: () => void;
+}) {
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleActivate = (id: string) => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveId(id), 80);
+  };
+  const scheduleDeactivate = () => {
+    if (hoverTimer.current) clearTimeout(hoverTimer.current);
+    hoverTimer.current = setTimeout(() => setActiveId(null), 150);
+  };
+
+  const active = colleges.find((c) => c.id === activeId) ?? null;
+  const depts = active ? departmentsByCollege[active.id] ?? [] : [];
+
+  return (
+    <div className="flex" onMouseLeave={scheduleDeactivate}>
+      <ul className="w-[320px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
+        {colleges.map((c) => {
+          const isActive = c.id === active?.id;
+          return (
+            <li key={c.id}>
+              <Link
+                to="/colleges/$college"
+                params={{ college: c.id }}
+                onMouseEnter={() => scheduleActivate(c.id)}
+                onFocus={() => setActiveId(c.id)}
+                onClick={onNavigate}
+                className={cn(
+                  "flex items-start gap-3 border-l-4 px-4 py-2.5 transition-colors",
+                  isActive ? "border-crimson bg-white" : "border-transparent hover:bg-white/60"
+                )}
+              >
+                <CollegeLogo
+                  shortCode={c.shortCode}
+                  src={c.logo}
+                  className="h-9 w-9 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
+                />
+                <div className="min-w-0">
+                  <div className="text-sm font-semibold leading-snug text-navy">{c.name}</div>
+                  <div className="mt-0.5 truncate text-xs text-muted-foreground">{c.shortCode} — {c.tagline}</div>
+                </div>
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            key="panel"
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 440, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            className="shrink-0 overflow-hidden border-l border-border"
+          >
+            <div className="max-h-[440px] w-[440px] overflow-y-auto p-5">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={active.id}
+                  initial={{ opacity: 0, x: 6 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -6 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                    {active.shortCode} Departments
+                  </div>
+                  {depts.length > 0 ? (
+                    <ul className="mt-3 grid grid-cols-2 gap-1.5">
+                      {depts.map((d) => (
+                        <li key={d.id}>
+                          <Link
+                            to="/departments/$dept"
+                            params={{ dept: d.code }}
+                            onClick={onNavigate}
+                            className="flex items-center gap-2.5 rounded-md p-2 transition-colors hover:bg-secondary"
+                          >
+                            {d.logo_url ? (
+                              <img
+                                src={d.logo_url}
+                                alt=""
+                                className="h-8 w-8 shrink-0 rounded-md border border-border bg-white object-contain p-1"
+                              />
+                            ) : (
+                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary/60 text-[10px] font-bold text-navy">
+                                {d.code}
+                              </div>
+                            )}
+                            <span className="truncate text-sm text-ink/80">{d.name}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="mt-3 text-sm text-muted-foreground">No departments listed yet.</p>
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 function CampusMega({ onNavigate }: { onNavigate: () => void }) {

@@ -1,6 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
-import { CTABanner } from "@/components/site/CTABanner";
 import { Reveal } from "@/components/site/Reveal";
 import { getAllProgrammes } from "@/lib/programmes.functions";
 import { ArrowRight } from "lucide-react";
@@ -54,7 +53,6 @@ function CoursesIndex() {
           ))}
         </div>
       </section>
-      <CTABanner />
     </>
   );
 }

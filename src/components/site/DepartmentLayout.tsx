@@ -2,7 +2,6 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { CollegeLogo } from "./CollegeLogo";
-import { CTABanner } from "./CTABanner";
 import type { Department } from "@/lib/departments.functions";
 import { cn } from "@/lib/utils";
 const BASE = "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/logos";
@@ -100,8 +99,6 @@ export function DepartmentLayout({ department }: Props) {
           </div>
         </div>
       </div>
-
-      <CTABanner />
     </>
   );
 }

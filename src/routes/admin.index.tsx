@@ -85,7 +85,6 @@ function AdminDashboardHome() {
         trusts: trusts.count || 0,
         homepageItems: homepageItems.count || 0,
         posts: posts.count || 0,
-        placementStats: placementStats.count || 0,
         placedStudents: placedStudents.count || 0,
         placementCells: placementCells.count || 0,
       };

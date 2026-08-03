@@ -10,16 +10,27 @@ import { supabase } from '@/integrations/supabase/client';
 
 const HERO_APPEARANCE_KEY = 'hero_appearance';
 
+export const MAX_HOMEPAGE_PHOTOS = 5;
+export const HOMEPAGE_ROTATE_MS = 5000;
+
 export interface HeroAppearance {
   heroImageOpacity: number; // 0-100 — how visible the raw campus photo is
   heroOverlayOpacity: number; // 0-100 — strength of the navy tint at its darkest point
   heroBlurPx: number; // 0-20 — backdrop blur applied to the photo so hero text stays legible
+  homepagePhotos: string[]; // up to MAX_HOMEPAGE_PHOTOS — rotates every HOMEPAGE_ROTATE_MS on "/"
+  aboutPhoto: string | null; // background photo for /about's hero — empty until an admin sets one
+  campusLifePhoto: string | null; // background photo for /campus-life's hero
+  contactPhoto: string | null; // background photo for /contact's hero
 }
 
 export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
   heroImageOpacity: 80,
   heroOverlayOpacity: 55,
   heroBlurPx: 4,
+  homepagePhotos: [],
+  aboutPhoto: null,
+  campusLifePhoto: null,
+  contactPhoto: null,
 };
 
 function parseHeroAppearance(value: unknown): HeroAppearance {
@@ -28,6 +39,12 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
     heroImageOpacity: v.heroImageOpacity ?? DEFAULT_HERO_APPEARANCE.heroImageOpacity,
     heroOverlayOpacity: v.heroOverlayOpacity ?? DEFAULT_HERO_APPEARANCE.heroOverlayOpacity,
     heroBlurPx: v.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
+    homepagePhotos: Array.isArray(v.homepagePhotos)
+      ? v.homepagePhotos.filter((p): p is string => typeof p === 'string' && p.length > 0).slice(0, MAX_HOMEPAGE_PHOTOS)
+      : [],
+    aboutPhoto: typeof v.aboutPhoto === 'string' && v.aboutPhoto ? v.aboutPhoto : null,
+    campusLifePhoto: typeof v.campusLifePhoto === 'string' && v.campusLifePhoto ? v.campusLifePhoto : null,
+    contactPhoto: typeof v.contactPhoto === 'string' && v.contactPhoto ? v.contactPhoto : null,
   };
 }
 
@@ -60,6 +77,7 @@ export const setHeroAppearance = createServerFn({ method: 'POST' })
     const clamp = (n: unknown, min: number, max: number, fallback: number) =>
       typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
     return {
+      ...parseHeroAppearance(a),
       heroImageOpacity: clamp(a?.heroImageOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroImageOpacity),
       heroOverlayOpacity: clamp(a?.heroOverlayOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroOverlayOpacity),
       heroBlurPx: clamp(a?.heroBlurPx, 0, 20, DEFAULT_HERO_APPEARANCE.heroBlurPx),
