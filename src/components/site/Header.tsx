@@ -43,17 +43,23 @@ export function Header() {
   };
 
   const displayColleges = useMemo(() => {
-    return (dbColleges ?? []).map(c => ({
-      id: c.slug,
-      shortCode: (c as any).metadata?.shortCode ?? c.code,
-      name: c.name,
-      tagline: (c as any).metadata?.tagline ?? "",
-      logo: c.logo_url ?? "",
-    }));
+    const EXCLUDED_SLUGS = ["abc123", "thesilicon", "the-silicon", "overview"];
+    return (dbColleges ?? [])
+      .filter(c => !EXCLUDED_SLUGS.includes(c.slug?.toLowerCase()))
+      .map(c => ({
+        id: c.slug,
+        shortCode: (c as any).metadata?.shortCode ?? c.code,
+        name: c.name,
+        tagline: (c as any).metadata?.tagline ?? "",
+        logo: c.logo_url ?? "",
+      }));
   }, [dbColleges]);
 
   const placementDivisions = useMemo(() => {
-    return displayColleges.map(c => ({ slug: c.id, label: c.shortCode }));
+    const ALLOWED_PLACEMENT_SLUGS = ["svit-degree", "svit-coa", "svica", "svion"];
+    return displayColleges
+      .filter(c => ALLOWED_PLACEMENT_SLUGS.includes(c.id))
+      .map(c => ({ slug: c.id, label: c.shortCode }));
   }, [displayColleges]);
 
   return (
@@ -145,18 +151,17 @@ export function Header() {
                   onMouseEnter={() => setPlacementOpen(true)}
                   onMouseLeave={() => setPlacementOpen(false)}
                 >
-                  <button
-                    type="button"
-                    onClick={() => setPlacementOpen((o) => !o)}
+                  <Link
+                    to="/placement/$college"
+                    params={{ college: "overview" }}
+                    onClick={() => setPlacementOpen(false)}
                     className={cn(
                       "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
                       active ? "text-navy" : "text-ink/80 hover:text-navy"
                     )}
-                    aria-haspopup="menu"
-                    aria-expanded={placementOpen}
                   >
                     {n.label} <ChevronDown className="h-3 w-3" />
-                  </button>
+                  </Link>
                   <AnimatePresence>
                     {placementOpen && (
                       <motion.div

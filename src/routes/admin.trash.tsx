@@ -46,7 +46,7 @@ const SOFT_DELETE_TABLES = [
   "testimonials",
   "downloads",
   "recruiters",
-  "placement_statistics",
+  "placed_students",
   "student_clubs",
   "media_folders",
   "media_files",

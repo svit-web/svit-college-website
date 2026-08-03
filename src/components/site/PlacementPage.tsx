@@ -14,7 +14,7 @@ const collegesList = [
   { slug: "overview",   label: "Overview",              icon: LayoutDashboard },
   { slug: "svit-degree",label: "SVIT (Degree)",         icon: Building2 },
   { slug: "svit-coa",   label: "COA (Architecture)",    icon: Building2 },
-  { slug: "svica",      label: "SVICA (Applied Sci.)",  icon: Building2 },
+  { slug: "svica",      label: "SVICA (Comp. Apps)",    icon: Building2 },
   { slug: "svion",      label: "SVION (Nursing)",       icon: Building2 },
 ];
 
@@ -116,7 +116,10 @@ function StudentCard({
         )}
       </div>
       <div className="p-3.5 border-t border-navy/8 text-center min-w-0">
-        <div className="font-semibold text-navy truncate text-sm">{student.companyName}</div>
+        {student.studentName && student.studentName !== "Student" && (
+          <div className="font-bold text-navy truncate text-xs mb-0.5">{student.studentName}</div>
+        )}
+        <div className="font-semibold text-slate-800 truncate text-sm">{student.companyName}</div>
         <div className="mt-1 flex items-center justify-center">
           <span className="rounded-full bg-navy/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy/60">
             Batch {student.batchYear || "2024"}
@@ -215,18 +218,32 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
   const isOverview = content.slug === "overview";
   const hasStudents = content.placedStudents.length > 0;
   const hasTopStudents = content.autoStats.topStudents.length > 0;
+  const activeDivisions = (content.divisions && content.divisions.length > 0)
+    ? content.divisions
+    : collegesList;
 
   return (
     <>
       <PageHero
-        title={content.heroTitle || `${content.shortCode} — Placements`}
+        title={
+          isOverview
+            ? (content.heroTitle?.replace(/OVERVIEW\s*—\s*/i, "") || "Training & Placement Cell")
+            : (content.heroTitle || `${content.shortCode} — Placements`)
+        }
         accent="Training & Placement"
-        subtitle={content.heroSubtitle || `Placement outcomes, recruiters and support at ${content.collegeName}.`}
-        crumbs={[
-          { label: "Home", to: "/" },
-          { label: "Placement" },
-          { label: content.shortCode },
-        ]}
+        subtitle={content.heroSubtitle || `Placement outcomes, recruiters and support across all SVIT institutions.`}
+        crumbs={
+          isOverview
+            ? [
+                { label: "Home", to: "/" },
+                { label: "Placements" },
+              ]
+            : [
+                { label: "Home", to: "/" },
+                { label: "Placements", to: "/placement/overview" },
+                { label: content.shortCode },
+              ]
+        }
       />
 
       <div className="bg-secondary/30">
@@ -243,12 +260,12 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                   Placements Dashboard
                 </div>
                 <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible scrollbar-none pb-1 lg:pb-0">
-                  {collegesList.map((item) => {
+                  {activeDivisions.map((item) => {
                     const isActive =
                       content.slug === item.slug ||
                       (item.slug === "svit-degree" && content.slug === "svit") ||
                       (item.slug === "svit-coa" && content.slug === "coa");
-                    const Icon = item.icon;
+                    const Icon = item.slug === "overview" ? LayoutDashboard : Building2;
                     return (
                       <li key={item.slug} className="shrink-0 lg:shrink">
                         <Link
@@ -262,7 +279,7 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                           }`}
                         >
                           <Icon className="h-4 w-4 shrink-0" />
-                          <span>{item.label}</span>
+                          <span className="truncate">{item.label}</span>
                         </Link>
                       </li>
                     );
@@ -376,23 +393,19 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
                     title={`${content.shortCode} Placed Students`}
                     variant="eyebrow"
                   />
-                  <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                    {(hasStudents
-                      ? content.placedStudents
-                      : Array.from({ length: 8 }, (_, i) => ({
-                          studentName: "Student",
-                          companyName: "Company",
-                          department: null,
-                          photo: null,
-                          batchYear: "2024",
-                          packageLpa: null,
-                        }))
-                    ).map((s, i) => (
-                      <Reveal key={`${s.companyName}-${i}`} delay={i * 0.03}>
-                        <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
-                      </Reveal>
-                    ))}
-                  </div>
+                  {content.placedStudents.length > 0 ? (
+                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                      {content.placedStudents.map((s, i) => (
+                        <Reveal key={`${s.companyName}-${i}`} delay={i * 0.03}>
+                          <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
+                        </Reveal>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 py-10 text-center text-xs text-slate-400">
+                      No placement student cards added yet for {content.shortCode}.
+                    </div>
+                  )}
                 </section>
               )}
 
