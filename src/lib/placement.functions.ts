@@ -1,456 +1,447 @@
-// Server functions for placement — all stats auto-calculated from placed_students records
-import { createServerFn } from '@tanstack/react-start';
+// Training & Placement Cell Data Model & Functions
 import { supabase } from '@/integrations/supabase/client';
 
-// ── Types ─────────────────────────────────────────────────────
-
-export interface Recruiter {
+export interface PlacementHighlight {
   id: string;
-  company_name: string;
-  logo_url: string;
-  website_url: string | null;
-  sort_order: number;
-  college_codes?: string[] | null;
-  metadata: { colleges?: string[]; [key: string]: any };
-  created_at: string;
-  updated_at: string;
+  icon: string;        // key into ICON_MAP
+  label: string;
 }
 
-export interface PlacementCell {
-  id: string;
-  college_code: string;
-  about_text: string | null;
-  hero_title: string | null;
-  hero_subtitle: string | null;
-  officer_name: string | null;
-  officer_designation: string | null;
-  officer_phone: string | null;
-  officer_email: string | null;
-  officer_photo_url: string | null;
-  default_student_placeholder_url: string | null;
+export interface SectionVisibility {
+  about: boolean;
+  trend: boolean;
+  placedStudents: boolean;
+  recruiters: boolean;
+  officer: boolean;
+  testimonials?: boolean;
+}
+
+export interface SectionConfig {
+  sections: SectionVisibility;
+  order: string[];
+  highlights: PlacementHighlight[];
 }
 
 export interface PlacedStudent {
   id: string;
-  college_id: string;
-  department_id: string | null;
-  student_name: string;
-  company_name: string;
-  photo_url: string | null;
-  batch_year: string | null;
-  package_lpa: number | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  college?: { id: string; slug: string; name: string } | null;
-  department?: { id: string; name: string; slug: string } | null;
+  studentName: string;
+  companyName: string;
+  batchYear: string;
+  photo: string | null;            // URL or data: URI
+  collegeId: string;               // division slug
 }
 
-/** Auto-calculated placement stats from placed_students table */
-export interface AutoStats {
-  total: number;
-  highestPackage: number | null;
-  averagePackage: number | null;
-  /** Sorted oldest → newest for charting */
-  byYear: { year: string; count: number }[];
-  /** Top student (highest package) per college — only populated on overview */
-  topStudents: {
-    collegeName: string;
-    collegeSlug: string;
-    studentName: string;
-    companyName: string;
-    packageLpa: number | null;
-    photoUrl: string | null;
-    departmentName: string | null;
-    batchYear: string | null;
-  }[];
+export interface RecruiterItem {
+  id: string;
+  companyName: string;
+  company_name?: string;
+  logo: string | null;
+  status?: "active" | "inactive";
+  sortOrder?: number;
 }
 
-// ── Phase 4: Auto-Stats Engine ────────────────────────────────
-/**
- * Calculates all placement statistics directly from placed_students records.
- * No separate placement_statistics table needed.
- * - Per-college: total, highest, avg, year-wise chart
- * - Overview: above + top student per college for highlight cards
- */
-export const getAutoStatsByCollege = createServerFn({ method: 'GET' })
-  .validator((input: { collegeId: string | null; isOverview: boolean; collegeSlug?: string }) => input)
-  .handler(async (ctx): Promise<AutoStats> => {
-    const getFallbackStats = (isOverview: boolean, collegeSlug?: string): AutoStats => {
-      const defaultTopStudents: AutoStats['topStudents'] = [
-        {
-          collegeName: "SVIT (Degree)",
-          collegeSlug: "svit-degree",
-          studentName: "Amit Sharma",
-          companyName: "Google",
-          packageLpa: 22.0,
-          photoUrl: null,
-          departmentName: "Computer Engineering",
-          batchYear: "2024",
-        },
-        {
-          collegeName: "COA (Architecture)",
-          collegeSlug: "svit-coa",
-          studentName: "Nisha Patel",
-          companyName: "Sthapati Studio",
-          packageLpa: 9.5,
-          photoUrl: null,
-          departmentName: "Architecture",
-          batchYear: "2024",
-        },
-        {
-          collegeName: "SVICA (Comp. Apps)",
-          collegeSlug: "svica",
-          studentName: "Kriti Joshi",
-          companyName: "HCL",
-          packageLpa: 8.0,
-          photoUrl: null,
-          departmentName: "Computer Applications",
-          batchYear: "2024",
-        },
-        {
-          collegeName: "SVION (Nursing)",
-          collegeSlug: "svion",
-          studentName: "Meena Patel",
-          companyName: "Apollo Hospitals",
-          packageLpa: 7.5,
-          photoUrl: null,
-          departmentName: "Nursing",
-          batchYear: "2024",
-        },
-      ];
+export type Recruiter = RecruiterItem;
 
-      if (isOverview) {
-        return {
-          total: 480,
-          highestPackage: 22.0,
-          averagePackage: 8.2,
-          byYear: [
-            { year: "2021", count: 95 },
-            { year: "2022", count: 115 },
-            { year: "2023", count: 132 },
-            { year: "2024", count: 138 },
-          ],
-          topStudents: defaultTopStudents,
-        };
-      }
+export interface PlacementOfficer {
+  name: string;
+  designation: string;
+  phone: string;
+  email: string;
+  photo: string | null;
+}
 
-      const perCollegeDefaults: Record<string, Partial<AutoStats>> = {
-        "svit-degree": {
-          total: 340,
-          highestPackage: 22.0,
-          averagePackage: 8.5,
-          byYear: [
-            { year: "2021", count: 70 },
-            { year: "2022", count: 82 },
-            { year: "2023", count: 92 },
-            { year: "2024", count: 96 },
-          ],
-        },
-        "svit-coa": {
-          total: 45,
-          highestPackage: 9.5,
-          averagePackage: 6.2,
-          byYear: [
-            { year: "2021", count: 8 },
-            { year: "2022", count: 10 },
-            { year: "2023", count: 12 },
-            { year: "2024", count: 15 },
-          ],
-        },
-        svica: {
-          total: 60,
-          highestPackage: 8.0,
-          averagePackage: 6.5,
-          byYear: [
-            { year: "2021", count: 10 },
-            { year: "2022", count: 14 },
-            { year: "2023", count: 16 },
-            { year: "2024", count: 20 },
-          ],
-        },
-        svion: {
-          total: 35,
-          highestPackage: 7.5,
-          averagePackage: 5.8,
-          byYear: [
-            { year: "2021", count: 7 },
-            { year: "2022", count: 9 },
-            { year: "2023", count: 10 },
-            { year: "2024", count: 11 },
-          ],
-        },
-      };
+export interface PlacementYearPoint {
+  year: string;
+  studentsPlaced: number;
+  placementPercentage: number;
+}
 
-      const matched = collegeSlug ? perCollegeDefaults[collegeSlug] : null;
-      return {
-        total: matched?.total ?? 100,
-        highestPackage: matched?.highestPackage ?? 12.0,
-        averagePackage: matched?.averagePackage ?? 7.0,
-        byYear: matched?.byYear ?? [
-          { year: "2021", count: 20 },
-          { year: "2022", count: 24 },
-          { year: "2023", count: 26 },
-          { year: "2024", count: 30 },
-        ],
-        topStudents: [],
-      };
-    };
+export interface PlacementTestimonial {
+  id: string;
+  studentName: string;
+  designation: string;
+  companyName: string;
+  batchYear: string;
+  departmentName: string;
+  quote: string;
+  photoUrl: string | null;
+  rating?: number;
+}
 
-    try {
-      let query = (supabase as any)
-        .from('placed_students')
-        .select('id, student_name, company_name, photo_url, batch_year, package_lpa, college_id, department_id, college:colleges(id, slug, name), department:departments(id, name)')
-        .eq('status', 'published');
-
-      if (!ctx.data.isOverview && ctx.data.collegeId) {
-        query = query.eq('college_id', ctx.data.collegeId);
-      }
-
-      const { data: students, error } = await query;
-      if (error || !students?.length) {
-        return getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug);
-      }
-
-      const total: number = students.length;
-
-      const withPkg = students.filter((s: any) => s.package_lpa != null);
-      const highestPackage = withPkg.length > 0
-        ? Math.max(...withPkg.map((s: any) => Number(s.package_lpa)))
-        : null;
-      const averagePackage = withPkg.length > 0
-        ? Math.round((withPkg.reduce((sum: number, s: any) => sum + Number(s.package_lpa), 0) / withPkg.length) * 10) / 10
-        : null;
-
-      const yearMap = new Map<string, number>();
-      for (const s of students) {
-        if (s.batch_year) yearMap.set(s.batch_year, (yearMap.get(s.batch_year) ?? 0) + 1);
-      }
-      const byYear = Array.from(yearMap.entries())
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([year, count]) => ({ year, count }));
-
-      let topStudents: AutoStats['topStudents'] = [];
-      if (ctx.data.isOverview) {
-        const VALID_COLLEGE_SLUGS = ["svit-degree", "svit-coa", "svica", "svion"];
-        const best = new Map<string, any>();
-        for (const s of students) {
-          const slug = s.college?.slug;
-          if (!slug || !VALID_COLLEGE_SLUGS.includes(slug)) continue;
-          const prev = best.get(slug);
-          const isPkgBetter = !prev
-            || (s.package_lpa != null && (prev.package_lpa == null || Number(s.package_lpa) > Number(prev.package_lpa)));
-          if (isPkgBetter) best.set(slug, s);
-        }
-        topStudents = Array.from(best.values()).map((s: any) => ({
-          collegeName: s.college?.name ?? '',
-          collegeSlug: s.college?.slug ?? '',
-          studentName: s.student_name,
-          companyName: s.company_name,
-          packageLpa: s.package_lpa != null ? Number(s.package_lpa) : null,
-          photoUrl: s.photo_url || null,
-          departmentName: s.department?.name ?? null,
-          batchYear: s.batch_year ?? null,
-        }));
-        if (topStudents.length === 0) {
-          topStudents = getFallbackStats(true).topStudents;
-        }
-      }
-
-      return {
-        total,
-        highestPackage: highestPackage ?? getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug).highestPackage,
-        averagePackage: averagePackage ?? getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug).averagePackage,
-        byYear: byYear.length ? byYear : getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug).byYear,
-        topStudents,
-      };
-    } catch {
-      return getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug);
-    }
-  });
-
-// ── Recruiters ────────────────────────────────────────────────
-
-export const getRecruitersByCollege = createServerFn({ method: 'GET' })
-  .validator((collegeSlug: string) => collegeSlug)
-  .handler(async (ctx) => {
-    const fetchAll = async () => {
-      const { data } = await supabase
-        .from('recruiters').select('*').eq('status', 'published').order('sort_order', { ascending: true });
-      return (data ?? []) as unknown as Recruiter[];
-    };
-    if (ctx.data === 'overview') return fetchAll();
-    try {
-      const { data, error } = await (supabase as any)
-        .from('recruiters').select('*').eq('status', 'published')
-        .or(`college_codes.cs.{${ctx.data}},college_codes.is.null`)
-        .order('sort_order', { ascending: true });
-      if (error) { console.warn('college_codes fallback:', error.message); return fetchAll(); }
-      return (data ?? []) as unknown as Recruiter[];
-    } catch { return fetchAll(); }
-  });
-
-/** Alias: fetch all published recruiters (used by non-placement routes) */
-export const getAllRecruiters = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data } = await supabase
-      .from('recruiters').select('*').eq('status', 'published').order('sort_order', { ascending: true });
-    return (data ?? []) as unknown as Recruiter[];
-  });
-
-// ── Placement Cell ────────────────────────────────────────────
-
-export const getPlacementCell = createServerFn({ method: 'GET' })
-  .validator((collegeCode: string) => collegeCode)
-  .handler(async (ctx) => {
-    const { data, error } = await (supabase as any)
-      .from('placement_cells').select('*').eq('college_code', ctx.data).maybeSingle();
-    if (error) { console.error('Error fetching placement cell:', error); return null; }
-    return data as PlacementCell | null;
-  });
-
-// ── College Lookup ────────────────────────────────────────────
-
-export const getCollegeBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('colleges').select('id, slug, code, name, metadata')
-      .eq('slug', ctx.data).eq('status', 'published').is('deleted_at', null).maybeSingle();
-    if (error || !data) return null;
-    return {
-      id: data.id as string,
-      code: data.slug,
-      name: data.name,
-      shortCode: (data.metadata as any)?.shortCode ?? data.code,
-    };
-  });
-
-/** Dynamic placement divisions list for left dashboard navigation */
-export interface PlacementDivisionItem {
+export interface DivisionInfo {
   slug: string;
-  label: string;
+  name: string;
+  shortCode: string;
+  isCustom?: boolean;
 }
 
-const EXCLUDED_PLACEMENT_SLUGS = ["abc123", "svit-diploma", "thesilicon", "the-silicon", "diploma"];
+export interface FullPlacementData {
+  divisions: DivisionInfo[];
+  heroTitle: string;
+  heroSubtitle: string;
+  highestPackage: string;
+  averagePackage: string;
+  aboutText: string;
+  sectionConfig: SectionConfig;
+  officer: PlacementOfficer;
+  placedStudents: PlacedStudent[];
+  recruiters: RecruiterItem[];
+  graphicalData: PlacementYearPoint[];
+  testimonials: PlacementTestimonial[];
+  divisionContents: Record<string, {
+    aboutText: string;
+    officer: PlacementOfficer;
+    graphicalData: PlacementYearPoint[];
+  }>;
+}
 
-export const getDynamicPlacementDivisions = createServerFn({ method: 'GET' })
-  .handler(async (): Promise<PlacementDivisionItem[]> => {
-    try {
-      const ORDER = ["svit-degree", "svit-coa", "svica", "svion"];
-      
-      // Query both colleges table and placement_cells table
-      const [collegesRes, cellsRes] = await Promise.all([
-        supabase.from('colleges').select('slug, name, code, metadata').eq('status', 'published').is('deleted_at', null).order('sort_order', { ascending: true }),
-        supabase.from('placement_cells').select('college_code').neq('college_code', 'overview')
-      ]);
+export const DEFAULT_DIVISIONS: DivisionInfo[] = [
+  { slug: "svit",  name: "Sardar Vallabhbhai Patel Institute of Technology", shortCode: "SVIT (Degree)" },
+  { slug: "coa",   name: "SVIT College of Architecture",                     shortCode: "COA (Architecture)" },
+  { slug: "svica", name: "SVIT College of Computer Applications",            shortCode: "SVICA (Comp. Apps)" },
+  { slug: "svion", name: "SVIT Institute of Nursing",                        shortCode: "SVION (Nursing)" },
+];
 
-      const divisionMap = new Map<string, PlacementDivisionItem>([
-        ['svit-degree', { slug: 'svit-degree', label: 'SVIT (Degree)' }],
-        ['svit-coa', { slug: 'svit-coa', label: 'COA (Architecture)' }],
-        ['svica', { slug: 'svica', label: 'SVICA (Comp. Apps)' }],
-        ['svion', { slug: 'svion', label: 'SVION (Nursing)' }],
-      ]);
+export const DEFAULT_HIGHLIGHTS: PlacementHighlight[] = [
+  { id: "h1", icon: "Target", label: "Industry-aligned Skill Bootcamps & Aptitude Training" },
+  { id: "h2", icon: "MessagesSquare", label: "Mock Technical & HR Interview Practice" },
+  { id: "h3", icon: "Briefcase", label: "200+ Top Recruiting Partners Nationwide" },
+  { id: "h4", icon: "Award", label: "Paid Internships & Pre-Placement Offers (PPOs)" },
+  { id: "h5", icon: "CalendarCheck", label: "Structured Annual On-Campus Drive Schedule" },
+  { id: "h6", icon: "UserCheck", label: "Dedicated Branch-Wise Student Mentorship" },
+];
 
-      // 1. Add colleges from main Colleges table
-      if (collegesRes.data && collegesRes.data.length > 0) {
-        collegesRes.data.forEach((c: any) => {
-          if (!EXCLUDED_PLACEMENT_SLUGS.includes(c.slug)) {
-            const short = c.metadata?.shortCode || c.code || c.name;
-            let label = short;
-            if (c.slug === 'svit-degree') label = 'SVIT (Degree)';
-            else if (c.slug === 'svit-coa') label = 'COA (Architecture)';
-            else if (c.slug === 'svica') label = 'SVICA (Comp. Apps)';
-            else if (c.slug === 'svion') label = 'SVION (Nursing)';
-            divisionMap.set(c.slug, { slug: c.slug, label });
-          }
-        });
-      }
+export const DEFAULT_TESTIMONIALS: PlacementTestimonial[] = [
+  {
+    id: "t1",
+    studentName: "Aarav Sharma",
+    designation: "Software Engineer",
+    companyName: "Google",
+    batchYear: "2024",
+    departmentName: "Computer Engineering",
+    quote: "The T&P Cell at SVIT conducted rigorous mock interviews and competitive programming bootcamps. The structured placement drives gave me the confidence to crack the Google interview!",
+    photoUrl: null,
+    rating: 5,
+  },
+  {
+    id: "t2",
+    studentName: "Priya Patel",
+    designation: "Systems Engineer",
+    companyName: "TCS Ninja",
+    batchYear: "2024",
+    departmentName: "Information Technology",
+    quote: "From resume building workshops to soft skills mentorship, the placement cell guided us at every step. I am immensely grateful for the continuous corporate exposure provided at SVIT Vasad.",
+    photoUrl: null,
+    rating: 5,
+  },
+  {
+    id: "t3",
+    studentName: "Kavya Soni",
+    designation: "Architectural Designer",
+    companyName: "Sthapati Studio",
+    batchYear: "2024",
+    departmentName: "College of Architecture",
+    quote: "SVIT COA helped connect our portfolio directly with top architectural consultancies. The campus recruitment drives were smooth, professional, and career-defining.",
+    photoUrl: null,
+    rating: 5,
+  },
+  {
+    id: "t4",
+    studentName: "Riddhi Shah",
+    designation: "Associate Analyst",
+    companyName: "HCLTech",
+    batchYear: "2024",
+    departmentName: "Computer Applications (SVICA)",
+    quote: "The hands-on technical labs and dedicated placement training helped me secure an excellent package right in my final semester. SVIT's placement support is top-notch!",
+    photoUrl: null,
+    rating: 5,
+  },
+  {
+    id: "t5",
+    studentName: "Meera Patel",
+    designation: "Staff Nurse",
+    companyName: "Apollo Hospitals",
+    batchYear: "2024",
+    departmentName: "Institute of Nursing (SVION)",
+    quote: "Our clinical internships combined with on-campus healthcare recruitment allowed me to start my nursing career at Apollo Hospitals immediately upon graduation.",
+    photoUrl: null,
+    rating: 5,
+  },
+  {
+    id: "t6",
+    studentName: "Ananya Desai",
+    designation: "Cloud Consultant",
+    companyName: "Microsoft",
+    batchYear: "2024",
+    departmentName: "Electronics & Communication",
+    quote: "SVIT Vasad provides world-class infrastructure and industry partnerships. The T&P mentors helped me refine my technical problem solving and soft skills to land my dream job.",
+    photoUrl: null,
+    rating: 5,
+  },
+];
 
-      // 2. Add custom placement divisions from placement_cells table
-      if (cellsRes.data && cellsRes.data.length > 0) {
-        cellsRes.data.forEach((pc: any) => {
-          const slug = pc.college_code;
-          if (!EXCLUDED_PLACEMENT_SLUGS.includes(slug) && !divisionMap.has(slug)) {
-            let label = slug.toUpperCase();
-            if (slug === 'svit-degree') label = 'SVIT (Degree)';
-            else if (slug === 'svit-coa') label = 'COA (Architecture)';
-            else if (slug === 'svica') label = 'SVICA (Comp. Apps)';
-            else if (slug === 'svion') label = 'SVION (Nursing)';
-            divisionMap.set(slug, { slug, label });
-          }
-        });
-      }
+export const DEFAULT_PLACEMENT_DATA: FullPlacementData = {
+  divisions: DEFAULT_DIVISIONS,
+  heroTitle: "Training & Placement Cell",
+  heroSubtitle: "Empowering SVIT graduates with world-class career opportunities, industry mentorship, and top campus recruitment.",
+  highestPackage: "₹42 LPA",
+  averagePackage: "₹11.5 LPA",
+  aboutText: "The Training & Placement Cell at SVIT Group of Institutions acts as a seamless bridge between academic excellence and corporate demand. We conduct year-round skill development, aptitude training, mock interviews, and industry interface sessions to ensure our engineering, architecture, computer applications, and nursing graduates achieve stellar career outcomes.",
+  sectionConfig: {
+    sections: {
+      about: true,
+      trend: true,
+      placedStudents: true,
+      recruiters: true,
+      officer: true,
+      testimonials: true,
+    },
+    order: ["about", "trend", "placedStudents", "recruiters", "officer", "testimonials"],
+    highlights: DEFAULT_HIGHLIGHTS,
+  },
+  officer: {
+    name: "Dr. K. M. Patel",
+    designation: "Head — Training & Placement Cell",
+    phone: "+91 98250 12345",
+    email: "tnp@svitvasad.ac.in",
+    photo: null,
+  },
+  graphicalData: [
+    { year: "2020", studentsPlaced: 152, placementPercentage: 82 },
+    { year: "2021", studentsPlaced: 168, placementPercentage: 85 },
+    { year: "2022", studentsPlaced: 175, placementPercentage: 87 },
+    { year: "2023", studentsPlaced: 180, placementPercentage: 88 },
+    { year: "2024", studentsPlaced: 195, placementPercentage: 91 },
+    { year: "2025", studentsPlaced: 211, placementPercentage: 93 },
+  ],
+  recruiters: [
+    { id: "r1", companyName: "TCS", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg" },
+    { id: "r2", companyName: "Infosys", logo: "https://upload.wikimedia.org/wikipedia/commons/9/95/Infosys_logo.svg" },
+    { id: "r3", companyName: "Wipro", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Wipro_Primary_Logo_Color_RGB.svg" },
+    { id: "r4", companyName: "L&T", logo: null },
+    { id: "r5", companyName: "Tata Motors", logo: null },
+    { id: "r6", companyName: "Reliance Industries", logo: null },
+    { id: "r7", companyName: "Adani Group", logo: null },
+    { id: "r8", companyName: "Tech Mahindra", logo: null },
+    { id: "r9", companyName: "Capgemini", logo: null },
+    { id: "r10", companyName: "Accenture", logo: null },
+    { id: "r11", companyName: "Cognizant", logo: null },
+    { id: "r12", companyName: "HCLTech", logo: null },
+    { id: "r13", companyName: "ICICI Bank", logo: null },
+    { id: "r14", companyName: "HDFC Bank", logo: null },
+    { id: "r15", companyName: "Amazon", logo: null },
+    { id: "r16", companyName: "IBM", logo: null },
+    { id: "r17", companyName: "Oracle", logo: null },
+    { id: "r18", companyName: "Cybage", logo: null },
+    { id: "r19", companyName: "Crest Data Systems", logo: null },
+    { id: "r20", companyName: "Torrent Power", logo: null },
+    { id: "r21", companyName: "Alembic", logo: null },
+    { id: "r22", companyName: "Sun Pharma", logo: null },
+    { id: "r23", companyName: "L&T Infotech", logo: null },
+    { id: "r24", companyName: "Mindtree", logo: null },
+  ],
+  placedStudents: [
+    { id: "s1", studentName: "Aarav Sharma", companyName: "Google", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s2", studentName: "Priya Patel", companyName: "TCS", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s3", studentName: "Rohan Mehta", companyName: "Infosys", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s4", studentName: "Ananya Desai", companyName: "Microsoft", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s5", studentName: "Kunal Shah", companyName: "Amazon", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s6", studentName: "Neha Joshi", companyName: "L&T", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s7", studentName: "Vikram Rathod", companyName: "Reliance Industries", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s8", studentName: "Siddharth Varma", companyName: "Adani Group", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s9", studentName: "Diya Trivedi", companyName: "Wipro", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s10", studentName: "Harsh Pandya", companyName: "Tech Mahindra", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s11", studentName: "Pooja Solanki", companyName: "Capgemini", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s12", studentName: "Aditya Bhatt", companyName: "Cognizant", batchYear: "2024", photo: null, collegeId: "svit" },
+    { id: "s13", studentName: "Kavya Soni", companyName: "Sthapati Studio", batchYear: "2024", photo: null, collegeId: "coa" },
+    { id: "s14", studentName: "Manav Parikh", companyName: "Morphogenesis", batchYear: "2024", photo: null, collegeId: "coa" },
+    { id: "s15", studentName: "Riddhi Shah", companyName: "HCLTech", batchYear: "2024", photo: null, collegeId: "svica" },
+    { id: "s16", studentName: "Yash Vyas", companyName: "Cybage", batchYear: "2024", photo: null, collegeId: "svica" },
+    { id: "s17", studentName: "Meera Patel", companyName: "Apollo Hospitals", batchYear: "2024", photo: null, collegeId: "svion" },
+    { id: "s18", studentName: "Dhaval Patel", companyName: "Zydus Hospital", batchYear: "2024", photo: null, collegeId: "svion" },
+    { id: "s19", studentName: "Chirag Gandhi", companyName: "Torrent Power", batchYear: "2023", photo: null, collegeId: "svit" },
+    { id: "s20", studentName: "Bhavna Patel", companyName: "Alembic", batchYear: "2023", photo: null, collegeId: "svit" },
+    { id: "s21", studentName: "Jayesh Patel", companyName: "Sun Pharma", batchYear: "2023", photo: null, collegeId: "svit" },
+    { id: "s22", studentName: "Kriti Sharma", companyName: "Accenture", batchYear: "2023", photo: null, collegeId: "svit" },
+  ],
+  testimonials: DEFAULT_TESTIMONIALS,
+  divisionContents: {
+    svit: {
+      aboutText: "SVIT Degree College offers placement support across Computer, IT, EC, Electrical, Mechanical, Civil, and Aeronautical Engineering with over 150+ annual drives.",
+      officer: {
+        name: "Dr. K. M. Patel",
+        designation: "Head — Training & Placement Cell (SVIT)",
+        phone: "+91 98250 12345",
+        email: "tnp@svitvasad.ac.in",
+        photo: null,
+      },
+      graphicalData: [
+        { year: "2020", studentsPlaced: 120, placementPercentage: 84 },
+        { year: "2021", studentsPlaced: 135, placementPercentage: 86 },
+        { year: "2022", studentsPlaced: 142, placementPercentage: 89 },
+        { year: "2023", studentsPlaced: 148, placementPercentage: 90 },
+        { year: "2024", studentsPlaced: 160, placementPercentage: 92 },
+        { year: "2025", studentsPlaced: 172, placementPercentage: 94 },
+      ],
+    },
+    coa: {
+      aboutText: "SVIT College of Architecture connects budding architects with premier design studios, urban planning firms, and architectural consultancies.",
+      officer: {
+        name: "Prof. Anjali Shah",
+        designation: "T&P Coordinator — Architecture",
+        phone: "+91 98250 54321",
+        email: "coa.tnp@svitvasad.ac.in",
+        photo: null,
+      },
+      graphicalData: [
+        { year: "2020", studentsPlaced: 12, placementPercentage: 75 },
+        { year: "2021", studentsPlaced: 14, placementPercentage: 78 },
+        { year: "2022", studentsPlaced: 15, placementPercentage: 80 },
+        { year: "2023", studentsPlaced: 16, placementPercentage: 82 },
+        { year: "2024", studentsPlaced: 18, placementPercentage: 85 },
+        { year: "2025", studentsPlaced: 20, placementPercentage: 88 },
+      ],
+    },
+    svica: {
+      aboutText: "SVICA provides specialized career counseling and software development campus drives for MCA & BCA students.",
+      officer: {
+        name: "Prof. Rajesh Verma",
+        designation: "T&P Coordinator — Computer Applications",
+        phone: "+91 98250 67890",
+        email: "svica.tnp@svitvasad.ac.in",
+        photo: null,
+      },
+      graphicalData: [
+        { year: "2020", studentsPlaced: 12, placementPercentage: 80 },
+        { year: "2021", studentsPlaced: 14, placementPercentage: 82 },
+        { year: "2022", studentsPlaced: 12, placementPercentage: 84 },
+        { year: "2023", studentsPlaced: 10, placementPercentage: 85 },
+        { year: "2024", studentsPlaced: 11, placementPercentage: 88 },
+        { year: "2025", studentsPlaced: 13, placementPercentage: 90 },
+      ],
+    },
+    svion: {
+      aboutText: "SVIT Institute of Nursing partners with leading hospital networks and healthcare providers for clinical recruitment and internship placements.",
+      officer: {
+        name: "Prof. Sister Mary",
+        designation: "T&P Coordinator — Nursing",
+        phone: "+91 98250 99999",
+        email: "svion.tnp@svitvasad.ac.in",
+        photo: null,
+      },
+      graphicalData: [
+        { year: "2020", studentsPlaced: 8, placementPercentage: 85 },
+        { year: "2021", studentsPlaced: 5, placementPercentage: 88 },
+        { year: "2022", studentsPlaced: 6, placementPercentage: 90 },
+        { year: "2023", studentsPlaced: 6, placementPercentage: 91 },
+        { year: "2024", studentsPlaced: 6, placementPercentage: 93 },
+        { year: "2025", studentsPlaced: 6, placementPercentage: 95 },
+      ],
+    },
+  },
+};
 
-      const collegeItems = Array.from(divisionMap.values());
-      collegeItems.sort((a, b) => {
-        const idxA = ORDER.indexOf(a.slug);
-        const idxB = ORDER.indexOf(b.slug);
-        return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-      });
+const STORAGE_KEY = "svit_placement_hub_data_v3";
 
-      return [{ slug: 'overview', label: 'Overview' }, ...collegeItems];
-    } catch {
-      return [
-        { slug: 'overview', label: 'Overview' },
-        { slug: 'svit-degree', label: 'SVIT (Degree)' },
-        { slug: 'svit-coa', label: 'COA (Architecture)' },
-        { slug: 'svica', label: 'SVICA (Comp. Apps)' },
-        { slug: 'svion', label: 'SVION (Nursing)' },
-      ];
+export function getAllRecruiters(): RecruiterItem[] {
+  const content = getAllPlacementContent();
+  return content.recruiters.map((r) => ({
+    ...r,
+    company_name: r.companyName,
+  }));
+}
+
+export function getAllPlacementContent(): FullPlacementData {
+  if (typeof window === "undefined") {
+    return DEFAULT_PLACEMENT_DATA;
+  }
+
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PLACEMENT_DATA));
+      return DEFAULT_PLACEMENT_DATA;
     }
-  });
+    const parsed = JSON.parse(raw);
+    return {
+      divisions: parsed.divisions || DEFAULT_PLACEMENT_DATA.divisions,
+      heroTitle: parsed.heroTitle || DEFAULT_PLACEMENT_DATA.heroTitle,
+      heroSubtitle: parsed.heroSubtitle || DEFAULT_PLACEMENT_DATA.heroSubtitle,
+      highestPackage: parsed.highestPackage || DEFAULT_PLACEMENT_DATA.highestPackage,
+      averagePackage: parsed.averagePackage || DEFAULT_PLACEMENT_DATA.averagePackage,
+      aboutText: parsed.aboutText || DEFAULT_PLACEMENT_DATA.aboutText,
+      sectionConfig: {
+        sections: { ...DEFAULT_PLACEMENT_DATA.sectionConfig.sections, ...parsed.sectionConfig?.sections },
+        order: parsed.sectionConfig?.order || DEFAULT_PLACEMENT_DATA.sectionConfig.order,
+        highlights: parsed.sectionConfig?.highlights || DEFAULT_PLACEMENT_DATA.sectionConfig.highlights,
+      },
+      officer: { ...DEFAULT_PLACEMENT_DATA.officer, ...parsed.officer },
+      placedStudents: parsed.placedStudents || DEFAULT_PLACEMENT_DATA.placedStudents,
+      recruiters: parsed.recruiters || DEFAULT_PLACEMENT_DATA.recruiters,
+      graphicalData: parsed.graphicalData || DEFAULT_PLACEMENT_DATA.graphicalData,
+      testimonials: parsed.testimonials || DEFAULT_PLACEMENT_DATA.testimonials,
+      divisionContents: parsed.divisionContents || DEFAULT_PLACEMENT_DATA.divisionContents,
+    };
+  } catch {
+    return DEFAULT_PLACEMENT_DATA;
+  }
+}
 
-/** All colleges for admin dropdowns */
-export const getAllColleges = createServerFn({ method: 'GET' })
-  .handler(async () => {
+export async function fetchPlacementContentAsync(): Promise<FullPlacementData> {
+  const localData = getAllPlacementContent();
+  try {
     const { data, error } = await supabase
-      .from('colleges')
-      .select('id, slug, name')
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .order('sort_order', { ascending: true });
-    if (error) return [];
-    const valid = (data ?? []).filter((c: any) => !EXCLUDED_PLACEMENT_SLUGS.includes(c.slug));
-    return valid as unknown as { id: string; slug: string; name: string }[];
-  });
+      .from("homepage_items")
+      .select("metadata")
+      .eq("section_key", "placement_hub")
+      .maybeSingle();
 
-/** Departments for a college — admin dropdowns */
-export const getDepartmentsByCollege = createServerFn({ method: 'GET' })
-  .validator((collegeId: string) => collegeId)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('departments').select('id, name, slug')
-      .eq('college_id', ctx.data).eq('status', 'published').order('name', { ascending: true });
-    if (error) return [];
-    return (data ?? []) as { id: string; name: string; slug: string }[];
-  });
-
-// ── Placed Students ───────────────────────────────────────────
-
-/** Fetch placed students for a college — used by public pages */
-export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
-  .validator((input: { collegeId: string | null; isOverview: boolean }) => input)
-  .handler(async (ctx) => {
-    try {
-      let query = (supabase as any)
-        .from('placed_students')
-        .select('*, college:colleges(id, slug, name), department:departments(id, name, slug)')
-        .eq('status', 'published')
-        .order('batch_year', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (!ctx.data.isOverview && ctx.data.collegeId) {
-        query = query.eq('college_id', ctx.data.collegeId);
+    if (!error && data?.metadata) {
+      const dbData = data.metadata as FullPlacementData;
+      const merged: FullPlacementData = {
+        ...DEFAULT_PLACEMENT_DATA,
+        ...dbData,
+        sectionConfig: {
+          sections: { ...DEFAULT_PLACEMENT_DATA.sectionConfig.sections, ...dbData.sectionConfig?.sections },
+          order: dbData.sectionConfig?.order || DEFAULT_PLACEMENT_DATA.sectionConfig.order,
+          highlights: dbData.sectionConfig?.highlights || DEFAULT_PLACEMENT_DATA.sectionConfig.highlights,
+        },
+      };
+      if (typeof window !== "undefined") {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
       }
-
-      const { data, error } = await query;
-      if (error) {
-        if (error.code === 'PGRST205' || error.code === '42P01') return [] as PlacedStudent[];
-        return [] as PlacedStudent[];
-      }
-      return (data ?? []) as unknown as PlacedStudent[];
-    } catch {
-      return [] as PlacedStudent[];
+      return merged;
     }
-  });
+  } catch (err) {
+    console.warn("Falling back to local storage placement content:", err);
+  }
+  return localData;
+}
+
+export function saveAllPlacementContent(data: FullPlacementData): void {
+  if (typeof window === "undefined") return;
+
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    window.dispatchEvent(new CustomEvent("svit_placement_updated", { detail: data }));
+  } catch (err) {
+    console.error("Failed to save placement content to localStorage:", err);
+  }
+
+  // Best-effort attempt to persist to Supabase homepage_items table
+  try {
+    (async () => {
+      await supabase
+        .from("homepage_items")
+        .upsert({
+          section_key: "placement_hub",
+          title: "Placement Hub Data",
+          metadata: data as any,
+        }, { onConflict: "section_key" });
+    })().catch(() => {
+      // Swallowed
+    });
+  } catch {
+    // Swallowed
+  }
+}
