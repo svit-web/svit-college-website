@@ -29,7 +29,7 @@ export function CTABanner({
       <div className="absolute -bottom-24 -right-24 h-72 w-72 rounded-full bg-crimson/20 blur-3xl" />
 
       <div className="container-page relative z-10 text-center">
-        <Reveal center>
+        <Reveal>
           {eyebrow && (
             <span className="inline-block rounded-full bg-gold/15 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-gold border border-gold/30 mb-4">
               {eyebrow}

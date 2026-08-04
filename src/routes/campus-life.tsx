@@ -5,7 +5,7 @@ export const Route = createFileRoute("/campus-life")({
   head: () => ({
     meta: [
       { title: "Campus Life — SVIT Vasad" },
-      { name: "description", content: "Facilities, co-curricular centres, clubs and events that make SVIT more than a college." },
+      { name: "description", content: "Facilities, clubs and events that make SVIT more than a college." },
     ],
   }),
   component: CampusLifeLayout,
