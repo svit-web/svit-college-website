@@ -24,6 +24,14 @@ import { Route as GrievanceRouteImport } from './routes/grievance'
 import { Route as NewsRouteImport } from './routes/news'
 import { Route as ParentsRouteImport } from './routes/parents'
 import { Route as StudentLoginRouteImport } from './routes/student-login'
+import { Route as AboutIndexRouteImport } from './routes/about.index'
+import { Route as AboutAccreditationRouteImport } from './routes/about.accreditation'
+import { Route as AboutBoardOfManagementRouteImport } from './routes/about.board-of-management'
+import { Route as AboutChairmanMessageRouteImport } from './routes/about.chairman-message'
+import { Route as AboutCommitteesRouteImport } from './routes/about.committees'
+import { Route as AboutFacilitiesRouteImport } from './routes/about.facilities'
+import { Route as AboutHistoryVisionMissionRouteImport } from './routes/about.history-vision-mission'
+import { Route as AboutMediaRouteImport } from './routes/about.media'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAppearanceRouteImport } from './routes/admin.appearance'
 import { Route as AdminCollegesRouteImport } from './routes/admin.colleges'
@@ -152,6 +160,47 @@ const StudentLoginRoute = StudentLoginRouteImport.update({
   id: '/student-login',
   path: '/student-login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AboutIndexRoute = AboutIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutAccreditationRoute = AboutAccreditationRouteImport.update({
+  id: '/accreditation',
+  path: '/accreditation',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutBoardOfManagementRoute = AboutBoardOfManagementRouteImport.update({
+  id: '/board-of-management',
+  path: '/board-of-management',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutChairmanMessageRoute = AboutChairmanMessageRouteImport.update({
+  id: '/chairman-message',
+  path: '/chairman-message',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutCommitteesRoute = AboutCommitteesRouteImport.update({
+  id: '/committees',
+  path: '/committees',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutFacilitiesRoute = AboutFacilitiesRouteImport.update({
+  id: '/facilities',
+  path: '/facilities',
+  getParentRoute: () => AboutRoute,
+} as any)
+const AboutHistoryVisionMissionRoute =
+  AboutHistoryVisionMissionRouteImport.update({
+    id: '/history-vision-mission',
+    path: '/history-vision-mission',
+    getParentRoute: () => AboutRoute,
+  } as any)
+const AboutMediaRoute = AboutMediaRouteImport.update({
+  id: '/media',
+  path: '/media',
+  getParentRoute: () => AboutRoute,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -428,7 +477,7 @@ const CoursesEngineeringDeptFacultyRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/alumni': typeof AlumniRoute
   '/anti-ragging': typeof AntiRaggingRoute
@@ -442,6 +491,13 @@ export interface FileRoutesByFullPath {
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
   '/student-login': typeof StudentLoginRoute
+  '/about/accreditation': typeof AboutAccreditationRoute
+  '/about/board-of-management': typeof AboutBoardOfManagementRoute
+  '/about/chairman-message': typeof AboutChairmanMessageRoute
+  '/about/committees': typeof AboutCommitteesRoute
+  '/about/facilities': typeof AboutFacilitiesRoute
+  '/about/history-vision-mission': typeof AboutHistoryVisionMissionRoute
+  '/about/media': typeof AboutMediaRoute
   '/admin/appearance': typeof AdminAppearanceRoute
   '/admin/colleges': typeof AdminCollegesRoute
   '/admin/events': typeof AdminEventsRoute
@@ -469,6 +525,7 @@ export interface FileRoutesByFullPath {
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
+  '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admissions/': typeof AdmissionsIndexRoute
   '/campus-life/': typeof CampusLifeIndexRoute
@@ -498,7 +555,6 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/alumni': typeof AlumniRoute
   '/anti-ragging': typeof AntiRaggingRoute
   '/campus': typeof CampusRoute
@@ -509,6 +565,13 @@ export interface FileRoutesByTo {
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
   '/student-login': typeof StudentLoginRoute
+  '/about/accreditation': typeof AboutAccreditationRoute
+  '/about/board-of-management': typeof AboutBoardOfManagementRoute
+  '/about/chairman-message': typeof AboutChairmanMessageRoute
+  '/about/committees': typeof AboutCommitteesRoute
+  '/about/facilities': typeof AboutFacilitiesRoute
+  '/about/history-vision-mission': typeof AboutHistoryVisionMissionRoute
+  '/about/media': typeof AboutMediaRoute
   '/admin/appearance': typeof AdminAppearanceRoute
   '/admin/colleges': typeof AdminCollegesRoute
   '/admin/events': typeof AdminEventsRoute
@@ -535,6 +598,7 @@ export interface FileRoutesByTo {
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
+  '/about': typeof AboutIndexRoute
   '/admin': typeof AdminIndexRoute
   '/admissions': typeof AdmissionsIndexRoute
   '/campus-life': typeof CampusLifeIndexRoute
@@ -564,7 +628,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/about': typeof AboutRouteWithChildren
   '/admin': typeof AdminRouteWithChildren
   '/alumni': typeof AlumniRoute
   '/anti-ragging': typeof AntiRaggingRoute
@@ -578,6 +642,13 @@ export interface FileRoutesById {
   '/news': typeof NewsRoute
   '/parents': typeof ParentsRoute
   '/student-login': typeof StudentLoginRoute
+  '/about/accreditation': typeof AboutAccreditationRoute
+  '/about/board-of-management': typeof AboutBoardOfManagementRoute
+  '/about/chairman-message': typeof AboutChairmanMessageRoute
+  '/about/committees': typeof AboutCommitteesRoute
+  '/about/facilities': typeof AboutFacilitiesRoute
+  '/about/history-vision-mission': typeof AboutHistoryVisionMissionRoute
+  '/about/media': typeof AboutMediaRoute
   '/admin/appearance': typeof AdminAppearanceRoute
   '/admin/colleges': typeof AdminCollegesRoute
   '/admin/events': typeof AdminEventsRoute
@@ -605,6 +676,7 @@ export interface FileRoutesById {
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
+  '/about/': typeof AboutIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/admissions/': typeof AdmissionsIndexRoute
   '/campus-life/': typeof CampusLifeIndexRoute
@@ -650,6 +722,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/parents'
     | '/student-login'
+    | '/about/accreditation'
+    | '/about/board-of-management'
+    | '/about/chairman-message'
+    | '/about/committees'
+    | '/about/facilities'
+    | '/about/history-vision-mission'
+    | '/about/media'
     | '/admin/appearance'
     | '/admin/colleges'
     | '/admin/events'
@@ -677,6 +756,7 @@ export interface FileRouteTypes {
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
+    | '/about/'
     | '/admin/'
     | '/admissions/'
     | '/campus-life/'
@@ -706,7 +786,6 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/about'
     | '/alumni'
     | '/anti-ragging'
     | '/campus'
@@ -717,6 +796,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/parents'
     | '/student-login'
+    | '/about/accreditation'
+    | '/about/board-of-management'
+    | '/about/chairman-message'
+    | '/about/committees'
+    | '/about/facilities'
+    | '/about/history-vision-mission'
+    | '/about/media'
     | '/admin/appearance'
     | '/admin/colleges'
     | '/admin/events'
@@ -743,6 +829,7 @@ export interface FileRouteTypes {
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
+    | '/about'
     | '/admin'
     | '/admissions'
     | '/campus-life'
@@ -785,6 +872,13 @@ export interface FileRouteTypes {
     | '/news'
     | '/parents'
     | '/student-login'
+    | '/about/accreditation'
+    | '/about/board-of-management'
+    | '/about/chairman-message'
+    | '/about/committees'
+    | '/about/facilities'
+    | '/about/history-vision-mission'
+    | '/about/media'
     | '/admin/appearance'
     | '/admin/colleges'
     | '/admin/events'
@@ -812,6 +906,7 @@ export interface FileRouteTypes {
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
+    | '/about/'
     | '/admin/'
     | '/admissions/'
     | '/campus-life/'
@@ -842,7 +937,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  AboutRoute: typeof AboutRouteWithChildren
   AdminRoute: typeof AdminRouteWithChildren
   AlumniRoute: typeof AlumniRoute
   AntiRaggingRoute: typeof AntiRaggingRoute
@@ -976,6 +1071,62 @@ declare module '@tanstack/react-router' {
       fullPath: '/student-login'
       preLoaderRoute: typeof StudentLoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/about/': {
+      id: '/about/'
+      path: '/'
+      fullPath: '/about/'
+      preLoaderRoute: typeof AboutIndexRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/accreditation': {
+      id: '/about/accreditation'
+      path: '/accreditation'
+      fullPath: '/about/accreditation'
+      preLoaderRoute: typeof AboutAccreditationRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/board-of-management': {
+      id: '/about/board-of-management'
+      path: '/board-of-management'
+      fullPath: '/about/board-of-management'
+      preLoaderRoute: typeof AboutBoardOfManagementRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/chairman-message': {
+      id: '/about/chairman-message'
+      path: '/chairman-message'
+      fullPath: '/about/chairman-message'
+      preLoaderRoute: typeof AboutChairmanMessageRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/committees': {
+      id: '/about/committees'
+      path: '/committees'
+      fullPath: '/about/committees'
+      preLoaderRoute: typeof AboutCommitteesRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/facilities': {
+      id: '/about/facilities'
+      path: '/facilities'
+      fullPath: '/about/facilities'
+      preLoaderRoute: typeof AboutFacilitiesRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/history-vision-mission': {
+      id: '/about/history-vision-mission'
+      path: '/history-vision-mission'
+      fullPath: '/about/history-vision-mission'
+      preLoaderRoute: typeof AboutHistoryVisionMissionRouteImport
+      parentRoute: typeof AboutRoute
+    }
+    '/about/media': {
+      id: '/about/media'
+      path: '/media'
+      fullPath: '/about/media'
+      preLoaderRoute: typeof AboutMediaRouteImport
+      parentRoute: typeof AboutRoute
     }
     '/admin/': {
       id: '/admin/'
@@ -1351,6 +1502,30 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AboutRouteChildren {
+  AboutAccreditationRoute: typeof AboutAccreditationRoute
+  AboutBoardOfManagementRoute: typeof AboutBoardOfManagementRoute
+  AboutChairmanMessageRoute: typeof AboutChairmanMessageRoute
+  AboutCommitteesRoute: typeof AboutCommitteesRoute
+  AboutFacilitiesRoute: typeof AboutFacilitiesRoute
+  AboutHistoryVisionMissionRoute: typeof AboutHistoryVisionMissionRoute
+  AboutMediaRoute: typeof AboutMediaRoute
+  AboutIndexRoute: typeof AboutIndexRoute
+}
+
+const AboutRouteChildren: AboutRouteChildren = {
+  AboutAccreditationRoute: AboutAccreditationRoute,
+  AboutBoardOfManagementRoute: AboutBoardOfManagementRoute,
+  AboutChairmanMessageRoute: AboutChairmanMessageRoute,
+  AboutCommitteesRoute: AboutCommitteesRoute,
+  AboutFacilitiesRoute: AboutFacilitiesRoute,
+  AboutHistoryVisionMissionRoute: AboutHistoryVisionMissionRoute,
+  AboutMediaRoute: AboutMediaRoute,
+  AboutIndexRoute: AboutIndexRoute,
+}
+
+const AboutRouteWithChildren = AboutRoute._addFileChildren(AboutRouteChildren)
+
 interface AdminRouteChildren {
   AdminAppearanceRoute: typeof AdminAppearanceRoute
   AdminCollegesRoute: typeof AdminCollegesRoute
@@ -1503,7 +1678,7 @@ const CoursesEngineeringDeptRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  AboutRoute: AboutRouteWithChildren,
   AdminRoute: AdminRouteWithChildren,
   AlumniRoute: AlumniRoute,
   AntiRaggingRoute: AntiRaggingRoute,
