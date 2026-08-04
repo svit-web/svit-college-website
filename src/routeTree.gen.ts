@@ -58,9 +58,9 @@ import { Route as PlacementIndexRouteImport } from './routes/placement.index'
 import { Route as PlacementCollegeRouteImport } from './routes/placement.$college'
 import { Route as ProgramsProgramRouteImport } from './routes/programs.$program'
 import { Route as StaffStaffRouteImport } from './routes/staff.$staff'
+import { Route as StudentCornerIndexRouteImport } from './routes/student-corner.index'
+import { Route as StudentCornerSlugRouteImport } from './routes/student-corner.$slug'
 import { Route as AdminTablesTableIdRouteImport } from './routes/admin.tables.$tableId'
-import { Route as CampusLifeCentreIndexRouteImport } from './routes/campus-life.centre.index'
-import { Route as CampusLifeCentreSlugRouteImport } from './routes/campus-life.centre.$slug'
 import { Route as CampusLifeClubsIndexRouteImport } from './routes/campus-life.clubs.index'
 import { Route as CampusLifeClubsSlugRouteImport } from './routes/campus-life.clubs.$slug'
 import { Route as CampusLifeEventsIndexRouteImport } from './routes/campus-life.events.index'
@@ -323,20 +323,20 @@ const StaffStaffRoute = StaffStaffRouteImport.update({
   path: '/staff/$staff',
   getParentRoute: () => rootRouteImport,
 } as any)
+const StudentCornerIndexRoute = StudentCornerIndexRouteImport.update({
+  id: '/student-corner/',
+  path: '/student-corner/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const StudentCornerSlugRoute = StudentCornerSlugRouteImport.update({
+  id: '/student-corner/$slug',
+  path: '/student-corner/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminTablesTableIdRoute = AdminTablesTableIdRouteImport.update({
   id: '/tables/$tableId',
   path: '/tables/$tableId',
   getParentRoute: () => AdminRoute,
-} as any)
-const CampusLifeCentreIndexRoute = CampusLifeCentreIndexRouteImport.update({
-  id: '/centre/',
-  path: '/centre/',
-  getParentRoute: () => CampusLifeRoute,
-} as any)
-const CampusLifeCentreSlugRoute = CampusLifeCentreSlugRouteImport.update({
-  id: '/centre/$slug',
-  path: '/centre/$slug',
-  getParentRoute: () => CampusLifeRoute,
 } as any)
 const CampusLifeClubsIndexRoute = CampusLifeClubsIndexRouteImport.update({
   id: '/clubs/',
@@ -469,6 +469,7 @@ export interface FileRoutesByFullPath {
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
+  '/student-corner/$slug': typeof StudentCornerSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admissions/': typeof AdmissionsIndexRoute
   '/campus-life/': typeof CampusLifeIndexRoute
@@ -476,8 +477,8 @@ export interface FileRoutesByFullPath {
   '/courses/': typeof CoursesIndexRoute
   '/gallery/': typeof GalleryIndexRoute
   '/placement/': typeof PlacementIndexRoute
+  '/student-corner/': typeof StudentCornerIndexRoute
   '/admin/tables/$tableId': typeof AdminTablesTableIdRoute
-  '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
   '/campus-life/clubs/$slug': typeof CampusLifeClubsSlugRouteWithChildren
   '/campus-life/events/$slug': typeof CampusLifeEventsSlugRoute
   '/campus-life/facilities/$': typeof CampusLifeFacilitiesSplatRoute
@@ -487,7 +488,6 @@ export interface FileRoutesByFullPath {
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
   '/departments/$dept/labs': typeof DepartmentsDeptLabsRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
-  '/campus-life/centre/': typeof CampusLifeCentreIndexRoute
   '/campus-life/clubs/': typeof CampusLifeClubsIndexRoute
   '/campus-life/events/': typeof CampusLifeEventsIndexRoute
   '/campus-life/facilities/': typeof CampusLifeFacilitiesIndexRoute
@@ -535,6 +535,7 @@ export interface FileRoutesByTo {
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
+  '/student-corner/$slug': typeof StudentCornerSlugRoute
   '/admin': typeof AdminIndexRoute
   '/admissions': typeof AdmissionsIndexRoute
   '/campus-life': typeof CampusLifeIndexRoute
@@ -542,8 +543,8 @@ export interface FileRoutesByTo {
   '/courses': typeof CoursesIndexRoute
   '/gallery': typeof GalleryIndexRoute
   '/placement': typeof PlacementIndexRoute
+  '/student-corner': typeof StudentCornerIndexRoute
   '/admin/tables/$tableId': typeof AdminTablesTableIdRoute
-  '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
   '/campus-life/events/$slug': typeof CampusLifeEventsSlugRoute
   '/campus-life/facilities/$': typeof CampusLifeFacilitiesSplatRoute
   '/courses/$course/faculty': typeof CoursesCourseFacultyRoute
@@ -552,7 +553,6 @@ export interface FileRoutesByTo {
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
   '/departments/$dept/labs': typeof DepartmentsDeptLabsRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
-  '/campus-life/centre': typeof CampusLifeCentreIndexRoute
   '/campus-life/clubs': typeof CampusLifeClubsIndexRoute
   '/campus-life/events': typeof CampusLifeEventsIndexRoute
   '/campus-life/facilities': typeof CampusLifeFacilitiesIndexRoute
@@ -605,6 +605,7 @@ export interface FileRoutesById {
   '/placement/$college': typeof PlacementCollegeRoute
   '/programs/$program': typeof ProgramsProgramRoute
   '/staff/$staff': typeof StaffStaffRoute
+  '/student-corner/$slug': typeof StudentCornerSlugRoute
   '/admin/': typeof AdminIndexRoute
   '/admissions/': typeof AdmissionsIndexRoute
   '/campus-life/': typeof CampusLifeIndexRoute
@@ -612,8 +613,8 @@ export interface FileRoutesById {
   '/courses/': typeof CoursesIndexRoute
   '/gallery/': typeof GalleryIndexRoute
   '/placement/': typeof PlacementIndexRoute
+  '/student-corner/': typeof StudentCornerIndexRoute
   '/admin/tables/$tableId': typeof AdminTablesTableIdRoute
-  '/campus-life/centre/$slug': typeof CampusLifeCentreSlugRoute
   '/campus-life/clubs/$slug': typeof CampusLifeClubsSlugRouteWithChildren
   '/campus-life/events/$slug': typeof CampusLifeEventsSlugRoute
   '/campus-life/facilities/$': typeof CampusLifeFacilitiesSplatRoute
@@ -623,7 +624,6 @@ export interface FileRoutesById {
   '/departments/$dept/activities': typeof DepartmentsDeptActivitiesRoute
   '/departments/$dept/labs': typeof DepartmentsDeptLabsRoute
   '/departments/$dept/staff': typeof DepartmentsDeptStaffRoute
-  '/campus-life/centre/': typeof CampusLifeCentreIndexRoute
   '/campus-life/clubs/': typeof CampusLifeClubsIndexRoute
   '/campus-life/events/': typeof CampusLifeEventsIndexRoute
   '/campus-life/facilities/': typeof CampusLifeFacilitiesIndexRoute
@@ -677,6 +677,7 @@ export interface FileRouteTypes {
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
+    | '/student-corner/$slug'
     | '/admin/'
     | '/admissions/'
     | '/campus-life/'
@@ -684,8 +685,8 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/gallery/'
     | '/placement/'
+    | '/student-corner/'
     | '/admin/tables/$tableId'
-    | '/campus-life/centre/$slug'
     | '/campus-life/clubs/$slug'
     | '/campus-life/events/$slug'
     | '/campus-life/facilities/$'
@@ -695,7 +696,6 @@ export interface FileRouteTypes {
     | '/departments/$dept/activities'
     | '/departments/$dept/labs'
     | '/departments/$dept/staff'
-    | '/campus-life/centre/'
     | '/campus-life/clubs/'
     | '/campus-life/events/'
     | '/campus-life/facilities/'
@@ -743,6 +743,7 @@ export interface FileRouteTypes {
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
+    | '/student-corner/$slug'
     | '/admin'
     | '/admissions'
     | '/campus-life'
@@ -750,8 +751,8 @@ export interface FileRouteTypes {
     | '/courses'
     | '/gallery'
     | '/placement'
+    | '/student-corner'
     | '/admin/tables/$tableId'
-    | '/campus-life/centre/$slug'
     | '/campus-life/events/$slug'
     | '/campus-life/facilities/$'
     | '/courses/$course/faculty'
@@ -760,7 +761,6 @@ export interface FileRouteTypes {
     | '/departments/$dept/activities'
     | '/departments/$dept/labs'
     | '/departments/$dept/staff'
-    | '/campus-life/centre'
     | '/campus-life/clubs'
     | '/campus-life/events'
     | '/campus-life/facilities'
@@ -812,6 +812,7 @@ export interface FileRouteTypes {
     | '/placement/$college'
     | '/programs/$program'
     | '/staff/$staff'
+    | '/student-corner/$slug'
     | '/admin/'
     | '/admissions/'
     | '/campus-life/'
@@ -819,8 +820,8 @@ export interface FileRouteTypes {
     | '/courses/'
     | '/gallery/'
     | '/placement/'
+    | '/student-corner/'
     | '/admin/tables/$tableId'
-    | '/campus-life/centre/$slug'
     | '/campus-life/clubs/$slug'
     | '/campus-life/events/$slug'
     | '/campus-life/facilities/$'
@@ -830,7 +831,6 @@ export interface FileRouteTypes {
     | '/departments/$dept/activities'
     | '/departments/$dept/labs'
     | '/departments/$dept/staff'
-    | '/campus-life/centre/'
     | '/campus-life/clubs/'
     | '/campus-life/events/'
     | '/campus-life/facilities/'
@@ -863,10 +863,12 @@ export interface RootRouteChildren {
   PlacementCollegeRoute: typeof PlacementCollegeRoute
   ProgramsProgramRoute: typeof ProgramsProgramRoute
   StaffStaffRoute: typeof StaffStaffRoute
+  StudentCornerSlugRoute: typeof StudentCornerSlugRoute
   AdmissionsIndexRoute: typeof AdmissionsIndexRoute
   CollegesIndexRoute: typeof CollegesIndexRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
   PlacementIndexRoute: typeof PlacementIndexRoute
+  StudentCornerIndexRoute: typeof StudentCornerIndexRoute
   CoursesEngineeringDeptRoute: typeof CoursesEngineeringDeptRouteWithChildren
 }
 
@@ -1215,26 +1217,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffStaffRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/student-corner/': {
+      id: '/student-corner/'
+      path: '/student-corner'
+      fullPath: '/student-corner/'
+      preLoaderRoute: typeof StudentCornerIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/student-corner/$slug': {
+      id: '/student-corner/$slug'
+      path: '/student-corner/$slug'
+      fullPath: '/student-corner/$slug'
+      preLoaderRoute: typeof StudentCornerSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/tables/$tableId': {
       id: '/admin/tables/$tableId'
       path: '/tables/$tableId'
       fullPath: '/admin/tables/$tableId'
       preLoaderRoute: typeof AdminTablesTableIdRouteImport
       parentRoute: typeof AdminRoute
-    }
-    '/campus-life/centre/': {
-      id: '/campus-life/centre/'
-      path: '/centre'
-      fullPath: '/campus-life/centre/'
-      preLoaderRoute: typeof CampusLifeCentreIndexRouteImport
-      parentRoute: typeof CampusLifeRoute
-    }
-    '/campus-life/centre/$slug': {
-      id: '/campus-life/centre/$slug'
-      path: '/centre/$slug'
-      fullPath: '/campus-life/centre/$slug'
-      preLoaderRoute: typeof CampusLifeCentreSlugRouteImport
-      parentRoute: typeof CampusLifeRoute
     }
     '/campus-life/clubs/': {
       id: '/campus-life/clubs/'
@@ -1416,11 +1418,9 @@ const CampusLifeClubsSlugRouteWithChildren =
 
 interface CampusLifeRouteChildren {
   CampusLifeIndexRoute: typeof CampusLifeIndexRoute
-  CampusLifeCentreSlugRoute: typeof CampusLifeCentreSlugRoute
   CampusLifeClubsSlugRoute: typeof CampusLifeClubsSlugRouteWithChildren
   CampusLifeEventsSlugRoute: typeof CampusLifeEventsSlugRoute
   CampusLifeFacilitiesSplatRoute: typeof CampusLifeFacilitiesSplatRoute
-  CampusLifeCentreIndexRoute: typeof CampusLifeCentreIndexRoute
   CampusLifeClubsIndexRoute: typeof CampusLifeClubsIndexRoute
   CampusLifeEventsIndexRoute: typeof CampusLifeEventsIndexRoute
   CampusLifeFacilitiesIndexRoute: typeof CampusLifeFacilitiesIndexRoute
@@ -1428,11 +1428,9 @@ interface CampusLifeRouteChildren {
 
 const CampusLifeRouteChildren: CampusLifeRouteChildren = {
   CampusLifeIndexRoute: CampusLifeIndexRoute,
-  CampusLifeCentreSlugRoute: CampusLifeCentreSlugRoute,
   CampusLifeClubsSlugRoute: CampusLifeClubsSlugRouteWithChildren,
   CampusLifeEventsSlugRoute: CampusLifeEventsSlugRoute,
   CampusLifeFacilitiesSplatRoute: CampusLifeFacilitiesSplatRoute,
-  CampusLifeCentreIndexRoute: CampusLifeCentreIndexRoute,
   CampusLifeClubsIndexRoute: CampusLifeClubsIndexRoute,
   CampusLifeEventsIndexRoute: CampusLifeEventsIndexRoute,
   CampusLifeFacilitiesIndexRoute: CampusLifeFacilitiesIndexRoute,
@@ -1524,10 +1522,12 @@ const rootRouteChildren: RootRouteChildren = {
   PlacementCollegeRoute: PlacementCollegeRoute,
   ProgramsProgramRoute: ProgramsProgramRoute,
   StaffStaffRoute: StaffStaffRoute,
+  StudentCornerSlugRoute: StudentCornerSlugRoute,
   AdmissionsIndexRoute: AdmissionsIndexRoute,
   CollegesIndexRoute: CollegesIndexRoute,
   CoursesIndexRoute: CoursesIndexRoute,
   PlacementIndexRoute: PlacementIndexRoute,
+  StudentCornerIndexRoute: StudentCornerIndexRoute,
   CoursesEngineeringDeptRoute: CoursesEngineeringDeptRouteWithChildren,
 }
 export const routeTree = rootRouteImport

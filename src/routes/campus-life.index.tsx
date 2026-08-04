@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { Building2, Sparkles, Users, CalendarDays, ArrowRight } from "lucide-react";
+import { Building2, Users, CalendarDays, ArrowRight } from "lucide-react";
 import { getAllStudentClubs } from "@/lib/clubs.functions";
-import { getAllCenters } from "@/lib/centers.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllEvents } from "@/lib/events.functions";
 
@@ -11,27 +10,25 @@ export const Route = createFileRoute("/campus-life/")({
   head: () => ({
     meta: [
       { title: "Campus Life Overview — SVIT Vasad" },
-      { name: "description", content: "An overview of facilities, centres, clubs and flagship events at SVIT Vasad." },
+      { name: "description", content: "An overview of facilities, clubs and flagship events at SVIT Vasad." },
     ],
   }),
   loader: async () => {
-    const [clubs, centers, facilities, events] = await Promise.all([
+    const [clubs, facilities, events] = await Promise.all([
       getAllStudentClubs(),
-      getAllCenters(),
       getAllFacilities(),
       getAllEvents(),
     ]);
-    return { clubs, centers, facilities, events };
+    return { clubs, facilities, events };
   },
   component: CampusLifeOverview,
 });
 
 function CampusLifeOverview() {
-  const { clubs, centers, facilities, events } = Route.useLoaderData();
+  const { clubs, facilities, events } = Route.useLoaderData();
 
   const SUMMARY = [
     { icon: Building2, label: "Facilities", count: facilities.length, to: "/campus-life/facilities" },
-    { icon: Sparkles, label: "Co-curricular Centres", count: centers.length, to: "/campus-life/centre" },
     { icon: Users, label: "Student Clubs", count: clubs.length, to: "/campus-life/clubs" },
     { icon: CalendarDays, label: "Flagship Events", count: events.length, to: "/campus-life/events" },
   ] as const;
@@ -40,7 +37,7 @@ function CampusLifeOverview() {
     <div className="space-y-12">
       <div>
         <SectionHeading eyebrow="Overview" title="Life beyond the classroom" subtitle="From cricket grounds and smart classrooms to TEDx and Prakarsh, campus life at SVIT is designed around student initiative." />
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {SUMMARY.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.05}>
               <Link to={s.to} className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">

@@ -1,7 +1,7 @@
 import { useRef, useState, useMemo, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Sparkles, Trophy, Users, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
@@ -9,6 +9,7 @@ const primaryNav = [
   { label: "About Us", to: "/about" },
   { label: "Colleges", to: "/colleges" },
   { label: "Campus Life", to: "/campus-life" },
+  { label: "Student Corner", to: "/student-corner" },
   { label: "Placement", to: "/placement" },
   { label: "Contact Us", to: "/contact" },
 ] as const;
@@ -18,7 +19,6 @@ const topNav = [
   { label: "Careers", to: "/careers" },
 ] as const;
 import { getAllFacilities } from "@/lib/facilities.functions";
-import { getAllCenters } from "@/lib/centers.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { getAllDepartments, type Department } from "@/lib/departments.functions";
 import { CollegeLogo } from "./CollegeLogo";
@@ -134,7 +134,7 @@ export function Header() {
                   <Link
                     to={n.to}
                     className={cn(
-                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      "link-underline flex items-center gap-1 px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
                       active ? "text-navy" : "text-ink/80 hover:text-navy"
                     )}
                   >
@@ -173,7 +173,7 @@ export function Header() {
                     params={{ college: "overview" }}
                     onClick={() => setPlacementOpen(false)}
                     className={cn(
-                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      "link-underline flex items-center gap-1 px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
                       active ? "text-navy" : "text-ink/80 hover:text-navy"
                     )}
                   >
@@ -218,7 +218,7 @@ export function Header() {
                   <Link
                     to={n.to}
                     className={cn(
-                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      "link-underline flex items-center gap-1 px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
                       active ? "text-navy" : "text-ink/80 hover:text-navy"
                     )}
                   >
@@ -245,7 +245,7 @@ export function Header() {
                 key={n.to}
                 to={n.to}
                 className={cn(
-                  "link-underline px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                  "link-underline px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
                   active ? "text-navy" : "text-ink/80 hover:text-navy"
                 )}
               >
@@ -416,12 +416,6 @@ function useCampusCategories(): MegaCategory[] {
     staleTime,
   });
 
-  const { data: centers } = useQuery({
-    queryKey: ['centers'],
-    queryFn: () => getAllCenters(),
-    staleTime,
-  });
-
   const { data: featuredClubs } = useQuery({
     queryKey: ['featured-clubs'],
     queryFn: () => getFeaturedStudentClubs(),
@@ -464,14 +458,6 @@ function useCampusCategories(): MegaCategory[] {
         label: s.name,
         to: "/campus",
       })),
-    },
-    {
-      key: "co-curricular",
-      title: "Co-curricular",
-      icon: Sparkles,
-      allLabel: "All centres",
-      allTo: "/campus-life/centre",
-      items: (centers ?? []).map((c) => ({ label: c.name.split("(")[0].trim(), to: `/campus-life/centre/${c.slug}` })),
     },
     {
       key: "clubs",
