@@ -52,6 +52,7 @@ const TABLE_QUERY_MAP: Record<string, string[][]> = {
   cells: [["cells"]],
   centers: [["centers"]],
   committees: [["committees"]],
+  board_members: [["board_members"]],
   student_clubs: [["student_clubs"], ["clubs"]],
   mous: [["mous"]],
 
