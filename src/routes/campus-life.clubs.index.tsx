@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Building2 } from "lucide-react";
 import { PillTabs } from "@/components/site/PillTabs";
 import { Reveal } from "@/components/site/Reveal";
 import { SectionHeading } from "@/components/site/SectionHeading";
@@ -40,6 +41,12 @@ function ClubsIndex() {
                 {c.metadata.accent || "Club"}
               </div>
               <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>
+              {c.departmentName && (
+                <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-navy/60">
+                  <Building2 className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{c.departmentName}</span>
+                </div>
+              )}
               <p className="mt-2 text-sm text-muted-foreground">
                 {c.metadata.subtitle || c.description}
               </p>
