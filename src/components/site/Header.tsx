@@ -6,7 +6,7 @@ import { Logo } from "./Logo";
 const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
   { label: "Home", to: "/" },
-  { label: "About Us", to: "/about" },
+  { label: "About SVIT", to: "/about" },
   { label: "Colleges", to: "/colleges" },
   { label: "Campus Life", to: "/campus-life" },
   { label: "Student Corner", to: "/student-corner" },
@@ -27,17 +27,18 @@ import { useQuery } from "@tanstack/react-query";
 import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getSports } from "@/lib/sports.functions";
+import { ABOUT_SECTIONS } from "@/lib/about-sections";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
-  const [placementOpen, setPlacementOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   // Mobile accordion states — all collapsed by default
   const [mobileCollegesOpen, setMobileCollegesOpen] = useState(false);
-  const [mobilePlacementOpen, setMobilePlacementOpen] = useState(false);
   const [mobileCampusOpen, setMobileCampusOpen] = useState(false);
+  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
 
   // Lock body scroll while mobile menu is open
   useEffect(() => {
@@ -48,8 +49,8 @@ export function Header() {
   function closeMobileMenu() {
     setOpen(false);
     setMobileCollegesOpen(false);
-    setMobilePlacementOpen(false);
     setMobileCampusOpen(false);
+    setMobileAboutOpen(false);
   }
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -73,13 +74,6 @@ export function Header() {
         logo: c.logo_url ?? "",
       }));
   }, [dbColleges]);
-
-  const placementDivisions = useMemo(() => {
-    const ALLOWED_PLACEMENT_SLUGS = ["svit-degree", "svit-coa", "svica", "svion"];
-    return displayColleges
-      .filter(c => ALLOWED_PLACEMENT_SLUGS.includes(c.id))
-      .map(c => ({ slug: c.id, label: c.shortCode }));
-  }, [displayColleges]);
 
   const { data: allDepartments } = useQuery({
     queryKey: ["departments", "all-for-nav"],
@@ -123,6 +117,50 @@ export function Header() {
         <nav className="hidden items-center gap-1 lg:flex">
           {primaryNav.map((n) => {
             const active = n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
+            if (n.label === "About SVIT") {
+              return (
+                <div
+                  key={n.to}
+                  className="relative"
+                  onMouseEnter={() => setAboutOpen(true)}
+                  onMouseLeave={() => setAboutOpen(false)}
+                >
+                  <Link
+                    to={n.to}
+                    className={cn(
+                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      active ? "text-navy" : "text-ink/80 hover:text-navy"
+                    )}
+                  >
+                    {n.label} <ChevronDown className="h-3 w-3" />
+                  </Link>
+                  <AnimatePresence>
+                    {aboutOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                      >
+                        <div className="grid grid-cols-1 gap-1">
+                          {ABOUT_SECTIONS.map((s) => (
+                            <Link
+                              key={s.to}
+                              to={s.to}
+                              onClick={() => setAboutOpen(false)}
+                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
             if (n.label === "Colleges") {
               return (
                 <div
@@ -154,53 +192,6 @@ export function Header() {
                           departmentsByCollege={departmentsByCollege}
                           onNavigate={() => setCoursesOpen(false)}
                         />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            }
-            if (n.label === "Placement") {
-              return (
-                <div
-                  key={n.to}
-                  className="relative"
-                  onMouseEnter={() => setPlacementOpen(true)}
-                  onMouseLeave={() => setPlacementOpen(false)}
-                >
-                  <Link
-                    to="/placement/$college"
-                    params={{ college: "overview" }}
-                    onClick={() => setPlacementOpen(false)}
-                    className={cn(
-                      "link-underline flex items-center gap-1 px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
-                      active ? "text-navy" : "text-ink/80 hover:text-navy"
-                    )}
-                  >
-                    {n.label} <ChevronDown className="h-3 w-3" />
-                  </Link>
-                  <AnimatePresence>
-                    {placementOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 w-56 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
-                      >
-                        <div className="grid grid-cols-1 gap-1">
-                          {placementDivisions.map((d) => (
-                            <Link
-                              key={d.slug}
-                              to="/placement/$college"
-                              params={{ college: d.slug }}
-                              onClick={() => setPlacementOpen(false)}
-                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
-                            >
-                              {d.label}
-                            </Link>
-                          ))}
-                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -286,6 +277,34 @@ export function Header() {
             <div className="max-h-[calc(100dvh-116px)] overflow-y-auto">
             <div className="container-page flex flex-col gap-1 py-4">
               {primaryNav.map((n) => {
+                if (n.label === "About SVIT") {
+                  return (
+                    <div key={n.to}>
+                      <button
+                        type="button"
+                        onClick={() => setMobileAboutOpen((o) => !o)}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                      >
+                        {n.label}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileAboutOpen && "rotate-180")} />
+                      </button>
+                      {mobileAboutOpen && (
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+                          {ABOUT_SECTIONS.map((s) => (
+                            <Link
+                              key={s.to}
+                              to={s.to}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
                 if (n.label === "Colleges") {
                   return (
                     <div key={n.to}>
@@ -315,35 +334,7 @@ export function Header() {
                     </div>
                   );
                 }
-                if (n.label === "Placement") {
-                  return (
-                    <div key={n.to}>
-                      <button
-                        type="button"
-                        onClick={() => setMobilePlacementOpen((o) => !o)}
-                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                      >
-                        {n.label}
-                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobilePlacementOpen && "rotate-180")} />
-                      </button>
-                      {mobilePlacementOpen && (
-                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                          {placementDivisions.map((d) => (
-                            <Link
-                              key={d.slug}
-                              to="/placement/$college"
-                              params={{ college: d.slug }}
-                              onClick={closeMobileMenu}
-                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                            >
-                              {d.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
+
                 if (n.label === "Campus Life") {
                   return (
                     <div key={n.to}>
