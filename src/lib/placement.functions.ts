@@ -1,9 +1,51 @@
-// Training & Placement Cell Data Model & Functions
-import { supabase } from '@/integrations/supabase/client';
+// Training & Placement Cell — Supabase-backed data layer.
+//
+// Storage map for the unified placement page:
+//   hero / about / officer          → placement_cells row where college_code = 'overview'
+//   packages, section config,
+//   highlights, trend, testimonials → placement_cells.metadata (jsonb) on that same row
+//   placed student cards            → placed_students table (FK → colleges)
+//   recruiter logo wall             → recruiters table
+//
+// Reads run through server functions so the page renders correctly under SSR.
+// Writes run in the browser with the admin's session so RLS sees `authenticated`.
+import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
+
+/** The single placement_cells row that backs the unified page. */
+export const OVERVIEW_CODE = "overview";
+
+// `any` because src/integrations/supabase/types.ts is stale against the live
+// schema — it is missing placed_students entirely and the placement_cells
+// hero_title / hero_subtitle columns. Regenerating it is tracked separately.
+function serverClient(): any {
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient<Database>(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        if (
+          (key.startsWith("sb_publishable_") || key.startsWith("sb_secret_")) &&
+          headers.get("Authorization") === `Bearer ${key}`
+        ) {
+          headers.delete("Authorization");
+        }
+        headers.set("apikey", key);
+        return fetch(input, { ...init, headers });
+      },
+    },
+  });
+}
+
+// ── Types ───────────────────────────────────────────────────────────
 
 export interface PlacementHighlight {
   id: string;
-  icon: string;        // key into ICON_MAP
+  icon: string; // key into ICON_MAP in PlacementPage
   label: string;
 }
 
@@ -27,8 +69,9 @@ export interface PlacedStudent {
   studentName: string;
   companyName: string;
   batchYear: string;
-  photo: string | null;            // URL or data: URI
-  collegeId: string;               // division slug
+  photo: string | null;
+  /** colleges.slug — resolved to colleges.id on write */
+  collegeId: string;
 }
 
 export interface RecruiterItem {
@@ -36,7 +79,6 @@ export interface RecruiterItem {
   companyName: string;
   company_name?: string;
   logo: string | null;
-  status?: "active" | "inactive";
   sortOrder?: number;
 }
 
@@ -68,15 +110,13 @@ export interface PlacementTestimonial {
   rating?: number;
 }
 
-export interface DivisionInfo {
+export interface CollegeOption {
   slug: string;
   name: string;
-  shortCode: string;
-  isCustom?: boolean;
+  code: string;
 }
 
 export interface FullPlacementData {
-  divisions: DivisionInfo[];
   heroTitle: string;
   heroSubtitle: string;
   highestPackage: string;
@@ -88,19 +128,10 @@ export interface FullPlacementData {
   recruiters: RecruiterItem[];
   graphicalData: PlacementYearPoint[];
   testimonials: PlacementTestimonial[];
-  divisionContents: Record<string, {
-    aboutText: string;
-    officer: PlacementOfficer;
-    graphicalData: PlacementYearPoint[];
-  }>;
 }
 
-export const DEFAULT_DIVISIONS: DivisionInfo[] = [
-  { slug: "svit",  name: "Sardar Vallabhbhai Patel Institute of Technology", shortCode: "SVIT (Degree)" },
-  { slug: "coa",   name: "SVIT College of Architecture",                     shortCode: "COA (Architecture)" },
-  { slug: "svica", name: "SVIT College of Computer Applications",            shortCode: "SVICA (Comp. Apps)" },
-  { slug: "svion", name: "SVIT Institute of Nursing",                        shortCode: "SVION (Nursing)" },
-];
+// ── Fallbacks ───────────────────────────────────────────────────────
+// Used only until an admin saves the overview row for the first time.
 
 export const DEFAULT_HIGHLIGHTS: PlacementHighlight[] = [
   { id: "h1", icon: "Target", label: "Industry-aligned Skill Bootcamps & Aptitude Training" },
@@ -111,337 +142,290 @@ export const DEFAULT_HIGHLIGHTS: PlacementHighlight[] = [
   { id: "h6", icon: "UserCheck", label: "Dedicated Branch-Wise Student Mentorship" },
 ];
 
-export const DEFAULT_TESTIMONIALS: PlacementTestimonial[] = [
-  {
-    id: "t1",
-    studentName: "Aarav Sharma",
-    designation: "Software Engineer",
-    companyName: "Google",
-    batchYear: "2024",
-    departmentName: "Computer Engineering",
-    quote: "The T&P Cell at SVIT conducted rigorous mock interviews and competitive programming bootcamps. The structured placement drives gave me the confidence to crack the Google interview!",
-    photoUrl: null,
-    rating: 5,
+export const DEFAULT_SECTION_CONFIG: SectionConfig = {
+  sections: {
+    about: true,
+    trend: true,
+    placedStudents: true,
+    recruiters: true,
+    officer: true,
+    testimonials: true,
   },
-  {
-    id: "t2",
-    studentName: "Priya Patel",
-    designation: "Systems Engineer",
-    companyName: "TCS Ninja",
-    batchYear: "2024",
-    departmentName: "Information Technology",
-    quote: "From resume building workshops to soft skills mentorship, the placement cell guided us at every step. I am immensely grateful for the continuous corporate exposure provided at SVIT Vasad.",
-    photoUrl: null,
-    rating: 5,
-  },
-  {
-    id: "t3",
-    studentName: "Kavya Soni",
-    designation: "Architectural Designer",
-    companyName: "Sthapati Studio",
-    batchYear: "2024",
-    departmentName: "College of Architecture",
-    quote: "SVIT COA helped connect our portfolio directly with top architectural consultancies. The campus recruitment drives were smooth, professional, and career-defining.",
-    photoUrl: null,
-    rating: 5,
-  },
-  {
-    id: "t4",
-    studentName: "Riddhi Shah",
-    designation: "Associate Analyst",
-    companyName: "HCLTech",
-    batchYear: "2024",
-    departmentName: "Computer Applications (SVICA)",
-    quote: "The hands-on technical labs and dedicated placement training helped me secure an excellent package right in my final semester. SVIT's placement support is top-notch!",
-    photoUrl: null,
-    rating: 5,
-  },
-  {
-    id: "t5",
-    studentName: "Meera Patel",
-    designation: "Staff Nurse",
-    companyName: "Apollo Hospitals",
-    batchYear: "2024",
-    departmentName: "Institute of Nursing (SVION)",
-    quote: "Our clinical internships combined with on-campus healthcare recruitment allowed me to start my nursing career at Apollo Hospitals immediately upon graduation.",
-    photoUrl: null,
-    rating: 5,
-  },
-  {
-    id: "t6",
-    studentName: "Ananya Desai",
-    designation: "Cloud Consultant",
-    companyName: "Microsoft",
-    batchYear: "2024",
-    departmentName: "Electronics & Communication",
-    quote: "SVIT Vasad provides world-class infrastructure and industry partnerships. The T&P mentors helped me refine my technical problem solving and soft skills to land my dream job.",
-    photoUrl: null,
-    rating: 5,
-  },
-];
-
-export const DEFAULT_PLACEMENT_DATA: FullPlacementData = {
-  divisions: DEFAULT_DIVISIONS,
-  heroTitle: "Training & Placement Cell",
-  heroSubtitle: "Empowering SVIT graduates with world-class career opportunities, industry mentorship, and top campus recruitment.",
-  highestPackage: "₹42 LPA",
-  averagePackage: "₹11.5 LPA",
-  aboutText: "The Training & Placement Cell at SVIT Group of Institutions acts as a seamless bridge between academic excellence and corporate demand. We conduct year-round skill development, aptitude training, mock interviews, and industry interface sessions to ensure our engineering, architecture, computer applications, and nursing graduates achieve stellar career outcomes.",
-  sectionConfig: {
-    sections: {
-      about: true,
-      trend: true,
-      placedStudents: true,
-      recruiters: true,
-      officer: true,
-      testimonials: true,
-    },
-    order: ["about", "trend", "placedStudents", "recruiters", "officer", "testimonials"],
-    highlights: DEFAULT_HIGHLIGHTS,
-  },
-  officer: {
-    name: "Dr. K. M. Patel",
-    designation: "Head — Training & Placement Cell",
-    phone: "+91 98250 12345",
-    email: "tnp@svitvasad.ac.in",
-    photo: null,
-  },
-  graphicalData: [
-    { year: "2020", studentsPlaced: 152, placementPercentage: 82 },
-    { year: "2021", studentsPlaced: 168, placementPercentage: 85 },
-    { year: "2022", studentsPlaced: 175, placementPercentage: 87 },
-    { year: "2023", studentsPlaced: 180, placementPercentage: 88 },
-    { year: "2024", studentsPlaced: 195, placementPercentage: 91 },
-    { year: "2025", studentsPlaced: 211, placementPercentage: 93 },
-  ],
-  recruiters: [
-    { id: "r1", companyName: "TCS", logo: "https://upload.wikimedia.org/wikipedia/commons/b/b1/Tata_Consultancy_Services_Logo.svg" },
-    { id: "r2", companyName: "Infosys", logo: "https://upload.wikimedia.org/wikipedia/commons/9/95/Infosys_logo.svg" },
-    { id: "r3", companyName: "Wipro", logo: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Wipro_Primary_Logo_Color_RGB.svg" },
-    { id: "r4", companyName: "L&T", logo: null },
-    { id: "r5", companyName: "Tata Motors", logo: null },
-    { id: "r6", companyName: "Reliance Industries", logo: null },
-    { id: "r7", companyName: "Adani Group", logo: null },
-    { id: "r8", companyName: "Tech Mahindra", logo: null },
-    { id: "r9", companyName: "Capgemini", logo: null },
-    { id: "r10", companyName: "Accenture", logo: null },
-    { id: "r11", companyName: "Cognizant", logo: null },
-    { id: "r12", companyName: "HCLTech", logo: null },
-    { id: "r13", companyName: "ICICI Bank", logo: null },
-    { id: "r14", companyName: "HDFC Bank", logo: null },
-    { id: "r15", companyName: "Amazon", logo: null },
-    { id: "r16", companyName: "IBM", logo: null },
-    { id: "r17", companyName: "Oracle", logo: null },
-    { id: "r18", companyName: "Cybage", logo: null },
-    { id: "r19", companyName: "Crest Data Systems", logo: null },
-    { id: "r20", companyName: "Torrent Power", logo: null },
-    { id: "r21", companyName: "Alembic", logo: null },
-    { id: "r22", companyName: "Sun Pharma", logo: null },
-    { id: "r23", companyName: "L&T Infotech", logo: null },
-    { id: "r24", companyName: "Mindtree", logo: null },
-  ],
-  placedStudents: [
-    { id: "s1", studentName: "Aarav Sharma", companyName: "Google", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s2", studentName: "Priya Patel", companyName: "TCS", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s3", studentName: "Rohan Mehta", companyName: "Infosys", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s4", studentName: "Ananya Desai", companyName: "Microsoft", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s5", studentName: "Kunal Shah", companyName: "Amazon", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s6", studentName: "Neha Joshi", companyName: "L&T", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s7", studentName: "Vikram Rathod", companyName: "Reliance Industries", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s8", studentName: "Siddharth Varma", companyName: "Adani Group", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s9", studentName: "Diya Trivedi", companyName: "Wipro", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s10", studentName: "Harsh Pandya", companyName: "Tech Mahindra", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s11", studentName: "Pooja Solanki", companyName: "Capgemini", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s12", studentName: "Aditya Bhatt", companyName: "Cognizant", batchYear: "2024", photo: null, collegeId: "svit" },
-    { id: "s13", studentName: "Kavya Soni", companyName: "Sthapati Studio", batchYear: "2024", photo: null, collegeId: "coa" },
-    { id: "s14", studentName: "Manav Parikh", companyName: "Morphogenesis", batchYear: "2024", photo: null, collegeId: "coa" },
-    { id: "s15", studentName: "Riddhi Shah", companyName: "HCLTech", batchYear: "2024", photo: null, collegeId: "svica" },
-    { id: "s16", studentName: "Yash Vyas", companyName: "Cybage", batchYear: "2024", photo: null, collegeId: "svica" },
-    { id: "s17", studentName: "Meera Patel", companyName: "Apollo Hospitals", batchYear: "2024", photo: null, collegeId: "svion" },
-    { id: "s18", studentName: "Dhaval Patel", companyName: "Zydus Hospital", batchYear: "2024", photo: null, collegeId: "svion" },
-    { id: "s19", studentName: "Chirag Gandhi", companyName: "Torrent Power", batchYear: "2023", photo: null, collegeId: "svit" },
-    { id: "s20", studentName: "Bhavna Patel", companyName: "Alembic", batchYear: "2023", photo: null, collegeId: "svit" },
-    { id: "s21", studentName: "Jayesh Patel", companyName: "Sun Pharma", batchYear: "2023", photo: null, collegeId: "svit" },
-    { id: "s22", studentName: "Kriti Sharma", companyName: "Accenture", batchYear: "2023", photo: null, collegeId: "svit" },
-  ],
-  testimonials: DEFAULT_TESTIMONIALS,
-  divisionContents: {
-    svit: {
-      aboutText: "SVIT Degree College offers placement support across Computer, IT, EC, Electrical, Mechanical, Civil, and Aeronautical Engineering with over 150+ annual drives.",
-      officer: {
-        name: "Dr. K. M. Patel",
-        designation: "Head — Training & Placement Cell (SVIT)",
-        phone: "+91 98250 12345",
-        email: "tnp@svitvasad.ac.in",
-        photo: null,
-      },
-      graphicalData: [
-        { year: "2020", studentsPlaced: 120, placementPercentage: 84 },
-        { year: "2021", studentsPlaced: 135, placementPercentage: 86 },
-        { year: "2022", studentsPlaced: 142, placementPercentage: 89 },
-        { year: "2023", studentsPlaced: 148, placementPercentage: 90 },
-        { year: "2024", studentsPlaced: 160, placementPercentage: 92 },
-        { year: "2025", studentsPlaced: 172, placementPercentage: 94 },
-      ],
-    },
-    coa: {
-      aboutText: "SVIT College of Architecture connects budding architects with premier design studios, urban planning firms, and architectural consultancies.",
-      officer: {
-        name: "Prof. Anjali Shah",
-        designation: "T&P Coordinator — Architecture",
-        phone: "+91 98250 54321",
-        email: "coa.tnp@svitvasad.ac.in",
-        photo: null,
-      },
-      graphicalData: [
-        { year: "2020", studentsPlaced: 12, placementPercentage: 75 },
-        { year: "2021", studentsPlaced: 14, placementPercentage: 78 },
-        { year: "2022", studentsPlaced: 15, placementPercentage: 80 },
-        { year: "2023", studentsPlaced: 16, placementPercentage: 82 },
-        { year: "2024", studentsPlaced: 18, placementPercentage: 85 },
-        { year: "2025", studentsPlaced: 20, placementPercentage: 88 },
-      ],
-    },
-    svica: {
-      aboutText: "SVICA provides specialized career counseling and software development campus drives for MCA & BCA students.",
-      officer: {
-        name: "Prof. Rajesh Verma",
-        designation: "T&P Coordinator — Computer Applications",
-        phone: "+91 98250 67890",
-        email: "svica.tnp@svitvasad.ac.in",
-        photo: null,
-      },
-      graphicalData: [
-        { year: "2020", studentsPlaced: 12, placementPercentage: 80 },
-        { year: "2021", studentsPlaced: 14, placementPercentage: 82 },
-        { year: "2022", studentsPlaced: 12, placementPercentage: 84 },
-        { year: "2023", studentsPlaced: 10, placementPercentage: 85 },
-        { year: "2024", studentsPlaced: 11, placementPercentage: 88 },
-        { year: "2025", studentsPlaced: 13, placementPercentage: 90 },
-      ],
-    },
-    svion: {
-      aboutText: "SVIT Institute of Nursing partners with leading hospital networks and healthcare providers for clinical recruitment and internship placements.",
-      officer: {
-        name: "Prof. Sister Mary",
-        designation: "T&P Coordinator — Nursing",
-        phone: "+91 98250 99999",
-        email: "svion.tnp@svitvasad.ac.in",
-        photo: null,
-      },
-      graphicalData: [
-        { year: "2020", studentsPlaced: 8, placementPercentage: 85 },
-        { year: "2021", studentsPlaced: 5, placementPercentage: 88 },
-        { year: "2022", studentsPlaced: 6, placementPercentage: 90 },
-        { year: "2023", studentsPlaced: 6, placementPercentage: 91 },
-        { year: "2024", studentsPlaced: 6, placementPercentage: 93 },
-        { year: "2025", studentsPlaced: 6, placementPercentage: 95 },
-      ],
-    },
-  },
+  order: ["about", "trend", "placedStudents", "recruiters", "officer", "testimonials"],
+  highlights: DEFAULT_HIGHLIGHTS,
 };
 
-const STORAGE_KEY = "svit_placement_hub_data_v3";
+export const EMPTY_PLACEMENT_DATA: FullPlacementData = {
+  heroTitle: "Training & Placement Cell",
+  heroSubtitle:
+    "Empowering SVIT graduates with world-class career opportunities, industry mentorship, and top campus recruitment.",
+  highestPackage: "—",
+  averagePackage: "—",
+  aboutText: "",
+  sectionConfig: DEFAULT_SECTION_CONFIG,
+  officer: { name: "", designation: "", phone: "", email: "", photo: null },
+  placedStudents: [],
+  recruiters: [],
+  graphicalData: [],
+  testimonials: [],
+};
 
-export function getAllRecruiters(): RecruiterItem[] {
-  const content = getAllPlacementContent();
-  return content.recruiters.map((r) => ({
-    ...r,
-    company_name: r.companyName,
-  }));
+// ── Shape helpers ───────────────────────────────────────────────────
+
+type OverviewMeta = {
+  highestPackage?: string;
+  averagePackage?: string;
+  sectionConfig?: Partial<SectionConfig>;
+  graphicalData?: PlacementYearPoint[];
+  testimonials?: PlacementTestimonial[];
+};
+
+function readMeta(raw: unknown): OverviewMeta {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return raw as OverviewMeta;
 }
 
-export function getAllPlacementContent(): FullPlacementData {
-  if (typeof window === "undefined") {
-    return DEFAULT_PLACEMENT_DATA;
-  }
+/** True for ids that came back from Postgres (as opposed to client-minted `s_123`). */
+export function isPersistedId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
 
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_PLACEMENT_DATA));
-      return DEFAULT_PLACEMENT_DATA;
-    }
-    const parsed = JSON.parse(raw);
+// ── Reads ───────────────────────────────────────────────────────────
+
+export const getPlacementContent = createServerFn({ method: "GET" }).handler(
+  async (): Promise<FullPlacementData> => {
+    const sb = serverClient();
+
+    const [cellRes, studentsRes, recruitersRes] = await Promise.all([
+      sb
+        .from("placement_cells")
+        .select(
+          "about_text, hero_title, hero_subtitle, officer_name, officer_designation, officer_phone, officer_email, officer_photo_url, metadata",
+        )
+        .eq("college_code", OVERVIEW_CODE)
+        .maybeSingle(),
+      sb
+        .from("placed_students")
+        .select("id, student_name, company_name, batch_year, photo_url, colleges(slug)")
+        .eq("status", "published")
+        .order("batch_year", { ascending: false })
+        .order("student_name", { ascending: true }),
+      sb
+        .from("recruiters")
+        .select("id, company_name, logo_url, sort_order")
+        .eq("status", "published")
+        .is("deleted_at", null)
+        .order("sort_order", { ascending: true }),
+    ]);
+
+    if (cellRes.error) throw new Error(cellRes.error.message);
+    if (studentsRes.error) throw new Error(studentsRes.error.message);
+    if (recruitersRes.error) throw new Error(recruitersRes.error.message);
+
+    const cell = cellRes.data as Record<string, any> | null;
+    const meta = readMeta(cell?.metadata);
+
     return {
-      divisions: parsed.divisions || DEFAULT_PLACEMENT_DATA.divisions,
-      heroTitle: parsed.heroTitle || DEFAULT_PLACEMENT_DATA.heroTitle,
-      heroSubtitle: parsed.heroSubtitle || DEFAULT_PLACEMENT_DATA.heroSubtitle,
-      highestPackage: parsed.highestPackage || DEFAULT_PLACEMENT_DATA.highestPackage,
-      averagePackage: parsed.averagePackage || DEFAULT_PLACEMENT_DATA.averagePackage,
-      aboutText: parsed.aboutText || DEFAULT_PLACEMENT_DATA.aboutText,
+      heroTitle: cell?.hero_title || EMPTY_PLACEMENT_DATA.heroTitle,
+      heroSubtitle: cell?.hero_subtitle || EMPTY_PLACEMENT_DATA.heroSubtitle,
+      highestPackage: meta.highestPackage || EMPTY_PLACEMENT_DATA.highestPackage,
+      averagePackage: meta.averagePackage || EMPTY_PLACEMENT_DATA.averagePackage,
+      aboutText: cell?.about_text || "",
       sectionConfig: {
-        sections: { ...DEFAULT_PLACEMENT_DATA.sectionConfig.sections, ...parsed.sectionConfig?.sections },
-        order: parsed.sectionConfig?.order || DEFAULT_PLACEMENT_DATA.sectionConfig.order,
-        highlights: parsed.sectionConfig?.highlights || DEFAULT_PLACEMENT_DATA.sectionConfig.highlights,
+        sections: { ...DEFAULT_SECTION_CONFIG.sections, ...meta.sectionConfig?.sections },
+        order: meta.sectionConfig?.order || DEFAULT_SECTION_CONFIG.order,
+        highlights: meta.sectionConfig?.highlights || DEFAULT_HIGHLIGHTS,
       },
-      officer: { ...DEFAULT_PLACEMENT_DATA.officer, ...parsed.officer },
-      placedStudents: parsed.placedStudents || DEFAULT_PLACEMENT_DATA.placedStudents,
-      recruiters: parsed.recruiters || DEFAULT_PLACEMENT_DATA.recruiters,
-      graphicalData: parsed.graphicalData || DEFAULT_PLACEMENT_DATA.graphicalData,
-      testimonials: parsed.testimonials || DEFAULT_PLACEMENT_DATA.testimonials,
-      divisionContents: parsed.divisionContents || DEFAULT_PLACEMENT_DATA.divisionContents,
+      officer: {
+        name: cell?.officer_name || "",
+        designation: cell?.officer_designation || "",
+        phone: cell?.officer_phone || "",
+        email: cell?.officer_email || "",
+        photo: cell?.officer_photo_url || null,
+      },
+      placedStudents: (studentsRes.data ?? []).map((s: any) => ({
+        id: s.id,
+        studentName: s.student_name,
+        companyName: s.company_name,
+        batchYear: s.batch_year ?? "",
+        photo: s.photo_url ?? null,
+        collegeId: s.colleges?.slug ?? "",
+      })),
+      recruiters: (recruitersRes.data ?? []).map((r: any) => ({
+        id: r.id,
+        companyName: r.company_name,
+        company_name: r.company_name,
+        logo: r.logo_url ?? null,
+        sortOrder: r.sort_order ?? 0,
+      })),
+      graphicalData: meta.graphicalData ?? [],
+      testimonials: meta.testimonials ?? [],
     };
-  } catch {
-    return DEFAULT_PLACEMENT_DATA;
-  }
-}
+  },
+);
 
-export async function fetchPlacementContentAsync(): Promise<FullPlacementData> {
-  const localData = getAllPlacementContent();
-  try {
-    const { data, error } = await supabase
-      .from("homepage_items")
-      .select("metadata")
-      .eq("section_key", "placement_hub")
-      .maybeSingle();
+/** Recruiter list for pages outside the placement hub (e.g. course pages). */
+export const getAllRecruiters = createServerFn({ method: "GET" }).handler(
+  async (): Promise<RecruiterItem[]> => {
+    const sb = serverClient();
+    const { data, error } = await sb
+      .from("recruiters")
+      .select("id, company_name, logo_url, sort_order")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((r: any) => ({
+      id: r.id,
+      companyName: r.company_name,
+      company_name: r.company_name,
+      logo: r.logo_url ?? null,
+      sortOrder: r.sort_order ?? 0,
+    }));
+  },
+);
 
-    if (!error && data?.metadata) {
-      const dbData = data.metadata as FullPlacementData;
-      const merged: FullPlacementData = {
-        ...DEFAULT_PLACEMENT_DATA,
-        ...dbData,
-        sectionConfig: {
-          sections: { ...DEFAULT_PLACEMENT_DATA.sectionConfig.sections, ...dbData.sectionConfig?.sections },
-          order: dbData.sectionConfig?.order || DEFAULT_PLACEMENT_DATA.sectionConfig.order,
-          highlights: dbData.sectionConfig?.highlights || DEFAULT_PLACEMENT_DATA.sectionConfig.highlights,
-        },
-      };
-      if (typeof window !== "undefined") {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
-      }
-      return merged;
+/** Colleges available to tag a placed student against. */
+export const getPlacementColleges = createServerFn({ method: "GET" }).handler(
+  async (): Promise<CollegeOption[]> => {
+    const sb = serverClient();
+    const { data, error } = await sb
+      .from("colleges")
+      .select("slug, name, code")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((c: any) => ({ slug: c.slug, name: c.name, code: c.code }));
+  },
+);
+
+// ── Write ───────────────────────────────────────────────────────────
+
+/**
+ * Persists the whole hub in one pass. Runs in the browser so the admin's
+ * Supabase session supplies the `authenticated` role that RLS requires.
+ * Throws on failure — callers surface the message rather than swallowing it.
+ */
+export async function savePlacementContent(data: FullPlacementData): Promise<void> {
+  const sb = supabase as any;
+
+  // 1 ── overview row: hero, about, officer, and everything JSON-shaped
+  const { error: cellError } = await sb.from("placement_cells").upsert(
+    {
+      college_code: OVERVIEW_CODE,
+      hero_title: data.heroTitle,
+      hero_subtitle: data.heroSubtitle,
+      about_text: data.aboutText,
+      officer_name: data.officer.name,
+      officer_designation: data.officer.designation,
+      officer_phone: data.officer.phone,
+      officer_email: data.officer.email,
+      officer_photo_url: data.officer.photo,
+      status: "published",
+      metadata: {
+        highestPackage: data.highestPackage,
+        averagePackage: data.averagePackage,
+        sectionConfig: data.sectionConfig,
+        graphicalData: data.graphicalData,
+        testimonials: data.testimonials,
+      },
+    },
+    { onConflict: "college_code" },
+  );
+  if (cellError) throw new Error(`Placement cell: ${cellError.message}`);
+
+  // 2 ── resolve college slugs → ids for the student cards
+  const { data: colleges, error: collegeError } = await sb
+    .from("colleges")
+    .select("id, slug")
+    .is("deleted_at", null);
+  if (collegeError) throw new Error(`Colleges: ${collegeError.message}`);
+  const collegeIdBySlug = new Map<string, string>(
+    (colleges ?? []).map((c: any) => [c.slug, c.id]),
+  );
+
+  // 3 ── placed_students: update existing, insert new, delete removed
+  const { data: existingStudents, error: studentReadError } = await sb
+    .from("placed_students")
+    .select("id");
+  if (studentReadError) throw new Error(`Placed students: ${studentReadError.message}`);
+
+  const keptStudentIds = new Set(
+    data.placedStudents.filter((s) => isPersistedId(s.id)).map((s) => s.id),
+  );
+  const removedStudentIds = (existingStudents ?? [])
+    .map((s: any) => s.id)
+    .filter((id: string) => !keptStudentIds.has(id));
+
+  for (const student of data.placedStudents) {
+    const collegeId = collegeIdBySlug.get(student.collegeId);
+    if (!collegeId) {
+      throw new Error(
+        `"${student.studentName}" is tagged to an unknown college (${student.collegeId || "none"}).`,
+      );
     }
-  } catch (err) {
-    console.warn("Falling back to local storage placement content:", err);
+    // Only the fields this screen owns — package_lpa / department_id set
+    // elsewhere are left untouched.
+    const row = {
+      college_id: collegeId,
+      student_name: student.studentName,
+      company_name: student.companyName,
+      batch_year: student.batchYear || null,
+      photo_url: student.photo,
+      status: "published",
+    };
+
+    if (isPersistedId(student.id)) {
+      const { error } = await sb.from("placed_students").update(row).eq("id", student.id);
+      if (error) throw new Error(`Placed students: ${error.message}`);
+    } else {
+      const { error } = await sb.from("placed_students").insert(row);
+      if (error) throw new Error(`Placed students: ${error.message}`);
+    }
   }
-  return localData;
-}
 
-export function saveAllPlacementContent(data: FullPlacementData): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-    window.dispatchEvent(new CustomEvent("svit_placement_updated", { detail: data }));
-  } catch (err) {
-    console.error("Failed to save placement content to localStorage:", err);
+  if (removedStudentIds.length) {
+    const { error } = await sb.from("placed_students").delete().in("id", removedStudentIds);
+    if (error) throw new Error(`Placed students: ${error.message}`);
   }
 
-  // Best-effort attempt to persist to Supabase homepage_items table
-  try {
-    (async () => {
-      await supabase
-        .from("homepage_items")
-        .upsert({
-          section_key: "placement_hub",
-          title: "Placement Hub Data",
-          metadata: data as any,
-        }, { onConflict: "section_key" });
-    })().catch(() => {
-      // Swallowed
-    });
-  } catch {
-    // Swallowed
+  // 4 ── recruiters: same update / insert / soft-delete cycle
+  const { data: existingRecruiters, error: recruiterReadError } = await sb
+    .from("recruiters")
+    .select("id")
+    .is("deleted_at", null);
+  if (recruiterReadError) throw new Error(`Recruiters: ${recruiterReadError.message}`);
+
+  const keptRecruiterIds = new Set(
+    data.recruiters.filter((r) => isPersistedId(r.id)).map((r) => r.id),
+  );
+  const removedRecruiterIds = (existingRecruiters ?? [])
+    .map((r: any) => r.id)
+    .filter((id: string) => !keptRecruiterIds.has(id));
+
+  for (const [index, recruiter] of data.recruiters.entries()) {
+    const row = {
+      company_name: recruiter.companyName,
+      logo_url: recruiter.logo,
+      sort_order: index,
+      status: "published",
+    };
+
+    if (isPersistedId(recruiter.id)) {
+      const { error } = await sb.from("recruiters").update(row).eq("id", recruiter.id);
+      if (error) throw new Error(`Recruiters: ${error.message}`);
+    } else {
+      const { error } = await sb.from("recruiters").insert(row);
+      if (error) throw new Error(`Recruiters: ${error.message}`);
+    }
+  }
+
+  if (removedRecruiterIds.length) {
+    const { error } = await sb
+      .from("recruiters")
+      .update({ deleted_at: new Date().toISOString() })
+      .in("id", removedRecruiterIds);
+    if (error) throw new Error(`Recruiters: ${error.message}`);
   }
 }

@@ -8,9 +8,12 @@ import {
 } from "lucide-react";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import {
-  getAllPlacementContent,
-  saveAllPlacementContent,
+  getPlacementContent,
+  getPlacementColleges,
+  savePlacementContent,
+  EMPTY_PLACEMENT_DATA,
   DEFAULT_HIGHLIGHTS,
+  type CollegeOption,
   type FullPlacementData,
   type PlacementHighlight,
   type PlacementYearPoint,
@@ -40,17 +43,44 @@ const ICON_OPTIONS = [
 ];
 
 export function TnpMasterHub() {
-  const [data, setData] = useState<FullPlacementData>(() => getAllPlacementContent());
+  const [data, setData] = useState<FullPlacementData>(EMPTY_PLACEMENT_DATA);
+  const [colleges, setColleges] = useState<CollegeOption[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState<"toggles" | "hero" | "about" | "trend" | "students" | "recruiters" | "officer" | "testimonials">("toggles");
 
-  // Reload data from localStorage on mount
   useEffect(() => {
-    setData(getAllPlacementContent());
+    let cancelled = false;
+    Promise.all([getPlacementContent(), getPlacementColleges()])
+      .then(([content, collegeList]) => {
+        if (cancelled) return;
+        setData(content);
+        setColleges(collegeList);
+      })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        toast.error(`Could not load placement content: ${(err as Error).message}`);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
-  const handleSave = () => {
-    saveAllPlacementContent(data);
-    toast.success("Training & Placement Cell content saved successfully!");
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await savePlacementContent(data);
+      const fresh = await getPlacementContent();
+      setData(fresh);
+      toast.success("Training & Placement Cell content saved successfully!");
+    } catch (err) {
+      toast.error(`Save failed: ${(err as Error).message}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const updateSections = (key: keyof SectionVisibility, val: boolean) => {
@@ -140,7 +170,7 @@ export function TnpMasterHub() {
     companyName: "",
     batchYear: "2024",
     photo: null,
-    collegeId: "svit",
+    collegeId: "",
   });
 
   const openAddStudent = () => {
@@ -151,7 +181,7 @@ export function TnpMasterHub() {
       companyName: "",
       batchYear: "2024",
       photo: null,
-      collegeId: "svit",
+      collegeId: colleges[0]?.slug ?? "",
     });
     setShowStudentModal(true);
   };
@@ -165,6 +195,10 @@ export function TnpMasterHub() {
   const saveStudent = () => {
     if (!studentForm.studentName.trim() || !studentForm.companyName.trim()) {
       toast.error("Student name and company name are required");
+      return;
+    }
+    if (!studentForm.collegeId) {
+      toast.error("Pick the college this student belongs to");
       return;
     }
 
@@ -314,6 +348,14 @@ export function TnpMasterHub() {
     toast.success("Testimonial deleted");
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-5xl py-20 text-center text-sm font-semibold text-slate-500">
+        Loading Training &amp; Placement content…
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-5xl space-y-6 pb-20">
       {/* Top Header */}
@@ -340,10 +382,11 @@ export function TnpMasterHub() {
           </a>
           <button
             onClick={handleSave}
-            className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-4 py-1.5 text-xs font-bold text-white hover:bg-navy/90 transition shadow-xs"
+            disabled={saving || loading}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-4 py-1.5 text-xs font-bold text-white hover:bg-navy/90 transition shadow-xs disabled:opacity-60"
           >
             <Save className="h-3.5 w-3.5 text-gold" />
-            Save Changes
+            {saving ? "Saving…" : "Save Changes"}
           </button>
         </div>
       </div>
@@ -941,16 +984,18 @@ export function TnpMasterHub() {
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Division</label>
+                  <label className="text-xs font-semibold text-slate-700">College</label>
                   <select
                     value={studentForm.collegeId}
                     onChange={(e) => setStudentForm({ ...studentForm, collegeId: e.target.value })}
                     className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800 bg-white"
                   >
-                    <option value="svit">SVIT (Degree)</option>
-                    <option value="coa">COA (Architecture)</option>
-                    <option value="svica">SVICA (Comp. Apps)</option>
-                    <option value="svion">SVION (Nursing)</option>
+                    <option value="">Select a college…</option>
+                    {colleges.map((c) => (
+                      <option key={c.slug} value={c.slug}>
+                        {c.code} — {c.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
               </div>

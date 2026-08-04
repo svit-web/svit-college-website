@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
   Target, MessagesSquare, Briefcase, CalendarCheck, UserCheck, Award,
@@ -10,8 +10,6 @@ import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
 import { PlacementTestimonialsSlider } from "./PlacementTestimonialsSlider";
 import {
-  getAllPlacementContent,
-  fetchPlacementContentAsync,
   type FullPlacementData,
   type PlacementHighlight,
   type PlacementTestimonial
@@ -42,41 +40,12 @@ function initials(name: string): string {
 }
 
 export interface PlacementPageProps {
-  data?: FullPlacementData;
+  data: FullPlacementData;
 }
 
-export function PlacementPage({ data: propData }: PlacementPageProps) {
-  const [data, setData] = useState<FullPlacementData>(() => propData || getAllPlacementContent());
+export function PlacementPage({ data }: PlacementPageProps) {
   const [visibleStudentCount, setVisibleStudentCount] = useState(STUDENTS_PER_PAGE);
   const [visibleRecruiterCount, setVisibleRecruiterCount] = useState(RECRUITERS_PER_PAGE);
-
-  useEffect(() => {
-    if (propData) {
-      setData(propData);
-    } else {
-      fetchPlacementContentAsync().then((content) => {
-        if (content) setData(content);
-      });
-    }
-  }, [propData]);
-
-  useEffect(() => {
-    const handleUpdate = (e: Event) => {
-      const customEvent = e as CustomEvent<FullPlacementData>;
-      if (customEvent.detail) {
-        setData(customEvent.detail);
-      } else {
-        setData(getAllPlacementContent());
-      }
-    };
-
-    window.addEventListener("storage", handleUpdate);
-    window.addEventListener("svit_placement_updated", handleUpdate);
-    return () => {
-      window.removeEventListener("storage", handleUpdate);
-      window.removeEventListener("svit_placement_updated", handleUpdate);
-    };
-  }, []);
 
   const aboutText = data.aboutText;
   const officer = data.officer;
