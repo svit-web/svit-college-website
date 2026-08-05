@@ -235,11 +235,11 @@ export function Header() {
                   <AnimatePresence>
                     {coursesOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
+                        initial={{ opacity: 0, y: 8, x: -190 }}
+                        animate={{ opacity: 1, y: 0, x: -190 }}
+                        exit={{ opacity: 0, y: 8, x: -190 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-white"
+                        className="absolute left-1/2 top-full z-50 pt-1"
                       >
                         <CollegesMega
                           colleges={displayColleges}
@@ -595,11 +595,16 @@ function CollegesMega({
   const depts = active ? departmentsByCollege[active.id] ?? [] : [];
 
   return (
-    // Fixed two-column layout — neither column ever changes width, so the
-    // container never shifts position when a college is hovered.
-    <div className="flex" onMouseLeave={deactivate}>
-      {/* Left: college list — wider */}
-      <ul className="w-[400px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
+    // Single unified bordered container — college list and dept panel are
+    // flex siblings inside it. overflow-hidden clips to the rounded corners.
+    // onMouseLeave covers the entire area so moving between the two panels
+    // never falsely triggers deactivation.
+    <div
+      className="flex items-start rounded-xl border border-border bg-white overflow-hidden"
+      onMouseLeave={deactivate}
+    >
+      {/* College list */}
+      <ul className="w-[380px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/30 py-3" role="menu">
         {colleges.map((c) => {
           const isActive = c.id === active?.id;
           return (
@@ -611,11 +616,16 @@ function CollegesMega({
                 onFocus={() => setActiveId(c.id)}
                 onClick={onNavigate}
                 className={cn(
-                  "flex items-center justify-between gap-3 border-l-4 px-5 py-3 transition-colors",
+                  "flex items-center gap-3 border-l-4 px-4 py-2.5 transition-colors",
                   isActive ? "border-crimson bg-white" : "border-transparent hover:bg-white/60"
                 )}
               >
-                <div className="min-w-0">
+                <CollegeLogo
+                  shortCode={c.shortCode}
+                  src={c.logo}
+                  className="h-9 w-9 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
+                />
+                <div className="min-w-0 flex-1">
                   <div className="text-sm font-semibold leading-snug text-navy">{c.name}</div>
                   <div className="mt-0.5 truncate text-xs text-muted-foreground">{c.shortCode}</div>
                 </div>
@@ -629,40 +639,40 @@ function CollegesMega({
         })}
       </ul>
 
-      {/* Right: department panel — always present at fixed width, only content fades */}
-      <div className="w-[280px] shrink-0 border-l border-border max-h-[440px] overflow-y-auto bg-white py-3">
-        <AnimatePresence mode="wait">
-          {active && (
-            <motion.div
-              key={active.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.1 }}
-            >
-              <div className="px-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                {active.shortCode} Departments
-              </div>
-              <ul>
-                {depts.length > 0 ? depts.map((d) => (
-                  <li key={d.id}>
-                    <Link
-                      to="/departments/$dept"
-                      params={{ dept: d.code }}
-                      onClick={onNavigate}
-                      className="block px-4 py-2 text-sm text-ink/80 hover:bg-secondary hover:text-navy transition-colors"
-                    >
-                      {d.name}
-                    </Link>
-                  </li>
-                )) : (
-                  <li className="px-4 py-2 text-sm text-muted-foreground">No departments listed yet.</li>
-                )}
-              </ul>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Dept panel — fades in when first college is hovered, fades out when
+          no college is hovered. NO key={active.id}: panel stays mounted when
+          switching between colleges so content swaps instantly with no animation. */}
+      <AnimatePresence>
+        {active && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.12 }}
+            className="w-[260px] shrink-0 border-l border-border bg-white py-3"
+          >
+            <div className="px-4 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-crimson">
+              {active.shortCode} Departments
+            </div>
+            <ul>
+              {depts.length > 0 ? depts.map((d) => (
+                <li key={d.id}>
+                  <Link
+                    to="/departments/$dept"
+                    params={{ dept: d.code }}
+                    onClick={onNavigate}
+                    className="block px-4 py-2 text-sm text-ink/80 hover:bg-secondary hover:text-navy transition-colors"
+                  >
+                    {d.name}
+                  </Link>
+                </li>
+              )) : (
+                <li className="px-4 py-2 text-sm text-muted-foreground">No departments listed yet.</li>
+              )}
+            </ul>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -21,6 +21,10 @@ export const Route = createFileRoute("/admin/appearance")({
 });
 
 function AdminAppearancePage() {
+  return <HeroAppearancePanel />;
+}
+
+export function HeroAppearancePanel() {
   const { roles, loading: authLoading } = useAdminAuthContext();
   const isAdmin = roles.some((r) => r.code === "admin");
   const [loading, setLoading] = useState(true);

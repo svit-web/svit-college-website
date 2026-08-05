@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   Layout,
-  Layers,
   Plus,
   Trash2,
   Edit2,
@@ -12,694 +11,340 @@ import {
   ArrowDown,
   Loader2,
   Grid,
-  Sliders
+  Image,
+  Palette,
 } from "lucide-react";
 import { toast } from "sonner";
 import { MediaUploader } from "@/components/admin/MediaUploader";
+import { HeroAppearancePanel } from "./admin.appearance";
 
 export const Route = createFileRoute("/admin/homepage")({
   component: AdminHomepageLayoutPage
 });
 
-interface SectionNode {
-  id: string;
-  title: string | null;
-  section_type: string;
-  sort_order: number;
-  is_active: boolean;
-  config: any;
-}
-
-interface WidgetNode {
-  id: string;
-  section_id: string;
-  title: string | null;
-  widget_type: string;
-  sort_order: number;
-  config: any;
-}
-
 function AdminHomepageLayoutPage() {
   const { user } = useAdminAuthContext();
-  
-  // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<"items" | "sections" | "widgets">("items");
-
-  // Sections State
-  const [sections, setSections] = useState<SectionNode[]>([]);
-  const [loadingSections, setLoadingSections] = useState(false);
-  const [isSectionModalOpen, setIsSectionModalOpen] = useState(false);
-  const [editingSection, setEditingSection] = useState<SectionNode | null>(null);
-  const [sectionForm, setSectionForm] = useState({
-    title: "",
-    section_type: "grid",
-    is_active: true,
-    sort_order: 10,
-    config: "{}"
-  });
-
-  // Widgets State
-  const [widgets, setWidgets] = useState<WidgetNode[]>([]);
-  const [loadingWidgets, setLoadingWidgets] = useState(false);
-  const [isWidgetModalOpen, setIsWidgetModalOpen] = useState(false);
-  const [editingWidget, setEditingWidget] = useState<WidgetNode | null>(null);
-  const [widgetForm, setWidgetForm] = useState({
-    section_id: "",
-    title: "",
-    widget_type: "html",
-    sort_order: 10,
-    config: "{}"
-  });
-
-  // Load sections and widgets
-  useEffect(() => {
-    loadSections();
-    loadWidgets();
-  }, []);
-
-  async function loadSections() {
-    setLoadingSections(true);
-    try {
-      const { data, error } = await supabase
-        .from("homepage_sections")
-        .select("*")
-        .is("deleted_at", null)
-        .order("sort_order", { ascending: true });
-
-      if (error) throw error;
-      setSections(data || []);
-    } catch (err: any) {
-      toast.error(`Error loading homepage sections: ${err.message}`);
-    } finally {
-      setLoadingSections(false);
-    }
-  }
-
-  async function loadWidgets() {
-    setLoadingWidgets(true);
-    try {
-      const { data, error } = await supabase
-        .from("homepage_widgets")
-        .select("*")
-        .is("deleted_at", null)
-        .order("sort_order", { ascending: true });
-
-      if (error) throw error;
-      setWidgets(data || []);
-    } catch (err: any) {
-      toast.error(`Error loading homepage widgets: ${err.message}`);
-    } finally {
-      setLoadingWidgets(false);
-    }
-  }
-
-  // Rearrange Section order
-  const handleShiftSection = async (section: SectionNode, direction: "up" | "down") => {
-    const idx = sections.findIndex((s) => s.id === section.id);
-    if (idx === -1) return;
-
-    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (targetIdx < 0 || targetIdx >= sections.length) return;
-
-    const targetSection = sections[targetIdx];
-
-    try {
-      const [r1, r2] = await Promise.all([
-        supabase.from("homepage_sections").update({ sort_order: targetSection.sort_order }).eq("id", section.id),
-        supabase.from("homepage_sections").update({ sort_order: section.sort_order }).eq("id", targetSection.id)
-      ]);
-      if (r1.error) throw r1.error;
-      if (r2.error) throw r2.error;
-      
-      toast.success("Sections rearranged.");
-      loadSections();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  // Section Save (Create or Update)
-  const handleSaveSection = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      let parsedConfig = {};
-      try {
-        parsedConfig = JSON.parse(sectionForm.config);
-      } catch {
-        throw new Error("Invalid Configuration JSON content");
-      }
-
-      const payload = {
-        title: sectionForm.title,
-        section_type: sectionForm.section_type,
-        is_active: sectionForm.is_active,
-        sort_order: Number(sectionForm.sort_order),
-        config: parsedConfig,
-        status: "published"
-      };
-
-      if (editingSection) {
-        const { error } = await supabase
-          .from("homepage_sections")
-          .update(payload as any)
-          .eq("id", editingSection.id);
-
-        if (error) throw error;
-        toast.success("Homepage section updated!");
-      } else {
-        const { error } = await supabase
-          .from("homepage_sections")
-          .insert(payload as any);
-
-        if (error) throw error;
-        toast.success("Homepage section added!");
-      }
-
-      setIsSectionModalOpen(false);
-      setEditingSection(null);
-      loadSections();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  // Section Open edit
-  const handleOpenEditSection = (section: SectionNode) => {
-    setEditingSection(section);
-    setSectionForm({
-      title: section.title || "",
-      section_type: section.section_type || "grid",
-      is_active: section.is_active,
-      sort_order: section.sort_order,
-      config: JSON.stringify(section.config || {}, null, 2)
-    });
-    setIsSectionModalOpen(true);
-  };
-
-  // Section Delete (soft)
-  const handleDeleteSection = async (section: SectionNode) => {
-    const confirmed = window.confirm("Are you sure you want to remove this homepage section? All widgets assigned to it will be orphaned.");
-    if (!confirmed) return;
-
-    try {
-      const { error } = await supabase
-        .from("homepage_sections")
-        .update({
-          deleted_at: new Date().toISOString(),
-          deleted_by: user?.id
-        })
-        .eq("id", section.id);
-
-      if (error) throw error;
-      toast.success("Section removed.");
-      loadSections();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  // Widget Save (Create or Update)
-  const handleSaveWidget = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      let parsedConfig = {};
-      try {
-        parsedConfig = JSON.parse(widgetForm.config);
-      } catch {
-        throw new Error("Invalid Configuration JSON content");
-      }
-
-      const payload = {
-        section_id: widgetForm.section_id,
-        title: widgetForm.title,
-        widget_type: widgetForm.widget_type,
-        sort_order: Number(widgetForm.sort_order),
-        config: parsedConfig,
-        status: "published"
-      };
-
-      if (editingWidget) {
-        const { error } = await supabase
-          .from("homepage_widgets")
-          .update(payload as any)
-          .eq("id", editingWidget.id);
-
-        if (error) throw error;
-        toast.success("Widget details updated!");
-      } else {
-        const { error } = await supabase
-          .from("homepage_widgets")
-          .insert(payload as any);
-
-        if (error) throw error;
-        toast.success("Widget added!");
-      }
-
-      setIsWidgetModalOpen(false);
-      setEditingWidget(null);
-      loadWidgets();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
-
-  // Widget Open edit
-  const handleOpenEditWidget = (widget: WidgetNode) => {
-    setEditingWidget(widget);
-    setWidgetForm({
-      section_id: widget.section_id || "",
-      title: widget.title || "",
-      widget_type: widget.widget_type || "html",
-      sort_order: widget.sort_order,
-      config: JSON.stringify(widget.config || {}, null, 2)
-    });
-    setIsWidgetModalOpen(true);
-  };
-
-  // Widget Delete
-  const handleDeleteWidget = async (widget: WidgetNode) => {
-    const confirmed = window.confirm("Remove this widget from section?");
-    if (!confirmed) return;
-
-    try {
-      const { error } = await supabase
-        .from("homepage_widgets")
-        .update({
-          deleted_at: new Date().toISOString(),
-          deleted_by: user?.id
-        })
-        .eq("id", widget.id);
-
-      if (error) throw error;
-      toast.success("Widget removed.");
-      loadWidgets();
-    } catch (err: any) {
-      toast.error(err.message);
-    }
-  };
+  const [activeTab, setActiveTab] = useState<"carousel" | "items" | "appearance">("carousel");
 
   return (
     <div className="space-y-6">
-      
-      {/* Title */}
       <div>
         <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl flex items-center gap-3">
           <Layout className="h-8 w-8 text-crimson" />
-          Homepage Layout Configurator
+          Homepage
         </h1>
         <p className="text-sm text-slate-500">
-          Design layout sections, add interactive widgets, and manage banner slider promos.
+          Manage everything that appears on the homepage — slides, content items, and visual appearance.
         </p>
       </div>
 
-      {/* Tabs list */}
       <div className="flex border-b border-slate-200">
         <button
-          onClick={() => setActiveTab("sections")}
-          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
-            activeTab === "sections"
-              ? "border-crimson text-navy"
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
+          onClick={() => setActiveTab("carousel")}
+          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === "carousel" ? "border-crimson text-navy" : "border-transparent text-slate-600 hover:text-slate-900"}`}
         >
-          <Layers className="h-4 w-4" />
-          <span>Layout Sections</span>
+          <Image className="h-4 w-4" />
+          <span>Carousel Slides</span>
         </button>
-
-        <button
-          onClick={() => setActiveTab("widgets")}
-          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
-            activeTab === "widgets"
-              ? "border-crimson text-navy"
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
-        >
-          <Sliders className="h-4 w-4" />
-          <span>Widgets & Blocks</span>
-        </button>
-
         <button
           onClick={() => setActiveTab("items")}
-          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${
-            activeTab === "items"
-              ? "border-crimson text-navy"
-              : "border-transparent text-slate-600 hover:text-slate-900"
-          }`}
+          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === "items" ? "border-crimson text-navy" : "border-transparent text-slate-600 hover:text-slate-900"}`}
         >
           <Grid className="h-4 w-4" />
-          <span>Slider Banners & Items</span>
+          <span>Homepage Items</span>
+        </button>
+        <button
+          onClick={() => setActiveTab("appearance")}
+          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === "appearance" ? "border-crimson text-navy" : "border-transparent text-slate-600 hover:text-slate-900"}`}
+        >
+          <Palette className="h-4 w-4" />
+          <span>Hero Appearance</span>
         </button>
       </div>
 
-      {/* Content tabs renders */}
-      <div className="space-y-6">
-        
-        {/* TAB 1: Sections Manager */}
-        {activeTab === "sections" && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center bg-white p-4 border border-slate-200 rounded-lg">
-              <span className="text-sm text-slate-500 font-semibold">Rearrange homepage row items:</span>
-              <button
-                onClick={() => {
-                  setEditingSection(null);
-                  setSectionForm({
-                    title: "",
-                    section_type: "grid",
-                    is_active: true,
-                    sort_order: (sections.length + 1) * 10,
-                    config: "{}"
-                  });
-                  setIsSectionModalOpen(true);
-                }}
-                className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Layout Section</span>
-              </button>
-            </div>
+      <div>
+        {activeTab === "carousel" && <CarouselSlidesManager userId={user?.id} />}
+        {activeTab === "items" && <HomepageItemsManager userId={user?.id} />}
+        {activeTab === "appearance" && <HeroAppearancePanel />}
+      </div>
+    </div>
+  );
+}
 
-            {loadingSections ? (
-              <div className="flex h-48 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-crimson" />
-              </div>
-            ) : sections.length > 0 ? (
-              <div className="space-y-3">
-                {sections.map((sec, idx) => (
-                  <div
-                    key={sec.id}
-                    className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 hover:bg-slate-100 transition"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-crimson/10 text-crimson border border-crimson/20 font-bold text-sm">
-                        {idx + 1}
-                      </div>
-                      <div>
-                        <h4 className="text-sm font-semibold text-slate-800">{sec.title || "Unnamed Section"}</h4>
-                        <p className="text-[10px] text-crimson uppercase tracking-wide font-mono mt-0.5">
-                          Type: {sec.section_type} • Config: {JSON.stringify(sec.config)}
-                        </p>
-                      </div>
-                    </div>
+// ─── Carousel Slides Manager ──────────────────────────────────────────────────
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        onClick={() => handleShiftSection(sec, "up")}
-                        disabled={idx === 0}
-                        className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleShiftSection(sec, "down")}
-                        disabled={idx === sections.length - 1}
-                        className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy disabled:opacity-30"
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                      </button>
-                      <span className="h-4 w-px bg-slate-100" />
-                      <button
-                        onClick={() => handleOpenEditSection(sec)}
-                        className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteSection(sec)}
-                        className="rounded p-1.5 text-slate-600 hover:bg-rose-500/15 hover:text-rose-400"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center p-12 bg-white border border-slate-200 rounded-lg">
-                <Layers className="h-12 w-12 mx-auto text-slate-800" />
-                <h3 className="text-navy font-bold mt-4">No sections defined</h3>
-                <p className="text-xs text-slate-500 mt-2">Add homepage layout sections to structure page rows.</p>
-              </div>
-            )}
-          </div>
-        )}
+interface CarouselSlideItem {
+  id: string;
+  eyebrow: string | null;
+  title: string;
+  subtitle: string | null;
+  image_url: string | null;
+  link_href: string | null;
+  link_label: string | null;
+  sort_order: number;
+  is_active: boolean;
+  status: string;
+}
 
-        {/* TAB 2: Widgets Manager */}
-        {activeTab === "widgets" && (
-          <div className="space-y-4">
-            <div className="flex justify-between items-center bg-white p-4 border border-slate-200 rounded-lg">
-              <span className="text-sm text-slate-500 font-semibold">Integrate active homepage widget blocks:</span>
-              <button
-                onClick={() => {
-                  setEditingWidget(null);
-                  setWidgetForm({
-                    section_id: sections[0]?.id || "",
-                    title: "",
-                    widget_type: "html",
-                    sort_order: 10,
-                    config: "{}"
-                  });
-                  setIsWidgetModalOpen(true);
-                }}
-                className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
-              >
-                <Plus className="h-4 w-4" />
-                <span>Add Widget Block</span>
-              </button>
-            </div>
+const EMPTY_SLIDE = {
+  eyebrow: "",
+  title: "",
+  subtitle: "",
+  image_url: "",
+  link_href: "",
+  link_label: "",
+  sort_order: 10,
+  is_active: true,
+  status: "published",
+};
 
-            {loadingWidgets ? (
-              <div className="flex h-48 items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-crimson" />
-              </div>
-            ) : widgets.length > 0 ? (
-              <div className="space-y-3">
-                {widgets.map((widget) => {
-                  const parentSection = sections.find((s) => s.id === widget.section_id);
-                  return (
-                    <div
-                      key={widget.id}
-                      className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-4 hover:bg-slate-100 transition"
-                    >
-                      <div>
-                        <h4 className="text-sm font-semibold text-slate-800">{widget.title || "Unnamed Widget"}</h4>
-                        <p className="text-[10px] text-crimson uppercase tracking-wide font-mono mt-0.5">
-                          Type: {widget.widget_type} • Section: {parentSection?.title || "(Orphaned/None)"}
-                        </p>
-                      </div>
+function CarouselSlidesManager({ userId }: { userId: string | undefined }) {
+  const [slides, setSlides] = useState<CarouselSlideItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingSlide, setEditingSlide] = useState<CarouselSlideItem | null>(null);
+  const [form, setForm] = useState({ ...EMPTY_SLIDE });
 
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => handleOpenEditWidget(widget)}
-                          className="rounded p-1.5 text-slate-600 hover:bg-slate-100 hover:text-navy"
-                        >
-                          <Edit2 className="h-4 w-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteWidget(widget)}
-                          className="rounded p-1.5 text-slate-600 hover:bg-rose-500/15 hover:text-rose-400"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="text-center p-12 bg-white border border-slate-200 rounded-lg">
-                <Sliders className="h-12 w-12 mx-auto text-slate-800" />
-                <h3 className="text-navy font-bold mt-4">No widgets defined</h3>
-                <p className="text-xs text-slate-500 mt-2">Create customizable sidebar or grid layout widgets.</p>
-              </div>
-            )}
-          </div>
-        )}
+  useEffect(() => { loadSlides(); }, []);
 
-        {/* TAB 3: Per-college Homepage Items Manager */}
-        {activeTab === "items" && (
-          <HomepageItemsManager userId={user?.id} />
-        )}
+  async function loadSlides() {
+    setLoading(true);
+    try {
+      const { data, error } = await (supabase as any)
+        .from("homepage_items")
+        .select("id, eyebrow, title, subtitle, image_url, link_href, link_label, sort_order, is_active, status")
+        .eq("item_type", "carousel_slide")
+        .eq("scope_type", "global")
+        .is("deleted_at", null)
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      setSlides(data || []);
+    } catch (err: any) {
+      toast.error(`Failed to load slides: ${err.message}`);
+    } finally {
+      setLoading(false);
+    }
+  }
 
+  function openAdd() {
+    setEditingSlide(null);
+    setForm({ ...EMPTY_SLIDE, sort_order: (slides.length + 1) * 10 });
+    setIsModalOpen(true);
+  }
+
+  function openEdit(slide: CarouselSlideItem) {
+    setEditingSlide(slide);
+    setForm({
+      eyebrow: slide.eyebrow || "",
+      title: slide.title || "",
+      subtitle: slide.subtitle || "",
+      image_url: slide.image_url || "",
+      link_href: slide.link_href || "",
+      link_label: slide.link_label || "",
+      sort_order: slide.sort_order ?? 10,
+      is_active: slide.is_active ?? true,
+      status: slide.status || "published",
+    });
+    setIsModalOpen(true);
+  }
+
+  async function handleSave(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      const payload = {
+        item_type: "carousel_slide",
+        scope_type: "global",
+        college_id: null,
+        eyebrow: form.eyebrow || null,
+        title: form.title,
+        subtitle: form.subtitle || null,
+        image_url: form.image_url || null,
+        link_href: form.link_href || null,
+        link_label: form.link_label || null,
+        sort_order: form.sort_order,
+        is_active: form.is_active,
+        status: form.status,
+      };
+      if (editingSlide) {
+        const { error } = await (supabase as any).from("homepage_items").update(payload).eq("id", editingSlide.id);
+        if (error) throw error;
+        toast.success("Slide updated!");
+      } else {
+        const { error } = await (supabase as any).from("homepage_items").insert({ ...payload, created_by: userId });
+        if (error) throw error;
+        toast.success("Slide added!");
+      }
+      setIsModalOpen(false);
+      loadSlides();
+    } catch (err: any) {
+      toast.error(`Save failed: ${err.message}`);
+    }
+  }
+
+  async function handleDelete(slide: CarouselSlideItem) {
+    if (!confirm("Delete this carousel slide?")) return;
+    const { error } = await (supabase as any)
+      .from("homepage_items")
+      .update({ deleted_at: new Date().toISOString(), deleted_by: userId })
+      .eq("id", slide.id);
+    if (error) toast.error(error.message);
+    else { toast.success("Slide deleted."); loadSlides(); }
+  }
+
+  async function handleShift(slide: CarouselSlideItem, direction: "up" | "down") {
+    const idx = slides.findIndex((s) => s.id === slide.id);
+    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
+    if (targetIdx < 0 || targetIdx >= slides.length) return;
+    const target = slides[targetIdx];
+    const [r1, r2] = await Promise.all([
+      (supabase as any).from("homepage_items").update({ sort_order: target.sort_order }).eq("id", slide.id),
+      (supabase as any).from("homepage_items").update({ sort_order: slide.sort_order }).eq("id", target.id),
+    ]);
+    if (r1.error) toast.error(r1.error.message);
+    else if (r2.error) toast.error(r2.error.message);
+    else loadSlides();
+  }
+
+  const f = (key: keyof typeof EMPTY_SLIDE, val: any) => setForm((p) => ({ ...p, [key]: val }));
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4">
+        <div>
+          <p className="text-sm font-semibold text-navy">Promo Carousel</p>
+          <p className="text-xs text-slate-500">The large slideshow below the Colleges section. Each slide has a background photo, headline, and CTA button.</p>
+        </div>
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
+        >
+          <Plus className="h-3.5 w-3.5" /> Add Slide
+        </button>
       </div>
 
-      {/* ➕ MODAL: Add / Edit Layout Section */}
-      {isSectionModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-navy mb-4">
-              {editingSection ? "Edit Section Details" : "Create Layout Section"}
-            </h3>
-            
-            <form onSubmit={handleSaveSection} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-700 uppercase">Section title / Label</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Latest Events"
-                  value={sectionForm.title}
-                  onChange={(e) => setSectionForm(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                />
+      {loading ? (
+        <div className="flex h-48 items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-crimson" />
+        </div>
+      ) : slides.length === 0 ? (
+        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
+          <Image className="mx-auto h-12 w-12 text-slate-300" />
+          <h3 className="mt-4 text-sm font-bold text-navy">No slides yet</h3>
+          <p className="mt-2 text-xs text-slate-500">Add a slide with a background photo, headline, and a CTA button.</p>
+        </div>
+      ) : (
+        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+          <div className="divide-y divide-slate-100">
+            {slides.map((slide, idx) => (
+              <div key={slide.id} className="flex items-center gap-4 px-4 py-3 hover:bg-slate-50 transition">
+                {slide.image_url ? (
+                  <img src={slide.image_url} alt="" className="h-14 w-24 shrink-0 rounded object-cover border border-slate-200" />
+                ) : (
+                  <div className="h-14 w-24 shrink-0 rounded bg-slate-100 border border-slate-200 flex items-center justify-center">
+                    <Image className="h-5 w-5 text-slate-300" />
+                  </div>
+                )}
+                <div className="min-w-0 flex-1">
+                  {slide.eyebrow && <div className="text-[10px] font-semibold uppercase tracking-widest text-gold">{slide.eyebrow}</div>}
+                  <div className="text-sm font-semibold text-slate-800 truncate">{slide.title}</div>
+                  {slide.subtitle && <div className="text-xs text-slate-500 truncate">{slide.subtitle}</div>}
+                  {slide.link_href && <div className="mt-0.5 text-[10px] text-slate-400 truncate">{slide.link_label || "CTA"} → {slide.link_href}</div>}
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${slide.status === "published" ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-amber-50 text-amber-600 border-amber-200"}`}>
+                    {slide.status}
+                  </span>
+                  <button onClick={() => handleShift(slide, "up")} disabled={idx === 0} className="rounded p-1 text-slate-400 hover:text-navy disabled:opacity-30">
+                    <ArrowUp className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => handleShift(slide, "down")} disabled={idx === slides.length - 1} className="rounded p-1 text-slate-400 hover:text-navy disabled:opacity-30">
+                    <ArrowDown className="h-3.5 w-3.5" />
+                  </button>
+                  <button onClick={() => openEdit(slide)} className="rounded p-1 text-slate-500 hover:text-navy hover:bg-slate-100">
+                    <Edit2 className="h-4 w-4" />
+                  </button>
+                  <button onClick={() => handleDelete(slide)} className="rounded p-1 text-slate-500 hover:text-rose-500 hover:bg-rose-50">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
+            ))}
+          </div>
+        </div>
+      )}
 
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/80 p-4">
+          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="mb-4 font-display text-lg font-bold text-navy">
+              {editingSlide ? "Edit Slide" : "Add Carousel Slide"}
+            </h3>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase text-slate-600">Background Photo</label>
+                <MediaUploader value={form.image_url} onChange={(url) => f("image_url", url)} bucketName="media" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase text-slate-600">Eyebrow / Kicker</label>
+                <input value={form.eyebrow} onChange={(e) => f("eyebrow", e.target.value)}
+                  placeholder='e.g. "Admissions Open 2026–27"'
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase text-slate-600">Headline *</label>
+                <input required value={form.title} onChange={(e) => f("title", e.target.value)}
+                  placeholder="e.g. Shape Your Engineering Career"
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase text-slate-600">Subtext</label>
+                <textarea rows={2} value={form.subtitle} onChange={(e) => f("subtitle", e.target.value)}
+                  placeholder="Short supporting description"
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+              </div>
               <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Section Type</label>
-                  <select
-                    value={sectionForm.section_type}
-                    onChange={(e) => setSectionForm(p => ({ ...p, section_type: e.target.value }))}
-                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                  >
-                    <option value="hero">Hero slider/carousel</option>
-                    <option value="grid">Grid (e.g. departments/courses)</option>
-                    <option value="statistics">Numerical stats counter</option>
-                    <option value="features">Feature grids</option>
-                    <option value="widgets">Widgets collection holder</option>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">CTA Link</label>
+                  <input value={form.link_href} onChange={(e) => f("link_href", e.target.value)}
+                    placeholder="/admissions"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
+                  <input value={form.link_label} onChange={(e) => f("link_label", e.target.value)}
+                    placeholder="Apply Now"
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Sort Order</label>
+                  <input type="number" value={form.sort_order} onChange={(e) => f("sort_order", Number(e.target.value))}
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none" />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Status</label>
+                  <select value={form.status} onChange={(e) => f("status", e.target.value)}
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none">
+                    <option value="published">Published</option>
+                    <option value="draft">Draft</option>
                   </select>
                 </div>
-
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Sort Order</label>
-                  <input
-                    type="number"
-                    value={sectionForm.sort_order}
-                    onChange={(e) => setSectionForm(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                  />
-                </div>
               </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-700 uppercase flex items-center gap-1">
-                  <span>Configuration settings (JSON format)</span>
-                </label>
-                <textarea
-                  required
-                  rows={6}
-                  placeholder='e.g. { "cols": 3, "darkTheme": true }'
-                  value={sectionForm.config}
-                  onChange={(e) => setSectionForm(p => ({ ...p, config: e.target.value }))}
-                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setIsSectionModalOpen(false)}
-                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
-                >
+              <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
+                <button type="button" onClick={() => setIsModalOpen(false)}
+                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy">
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
-                >
-                  {editingSection ? "Save Changes" : "Create Section"}
+                <button type="submit"
+                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90">
+                  {editingSlide ? "Save Changes" : "Add Slide"}
                 </button>
               </div>
             </form>
           </div>
         </div>
       )}
-
-      {/* ➕ MODAL: Add / Edit Widget Block */}
-      {isWidgetModalOpen && (
-        <div className="fixed inset-0 flex items-center justify-center bg-slate-950/80 p-4 z-50">
-          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="font-display text-lg font-bold text-navy mb-4">
-              {editingWidget ? "Edit Widget Block" : "Integrate Widget Block"}
-            </h3>
-            
-            <form onSubmit={handleSaveWidget} className="space-y-4">
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-700 uppercase">Widget Name / Title</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Admission Alerts Bar"
-                  value={widgetForm.title}
-                  onChange={(e) => setWidgetForm(p => ({ ...p, title: e.target.value }))}
-                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Parent Section Group</label>
-                  <select
-                    value={widgetForm.section_id}
-                    onChange={(e) => setWidgetForm(p => ({ ...p, section_id: e.target.value }))}
-                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                  >
-                    {sections.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.title}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[11px] font-semibold text-slate-700 uppercase">Widget Type</label>
-                  <select
-                    value={widgetForm.widget_type}
-                    onChange={(e) => setWidgetForm(p => ({ ...p, widget_type: e.target.value }))}
-                    className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                  >
-                    <option value="html">Custom HTML / Text</option>
-                    <option value="links">Social Links Grid</option>
-                    <option value="alerts">Admission Alerts ticker</option>
-                    <option value="feed">RSS/Notice feed</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-700 uppercase">Sort Order</label>
-                <input
-                  type="number"
-                  value={widgetForm.sort_order}
-                  onChange={(e) => setWidgetForm(p => ({ ...p, sort_order: Number(e.target.value) }))}
-                  className="w-full rounded border border-slate-200 bg-white font-mono px-3.5 py-2 text-xs text-slate-800 focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-700 uppercase flex items-center gap-1">
-                  <span>Widget configuration settings (JSON format)</span>
-                </label>
-                <textarea
-                  required
-                  rows={5}
-                  placeholder='e.g. { "htmlContent": "<h3>Vasad Info</h3>", "color": "blue" }'
-                  value={widgetForm.config}
-                  onChange={(e) => setWidgetForm(p => ({ ...p, config: e.target.value }))}
-                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs font-mono text-slate-800 focus:outline-none"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setIsWidgetModalOpen(false)}
-                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
-                >
-                  {editingWidget ? "Save Widget" : "Integrate Widget"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
