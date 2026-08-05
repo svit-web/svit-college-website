@@ -118,7 +118,9 @@ export const getLatestEvents = createServerFn({ method: "GET" }).handler(
       .from("events")
       .select("id, slug, title, tag, start_date, description, featured_image_url, registration_link, sort_order")
       .eq("status", "published")
-      .order("sort_order", { ascending: true })
+      .eq("is_featured", true)
+      .is("deleted_at", null)
+      .order("featured_at", { ascending: false })
       .limit(8);
     if (error) throw new Error(error.message);
     return data ?? [];
