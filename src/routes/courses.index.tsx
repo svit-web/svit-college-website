@@ -30,20 +30,20 @@ function CoursesIndex() {
                 className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-7 hover:border-gold"
               >
                 <div className="flex items-center gap-4">
-                  <div className={cn("flex h-14 w-14 items-center justify-center rounded-md text-white font-display font-bold text-sm", c.metadata.color)}>
-                    {c.metadata.short}
+                  <div className={cn("flex h-14 w-14 items-center justify-center rounded-md text-white font-display font-bold text-sm", c.color)}>
+                    {c.short_name}
                   </div>
                   <div>
                     <h3 className="font-display text-xl font-bold text-navy">{c.name}</h3>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-crimson">{c.metadata.tagline}</div>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-crimson">{c.tagline}</div>
                   </div>
                 </div>
-                <div className="mt-4 text-sm text-muted-foreground">{c.metadata.fullName}</div>
-                <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{c.metadata.description}</p>
+                <div className="mt-4 text-sm text-muted-foreground">{c.full_name}</div>
+                <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{c.description}</p>
                 <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4 text-xs">
-                  <div><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold text-navy">{c.metadata.duration}</dd></div>
-                  <div><dt className="text-muted-foreground">Intake</dt><dd className="font-semibold text-navy">{c.metadata.intake}</dd></div>
-                  <div><dt className="text-muted-foreground">Eligibility</dt><dd className="font-semibold text-navy text-[10px] leading-tight">{c.metadata.eligibility}</dd></div>
+                  <div><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold text-navy">{c.duration}</dd></div>
+                  <div><dt className="text-muted-foreground">Intake</dt><dd className="font-semibold text-navy">{String(c.intake ?? "—")}</dd></div>
+                  <div><dt className="text-muted-foreground">Eligibility</dt><dd className="font-semibold text-navy text-[10px] leading-tight">{c.eligibility}</dd></div>
                 </dl>
                 <div className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-gold">
                   View Details <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import campusHero from "@/assets/campus-hero.jpg";
 import campusAerial from "@/assets/campus-aerial.jpg";
 import students from "@/assets/students.jpg";
+import { miscSettingsQuery } from "@/lib/homepage";
 
 export interface CarouselSlide {
   image: string;
@@ -14,35 +16,43 @@ export interface CarouselSlide {
   cta: { label: string; to: string };
 }
 
-const defaultSlides: CarouselSlide[] = [
-  {
-    image: campusHero,
-    eyebrow: "Admissions 2026-27",
-    title: "Where Excellence Meets Innovation",
-    subtitle: "AICTE-approved programmes across engineering, management and applied sciences.",
-    cta: { label: "Apply Now", to: "/admissions/inquiry" },
-  },
-  {
-    image: campusAerial,
-    eyebrow: "15+ Acre Green Campus",
-    title: "Learn in an Inspiring Environment",
-    subtitle: "State-of-the-art labs, digital library, sports facilities and comfortable hostels.",
-    cta: { label: "Explore Campus", to: "/campus" },
-  },
-  {
-    image: students,
-    eyebrow: "95% Placement Record",
-    title: "Careers That Take Off",
-    subtitle: "200+ recruiting partners including TCS, Infosys, L&T, Adani and Reliance.",
-    cta: { label: "See Placements", to: "/placement/svit" },
-  },
-];
+function buildDefaultSlides(admissionYear: string, placementPct: number, recruiterCount: number): CarouselSlide[] {
+  return [
+    {
+      image: campusHero,
+      eyebrow: `Admissions ${admissionYear}`,
+      title: "Where Excellence Meets Innovation",
+      subtitle: "AICTE-approved programmes across engineering, management and applied sciences.",
+      cta: { label: "Apply Now", to: "/admissions/inquiry" },
+    },
+    {
+      image: campusAerial,
+      eyebrow: "Green Campus",
+      title: "Learn in an Inspiring Environment",
+      subtitle: "State-of-the-art labs, digital library, sports facilities and comfortable hostels.",
+      cta: { label: "Explore Campus", to: "/campus" },
+    },
+    {
+      image: students,
+      eyebrow: `${placementPct}% Placement Record`,
+      title: "Careers That Take Off",
+      subtitle: `${recruiterCount}+ recruiting partners across industries nationwide.`,
+      cta: { label: "See Placements", to: "/placement/svit" },
+    },
+  ];
+}
 
 interface Props {
   slides?: CarouselSlide[];
 }
 
 export function HomeCarousel({ slides: slidesProp }: Props = {}) {
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const defaultSlides = buildDefaultSlides(
+    misc?.admission_year ?? "2026-27",
+    misc?.placement_percentage ?? 95,
+    misc?.recruiter_count ?? 200,
+  );
   const slides = slidesProp && slidesProp.length > 0 ? slidesProp : defaultSlides;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);

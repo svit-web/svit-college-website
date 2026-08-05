@@ -12,6 +12,10 @@ export interface MiscSettings {
   ugc_helpline: string;
   og_description: string;
   og_image_url: string | null;
+  placement_percentage: number;
+  recruiter_count: number;
+  campus_size_acres: number;
+  meta_description: string;
 }
 
 export interface ContactInfoSettings {
@@ -29,6 +33,7 @@ export interface ContactInfoSettings {
 const MISC_KEYS: (keyof MiscSettings)[] = [
   'admission_year', 'year_established', 'antiragging_email',
   'it_support_email', 'ugc_helpline', 'og_description', 'og_image_url',
+  'placement_percentage', 'recruiter_count', 'campus_size_acres', 'meta_description',
 ];
 
 export const DEFAULT_MISC: MiscSettings = {
@@ -39,6 +44,10 @@ export const DEFAULT_MISC: MiscSettings = {
   ugc_helpline: '1800-111-656',
   og_description: 'Empowering minds, inspiring innovation. Admissions open for 2026-27.',
   og_image_url: null,
+  placement_percentage: 95,
+  recruiter_count: 200,
+  campus_size_acres: 15,
+  meta_description: 'AICTE-approved engineering, management and applied sciences programmes on a 15-acre campus in Vasad, Gujarat. 95% placements, modern labs, vibrant campus life.',
 };
 
 export const DEFAULT_CONTACT: ContactInfoSettings = {
@@ -74,6 +83,10 @@ export const getMiscSettings = createServerFn({ method: 'GET' })
       ugc_helpline: (map.ugc_helpline as string) ?? DEFAULT_MISC.ugc_helpline,
       og_description: (map.og_description as string) ?? DEFAULT_MISC.og_description,
       og_image_url: (map.og_image_url as string | null) ?? null,
+      placement_percentage: (map.placement_percentage as number) ?? DEFAULT_MISC.placement_percentage,
+      recruiter_count: (map.recruiter_count as number) ?? DEFAULT_MISC.recruiter_count,
+      campus_size_acres: (map.campus_size_acres as number) ?? DEFAULT_MISC.campus_size_acres,
+      meta_description: (map.meta_description as string) ?? DEFAULT_MISC.meta_description,
     };
   });
 

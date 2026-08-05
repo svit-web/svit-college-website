@@ -2,17 +2,16 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { getAllCoursesWithIntakeFees, type CourseWithCollegeInfo } from "@/lib/intake-fees.functions";
+import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const Route = createFileRoute("/admissions/intake-fees")({
-  head: () => ({
-    meta: [
-      { title: "Intake & Fees — SVIT Vasad" },
-      { name: "description", content: "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad." },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const yr = loaderData?.admissionYear ?? "2026-27";
+    return { meta: [{ title: `Intake & Fees ${yr} — SVIT Vasad` }, { name: "description", content: "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad." }] };
+  },
   loader: async () => {
-    const courses = await getAllCoursesWithIntakeFees();
-    return { courses };
+    const [courses, misc] = await Promise.all([getAllCoursesWithIntakeFees(), getMiscSettings()]);
+    return { courses, admissionYear: misc.admission_year };
   },
   component: IntakeFeesPage,
 });
@@ -36,14 +35,14 @@ function groupByCollege(courses: CourseWithCollegeInfo[]) {
 }
 
 function IntakeFeesPage() {
-  const { courses } = Route.useLoaderData();
+  const { courses, admissionYear } = Route.useLoaderData();
   const groups = groupByCollege(courses);
 
   return (
     <>
       <PageHero
         title="Intake & Fees"
-        accent="2026-27"
+        accent={admissionYear ?? "2026-27"}
         subtitle="Programme-wise annual intake and tuition fees (per semester) across all SVIT colleges."
         crumbs={[
           { label: "Home", to: "/" },
@@ -75,7 +74,7 @@ function IntakeFeesPage() {
                     <tr key={c.id} className={`border-t border-border ${i % 2 === 1 ? "bg-secondary/30" : ""}`}>
                       <td className="p-4 font-semibold text-navy">{c.name}</td>
                       <td className="p-4 text-muted-foreground">{DEGREE_LABEL[c.degree_level] ?? c.degree_level}</td>
-                      <td className="p-4 text-muted-foreground">{c.metadata?.duration ?? "—"}</td>
+                      <td className="p-4 text-muted-foreground">{c.duration ?? "—"}</td>
                       <td className="p-4 text-center font-semibold text-navy">
                         {c.intake != null ? c.intake : "—"}
                       </td>

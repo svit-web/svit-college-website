@@ -22,6 +22,7 @@ const topNav = [
   { label: "Alumni", to: "/alumni" },
   { label: "Careers", to: "/careers" },
 ] as const;
+import { ABOUT_SECTIONS } from "@/lib/about-sections";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { getAllDepartments, type Department } from "@/lib/departments.functions";
@@ -70,14 +71,13 @@ export function Header() {
   };
 
   const displayColleges = useMemo(() => {
-    const EXCLUDED_SLUGS = ["abc123", "thesilicon", "the-silicon", "overview"];
     return (dbColleges ?? [])
-      .filter(c => !EXCLUDED_SLUGS.includes(c.slug?.toLowerCase()))
+      .filter(c => (c as any).show_in_navigation !== false)
       .map(c => ({
         id: c.slug,
-        shortCode: (c as any).metadata?.shortCode ?? c.code,
+        shortCode: c.code,
         name: c.name,
-        tagline: (c as any).metadata?.tagline ?? "",
+        tagline: (c as any).tagline ?? "",
         logo: c.logo_url ?? "",
       }));
   }, [dbColleges]);
@@ -518,10 +518,10 @@ function useCampusCategories(): MegaCategory[] {
       allLabel: "All facilities",
       allTo: "/campus-life/facilities",
       items: (facilities ?? [])
-        .filter((f) => f.metadata?.category !== "sports")
+        .filter((f) => f.category !== "sports")
         .map((f) => ({
           label: f.name,
-          to: `/campus-life/facilities/${f.metadata?.category ?? 'academic'}/${f.slug}`,
+          to: `/campus-life/facilities/${f.category ?? 'academic'}/${f.slug}`,
         })),
     },
     {

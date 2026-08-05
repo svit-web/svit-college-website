@@ -51,7 +51,7 @@ function AccreditationPage() {
                   {accreditations.map((acc) => (
                     <tr key={acc.id} className="border-t border-border first:border-t-0">
                       <td className="px-4 py-3 text-navy">
-                        {acc.metadata.body || `${acc.organization} (${acc.value})`}
+                        {acc.accreditation_body || `${acc.organization} (${acc.value})`}
                       </td>
                       <td className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gold">
                         {acc.value}
@@ -64,7 +64,7 @@ function AccreditationPage() {
 
             <div className="space-y-4">
               {accreditations
-                .filter((acc) => acc.metadata.description)
+                .filter((acc) => acc.description)
                 .slice(0, 3)
                 .map((acc) => (
                   <div key={acc.id} className="rounded-xl border-2 border-navy/15 bg-white p-5">
@@ -72,7 +72,7 @@ function AccreditationPage() {
                       {acc.organization}
                     </div>
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                      {acc.metadata.description}
+                      {acc.description}
                     </p>
                   </div>
                 ))}
@@ -162,7 +162,7 @@ function AccreditationPage() {
                     <td className="px-4 py-3 font-medium text-navy">{mou.partner_organization}</td>
                     <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{mou.purpose}</td>
                     <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
-                      {mou.metadata?.department ?? "—"}
+                      {mou.department_name ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
                       {mou.signed_date ? new Date(mou.signed_date).toLocaleDateString("en-IN", { year: "numeric", month: "short" }) : "—"}

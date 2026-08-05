@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Download } from "lucide-react";
 import { Reveal } from "./Reveal";
+import { miscSettingsQuery } from "@/lib/homepage";
 
 interface CTABannerProps {
   eyebrow?: string;
@@ -13,14 +15,17 @@ interface CTABannerProps {
 }
 
 export function CTABanner({
-  eyebrow = "Admissions Open 2026-27",
+  eyebrow,
   title = "Ready to Shape Your Engineering & Architectural Career?",
-  subtitle = "Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and 200+ active recruiting partners.",
+  subtitle,
   primaryActionLabel = "Apply Now",
   primaryActionTo = "/admissions/inquiry",
   secondaryActionLabel = "Download Brochure",
   secondaryActionTo = "/downloads",
 }: CTABannerProps) {
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const resolvedEyebrow = eyebrow ?? `Admissions Open ${misc?.admission_year ?? "2026-27"}`;
+  const resolvedSubtitle = subtitle ?? `Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and ${misc?.recruiter_count ?? 200}+ active recruiting partners.`;
   return (
     <section className="relative overflow-hidden bg-navy py-16 md:py-24 text-white">
       {/* Radial and blur orbs */}
@@ -30,17 +35,17 @@ export function CTABanner({
 
       <div className="container-page relative z-10 text-center">
         <Reveal>
-          {eyebrow && (
+          {resolvedEyebrow && (
             <span className="inline-block rounded-full bg-gold/15 px-4 py-1.5 text-xs font-extrabold uppercase tracking-widest text-gold border border-gold/30 mb-4">
-              {eyebrow}
+              {resolvedEyebrow}
             </span>
           )}
           <h2 className="font-display text-3xl md:text-5xl font-extrabold text-white max-w-3xl mx-auto leading-tight">
             {title}
           </h2>
-          {subtitle && (
+          {resolvedSubtitle && (
             <p className="mt-4 text-base md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-medium">
-              {subtitle}
+              {resolvedSubtitle}
             </p>
           )}
 

@@ -28,6 +28,7 @@ import {
   homepageItemsQuery,
   promoBySlot,
   recruitersQuery,
+  miscSettingsQuery,
   type HomepageItem,
 } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS } from "@/lib/theme.functions";
@@ -79,18 +80,19 @@ function Hero() {
   const quickLinks = byType(items, "quick_link");
   const highlightCards = byType(items, "highlight_card");
   const { data: appearance } = useQuery(heroAppearanceQuery);
+  const { data: misc } = useQuery(miscSettingsQuery);
   const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
   const photos =
     resolvedAppearance.homepagePhotos.length > 0
       ? resolvedAppearance.homepagePhotos
       : [hero?.image_url || campusHero];
 
-  const eyebrow = hero?.eyebrow ?? "Est. 2005 · Vasad, Gujarat";
+  const eyebrow = hero?.eyebrow ?? `Est. ${misc?.year_established ?? 1997} · Vasad, Gujarat`;
   const title = hero?.title ?? "Build Your Future.";
   const titleAccent = hero?.title_accent ?? "Shape The World.";
   const subtitle =
     hero?.subtitle ??
-    "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with 95%+ placement across 200+ recruiting partners.";
+    `SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with ${misc?.placement_percentage ?? 95}%+ placement across ${misc?.recruiter_count ?? 200}+ recruiting partners.`;
   const primaryLabel = hero?.link_label ?? "Apply Now";
   const primaryHref = hero?.link_href ?? "/admissions/inquiry";
   const secondaryLabel = hero?.secondary_link_label ?? "Explore Courses";
@@ -164,14 +166,13 @@ function Hero() {
 function StatsStrip() {
   const items = useHomepageItems();
   const stats = byType(items, "stat");
-  const rows = stats.map((s) => ({ value: s.title, label: s.subtitle ?? "" }));
   return (
     <section className="bg-navy text-white">
       <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
-        {rows.map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.value}</div>
-            <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.label}</div>
+        {stats.map((s) => (
+          <div key={s.id} className="text-center">
+            <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.title}</div>
+            <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.subtitle ?? ""}</div>
           </div>
         ))}
       </div>

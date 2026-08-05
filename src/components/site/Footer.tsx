@@ -3,7 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter, Youtube, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
 import { useQuery } from "@tanstack/react-query";
-import { programmesQuery, contactInfoQuery } from "@/lib/homepage";
+import { programmesQuery, contactInfoQuery, miscSettingsQuery } from "@/lib/homepage";
 
 const fallbackSite = {
   fullName: "Sardar Vallabhbhai Institute of Technology",
@@ -23,9 +23,10 @@ const socialIconMap: Record<string, typeof Facebook> = {
 export function Footer() {
   const { data: programmes } = useQuery(programmesQuery);
   const { data: contactInfo } = useQuery(contactInfoQuery);
+  const { data: misc } = useQuery(miscSettingsQuery);
 
   const site = {
-    fullName: contactInfo?.metadata?.fullName ?? fallbackSite.fullName,
+    fullName: contactInfo?.full_name ?? fallbackSite.fullName,
     email: contactInfo?.email ?? fallbackSite.email,
     phone: contactInfo?.phone ?? fallbackSite.phone,
     address: contactInfo?.address ?? fallbackSite.address,
@@ -55,7 +56,7 @@ export function Footer() {
           <div className="lg:col-span-2 mb-2 md:mb-0">
             <Logo light />
             <p className="mt-4 text-sm text-white/70 max-w-sm">
-              {site.fullName} — a premier institute committed to excellence in education, research and community impact since 2005.
+              {site.fullName} — a premier institute committed to excellence in education, research and community impact since {misc?.year_established ?? 1997}.
             </p>
             <div className="mt-5 space-y-2 text-sm">
               <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-gold shrink-0" /><span>{site.address}</span></div>

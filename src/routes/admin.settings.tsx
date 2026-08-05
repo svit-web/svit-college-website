@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
-import { Settings as SettingsIcon, ShieldAlert, Phone, Mail, MapPin, Globe, Building2, Calendar, Shield, Headphones, Share2 } from "lucide-react";
+import { Settings as SettingsIcon, ShieldAlert, Phone, Mail, MapPin, Globe, Building2, Calendar, Shield, Headphones, Share2, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
@@ -209,9 +209,22 @@ function AdminSettingsPage() {
           <Field label="OG Image URL" icon={<Globe className="h-3.5 w-3.5" />}>
             <input type="url" value={m.og_image_url ?? ""} onChange={(e) => setM({ og_image_url: e.target.value || null })} className={inputCls} placeholder="https://..." />
           </Field>
+          <Field label="Placement %" icon={<BarChart3 className="h-3.5 w-3.5" />}>
+            <input type="number" value={m.placement_percentage} onChange={(e) => setM({ placement_percentage: Number(e.target.value) })} className={inputCls} />
+          </Field>
+          <Field label="Recruiter Count" icon={<Building2 className="h-3.5 w-3.5" />}>
+            <input type="number" value={m.recruiter_count} onChange={(e) => setM({ recruiter_count: Number(e.target.value) })} className={inputCls} />
+          </Field>
+          <Field label="Campus Size (acres)" icon={<MapPin className="h-3.5 w-3.5" />}>
+            <input type="number" value={m.campus_size_acres} onChange={(e) => setM({ campus_size_acres: Number(e.target.value) })} className={inputCls} />
+          </Field>
         </div>
 
-        <Field label="OG / Meta Description" full>
+        <Field label="Site Meta Description" full>
+          <textarea rows={2} value={m.meta_description} onChange={(e) => setM({ meta_description: e.target.value })} className={inputCls} />
+        </Field>
+
+        <Field label="OG / Social Description" full>
           <textarea rows={2} value={m.og_description} onChange={(e) => setM({ og_description: e.target.value })} className={inputCls} />
         </Field>
 

@@ -2,25 +2,31 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/site/PageHero";
 import { getAllProgrammes } from "@/lib/programmes.functions";
 import { getContactInfo } from "@/lib/pages.functions";
+import { getMiscSettings } from "@/lib/site-settings.functions";
 import { submitForm } from "@/lib/submissions";
 import { useState } from "react";
 import { CheckCircle2, Loader2, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admissions/inquiry")({
-  head: () => ({ meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: "Submit an admission enquiry for 2026-27 at SVIT Vasad." }] }),
+  head: ({ loaderData }) => {
+    const yr = loaderData?.admissionYear ?? "2026-27";
+    return { meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: `Submit an admission enquiry for ${yr} at SVIT Vasad.` }] };
+  },
   loader: async () => {
-    const [programmes, contact] = await Promise.all([
+    const [programmes, contact, misc] = await Promise.all([
       getAllProgrammes(),
       getContactInfo(),
+      getMiscSettings(),
     ]);
-    return { programmes, phone: contact?.phone ?? "+91 2692 274766" };
+    return { programmes, phone: contact?.phone ?? "+91 2692 274766", admissionYear: misc.admission_year, placementPct: misc.placement_percentage };
   },
   component: Inquiry,
 });
 
 function Inquiry() {
-  const { programmes, phone } = Route.useLoaderData();
+  const { programmes, phone, admissionYear, placementPct } = Route.useLoaderData();
+  const yr = admissionYear ?? "2026-27";
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -51,7 +57,7 @@ function Inquiry() {
 
   return (
     <>
-      <PageHero title="Admission Inquiry" accent="2026-27" subtitle="Share your details — our admissions team will guide you within 24 hours." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions", to: "/admissions" }, { label: "Inquiry" }]} />
+      <PageHero title="Admission Inquiry" accent={yr} subtitle="Share your details — our admissions team will guide you within 24 hours." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions", to: "/admissions" }, { label: "Inquiry" }]} />
 
       <section className="container-page py-20">
         <div className="grid gap-8 lg:grid-cols-[1.6fr_1fr]">
@@ -79,8 +85,7 @@ function Inquiry() {
                   </Field>
                   <Field label="Year *">
                     <select name="year" required className="input">
-                      <option value="2026-27">2026-27</option>
-                      <option value="2027-28">2027-28</option>
+                      <option value={yr}>{yr}</option>
                     </select>
                   </Field>
                 </div>
@@ -102,7 +107,7 @@ function Inquiry() {
               <h3 className="mt-2 font-display text-xl font-bold">Join a legacy of 20 years</h3>
               <ul className="mt-4 space-y-2 text-sm text-white/85">
                 <li>&bull; AICTE approved programmes</li>
-                <li>&bull; 95%+ placement record</li>
+                <li>&bull; {placementPct ?? 95}%+ placement record</li>
                 <li>&bull; Scholarships available</li>
                 <li>&bull; Modern hostels</li>
               </ul>

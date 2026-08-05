@@ -153,23 +153,23 @@ export function DeptAboutView({ department, courses = [], labs = [] }: Props) {
                   <span className="rounded-full bg-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
                     {DEGREE_LABEL[c.degree_level] ?? c.degree_level}
                   </span>
-                  {c.metadata.yearStarted && (
+                  {c.year_started && (
                     <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-                      Since {c.metadata.yearStarted}
+                      Since {c.year_started}
                     </span>
                   )}
                 </div>
                 <h3 className="mt-3 font-display text-lg font-bold text-navy leading-snug">
-                  {c.metadata.shortName ?? c.name}
+                  {c.short_name ?? c.name}
                 </h3>
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
                   <div>
                     <dt className="text-muted-foreground">Intake</dt>
-                    <dd className="font-bold text-navy">{c.metadata.intake ?? "—"}</dd>
+                    <dd className="font-bold text-navy">{c.intake ?? "—"}</dd>
                   </div>
                   <div>
                     <dt className="text-muted-foreground">Duration</dt>
-                    <dd className="font-bold text-navy">{c.metadata.durationYears ? `${c.metadata.durationYears} yrs` : "—"}</dd>
+                    <dd className="font-bold text-navy">{c.duration_years ? `${c.duration_years} yrs` : "—"}</dd>
                   </div>
                 </dl>
                 <div className="mt-4 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">

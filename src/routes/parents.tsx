@@ -1,21 +1,23 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { PageHero } from "@/components/site/PageHero";
 import { Reveal } from "@/components/site/Reveal";
 import { CalendarCheck, MessageCircle, Shield, TrendingUp } from "lucide-react";
+import { miscSettingsQuery } from "@/lib/homepage";
 
 export const Route = createFileRoute("/parents")({
   head: () => ({ meta: [{ title: "For Parents — SVIT Vasad" }] }),
   component: Parents,
 });
 
-const feats = [
-  { icon: Shield, t: "Safety & Wellbeing", d: "24×7 campus security, medical centre and dedicated wardens in hostels." },
-  { icon: MessageCircle, t: "Regular Communication", d: "Term-wise progress updates, PTA meetings and open communication with faculty." },
-  { icon: TrendingUp, t: "Career Growth", d: "Structured internships, industry mentors and 95% placement track record." },
-  { icon: CalendarCheck, t: "Parent Portal", d: "Access attendance, marks, fees and calendars via the student portal." },
-];
-
 function Parents() {
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const feats = [
+    { icon: Shield, t: "Safety & Wellbeing", d: "24×7 campus security, medical centre and dedicated wardens in hostels." },
+    { icon: MessageCircle, t: "Regular Communication", d: "Term-wise progress updates, PTA meetings and open communication with faculty." },
+    { icon: TrendingUp, t: "Career Growth", d: `Structured internships, industry mentors and ${misc?.placement_percentage ?? 95}% placement track record.` },
+    { icon: CalendarCheck, t: "Parent Portal", d: "Access attendance, marks, fees and calendars via the student portal." },
+  ];
   return (
     <>
       <PageHero title="For Parents" accent="Partners In Progress" subtitle="Your child's growth is a shared journey — here's how SVIT keeps you informed and involved." crumbs={[{ label: "Home", to: "/" }, { label: "Parents" }]} />

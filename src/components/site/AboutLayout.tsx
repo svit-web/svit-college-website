@@ -2,7 +2,7 @@ import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getRouteApi } from "@tanstack/react-router";
 import { HeroPhotoLayer } from "./HeroPhotoLayer";
-import { heroAppearanceQuery } from "@/lib/homepage";
+import { heroAppearanceQuery, miscSettingsQuery } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme.functions";
 import { ABOUT_SECTIONS } from "@/lib/about-sections";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,7 @@ const route = getRouteApi("/about");
 export function AboutLayout() {
   const { aboutPage: c } = route.useLoaderData();
   const { data: appearance } = useQuery(heroAppearanceQuery);
+  const { data: misc } = useQuery(miscSettingsQuery);
   const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -36,7 +37,7 @@ export function AboutLayout() {
             </p>
             <div className="mt-8 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wider text-white/70">
               <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
-                Est. 1997
+                Est. {misc?.year_established ?? 1997}
               </span>
               <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
                 AICTE Approved

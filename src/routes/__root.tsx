@@ -15,7 +15,8 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Header } from "@/components/site/Header";
 import { Footer } from "@/components/site/Footer";
-import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
+import { collegesQuery, contactInfoQuery, miscSettingsQuery } from "@/lib/homepage";
+import { getMiscSettings, DEFAULT_MISC } from "@/lib/site-settings.functions";
 
 function NotFoundComponent() {
   return (
@@ -60,23 +61,30 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-  loader: ({ context }) => {
-    // Header's Colleges mega-menu + Footer contact info appear on every route; warm the cache
-    void context.queryClient.prefetchQuery(collegesQuery);
-    void context.queryClient.prefetchQuery(contactInfoQuery);
+  loader: async ({ context }) => {
+    // Await to ensure dehydrated state is included in SSR HTML → prevents hydration mismatches
+    const misc = await context.queryClient.ensureQueryData(miscSettingsQuery).catch(() => DEFAULT_MISC);
+    await Promise.all([
+      context.queryClient.prefetchQuery(collegesQuery),
+      context.queryClient.prefetchQuery(contactInfoQuery),
+    ]);
+    return { misc };
   },
-  head: () => ({
+  head: ({ loaderData }) => {
+    const misc = loaderData?.misc ?? DEFAULT_MISC;
+    const ogImage = misc.og_image_url ?? "https://svitvasad.ac.in/og-image.jpg";
+    return ({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "SVIT Vasad — Sardar Vallabhbhai Institute of Technology" },
-      { name: "description", content: "AICTE-approved engineering, management and applied sciences programmes on a 15-acre campus in Vasad, Gujarat. 95% placements, modern labs, vibrant campus life." },
+      { name: "description", content: misc.meta_description },
       { property: "og:title", content: "SVIT Vasad — Institute of Technology" },
-      { property: "og:description", content: "Empowering minds, inspiring innovation. Admissions open for 2026-27." },
+      { property: "og:description", content: misc.og_description },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://svitvasad.ac.in/og-image.jpg" },
+      { property: "og:image", content: ogImage },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: "https://svitvasad.ac.in/og-image.jpg" },
+      { name: "twitter:image", content: ogImage },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -85,7 +93,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700;800&display=swap" },
     ],
-  }),
+  });},
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
