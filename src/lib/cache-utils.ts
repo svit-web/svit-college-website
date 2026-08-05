@@ -62,8 +62,8 @@ const TABLE_QUERY_MAP: Record<string, string[][]> = {
   placement_cells: [["placement_cells"], ["placement"]],
   testimonials: [["testimonials"]],
 
-  // Contact & Info
-  contact_info: [["contact_info"]],
+  // Contact & Info (now stored in app_settings)
+  app_settings: [["contact_info"], ["hero_appearance"]],
   accreditations: [["accreditations"]],
   downloads: [["downloads"]],
 

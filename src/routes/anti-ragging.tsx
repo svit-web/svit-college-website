@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { PageHero } from "@/components/site/PageHero";
 import { AlertTriangle, Mail, Phone } from "lucide-react";
+import { miscSettingsQuery } from "@/lib/homepage";
 
 export const Route = createFileRoute("/anti-ragging")({
   head: () => ({ meta: [{ title: "Anti-Ragging — SVIT Vasad" }] }),
@@ -8,6 +10,9 @@ export const Route = createFileRoute("/anti-ragging")({
 });
 
 function AntiRagging() {
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const antiraggingEmail = misc?.antiragging_email ?? "antiragging@svitvasad.ac.in";
+  const ugcHelpline = misc?.ugc_helpline ?? "1800-180-5522";
   return (
     <>
       <PageHero title="Anti-Ragging" accent="Zero Tolerance" subtitle="SVIT Vasad maintains a strict anti-ragging policy in compliance with UGC regulations." crumbs={[{ label: "Home", to: "/" }, { label: "Anti-Ragging" }]} />
@@ -34,8 +39,8 @@ function AntiRagging() {
             <h3 className="font-display text-xl font-bold">Report Ragging</h3>
             <p className="mt-2 text-sm text-white/80">Reach out anonymously or with full details. All complaints are kept strictly confidential.</p>
             <div className="mt-5 space-y-2 text-sm">
-              <a href="tel:1800-180-5522" className="flex items-center gap-2 text-gold"><Phone className="h-4 w-4" /> UGC Anti-Ragging Helpline: 1800-180-5522</a>
-              <a href="mailto:antiragging@svitvasad.ac.in" className="flex items-center gap-2 text-gold"><Mail className="h-4 w-4" /> antiragging@svitvasad.ac.in</a>
+              <a href={`tel:${ugcHelpline}`} className="flex items-center gap-2 text-gold"><Phone className="h-4 w-4" /> UGC Anti-Ragging Helpline: {ugcHelpline}</a>
+              <a href={`mailto:${antiraggingEmail}`} className="flex items-center gap-2 text-gold"><Mail className="h-4 w-4" /> {antiraggingEmail}</a>
             </div>
           </div>
         </div>

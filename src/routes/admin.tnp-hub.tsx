@@ -42,7 +42,7 @@ const ICON_OPTIONS = [
   "TrendingUp",
 ];
 
-export function TnpMasterHub() {
+function TnpMasterHub() {
   const [data, setData] = useState<FullPlacementData>(EMPTY_PLACEMENT_DATA);
   const [colleges, setColleges] = useState<CollegeOption[]>([]);
   const [loading, setLoading] = useState(true);

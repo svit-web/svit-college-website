@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { TnpMasterHub } from "./admin.tnp-hub";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/placement-stats")({
-  component: TnpMasterHub,
+  beforeLoad: () => { throw redirect({ to: "/admin/tnp-hub" }); },
+  component: () => null,
 });

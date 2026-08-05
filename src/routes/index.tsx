@@ -185,9 +185,9 @@ function CollegesSection() {
     data && data.length > 0
       ? data.map((c) => ({
           id: c.slug,
-          shortCode: (c as any).metadata?.shortCode ?? c.code,
+          shortCode: c.code,
           name: c.name,
-          tagline: (c as any).metadata?.tagline ?? "",
+          tagline: (c as any).tagline ?? "",
           logo: c.logo_url ?? "",
         }))
       : [];
@@ -282,14 +282,19 @@ function WhySection() {
 function TrustBand() {
   const items = useHomepageItems();
   const badges = byType(items, "trust_badge");
-  const labels = badges.map((b) => b.title);
+  const seen = new Set<string>();
+  const uniqueBadges = badges.filter((b) => {
+    if (seen.has(b.title)) return false;
+    seen.add(b.title);
+    return true;
+  });
   return (
     <section className="container-page py-14">
       <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-white p-8 md:grid-cols-4">
-        {labels.map((i) => (
-          <div key={i} className="flex items-center justify-center gap-2 text-navy">
+        {uniqueBadges.map((b) => (
+          <div key={b.id} className="flex items-center justify-center gap-2 text-navy">
             <BadgeCheck className="h-5 w-5 text-gold" />
-            <span className="text-sm font-semibold uppercase tracking-wider">{i}</span>
+            <span className="text-sm font-semibold uppercase tracking-wider">{b.title}</span>
           </div>
         ))}
       </div>
