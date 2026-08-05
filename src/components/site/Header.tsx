@@ -239,7 +239,7 @@ export function Header() {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
+                        className="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 overflow-hidden rounded-xl border border-border bg-white"
                       >
                         <CollegesMega
                           colleges={displayColleges}
@@ -570,12 +570,6 @@ function useCampusCategories(): MegaCategory[] {
 
 type NavCollege = { id: string; shortCode: string; name: string; tagline: string; logo: string };
 
-/**
- * Desktop-only "Colleges" mega-menu: hovering a college on the left reveals
- * its departments (with logos) on the right; clicking a department goes
- * straight to /departments/$dept. The college row itself still links to
- * /colleges/$college like before — hover only adds the flyout.
- */
 function CollegesMega({
   colleges,
   departmentsByCollege,
@@ -588,21 +582,24 @@ function CollegesMega({
   const [activeId, setActiveId] = useState<string | null>(null);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const scheduleActivate = (id: string) => {
+  function activate(id: string) {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setActiveId(id), 80);
-  };
-  const scheduleDeactivate = () => {
+    hoverTimer.current = setTimeout(() => setActiveId(id), 60);
+  }
+  function deactivate() {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setActiveId(null), 150);
-  };
+    hoverTimer.current = setTimeout(() => setActiveId(null), 120);
+  }
 
   const active = colleges.find((c) => c.id === activeId) ?? null;
   const depts = active ? departmentsByCollege[active.id] ?? [] : [];
 
   return (
-    <div className="flex" onMouseLeave={scheduleDeactivate}>
-      <ul className="w-[320px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
+    // Fixed two-column layout — neither column ever changes width, so the
+    // container never shifts position when a college is hovered.
+    <div className="flex" onMouseLeave={deactivate}>
+      {/* Left: college list — wider */}
+      <ul className="w-[400px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/40 py-3" role="menu">
         {colleges.map((c) => {
           const isActive = c.id === active?.id;
           return (
@@ -610,85 +607,62 @@ function CollegesMega({
               <Link
                 to="/colleges/$college"
                 params={{ college: c.id }}
-                onMouseEnter={() => scheduleActivate(c.id)}
+                onMouseEnter={() => activate(c.id)}
                 onFocus={() => setActiveId(c.id)}
                 onClick={onNavigate}
                 className={cn(
-                  "flex items-start gap-3 border-l-4 px-4 py-2.5 transition-colors",
+                  "flex items-center justify-between gap-3 border-l-4 px-5 py-3 transition-colors",
                   isActive ? "border-crimson bg-white" : "border-transparent hover:bg-white/60"
                 )}
               >
-                <CollegeLogo
-                  shortCode={c.shortCode}
-                  src={c.logo}
-                  className="h-9 w-9 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
-                />
                 <div className="min-w-0">
                   <div className="text-sm font-semibold leading-snug text-navy">{c.name}</div>
-                  <div className="mt-0.5 truncate text-xs text-muted-foreground">{c.shortCode} — {c.tagline}</div>
+                  <div className="mt-0.5 truncate text-xs text-muted-foreground">{c.shortCode}</div>
                 </div>
+                <ChevronRight className={cn(
+                  "h-3.5 w-3.5 shrink-0 text-crimson transition-opacity",
+                  isActive ? "opacity-100" : "opacity-0"
+                )} />
               </Link>
             </li>
           );
         })}
       </ul>
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            key="panel"
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 440, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="shrink-0 overflow-hidden border-l border-border"
-          >
-            <div className="max-h-[440px] w-[440px] overflow-y-auto p-5">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={active.id}
-                  initial={{ opacity: 0, x: 6 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -6 }}
-                  transition={{ duration: 0.15 }}
-                >
-                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
-                    {active.shortCode} Departments
-                  </div>
-                  {depts.length > 0 ? (
-                    <ul className="mt-3 grid grid-cols-2 gap-1.5">
-                      {depts.map((d) => (
-                        <li key={d.id}>
-                          <Link
-                            to="/departments/$dept"
-                            params={{ dept: d.code }}
-                            onClick={onNavigate}
-                            className="flex items-center gap-2.5 rounded-md p-2 transition-colors hover:bg-secondary"
-                          >
-                            {d.logo_url ? (
-                              <img
-                                src={d.logo_url}
-                                alt=""
-                                className="h-8 w-8 shrink-0 rounded-md border border-border bg-white object-contain p-1"
-                              />
-                            ) : (
-                              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-secondary/60 text-[10px] font-bold text-navy">
-                                {d.code}
-                              </div>
-                            )}
-                            <span className="truncate text-sm text-ink/80">{d.name}</span>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <p className="mt-3 text-sm text-muted-foreground">No departments listed yet.</p>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+
+      {/* Right: department panel — always present at fixed width, only content fades */}
+      <div className="w-[280px] shrink-0 border-l border-border max-h-[440px] overflow-y-auto bg-white py-3">
+        <AnimatePresence mode="wait">
+          {active && (
+            <motion.div
+              key={active.id}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.1 }}
+            >
+              <div className="px-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                {active.shortCode} Departments
+              </div>
+              <ul>
+                {depts.length > 0 ? depts.map((d) => (
+                  <li key={d.id}>
+                    <Link
+                      to="/departments/$dept"
+                      params={{ dept: d.code }}
+                      onClick={onNavigate}
+                      className="block px-4 py-2 text-sm text-ink/80 hover:bg-secondary hover:text-navy transition-colors"
+                    >
+                      {d.name}
+                    </Link>
+                  </li>
+                )) : (
+                  <li className="px-4 py-2 text-sm text-muted-foreground">No departments listed yet.</li>
+                )}
+              </ul>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
