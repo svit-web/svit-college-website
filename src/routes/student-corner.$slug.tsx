@@ -17,9 +17,9 @@ export const Route = createFileRoute("/student-corner/$slug")({
     const transformedItem = {
       slug: item.slug,
       title: item.name,
-      subtitle: item.metadata?.subtitle || "",
-      accent: item.metadata?.accent || "Centre",
-      description: item.metadata?.description || "",
+      subtitle: item.subtitle || "",
+      accent: item.accent_color || "Centre",
+      description: item.description || "",
       highlights: Array.isArray(item.metadata?.highlights) ? item.metadata.highlights : [],
       image: null,
     };
