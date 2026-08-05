@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { ShieldAlert, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2 } from "lucide-react";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   listPortalUsers,
   listScopeOptions,
@@ -111,7 +111,7 @@ function ScopeFields({
 }
 
 function UserManagementPage() {
-  const { roles, loading: authLoading } = useAdminAuth();
+  const { roles, loading: authLoading } = useAdminAuthContext();
   const isAdmin = roles.some((r) => r.code === "admin");
 
   const [users, setUsers] = useState<PortalUser[]>([]);

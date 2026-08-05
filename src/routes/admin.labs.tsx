@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import {
   FlaskConical, Plus, Trash2, Save, Loader2, X, Search,
@@ -34,7 +34,7 @@ function slugify(s: string) {
 }
 
 function AdminLabsPage() {
-  const { user, roles } = useAdminAuth();
+  const { user, roles } = useAdminAuthContext();
 
   const isGlobal = roles.some((r) => r.code === "admin" || r.code === "editor");
   const deptAdminRole = roles.find((r) => r.code === "department_admin" && r.department_id);

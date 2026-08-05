@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { getAllScholarshipsAdmin, upsertScholarship, deleteScholarship, type Scholarship } from "@/lib/scholarships.functions";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -29,7 +29,7 @@ const BLANK: Partial<Scholarship> & { name: string; type: string } = {
 };
 
 function AdminScholarshipsPage() {
-  const { roles, loading } = useAdminAuth();
+  const { roles, loading } = useAdminAuthContext();
   const isAdmin = roles.some((r) => r.code === "admin");
 
   const [scholarships, setScholarships] = useState<Scholarship[]>([]);

@@ -1,6 +1,7 @@
 import { useEffect, useState, Suspense } from "react";
 import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
 import { Loader2, AlertTriangle } from "lucide-react";
@@ -70,7 +71,8 @@ function RouteLoadingSkeleton() {
 
 // ─── Admin Layout ─────────────────────────────────────────────────────────────
 function AdminLayout() {
-  const { user, profile, roles, loading, isAuthorized, logout } = useAdminAuth();
+  const auth = useAdminAuth();
+  const { user, profile, roles, loading, isAuthorized, logout } = auth;
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/admin/login";
@@ -105,9 +107,15 @@ function AdminLayout() {
   }
 
   if (isLoginPage) return <Outlet />;
-  if (!isAuthorized) return null;
+  // Show spinner while the redirect to /admin/login fires (avoids null flash)
+  if (!isAuthorized) return (
+    <div className="flex h-screen w-screen items-center justify-center admin-bg">
+      <Loader2 className="h-10 w-10 animate-spin text-crimson" />
+    </div>
+  );
 
   return (
+    <AdminAuthProvider value={auth}>
     <div className="flex h-screen w-screen overflow-hidden bg-slate-50">
       <AdminSidebar
         user={user}
@@ -135,5 +143,6 @@ function AdminLayout() {
         </main>
       </div>
     </div>
+    </AdminAuthProvider>
   );
 }

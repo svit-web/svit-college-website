@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import {
   DEFAULT_HERO_APPEARANCE,
@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin/appearance")({
 });
 
 function AdminAppearancePage() {
-  const { roles, loading: authLoading } = useAdminAuth();
+  const { roles, loading: authLoading } = useAdminAuthContext();
   const isAdmin = roles.some((r) => r.code === "admin");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

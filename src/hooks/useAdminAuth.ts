@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { User } from "@supabase/supabase-js";
 
@@ -30,7 +30,7 @@ export function useAdminAuth() {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   // Ref to prevent duplicate concurrent checkAuth calls
-  const checkingRef = { current: false };
+  const checkingRef = useRef(false);
 
   const checkAuth = useCallback(async (currentUserId?: string) => {
     // Guard against duplicate concurrent invocations

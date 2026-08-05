@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   Calendar,
   FileText,
@@ -48,7 +48,7 @@ const ACTION_MAP: Record<string, string> = {
 };
 
 function AdminDashboardHome() {
-  const { profile, roles } = useAdminAuth();
+  const { profile, roles } = useAdminAuthContext();
   const sb = supabase as any;
 
   const userScope = useMemo(() => {

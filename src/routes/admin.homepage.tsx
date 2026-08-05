@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   Layout,
   Layers,
@@ -40,10 +40,10 @@ interface WidgetNode {
 }
 
 function AdminHomepageLayoutPage() {
-  const { user } = useAdminAuth();
+  const { user } = useAdminAuthContext();
   
   // Navigation Tabs
-  const [activeTab, setActiveTab] = useState<"items" | "sections" | "widgets">("sections");
+  const [activeTab, setActiveTab] = useState<"items" | "sections" | "widgets">("items");
 
   // Sections State
   const [sections, setSections] = useState<SectionNode[]>([]);

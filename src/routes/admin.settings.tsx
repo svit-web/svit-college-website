@@ -4,7 +4,7 @@ import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Settings as SettingsIcon, ShieldAlert, Phone, Mail, MapPin, Globe, Building2, Calendar, Shield, Headphones, Share2, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { useImageCompressionMode, IMAGE_COMPRESSION_MODE_QUERY_KEY } from "@/hooks/useImageCompressionMode";
 import { setImageCompressionMode } from "@/lib/app-settings.functions";
 import { Switch } from "@/components/ui/switch";
@@ -23,7 +23,7 @@ export const Route = createFileRoute("/admin/settings")({
 });
 
 function AdminSettingsPage() {
-  const { roles, loading } = useAdminAuth();
+  const { roles, loading } = useAdminAuthContext();
   const isAdmin = roles.some((r) => r.code === "admin");
   const { mode } = useImageCompressionMode();
   const [compressionSaving, setCompressionSaving] = useState(false);

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { Plus, Trash2, Edit2, Loader2, Trophy, Medal } from "lucide-react";
 import { toast } from "sonner";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -49,7 +49,7 @@ function toSlug(name: string) {
 }
 
 function AdminSportsPage() {
-  const { user, loading: authLoading } = useAdminAuth();
+  const { user, loading: authLoading } = useAdminAuthContext();
   const userId = user?.id;
   const [tab, setTab] = useState<"sports" | "achievements">("sports");
 
