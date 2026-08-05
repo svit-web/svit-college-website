@@ -1,7 +1,7 @@
 import { useRef, useState, useMemo, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, GraduationCap, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
@@ -10,9 +10,7 @@ const primaryNav = [
   { label: "Colleges", to: "/colleges" },
   { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
-  { label: "Student Corner", to: "/student-corner" },
   { label: "Placement", to: "/placement" },
-  { label: "Contact Us", to: "/contact" },
 ] as const;
 
 const admissionsLinks = [
@@ -33,7 +31,7 @@ import { useQuery } from "@tanstack/react-query";
 import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getSports } from "@/lib/sports.functions";
-import { ABOUT_SECTIONS } from "@/lib/about-sections";
+import { getAllCenters } from "@/lib/centers.functions";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -506,6 +504,12 @@ function useCampusCategories(): MegaCategory[] {
     staleTime,
   });
 
+  const { data: centers } = useQuery({
+    queryKey: ['centers'],
+    queryFn: () => getAllCenters(),
+    staleTime,
+  });
+
   return [
     {
       key: "facilities",
@@ -546,6 +550,17 @@ function useCampusCategories(): MegaCategory[] {
       allLabel: "All events",
       allTo: "/campus-life/events",
       items: (events ?? []).map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
+    },
+    {
+      key: "student-corner",
+      title: "Societies",
+      icon: GraduationCap,
+      allLabel: "All centres",
+      allTo: "/student-corner",
+      items: (centers ?? []).map((c) => ({
+        label: c.name.split("(")[0].trim(),
+        to: `/student-corner/${c.slug}`,
+      })),
     },
   ];
 }
@@ -806,4 +821,3 @@ function MobileCampusAccordion({ onNavigate }: { onNavigate: () => void }) {
     </div>
   );
 }
-

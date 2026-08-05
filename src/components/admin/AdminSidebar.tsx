@@ -50,7 +50,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Facilities", to: "/admin/tables/facilities" },
       { label: "Labs", to: "/admin/labs" },
       { label: "Dept Activities", to: "/admin/tables/department_activities" },
-      { label: "Student Corner", to: "/admin/tables/centers" },
+      { label: "Societies", to: "/admin/tables/centers" },
       { label: "Scholarships", to: "/admin/scholarships", adminOnly: true },
     ],
   },
@@ -100,6 +100,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Settings,
     items: [
       { label: "Inquiries Inbox", to: "/admin/inquiries" },
+      { label: "User Management", to: "/admin/user-management", adminOnly: true },
       { label: "Users & Profiles", to: "/admin/tables/user_profiles" },
       { label: "User Roles", to: "/admin/tables/user_roles" },
       { label: "Audit Logs", to: "/admin/tables/audit_logs" },

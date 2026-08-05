@@ -40,7 +40,7 @@ function Parents() {
             <h3 className="font-display text-xl font-bold text-navy">Parent Relations Cell</h3>
             <p className="mt-1 text-sm text-muted-foreground">Have a concern or feedback? Reach out to the Parent Relations team.</p>
           </div>
-          <Link to="/contact" className="rounded-md bg-navy px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Get in Touch</Link>
+          <Link to="/admissions/inquiry" className="rounded-md bg-navy px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Get in Touch</Link>
         </div>
       </section>
     </>

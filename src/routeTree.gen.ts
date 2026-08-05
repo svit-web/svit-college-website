@@ -17,7 +17,6 @@ import { Route as AntiRaggingRouteImport } from './routes/anti-ragging'
 import { Route as CampusRouteImport } from './routes/campus'
 import { Route as CampusLifeRouteImport } from './routes/campus-life'
 import { Route as CareersRouteImport } from './routes/careers'
-import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DownloadsRouteImport } from './routes/downloads'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as GrievanceRouteImport } from './routes/grievance'
@@ -53,6 +52,7 @@ import { Route as AdminSportsRouteImport } from './routes/admin.sports'
 import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
 import { Route as AdminTnpHubRouteImport } from './routes/admin.tnp-hub'
 import { Route as AdminTrashRouteImport } from './routes/admin.trash'
+import { Route as AdminUserManagementRouteImport } from './routes/admin.user-management'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
 import { Route as AdmissionsIntakeFeesRouteImport } from './routes/admissions.intake-fees'
@@ -127,11 +127,6 @@ const CampusLifeRoute = CampusLifeRouteImport.update({
 const CareersRoute = CareersRouteImport.update({
   id: '/careers',
   path: '/careers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadsRoute = DownloadsRouteImport.update({
@@ -308,6 +303,11 @@ const AdminTnpHubRoute = AdminTnpHubRouteImport.update({
 const AdminTrashRoute = AdminTrashRouteImport.update({
   id: '/trash',
   path: '/trash',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUserManagementRoute = AdminUserManagementRouteImport.update({
+  id: '/user-management',
+  path: '/user-management',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
@@ -502,7 +502,6 @@ export interface FileRoutesByFullPath {
   '/campus': typeof CampusRoute
   '/campus-life': typeof CampusLifeRouteWithChildren
   '/careers': typeof CareersRoute
-  '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
   '/gallery': typeof GalleryRouteWithChildren
   '/grievance': typeof GrievanceRoute
@@ -536,6 +535,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/admissions/intake-fees': typeof AdmissionsIntakeFeesRoute
   '/admissions/scholarships': typeof AdmissionsScholarshipsRoute
@@ -580,7 +580,6 @@ export interface FileRoutesByTo {
   '/anti-ragging': typeof AntiRaggingRoute
   '/campus': typeof CampusRoute
   '/careers': typeof CareersRoute
-  '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
@@ -613,6 +612,7 @@ export interface FileRoutesByTo {
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/admissions/intake-fees': typeof AdmissionsIntakeFeesRoute
   '/admissions/scholarships': typeof AdmissionsScholarshipsRoute
@@ -659,7 +659,6 @@ export interface FileRoutesById {
   '/campus': typeof CampusRoute
   '/campus-life': typeof CampusLifeRouteWithChildren
   '/careers': typeof CareersRoute
-  '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
   '/gallery': typeof GalleryRouteWithChildren
   '/grievance': typeof GrievanceRoute
@@ -693,6 +692,7 @@ export interface FileRoutesById {
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/admissions/intake-fees': typeof AdmissionsIntakeFeesRoute
   '/admissions/scholarships': typeof AdmissionsScholarshipsRoute
@@ -742,7 +742,6 @@ export interface FileRouteTypes {
     | '/campus'
     | '/campus-life'
     | '/careers'
-    | '/contact'
     | '/downloads'
     | '/gallery'
     | '/grievance'
@@ -776,6 +775,7 @@ export interface FileRouteTypes {
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
+    | '/admin/user-management'
     | '/admissions/inquiry'
     | '/admissions/intake-fees'
     | '/admissions/scholarships'
@@ -820,7 +820,6 @@ export interface FileRouteTypes {
     | '/anti-ragging'
     | '/campus'
     | '/careers'
-    | '/contact'
     | '/downloads'
     | '/grievance'
     | '/news'
@@ -853,6 +852,7 @@ export interface FileRouteTypes {
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
+    | '/admin/user-management'
     | '/admissions/inquiry'
     | '/admissions/intake-fees'
     | '/admissions/scholarships'
@@ -898,7 +898,6 @@ export interface FileRouteTypes {
     | '/campus'
     | '/campus-life'
     | '/careers'
-    | '/contact'
     | '/downloads'
     | '/gallery'
     | '/grievance'
@@ -932,6 +931,7 @@ export interface FileRouteTypes {
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
+    | '/admin/user-management'
     | '/admissions/inquiry'
     | '/admissions/intake-fees'
     | '/admissions/scholarships'
@@ -980,7 +980,6 @@ export interface RootRouteChildren {
   CampusRoute: typeof CampusRoute
   CampusLifeRoute: typeof CampusLifeRouteWithChildren
   CareersRoute: typeof CareersRoute
-  ContactRoute: typeof ContactRoute
   DownloadsRoute: typeof DownloadsRoute
   GalleryRoute: typeof GalleryRouteWithChildren
   GrievanceRoute: typeof GrievanceRoute
@@ -1061,13 +1060,6 @@ declare module '@tanstack/react-router' {
       path: '/careers'
       fullPath: '/careers'
       preLoaderRoute: typeof CareersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/downloads': {
@@ -1313,6 +1305,13 @@ declare module '@tanstack/react-router' {
       path: '/trash'
       fullPath: '/admin/trash'
       preLoaderRoute: typeof AdminTrashRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/user-management': {
+      id: '/admin/user-management'
+      path: '/user-management'
+      fullPath: '/admin/user-management'
+      preLoaderRoute: typeof AdminUserManagementRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admissions/': {
@@ -1608,6 +1607,7 @@ interface AdminRouteChildren {
   AdminStaffWizardsRoute: typeof AdminStaffWizardsRoute
   AdminTnpHubRoute: typeof AdminTnpHubRoute
   AdminTrashRoute: typeof AdminTrashRoute
+  AdminUserManagementRoute: typeof AdminUserManagementRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminTablesTableIdRoute: typeof AdminTablesTableIdRoute
 }
@@ -1633,6 +1633,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminStaffWizardsRoute: AdminStaffWizardsRoute,
   AdminTnpHubRoute: AdminTnpHubRoute,
   AdminTrashRoute: AdminTrashRoute,
+  AdminUserManagementRoute: AdminUserManagementRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminTablesTableIdRoute: AdminTablesTableIdRoute,
 }
@@ -1744,7 +1745,6 @@ const rootRouteChildren: RootRouteChildren = {
   CampusRoute: CampusRoute,
   CampusLifeRoute: CampusLifeRouteWithChildren,
   CareersRoute: CareersRoute,
-  ContactRoute: ContactRoute,
   DownloadsRoute: DownloadsRoute,
   GalleryRoute: GalleryRouteWithChildren,
   GrievanceRoute: GrievanceRoute,

@@ -108,7 +108,9 @@ const HIDDEN_GRID_COLUMNS = [
   "metadata",
   "bio",
   "description",
-  "content"
+  "content",
+  "featured_at",
+  "featured_by"
 ];
 
 // Status badge styles — module-level constant to avoid recreation per render
@@ -285,6 +287,10 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
             query = query.eq("id", userScope.collegeId);
           } else if (cols.includes("college_id")) {
             query = query.eq("college_id", userScope.collegeId);
+            // Events auto-inherit college_id even for department-scoped rows
+            // (for display/filtering); a college editor should still only
+            // manage their own college-level events, not the department ones.
+            if (tableId === "events") query = query.eq("scope_type", "college");
           }
         } else if (userScope.level === "department" && userScope.departmentId) {
           if (tableId === "departments") {
@@ -358,7 +364,13 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
     schema.columns.forEach((col: any) => {
       // Don't modify system columns
-      if (col.name === "created_at" || col.name === "updated_at" || col.name === "deleted_at") return;
+      if (
+        col.name === "created_at" ||
+        col.name === "updated_at" ||
+        col.name === "deleted_at" ||
+        col.name === "featured_at" ||
+        col.name === "featured_by"
+      ) return;
 
       if (record) {
         // Pre-fill value for editing
@@ -376,6 +388,8 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           initialValues[col.name] = userScope.departmentId;
         } else if (col.name === "trust_id" && userScope.level === "trust") {
           initialValues[col.name] = userScope.trustId;
+        } else if (tableId === "events" && col.name === "scope_type" && userScope.level !== "global") {
+          initialValues[col.name] = userScope.level;
         } else if (col.name === "status") {
           initialValues[col.name] = "published";
         } else {
@@ -426,7 +440,9 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           col.name === "updated_at" ||
           col.name === "deleted_at" ||
           col.name === "created_by" ||
-          col.name === "updated_by"
+          col.name === "updated_by" ||
+          col.name === "featured_at" ||
+          col.name === "featured_by"
         ) {
           return;
         }
@@ -933,7 +949,9 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                   col.name === "deleted_at" ||
                   col.name === "created_by" ||
                   col.name === "updated_by" ||
-                  col.name === "deleted_by"
+                  col.name === "deleted_by" ||
+                  col.name === "featured_at" ||
+                  col.name === "featured_by"
                 ) {
                   return null;
                 }
@@ -975,18 +993,29 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         onChange={(newSeoId) => handleFieldChange("seo_id", newSeoId)}
                       />
                     ) : col.type === "boolean" ? (
-                      <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id={col.name}
-                          checked={!!formValues[col.name]}
-                          onChange={(e) => handleFieldChange(col.name, e.target.checked)}
-                          className="h-4 w-4 rounded border-slate-200 bg-white text-crimson focus:ring-crimson focus:ring-offset-white"
-                        />
-                        <label htmlFor={col.name} className="ml-2 text-sm text-slate-600">
-                          Toggle Active State
-                        </label>
-                      </div>
+                      (() => {
+                        const isFeaturedField = tableId === "events" && col.name === "is_featured";
+                        const lockedForNonGlobal = isFeaturedField && userScope.level !== "global";
+                        return (
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={col.name}
+                              checked={!!formValues[col.name]}
+                              disabled={lockedForNonGlobal}
+                              onChange={(e) => handleFieldChange(col.name, e.target.checked)}
+                              className="h-4 w-4 rounded border-slate-200 bg-white text-crimson focus:ring-crimson focus:ring-offset-white disabled:opacity-50"
+                            />
+                            <label htmlFor={col.name} className="ml-2 text-sm text-slate-600">
+                              {isFeaturedField
+                                ? lockedForNonGlobal
+                                  ? "Feature on homepage (global admin only)"
+                                  : "Feature on homepage (max 8 at once)"
+                                : "Toggle Active State"}
+                            </label>
+                          </div>
+                        );
+                      })()
                     ) : /* Media/Asset Storage Uploader */
                     (col.name.endsWith("_url") || col.name.includes("image") || col.name.includes("file")) && col.type === "text" ? (
                       <MediaUploader
@@ -1000,7 +1029,12 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         value={formValues[col.name] || ""}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                        disabled={
+                          tableId === "events" &&
+                          ((col.name === "college_id" && userScope.level === "college") ||
+                            (col.name === "department_id" && userScope.level === "department"))
+                        }
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
                       >
                         <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
                         {fkOptions[fk.foreign_table]?.map((opt) => (
@@ -1025,17 +1059,25 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                       </select>
                     ) : /* Any other enum (USER-DEFINED type) column with known values */
                     col.type === "USER-DEFINED" && col.enum_values ? (
-                      <select
-                        value={formValues[col.name] || ""}
-                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                        required={!col.is_nullable}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-                      >
-                        <option value="">-- Select --</option>
-                        {col.enum_values.map((v: string) => (
-                          <option key={v} value={v}>{formatLabel(v)}</option>
-                        ))}
-                      </select>
+                      (() => {
+                        const isEventScopeField = tableId === "events" && col.name === "scope_type";
+                        const lockedScope = isEventScopeField && userScope.level !== "global";
+                        const options = lockedScope ? [userScope.level] : col.enum_values;
+                        return (
+                          <select
+                            value={formValues[col.name] || ""}
+                            onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                            required={!col.is_nullable}
+                            disabled={lockedScope}
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none disabled:opacity-60"
+                          >
+                            <option value="">-- Select --</option>
+                            {options.map((v: string) => (
+                              <option key={v} value={v}>{formatLabel(v)}</option>
+                            ))}
+                          </select>
+                        );
+                      })()
                     ) : /* Text Area for larger string inputs */
                     col.name === "description" || col.name === "bio" || col.name === "content" ? (
                       <textarea

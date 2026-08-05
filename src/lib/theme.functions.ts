@@ -20,7 +20,6 @@ export interface HeroAppearance {
   homepagePhotos: string[]; // up to MAX_HOMEPAGE_PHOTOS — rotates every HOMEPAGE_ROTATE_MS on "/"
   aboutPhoto: string | null; // background photo for /about's hero — empty until an admin sets one
   campusLifePhoto: string | null; // background photo for /campus-life's hero
-  contactPhoto: string | null; // background photo for /contact's hero
 }
 
 export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
@@ -30,7 +29,6 @@ export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
   homepagePhotos: [],
   aboutPhoto: null,
   campusLifePhoto: null,
-  contactPhoto: null,
 };
 
 function parseHeroAppearance(value: unknown): HeroAppearance {
@@ -44,7 +42,6 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
       : [],
     aboutPhoto: typeof v.aboutPhoto === 'string' && v.aboutPhoto ? v.aboutPhoto : null,
     campusLifePhoto: typeof v.campusLifePhoto === 'string' && v.campusLifePhoto ? v.campusLifePhoto : null,
-    contactPhoto: typeof v.contactPhoto === 'string' && v.contactPhoto ? v.contactPhoto : null,
   };
 }
 

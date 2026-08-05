@@ -28,8 +28,8 @@ export const Route = createFileRoute("/student-corner/$slug")({
   },
   head: ({ loaderData }) =>
     loaderData
-      ? { meta: [{ title: `${loaderData.item.title} — Student Corner — SVIT Vasad` }, { name: "description", content: (loaderData.item.description || "").slice(0, 155) }] }
-      : { meta: [{ title: "Student Corner — SVIT Vasad" }, { name: "robots", content: "noindex" }] },
+      ? { meta: [{ title: `${loaderData.item.title} — Societies — SVIT Vasad` }, { name: "description", content: (loaderData.item.description || "").slice(0, 155) }] }
+      : { meta: [{ title: "Societies — SVIT Vasad" }, { name: "robots", content: "noindex" }] },
   component: CentreLeaf,
   notFoundComponent: () => <div className="container-page py-32"><div className="rounded-2xl border-2 border-navy/15 bg-white p-10 text-center"><div className="text-xs font-bold uppercase tracking-widest text-crimson">Not found</div><h2 className="mt-2 font-display text-2xl font-bold text-navy">Centre not available</h2></div></div>,
 });
@@ -39,10 +39,10 @@ function CentreLeaf() {
   return (
     <>
       <PageHero
-        title="Student Corner"
+        title="Societies"
         accent="Beyond the Classroom"
         subtitle="Centres, cells and chapters where students grow beyond the syllabus."
-        crumbs={[{ label: "Home", to: "/" }, { label: "Student Corner", to: "/student-corner" }, { label: item.title }]}
+        crumbs={[{ label: "Home", to: "/" }, { label: "Societies", to: "/student-corner" }, { label: item.title }]}
       />
 
       <section className="container-page py-20">
