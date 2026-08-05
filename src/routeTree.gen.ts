@@ -52,6 +52,7 @@ import { Route as AdminSportsRouteImport } from './routes/admin.sports'
 import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
 import { Route as AdminTnpHubRouteImport } from './routes/admin.tnp-hub'
 import { Route as AdminTrashRouteImport } from './routes/admin.trash'
+import { Route as AdminUserManagementRouteImport } from './routes/admin.user-management'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
 import { Route as CampusLifeIndexRouteImport } from './routes/campus-life.index'
@@ -302,6 +303,11 @@ const AdminTrashRoute = AdminTrashRouteImport.update({
   path: '/trash',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminUserManagementRoute = AdminUserManagementRouteImport.update({
+  id: '/user-management',
+  path: '/user-management',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
   id: '/admissions/',
   path: '/admissions/',
@@ -517,6 +523,7 @@ export interface FileRoutesByFullPath {
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
@@ -591,6 +598,7 @@ export interface FileRoutesByTo {
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
@@ -668,6 +676,7 @@ export interface FileRoutesById {
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
+  '/admin/user-management': typeof AdminUserManagementRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
@@ -748,6 +757,7 @@ export interface FileRouteTypes {
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
+    | '/admin/user-management'
     | '/admissions/inquiry'
     | '/colleges/$college'
     | '/courses/$course'
@@ -822,6 +832,7 @@ export interface FileRouteTypes {
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
+    | '/admin/user-management'
     | '/admissions/inquiry'
     | '/colleges/$college'
     | '/courses/$course'
@@ -898,6 +909,7 @@ export interface FileRouteTypes {
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
+    | '/admin/user-management'
     | '/admissions/inquiry'
     | '/colleges/$college'
     | '/courses/$course'
@@ -1270,6 +1282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminTrashRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/user-management': {
+      id: '/admin/user-management'
+      path: '/user-management'
+      fullPath: '/admin/user-management'
+      preLoaderRoute: typeof AdminUserManagementRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admissions/': {
       id: '/admissions/'
       path: '/admissions'
@@ -1548,6 +1567,7 @@ interface AdminRouteChildren {
   AdminStaffWizardsRoute: typeof AdminStaffWizardsRoute
   AdminTnpHubRoute: typeof AdminTnpHubRoute
   AdminTrashRoute: typeof AdminTrashRoute
+  AdminUserManagementRoute: typeof AdminUserManagementRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminTablesTableIdRoute: typeof AdminTablesTableIdRoute
 }
@@ -1572,6 +1592,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminStaffWizardsRoute: AdminStaffWizardsRoute,
   AdminTnpHubRoute: AdminTnpHubRoute,
   AdminTrashRoute: AdminTrashRoute,
+  AdminUserManagementRoute: AdminUserManagementRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminTablesTableIdRoute: AdminTablesTableIdRoute,
 }
