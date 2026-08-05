@@ -1,4 +1,4 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider, HydrationBoundary, dehydrate } from "@tanstack/react-query";
 import {
   Outlet,
   Link,
@@ -68,7 +68,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       context.queryClient.prefetchQuery(collegesQuery),
       context.queryClient.prefetchQuery(contactInfoQuery),
     ]);
-    return { misc };
+    return { misc, dehydratedState: dehydrate(context.queryClient) };
   },
   head: ({ loaderData }) => {
     const misc = loaderData?.misc ?? DEFAULT_MISC;
@@ -123,30 +123,35 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const { dehydratedState } = Route.useLoaderData() ?? {};
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   if (isAdminRoute) {
     return (
       <QueryClientProvider client={queryClient}>
-        <div className="flex min-h-screen flex-col bg-slate-950 text-slate-50">
-          <Outlet />
-        </div>
-        <Toaster position="top-right" richColors theme="dark" />
+        <HydrationBoundary state={dehydratedState}>
+          <div className="flex min-h-screen flex-col bg-slate-950 text-slate-50">
+            <Outlet />
+          </div>
+          <Toaster position="top-right" richColors theme="dark" />
+        </HydrationBoundary>
       </QueryClientProvider>
     );
   }
 
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="flex min-h-screen flex-col">
-        <Header />
-        <main className="flex-1">
-          <Outlet />
-        </main>
-        <Footer />
-      </div>
-      <Toaster position="top-right" richColors />
+      <HydrationBoundary state={dehydratedState}>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">
+            <Outlet />
+          </main>
+          <Footer />
+        </div>
+        <Toaster position="top-right" richColors />
+      </HydrationBoundary>
     </QueryClientProvider>
   );
 }
