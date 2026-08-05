@@ -99,6 +99,7 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Settings,
     items: [
       { label: "Inquiries Inbox", to: "/admin/inquiries" },
+      { label: "User Management", to: "/admin/user-management", adminOnly: true },
       { label: "Users & Profiles", to: "/admin/tables/user_profiles" },
       { label: "User Roles", to: "/admin/tables/user_roles" },
       { label: "Audit Logs", to: "/admin/tables/audit_logs" },
