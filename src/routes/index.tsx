@@ -114,7 +114,7 @@ function Hero() {
     <section className="relative overflow-hidden bg-navy-deep text-white">
       <HeroPhotoLayer photos={photos} appearance={resolvedAppearance} rotateMs={HOMEPAGE_ROTATE_MS} />
       <div className="container-page relative py-20 md:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+        <div className={`grid items-center gap-12 ${resolvedAppearance.heroSliderEnabled ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
               {eyebrow}
@@ -150,14 +150,16 @@ function Hero() {
               </Link>
             </div>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.15 }}
-            className="w-full"
-          >
-            <HeroCardSlider items={highlights} />
-          </motion.div>
+          {resolvedAppearance.heroSliderEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.15 }}
+              className="w-full"
+            >
+              <HeroCardSlider items={highlights} />
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

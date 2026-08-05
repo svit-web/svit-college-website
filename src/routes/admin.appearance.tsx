@@ -12,7 +12,7 @@ import {
   HOMEPAGE_ROTATE_MS,
   type HeroAppearance,
 } from "@/lib/theme.functions";
-import { Image, Images, Layers, Loader2, Save, ShieldAlert, Sparkles } from "lucide-react";
+import { Image, Images, Layers, Loader2, Save, ShieldAlert, Sparkles, SlidersHorizontal } from "lucide-react";
 import { toast } from "sonner";
 import campusHero from "@/assets/campus-hero.jpg";
 
@@ -165,6 +165,28 @@ function AdminAppearancePage() {
             suffix="px"
             onChange={(v) => setSettings((s) => ({ ...s, heroBlurPx: v }))}
           />
+          <div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm font-semibold text-navy">
+                <SlidersHorizontal className="h-4 w-4 text-crimson" />
+                Homepage Card Slider
+              </label>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={settings.heroSliderEnabled}
+                onClick={() => setSettings((s) => ({ ...s, heroSliderEnabled: !s.heroSliderEnabled }))}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.heroSliderEnabled ? "bg-crimson" : "bg-slate-300"}`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${settings.heroSliderEnabled ? "translate-x-6" : "translate-x-1"}`}
+                />
+              </button>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">
+              Show or hide the highlight card slider on the right side of the homepage hero.
+            </p>
+          </div>
         </div>
 
         {/* Live preview */}

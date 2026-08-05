@@ -33,11 +33,9 @@ export const setImageCompressionMode = createServerFn({ method: "POST" })
     return mode;
   })
   .handler(async ({ data: mode, context }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-
     // requireSupabaseAuth only proves who the caller is (context.userId) —
     // role authorization for this privileged write still has to happen here.
-    const { data: roleRows, error: roleErr } = await supabaseAdmin
+    const { data: roleRows, error: roleErr } = await context.supabase
       .from("user_roles")
       .select("scope_type, role:role_id(code)")
       .eq("user_id", context.userId)
@@ -51,7 +49,7 @@ export const setImageCompressionMode = createServerFn({ method: "POST" })
       throw new Error("Forbidden: only a global admin can change this setting.");
     }
 
-    const { error: upsertErr } = await supabaseAdmin.from("app_settings").upsert({
+    const { error: upsertErr } = await context.supabase.from("app_settings").upsert({
       key: IMAGE_COMPRESSION_MODE_KEY,
       value: mode,
       updated_at: new Date().toISOString(),
