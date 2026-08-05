@@ -8,10 +8,16 @@ const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About SVIT", to: "/about" },
   { label: "Colleges", to: "/colleges" },
+  { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
   { label: "Student Corner", to: "/student-corner" },
   { label: "Placement", to: "/placement" },
   { label: "Contact Us", to: "/contact" },
+] as const;
+
+const admissionsLinks = [
+  { label: "Intake & Fees", to: "/admissions/intake-fees" },
+  { label: "Scholarships", to: "/admissions/scholarships" },
 ] as const;
 const topNav = [
   { label: "Parents", to: "/parents" },
@@ -34,11 +40,13 @@ export function Header() {
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [admissionsOpen, setAdmissionsOpen] = useState(false);
 
   // Mobile accordion states — all collapsed by default
   const [mobileCollegesOpen, setMobileCollegesOpen] = useState(false);
   const [mobileCampusOpen, setMobileCampusOpen] = useState(false);
   const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
+  const [mobileAdmissionsOpen, setMobileAdmissionsOpen] = useState(false);
 
   // Lock body scroll while mobile menu is open
   useEffect(() => {
@@ -51,6 +59,7 @@ export function Header() {
     setMobileCollegesOpen(false);
     setMobileCampusOpen(false);
     setMobileAboutOpen(false);
+    setMobileAdmissionsOpen(false);
   }
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -149,6 +158,50 @@ export function Header() {
                               key={s.to}
                               to={s.to}
                               onClick={() => setAboutOpen(false)}
+                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              );
+            }
+            if (n.label === "Admissions") {
+              return (
+                <div
+                  key={n.to}
+                  className="relative"
+                  onMouseEnter={() => setAdmissionsOpen(true)}
+                  onMouseLeave={() => setAdmissionsOpen(false)}
+                >
+                  <Link
+                    to={n.to}
+                    className={cn(
+                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
+                      active ? "text-navy" : "text-ink/80 hover:text-navy"
+                    )}
+                  >
+                    {n.label} <ChevronDown className="h-3 w-3" />
+                  </Link>
+                  <AnimatePresence>
+                    {admissionsOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 8 }}
+                        transition={{ duration: 0.18 }}
+                        className="absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                      >
+                        <div className="grid grid-cols-1 gap-1">
+                          {admissionsLinks.map((s) => (
+                            <Link
+                              key={s.to}
+                              to={s.to}
+                              onClick={() => setAdmissionsOpen(false)}
                               className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
                             >
                               {s.label}
@@ -291,6 +344,34 @@ export function Header() {
                       {mobileAboutOpen && (
                         <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
                           {ABOUT_SECTIONS.map((s) => (
+                            <Link
+                              key={s.to}
+                              to={s.to}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
+                            >
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+                if (n.label === "Admissions") {
+                  return (
+                    <div key={n.to}>
+                      <button
+                        type="button"
+                        onClick={() => setMobileAdmissionsOpen((o) => !o)}
+                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+                      >
+                        {n.label}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileAdmissionsOpen && "rotate-180")} />
+                      </button>
+                      {mobileAdmissionsOpen && (
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
+                          {admissionsLinks.map((s) => (
                             <Link
                               key={s.to}
                               to={s.to}

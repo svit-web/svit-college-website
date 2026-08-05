@@ -47,6 +47,7 @@ import { Route as AdminPlacementStatsRouteImport } from './routes/admin.placemen
 import { Route as AdminPlacementsRouteImport } from './routes/admin.placements'
 import { Route as AdminPostsRouteImport } from './routes/admin.posts'
 import { Route as AdminRecruitersRouteImport } from './routes/admin.recruiters'
+import { Route as AdminScholarshipsRouteImport } from './routes/admin.scholarships'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminSportsRouteImport } from './routes/admin.sports'
 import { Route as AdminStaffWizardsRouteImport } from './routes/admin.staff-wizards'
@@ -54,6 +55,8 @@ import { Route as AdminTnpHubRouteImport } from './routes/admin.tnp-hub'
 import { Route as AdminTrashRouteImport } from './routes/admin.trash'
 import { Route as AdmissionsIndexRouteImport } from './routes/admissions.index'
 import { Route as AdmissionsInquiryRouteImport } from './routes/admissions.inquiry'
+import { Route as AdmissionsIntakeFeesRouteImport } from './routes/admissions.intake-fees'
+import { Route as AdmissionsScholarshipsRouteImport } from './routes/admissions.scholarships'
 import { Route as CampusLifeIndexRouteImport } from './routes/campus-life.index'
 import { Route as CollegesIndexRouteImport } from './routes/colleges.index'
 import { Route as CollegesCollegeRouteImport } from './routes/colleges.$college'
@@ -277,6 +280,11 @@ const AdminRecruitersRoute = AdminRecruitersRouteImport.update({
   path: '/recruiters',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminScholarshipsRoute = AdminScholarshipsRouteImport.update({
+  id: '/scholarships',
+  path: '/scholarships',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -310,6 +318,16 @@ const AdmissionsIndexRoute = AdmissionsIndexRouteImport.update({
 const AdmissionsInquiryRoute = AdmissionsInquiryRouteImport.update({
   id: '/admissions/inquiry',
   path: '/admissions/inquiry',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmissionsIntakeFeesRoute = AdmissionsIntakeFeesRouteImport.update({
+  id: '/admissions/intake-fees',
+  path: '/admissions/intake-fees',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdmissionsScholarshipsRoute = AdmissionsScholarshipsRouteImport.update({
+  id: '/admissions/scholarships',
+  path: '/admissions/scholarships',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CampusLifeIndexRoute = CampusLifeIndexRouteImport.update({
@@ -512,12 +530,15 @@ export interface FileRoutesByFullPath {
   '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/scholarships': typeof AdminScholarshipsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/admissions/intake-fees': typeof AdmissionsIntakeFeesRoute
+  '/admissions/scholarships': typeof AdmissionsScholarshipsRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
@@ -586,12 +607,15 @@ export interface FileRoutesByTo {
   '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/scholarships': typeof AdminScholarshipsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/admissions/intake-fees': typeof AdmissionsIntakeFeesRoute
+  '/admissions/scholarships': typeof AdmissionsScholarshipsRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/gallery/$albumId': typeof GalleryAlbumIdRoute
@@ -663,12 +687,15 @@ export interface FileRoutesById {
   '/admin/placements': typeof AdminPlacementsRoute
   '/admin/posts': typeof AdminPostsRoute
   '/admin/recruiters': typeof AdminRecruitersRoute
+  '/admin/scholarships': typeof AdminScholarshipsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/sports': typeof AdminSportsRoute
   '/admin/staff-wizards': typeof AdminStaffWizardsRoute
   '/admin/tnp-hub': typeof AdminTnpHubRoute
   '/admin/trash': typeof AdminTrashRoute
   '/admissions/inquiry': typeof AdmissionsInquiryRoute
+  '/admissions/intake-fees': typeof AdmissionsIntakeFeesRoute
+  '/admissions/scholarships': typeof AdmissionsScholarshipsRoute
   '/colleges/$college': typeof CollegesCollegeRoute
   '/courses/$course': typeof CoursesCourseRouteWithChildren
   '/departments/$dept': typeof DepartmentsDeptRouteWithChildren
@@ -743,12 +770,15 @@ export interface FileRouteTypes {
     | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/scholarships'
     | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
     | '/admissions/inquiry'
+    | '/admissions/intake-fees'
+    | '/admissions/scholarships'
     | '/colleges/$college'
     | '/courses/$course'
     | '/departments/$dept'
@@ -817,12 +847,15 @@ export interface FileRouteTypes {
     | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/scholarships'
     | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
     | '/admissions/inquiry'
+    | '/admissions/intake-fees'
+    | '/admissions/scholarships'
     | '/colleges/$college'
     | '/courses/$course'
     | '/gallery/$albumId'
@@ -893,12 +926,15 @@ export interface FileRouteTypes {
     | '/admin/placements'
     | '/admin/posts'
     | '/admin/recruiters'
+    | '/admin/scholarships'
     | '/admin/settings'
     | '/admin/sports'
     | '/admin/staff-wizards'
     | '/admin/tnp-hub'
     | '/admin/trash'
     | '/admissions/inquiry'
+    | '/admissions/intake-fees'
+    | '/admissions/scholarships'
     | '/colleges/$college'
     | '/courses/$course'
     | '/departments/$dept'
@@ -952,6 +988,8 @@ export interface RootRouteChildren {
   ParentsRoute: typeof ParentsRoute
   StudentLoginRoute: typeof StudentLoginRoute
   AdmissionsInquiryRoute: typeof AdmissionsInquiryRoute
+  AdmissionsIntakeFeesRoute: typeof AdmissionsIntakeFeesRoute
+  AdmissionsScholarshipsRoute: typeof AdmissionsScholarshipsRoute
   CollegesCollegeRoute: typeof CollegesCollegeRoute
   CoursesCourseRoute: typeof CoursesCourseRouteWithChildren
   DepartmentsDeptRoute: typeof DepartmentsDeptRouteWithChildren
@@ -1235,6 +1273,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminRecruitersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/scholarships': {
+      id: '/admin/scholarships'
+      path: '/scholarships'
+      fullPath: '/admin/scholarships'
+      preLoaderRoute: typeof AdminScholarshipsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/settings'
@@ -1282,6 +1327,20 @@ declare module '@tanstack/react-router' {
       path: '/admissions/inquiry'
       fullPath: '/admissions/inquiry'
       preLoaderRoute: typeof AdmissionsInquiryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admissions/intake-fees': {
+      id: '/admissions/intake-fees'
+      path: '/admissions/intake-fees'
+      fullPath: '/admissions/intake-fees'
+      preLoaderRoute: typeof AdmissionsIntakeFeesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admissions/scholarships': {
+      id: '/admissions/scholarships'
+      path: '/admissions/scholarships'
+      fullPath: '/admissions/scholarships'
+      preLoaderRoute: typeof AdmissionsScholarshipsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/campus-life/': {
@@ -1543,6 +1602,7 @@ interface AdminRouteChildren {
   AdminPlacementsRoute: typeof AdminPlacementsRoute
   AdminPostsRoute: typeof AdminPostsRoute
   AdminRecruitersRoute: typeof AdminRecruitersRoute
+  AdminScholarshipsRoute: typeof AdminScholarshipsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSportsRoute: typeof AdminSportsRoute
   AdminStaffWizardsRoute: typeof AdminStaffWizardsRoute
@@ -1567,6 +1627,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminPlacementsRoute: AdminPlacementsRoute,
   AdminPostsRoute: AdminPostsRoute,
   AdminRecruitersRoute: AdminRecruitersRoute,
+  AdminScholarshipsRoute: AdminScholarshipsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSportsRoute: AdminSportsRoute,
   AdminStaffWizardsRoute: AdminStaffWizardsRoute,
@@ -1691,6 +1752,8 @@ const rootRouteChildren: RootRouteChildren = {
   ParentsRoute: ParentsRoute,
   StudentLoginRoute: StudentLoginRoute,
   AdmissionsInquiryRoute: AdmissionsInquiryRoute,
+  AdmissionsIntakeFeesRoute: AdmissionsIntakeFeesRoute,
+  AdmissionsScholarshipsRoute: AdmissionsScholarshipsRoute,
   CollegesCollegeRoute: CollegesCollegeRoute,
   CoursesCourseRoute: CoursesCourseRouteWithChildren,
   DepartmentsDeptRoute: DepartmentsDeptRouteWithChildren,
