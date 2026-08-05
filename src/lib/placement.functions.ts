@@ -1,456 +1,431 @@
-// Server functions for placement — all stats auto-calculated from placed_students records
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+// Training & Placement Cell — Supabase-backed data layer.
+//
+// Storage map for the unified placement page:
+//   hero / about / officer          → placement_cells row where college_code = 'overview'
+//   packages, section config,
+//   highlights, trend, testimonials → placement_cells.metadata (jsonb) on that same row
+//   placed student cards            → placed_students table (FK → colleges)
+//   recruiter logo wall             → recruiters table
+//
+// Reads run through server functions so the page renders correctly under SSR.
+// Writes run in the browser with the admin's session so RLS sees `authenticated`.
+import { createServerFn } from "@tanstack/react-start";
+import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
-// ── Types ─────────────────────────────────────────────────────
+/** The single placement_cells row that backs the unified page. */
+export const OVERVIEW_CODE = "overview";
 
-export interface Recruiter {
-  id: string;
-  company_name: string;
-  logo_url: string;
-  website_url: string | null;
-  sort_order: number;
-  college_codes?: string[] | null;
-  metadata: { colleges?: string[]; [key: string]: any };
-  created_at: string;
-  updated_at: string;
+// `any` because src/integrations/supabase/types.ts is stale against the live
+// schema — it is missing placed_students entirely and the placement_cells
+// hero_title / hero_subtitle columns. Regenerating it is tracked separately.
+function serverClient(): any {
+  const url = process.env.SUPABASE_URL!;
+  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
+  return createClient<Database>(url, key, {
+    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
+    global: {
+      fetch: (input, init) => {
+        const headers = new Headers(init?.headers);
+        if (
+          (key.startsWith("sb_publishable_") || key.startsWith("sb_secret_")) &&
+          headers.get("Authorization") === `Bearer ${key}`
+        ) {
+          headers.delete("Authorization");
+        }
+        headers.set("apikey", key);
+        return fetch(input, { ...init, headers });
+      },
+    },
+  });
 }
 
-export interface PlacementCell {
+// ── Types ───────────────────────────────────────────────────────────
+
+export interface PlacementHighlight {
   id: string;
-  college_code: string;
-  about_text: string | null;
-  hero_title: string | null;
-  hero_subtitle: string | null;
-  officer_name: string | null;
-  officer_designation: string | null;
-  officer_phone: string | null;
-  officer_email: string | null;
-  officer_photo_url: string | null;
-  default_student_placeholder_url: string | null;
+  icon: string; // key into ICON_MAP in PlacementPage
+  label: string;
+}
+
+export interface SectionVisibility {
+  about: boolean;
+  trend: boolean;
+  placedStudents: boolean;
+  recruiters: boolean;
+  officer: boolean;
+  testimonials?: boolean;
+}
+
+export interface SectionConfig {
+  sections: SectionVisibility;
+  order: string[];
+  highlights: PlacementHighlight[];
 }
 
 export interface PlacedStudent {
   id: string;
-  college_id: string;
-  department_id: string | null;
-  student_name: string;
-  company_name: string;
-  photo_url: string | null;
-  batch_year: string | null;
-  package_lpa: number | null;
-  status: string;
-  created_at: string;
-  updated_at: string;
-  college?: { id: string; slug: string; name: string } | null;
-  department?: { id: string; name: string; slug: string } | null;
+  studentName: string;
+  companyName: string;
+  batchYear: string;
+  photo: string | null;
+  /** colleges.slug — resolved to colleges.id on write */
+  collegeId: string;
 }
 
-/** Auto-calculated placement stats from placed_students table */
-export interface AutoStats {
-  total: number;
-  highestPackage: number | null;
-  averagePackage: number | null;
-  /** Sorted oldest → newest for charting */
-  byYear: { year: string; count: number }[];
-  /** Top student (highest package) per college — only populated on overview */
-  topStudents: {
-    collegeName: string;
-    collegeSlug: string;
-    studentName: string;
-    companyName: string;
-    packageLpa: number | null;
-    photoUrl: string | null;
-    departmentName: string | null;
-    batchYear: string | null;
-  }[];
+export interface RecruiterItem {
+  id: string;
+  companyName: string;
+  company_name?: string;
+  logo: string | null;
+  sortOrder?: number;
 }
 
-// ── Phase 4: Auto-Stats Engine ────────────────────────────────
-/**
- * Calculates all placement statistics directly from placed_students records.
- * No separate placement_statistics table needed.
- * - Per-college: total, highest, avg, year-wise chart
- * - Overview: above + top student per college for highlight cards
- */
-export const getAutoStatsByCollege = createServerFn({ method: 'GET' })
-  .validator((input: { collegeId: string | null; isOverview: boolean; collegeSlug?: string }) => input)
-  .handler(async (ctx): Promise<AutoStats> => {
-    const getFallbackStats = (isOverview: boolean, collegeSlug?: string): AutoStats => {
-      const defaultTopStudents: AutoStats['topStudents'] = [
-        {
-          collegeName: "SVIT (Degree)",
-          collegeSlug: "svit-degree",
-          studentName: "Amit Sharma",
-          companyName: "Google",
-          packageLpa: 22.0,
-          photoUrl: null,
-          departmentName: "Computer Engineering",
-          batchYear: "2024",
-        },
-        {
-          collegeName: "COA (Architecture)",
-          collegeSlug: "svit-coa",
-          studentName: "Nisha Patel",
-          companyName: "Sthapati Studio",
-          packageLpa: 9.5,
-          photoUrl: null,
-          departmentName: "Architecture",
-          batchYear: "2024",
-        },
-        {
-          collegeName: "SVICA (Comp. Apps)",
-          collegeSlug: "svica",
-          studentName: "Kriti Joshi",
-          companyName: "HCL",
-          packageLpa: 8.0,
-          photoUrl: null,
-          departmentName: "Computer Applications",
-          batchYear: "2024",
-        },
-        {
-          collegeName: "SVION (Nursing)",
-          collegeSlug: "svion",
-          studentName: "Meena Patel",
-          companyName: "Apollo Hospitals",
-          packageLpa: 7.5,
-          photoUrl: null,
-          departmentName: "Nursing",
-          batchYear: "2024",
-        },
-      ];
+export type Recruiter = RecruiterItem;
 
-      if (isOverview) {
-        return {
-          total: 480,
-          highestPackage: 22.0,
-          averagePackage: 8.2,
-          byYear: [
-            { year: "2021", count: 95 },
-            { year: "2022", count: 115 },
-            { year: "2023", count: 132 },
-            { year: "2024", count: 138 },
-          ],
-          topStudents: defaultTopStudents,
-        };
-      }
+export interface PlacementOfficer {
+  name: string;
+  designation: string;
+  phone: string;
+  email: string;
+  photo: string | null;
+}
 
-      const perCollegeDefaults: Record<string, Partial<AutoStats>> = {
-        "svit-degree": {
-          total: 340,
-          highestPackage: 22.0,
-          averagePackage: 8.5,
-          byYear: [
-            { year: "2021", count: 70 },
-            { year: "2022", count: 82 },
-            { year: "2023", count: 92 },
-            { year: "2024", count: 96 },
-          ],
-        },
-        "svit-coa": {
-          total: 45,
-          highestPackage: 9.5,
-          averagePackage: 6.2,
-          byYear: [
-            { year: "2021", count: 8 },
-            { year: "2022", count: 10 },
-            { year: "2023", count: 12 },
-            { year: "2024", count: 15 },
-          ],
-        },
-        svica: {
-          total: 60,
-          highestPackage: 8.0,
-          averagePackage: 6.5,
-          byYear: [
-            { year: "2021", count: 10 },
-            { year: "2022", count: 14 },
-            { year: "2023", count: 16 },
-            { year: "2024", count: 20 },
-          ],
-        },
-        svion: {
-          total: 35,
-          highestPackage: 7.5,
-          averagePackage: 5.8,
-          byYear: [
-            { year: "2021", count: 7 },
-            { year: "2022", count: 9 },
-            { year: "2023", count: 10 },
-            { year: "2024", count: 11 },
-          ],
-        },
-      };
+export interface PlacementYearPoint {
+  year: string;
+  studentsPlaced: number;
+  placementPercentage: number;
+}
 
-      const matched = collegeSlug ? perCollegeDefaults[collegeSlug] : null;
-      return {
-        total: matched?.total ?? 100,
-        highestPackage: matched?.highestPackage ?? 12.0,
-        averagePackage: matched?.averagePackage ?? 7.0,
-        byYear: matched?.byYear ?? [
-          { year: "2021", count: 20 },
-          { year: "2022", count: 24 },
-          { year: "2023", count: 26 },
-          { year: "2024", count: 30 },
-        ],
-        topStudents: [],
-      };
-    };
+export interface PlacementTestimonial {
+  id: string;
+  studentName: string;
+  designation: string;
+  companyName: string;
+  batchYear: string;
+  departmentName: string;
+  quote: string;
+  photoUrl: string | null;
+  rating?: number;
+}
 
-    try {
-      let query = (supabase as any)
-        .from('placed_students')
-        .select('id, student_name, company_name, photo_url, batch_year, package_lpa, college_id, department_id, college:colleges(id, slug, name), department:departments(id, name)')
-        .eq('status', 'published');
-
-      if (!ctx.data.isOverview && ctx.data.collegeId) {
-        query = query.eq('college_id', ctx.data.collegeId);
-      }
-
-      const { data: students, error } = await query;
-      if (error || !students?.length) {
-        return getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug);
-      }
-
-      const total: number = students.length;
-
-      const withPkg = students.filter((s: any) => s.package_lpa != null);
-      const highestPackage = withPkg.length > 0
-        ? Math.max(...withPkg.map((s: any) => Number(s.package_lpa)))
-        : null;
-      const averagePackage = withPkg.length > 0
-        ? Math.round((withPkg.reduce((sum: number, s: any) => sum + Number(s.package_lpa), 0) / withPkg.length) * 10) / 10
-        : null;
-
-      const yearMap = new Map<string, number>();
-      for (const s of students) {
-        if (s.batch_year) yearMap.set(s.batch_year, (yearMap.get(s.batch_year) ?? 0) + 1);
-      }
-      const byYear = Array.from(yearMap.entries())
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([year, count]) => ({ year, count }));
-
-      let topStudents: AutoStats['topStudents'] = [];
-      if (ctx.data.isOverview) {
-        const VALID_COLLEGE_SLUGS = ["svit-degree", "svit-coa", "svica", "svion"];
-        const best = new Map<string, any>();
-        for (const s of students) {
-          const slug = s.college?.slug;
-          if (!slug || !VALID_COLLEGE_SLUGS.includes(slug)) continue;
-          const prev = best.get(slug);
-          const isPkgBetter = !prev
-            || (s.package_lpa != null && (prev.package_lpa == null || Number(s.package_lpa) > Number(prev.package_lpa)));
-          if (isPkgBetter) best.set(slug, s);
-        }
-        topStudents = Array.from(best.values()).map((s: any) => ({
-          collegeName: s.college?.name ?? '',
-          collegeSlug: s.college?.slug ?? '',
-          studentName: s.student_name,
-          companyName: s.company_name,
-          packageLpa: s.package_lpa != null ? Number(s.package_lpa) : null,
-          photoUrl: s.photo_url || null,
-          departmentName: s.department?.name ?? null,
-          batchYear: s.batch_year ?? null,
-        }));
-        if (topStudents.length === 0) {
-          topStudents = getFallbackStats(true).topStudents;
-        }
-      }
-
-      return {
-        total,
-        highestPackage: highestPackage ?? getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug).highestPackage,
-        averagePackage: averagePackage ?? getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug).averagePackage,
-        byYear: byYear.length ? byYear : getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug).byYear,
-        topStudents,
-      };
-    } catch {
-      return getFallbackStats(ctx.data.isOverview, ctx.data.collegeSlug);
-    }
-  });
-
-// ── Recruiters ────────────────────────────────────────────────
-
-export const getRecruitersByCollege = createServerFn({ method: 'GET' })
-  .validator((collegeSlug: string) => collegeSlug)
-  .handler(async (ctx) => {
-    const fetchAll = async () => {
-      const { data } = await supabase
-        .from('recruiters').select('*').eq('status', 'published').order('sort_order', { ascending: true });
-      return (data ?? []) as unknown as Recruiter[];
-    };
-    if (ctx.data === 'overview') return fetchAll();
-    try {
-      const { data, error } = await (supabase as any)
-        .from('recruiters').select('*').eq('status', 'published')
-        .or(`college_codes.cs.{${ctx.data}},college_codes.is.null`)
-        .order('sort_order', { ascending: true });
-      if (error) { console.warn('college_codes fallback:', error.message); return fetchAll(); }
-      return (data ?? []) as unknown as Recruiter[];
-    } catch { return fetchAll(); }
-  });
-
-/** Alias: fetch all published recruiters (used by non-placement routes) */
-export const getAllRecruiters = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data } = await supabase
-      .from('recruiters').select('*').eq('status', 'published').order('sort_order', { ascending: true });
-    return (data ?? []) as unknown as Recruiter[];
-  });
-
-// ── Placement Cell ────────────────────────────────────────────
-
-export const getPlacementCell = createServerFn({ method: 'GET' })
-  .validator((collegeCode: string) => collegeCode)
-  .handler(async (ctx) => {
-    const { data, error } = await (supabase as any)
-      .from('placement_cells').select('*').eq('college_code', ctx.data).maybeSingle();
-    if (error) { console.error('Error fetching placement cell:', error); return null; }
-    return data as PlacementCell | null;
-  });
-
-// ── College Lookup ────────────────────────────────────────────
-
-export const getCollegeBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('colleges').select('id, slug, code, name, metadata')
-      .eq('slug', ctx.data).eq('status', 'published').is('deleted_at', null).maybeSingle();
-    if (error || !data) return null;
-    return {
-      id: data.id as string,
-      code: data.slug,
-      name: data.name,
-      shortCode: (data.metadata as any)?.shortCode ?? data.code,
-    };
-  });
-
-/** Dynamic placement divisions list for left dashboard navigation */
-export interface PlacementDivisionItem {
+export interface CollegeOption {
   slug: string;
-  label: string;
+  name: string;
+  code: string;
 }
 
-const EXCLUDED_PLACEMENT_SLUGS = ["abc123", "svit-diploma", "thesilicon", "the-silicon", "diploma"];
+export interface FullPlacementData {
+  heroTitle: string;
+  heroSubtitle: string;
+  highestPackage: string;
+  averagePackage: string;
+  aboutText: string;
+  sectionConfig: SectionConfig;
+  officer: PlacementOfficer;
+  placedStudents: PlacedStudent[];
+  recruiters: RecruiterItem[];
+  graphicalData: PlacementYearPoint[];
+  testimonials: PlacementTestimonial[];
+}
 
-export const getDynamicPlacementDivisions = createServerFn({ method: 'GET' })
-  .handler(async (): Promise<PlacementDivisionItem[]> => {
-    try {
-      const ORDER = ["svit-degree", "svit-coa", "svica", "svion"];
-      
-      // Query both colleges table and placement_cells table
-      const [collegesRes, cellsRes] = await Promise.all([
-        supabase.from('colleges').select('slug, name, code, metadata').eq('status', 'published').is('deleted_at', null).order('sort_order', { ascending: true }),
-        supabase.from('placement_cells').select('college_code').neq('college_code', 'overview')
-      ]);
+// ── Fallbacks ───────────────────────────────────────────────────────
+// Used only until an admin saves the overview row for the first time.
 
-      const divisionMap = new Map<string, PlacementDivisionItem>([
-        ['svit-degree', { slug: 'svit-degree', label: 'SVIT (Degree)' }],
-        ['svit-coa', { slug: 'svit-coa', label: 'COA (Architecture)' }],
-        ['svica', { slug: 'svica', label: 'SVICA (Comp. Apps)' }],
-        ['svion', { slug: 'svion', label: 'SVION (Nursing)' }],
-      ]);
+export const DEFAULT_HIGHLIGHTS: PlacementHighlight[] = [
+  { id: "h1", icon: "Target", label: "Industry-aligned Skill Bootcamps & Aptitude Training" },
+  { id: "h2", icon: "MessagesSquare", label: "Mock Technical & HR Interview Practice" },
+  { id: "h3", icon: "Briefcase", label: "200+ Top Recruiting Partners Nationwide" },
+  { id: "h4", icon: "Award", label: "Paid Internships & Pre-Placement Offers (PPOs)" },
+  { id: "h5", icon: "CalendarCheck", label: "Structured Annual On-Campus Drive Schedule" },
+  { id: "h6", icon: "UserCheck", label: "Dedicated Branch-Wise Student Mentorship" },
+];
 
-      // 1. Add colleges from main Colleges table
-      if (collegesRes.data && collegesRes.data.length > 0) {
-        collegesRes.data.forEach((c: any) => {
-          if (!EXCLUDED_PLACEMENT_SLUGS.includes(c.slug)) {
-            const short = c.metadata?.shortCode || c.code || c.name;
-            let label = short;
-            if (c.slug === 'svit-degree') label = 'SVIT (Degree)';
-            else if (c.slug === 'svit-coa') label = 'COA (Architecture)';
-            else if (c.slug === 'svica') label = 'SVICA (Comp. Apps)';
-            else if (c.slug === 'svion') label = 'SVION (Nursing)';
-            divisionMap.set(c.slug, { slug: c.slug, label });
-          }
-        });
-      }
+export const DEFAULT_SECTION_CONFIG: SectionConfig = {
+  sections: {
+    about: true,
+    trend: true,
+    placedStudents: true,
+    recruiters: true,
+    officer: true,
+    testimonials: true,
+  },
+  order: ["about", "trend", "placedStudents", "recruiters", "officer", "testimonials"],
+  highlights: DEFAULT_HIGHLIGHTS,
+};
 
-      // 2. Add custom placement divisions from placement_cells table
-      if (cellsRes.data && cellsRes.data.length > 0) {
-        cellsRes.data.forEach((pc: any) => {
-          const slug = pc.college_code;
-          if (!EXCLUDED_PLACEMENT_SLUGS.includes(slug) && !divisionMap.has(slug)) {
-            let label = slug.toUpperCase();
-            if (slug === 'svit-degree') label = 'SVIT (Degree)';
-            else if (slug === 'svit-coa') label = 'COA (Architecture)';
-            else if (slug === 'svica') label = 'SVICA (Comp. Apps)';
-            else if (slug === 'svion') label = 'SVION (Nursing)';
-            divisionMap.set(slug, { slug, label });
-          }
-        });
-      }
+export const EMPTY_PLACEMENT_DATA: FullPlacementData = {
+  heroTitle: "Training & Placement Cell",
+  heroSubtitle:
+    "Empowering SVIT graduates with world-class career opportunities, industry mentorship, and top campus recruitment.",
+  highestPackage: "—",
+  averagePackage: "—",
+  aboutText: "",
+  sectionConfig: DEFAULT_SECTION_CONFIG,
+  officer: { name: "", designation: "", phone: "", email: "", photo: null },
+  placedStudents: [],
+  recruiters: [],
+  graphicalData: [],
+  testimonials: [],
+};
 
-      const collegeItems = Array.from(divisionMap.values());
-      collegeItems.sort((a, b) => {
-        const idxA = ORDER.indexOf(a.slug);
-        const idxB = ORDER.indexOf(b.slug);
-        return (idxA === -1 ? 99 : idxA) - (idxB === -1 ? 99 : idxB);
-      });
+// ── Shape helpers ───────────────────────────────────────────────────
 
-      return [{ slug: 'overview', label: 'Overview' }, ...collegeItems];
-    } catch {
-      return [
-        { slug: 'overview', label: 'Overview' },
-        { slug: 'svit-degree', label: 'SVIT (Degree)' },
-        { slug: 'svit-coa', label: 'COA (Architecture)' },
-        { slug: 'svica', label: 'SVICA (Comp. Apps)' },
-        { slug: 'svion', label: 'SVION (Nursing)' },
-      ];
+type OverviewMeta = {
+  highestPackage?: string;
+  averagePackage?: string;
+  sectionConfig?: Partial<SectionConfig>;
+  graphicalData?: PlacementYearPoint[];
+  testimonials?: PlacementTestimonial[];
+};
+
+function readMeta(raw: unknown): OverviewMeta {
+  if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+  return raw as OverviewMeta;
+}
+
+/** True for ids that came back from Postgres (as opposed to client-minted `s_123`). */
+export function isPersistedId(id: string): boolean {
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+}
+
+// ── Reads ───────────────────────────────────────────────────────────
+
+export const getPlacementContent = createServerFn({ method: "GET" }).handler(
+  async (): Promise<FullPlacementData> => {
+    const sb = serverClient();
+
+    const [cellRes, studentsRes, recruitersRes] = await Promise.all([
+      sb
+        .from("placement_cells")
+        .select(
+          "about_text, hero_title, hero_subtitle, officer_name, officer_designation, officer_phone, officer_email, officer_photo_url, metadata",
+        )
+        .eq("college_code", OVERVIEW_CODE)
+        .maybeSingle(),
+      sb
+        .from("placed_students")
+        .select("id, student_name, company_name, batch_year, photo_url, colleges(slug)")
+        .eq("status", "published")
+        .order("batch_year", { ascending: false })
+        .order("student_name", { ascending: true }),
+      sb
+        .from("recruiters")
+        .select("id, company_name, logo_url, sort_order")
+        .eq("status", "published")
+        .is("deleted_at", null)
+        .order("sort_order", { ascending: true }),
+    ]);
+
+    if (cellRes.error) throw new Error(cellRes.error.message);
+    if (studentsRes.error) throw new Error(studentsRes.error.message);
+    if (recruitersRes.error) throw new Error(recruitersRes.error.message);
+
+    const cell = cellRes.data as Record<string, any> | null;
+    const meta = readMeta(cell?.metadata);
+
+    return {
+      heroTitle: cell?.hero_title || EMPTY_PLACEMENT_DATA.heroTitle,
+      heroSubtitle: cell?.hero_subtitle || EMPTY_PLACEMENT_DATA.heroSubtitle,
+      highestPackage: meta.highestPackage || EMPTY_PLACEMENT_DATA.highestPackage,
+      averagePackage: meta.averagePackage || EMPTY_PLACEMENT_DATA.averagePackage,
+      aboutText: cell?.about_text || "",
+      sectionConfig: {
+        sections: { ...DEFAULT_SECTION_CONFIG.sections, ...meta.sectionConfig?.sections },
+        order: meta.sectionConfig?.order || DEFAULT_SECTION_CONFIG.order,
+        highlights: meta.sectionConfig?.highlights || DEFAULT_HIGHLIGHTS,
+      },
+      officer: {
+        name: cell?.officer_name || "",
+        designation: cell?.officer_designation || "",
+        phone: cell?.officer_phone || "",
+        email: cell?.officer_email || "",
+        photo: cell?.officer_photo_url || null,
+      },
+      placedStudents: (studentsRes.data ?? []).map((s: any) => ({
+        id: s.id,
+        studentName: s.student_name,
+        companyName: s.company_name,
+        batchYear: s.batch_year ?? "",
+        photo: s.photo_url ?? null,
+        collegeId: s.colleges?.slug ?? "",
+      })),
+      recruiters: (recruitersRes.data ?? []).map((r: any) => ({
+        id: r.id,
+        companyName: r.company_name,
+        company_name: r.company_name,
+        logo: r.logo_url ?? null,
+        sortOrder: r.sort_order ?? 0,
+      })),
+      graphicalData: meta.graphicalData ?? [],
+      testimonials: meta.testimonials ?? [],
+    };
+  },
+);
+
+/** Recruiter list for pages outside the placement hub (e.g. course pages). */
+export const getAllRecruiters = createServerFn({ method: "GET" }).handler(
+  async (): Promise<RecruiterItem[]> => {
+    const sb = serverClient();
+    const { data, error } = await sb
+      .from("recruiters")
+      .select("id, company_name, logo_url, sort_order")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((r: any) => ({
+      id: r.id,
+      companyName: r.company_name,
+      company_name: r.company_name,
+      logo: r.logo_url ?? null,
+      sortOrder: r.sort_order ?? 0,
+    }));
+  },
+);
+
+/** Colleges available to tag a placed student against. */
+export const getPlacementColleges = createServerFn({ method: "GET" }).handler(
+  async (): Promise<CollegeOption[]> => {
+    const sb = serverClient();
+    const { data, error } = await sb
+      .from("colleges")
+      .select("slug, name, code")
+      .eq("status", "published")
+      .is("deleted_at", null)
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((c: any) => ({ slug: c.slug, name: c.name, code: c.code }));
+  },
+);
+
+// ── Write ───────────────────────────────────────────────────────────
+
+/**
+ * Persists the whole hub in one pass. Runs in the browser so the admin's
+ * Supabase session supplies the `authenticated` role that RLS requires.
+ * Throws on failure — callers surface the message rather than swallowing it.
+ */
+export async function savePlacementContent(data: FullPlacementData): Promise<void> {
+  const sb = supabase as any;
+
+  // 1 ── overview row: hero, about, officer, and everything JSON-shaped
+  const { error: cellError } = await sb.from("placement_cells").upsert(
+    {
+      college_code: OVERVIEW_CODE,
+      hero_title: data.heroTitle,
+      hero_subtitle: data.heroSubtitle,
+      about_text: data.aboutText,
+      officer_name: data.officer.name,
+      officer_designation: data.officer.designation,
+      officer_phone: data.officer.phone,
+      officer_email: data.officer.email,
+      officer_photo_url: data.officer.photo,
+      status: "published",
+      metadata: {
+        highestPackage: data.highestPackage,
+        averagePackage: data.averagePackage,
+        sectionConfig: data.sectionConfig,
+        graphicalData: data.graphicalData,
+        testimonials: data.testimonials,
+      },
+    },
+    { onConflict: "college_code" },
+  );
+  if (cellError) throw new Error(`Placement cell: ${cellError.message}`);
+
+  // 2 ── resolve college slugs → ids for the student cards
+  const { data: colleges, error: collegeError } = await sb
+    .from("colleges")
+    .select("id, slug")
+    .is("deleted_at", null);
+  if (collegeError) throw new Error(`Colleges: ${collegeError.message}`);
+  const collegeIdBySlug = new Map<string, string>(
+    (colleges ?? []).map((c: any) => [c.slug, c.id]),
+  );
+
+  // 3 ── placed_students: update existing, insert new, delete removed
+  const { data: existingStudents, error: studentReadError } = await sb
+    .from("placed_students")
+    .select("id");
+  if (studentReadError) throw new Error(`Placed students: ${studentReadError.message}`);
+
+  const keptStudentIds = new Set(
+    data.placedStudents.filter((s) => isPersistedId(s.id)).map((s) => s.id),
+  );
+  const removedStudentIds = (existingStudents ?? [])
+    .map((s: any) => s.id)
+    .filter((id: string) => !keptStudentIds.has(id));
+
+  for (const student of data.placedStudents) {
+    const collegeId = collegeIdBySlug.get(student.collegeId);
+    if (!collegeId) {
+      throw new Error(
+        `"${student.studentName}" is tagged to an unknown college (${student.collegeId || "none"}).`,
+      );
     }
-  });
+    // Only the fields this screen owns — package_lpa / department_id set
+    // elsewhere are left untouched.
+    const row = {
+      college_id: collegeId,
+      student_name: student.studentName,
+      company_name: student.companyName,
+      batch_year: student.batchYear || null,
+      photo_url: student.photo,
+      status: "published",
+    };
 
-/** All colleges for admin dropdowns */
-export const getAllColleges = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('colleges')
-      .select('id, slug, name')
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .order('sort_order', { ascending: true });
-    if (error) return [];
-    const valid = (data ?? []).filter((c: any) => !EXCLUDED_PLACEMENT_SLUGS.includes(c.slug));
-    return valid as unknown as { id: string; slug: string; name: string }[];
-  });
-
-/** Departments for a college — admin dropdowns */
-export const getDepartmentsByCollege = createServerFn({ method: 'GET' })
-  .validator((collegeId: string) => collegeId)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('departments').select('id, name, slug')
-      .eq('college_id', ctx.data).eq('status', 'published').order('name', { ascending: true });
-    if (error) return [];
-    return (data ?? []) as { id: string; name: string; slug: string }[];
-  });
-
-// ── Placed Students ───────────────────────────────────────────
-
-/** Fetch placed students for a college — used by public pages */
-export const getPlacedStudentsByCollege = createServerFn({ method: 'GET' })
-  .validator((input: { collegeId: string | null; isOverview: boolean }) => input)
-  .handler(async (ctx) => {
-    try {
-      let query = (supabase as any)
-        .from('placed_students')
-        .select('*, college:colleges(id, slug, name), department:departments(id, name, slug)')
-        .eq('status', 'published')
-        .order('batch_year', { ascending: false })
-        .order('created_at', { ascending: false });
-
-      if (!ctx.data.isOverview && ctx.data.collegeId) {
-        query = query.eq('college_id', ctx.data.collegeId);
-      }
-
-      const { data, error } = await query;
-      if (error) {
-        if (error.code === 'PGRST205' || error.code === '42P01') return [] as PlacedStudent[];
-        return [] as PlacedStudent[];
-      }
-      return (data ?? []) as unknown as PlacedStudent[];
-    } catch {
-      return [] as PlacedStudent[];
+    if (isPersistedId(student.id)) {
+      const { error } = await sb.from("placed_students").update(row).eq("id", student.id);
+      if (error) throw new Error(`Placed students: ${error.message}`);
+    } else {
+      const { error } = await sb.from("placed_students").insert(row);
+      if (error) throw new Error(`Placed students: ${error.message}`);
     }
-  });
+  }
+
+  if (removedStudentIds.length) {
+    const { error } = await sb.from("placed_students").delete().in("id", removedStudentIds);
+    if (error) throw new Error(`Placed students: ${error.message}`);
+  }
+
+  // 4 ── recruiters: same update / insert / soft-delete cycle
+  const { data: existingRecruiters, error: recruiterReadError } = await sb
+    .from("recruiters")
+    .select("id")
+    .is("deleted_at", null);
+  if (recruiterReadError) throw new Error(`Recruiters: ${recruiterReadError.message}`);
+
+  const keptRecruiterIds = new Set(
+    data.recruiters.filter((r) => isPersistedId(r.id)).map((r) => r.id),
+  );
+  const removedRecruiterIds = (existingRecruiters ?? [])
+    .map((r: any) => r.id)
+    .filter((id: string) => !keptRecruiterIds.has(id));
+
+  for (const [index, recruiter] of data.recruiters.entries()) {
+    const row = {
+      company_name: recruiter.companyName,
+      logo_url: recruiter.logo,
+      sort_order: index,
+      status: "published",
+    };
+
+    if (isPersistedId(recruiter.id)) {
+      const { error } = await sb.from("recruiters").update(row).eq("id", recruiter.id);
+      if (error) throw new Error(`Recruiters: ${error.message}`);
+    } else {
+      const { error } = await sb.from("recruiters").insert(row);
+      if (error) throw new Error(`Recruiters: ${error.message}`);
+    }
+  }
+
+  if (removedRecruiterIds.length) {
+    const { error } = await sb
+      .from("recruiters")
+      .update({ deleted_at: new Date().toISOString() })
+      .in("id", removedRecruiterIds);
+    if (error) throw new Error(`Recruiters: ${error.message}`);
+  }
+}

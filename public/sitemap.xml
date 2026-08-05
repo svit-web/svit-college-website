@@ -51,5 +51,7 @@
   <url><loc>https://svitvasad.ac.in/campus-life/events</loc><priority>0.6</priority></url>
   <url><loc>https://svitvasad.ac.in/campus-life/clubs</loc><priority>0.6</priority></url>
   <url><loc>https://svitvasad.ac.in/campus-life/facilities</loc><priority>0.6</priority></url>
-  <url><loc>https://svitvasad.ac.in/campus-life/centre</loc><priority>0.6</priority></url>
+
+  <!-- Student Corner -->
+  <url><loc>https://svitvasad.ac.in/student-corner</loc><priority>0.6</priority></url>
 </urlset>

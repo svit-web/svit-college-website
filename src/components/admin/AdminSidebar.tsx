@@ -50,6 +50,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Facilities", to: "/admin/tables/facilities" },
       { label: "Labs", to: "/admin/labs" },
       { label: "Dept Activities", to: "/admin/tables/department_activities" },
+      { label: "Student Corner", to: "/admin/tables/centers" },
     ],
   },
   {
@@ -73,6 +74,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "T&P Master Hub", to: "/admin/tnp-hub" },
       { label: "Recruiters", to: "/admin/recruiters" },
       { label: "Testimonials", to: "/admin/tables/testimonials" },
+      { label: "Board of Management", to: "/admin/tables/board_members" },
       { label: "Accreditations", to: "/admin/tables/accreditations" },
       { label: "Downloads / Forms", to: "/admin/tables/downloads" },
       { label: "Media Library", to: "/admin/media" },

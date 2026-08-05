@@ -1,447 +1,485 @@
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import {
-  Mail, Phone, User, Image as ImageIcon, Info,
-  BarChart3, GraduationCap, Building2, UserCircle2,
-  LayoutDashboard, TrendingUp, Award, Users,
+  Target, MessagesSquare, Briefcase, CalendarCheck, UserCheck, Award,
+  BookOpen, GraduationCap, Building2, Sparkles, CheckCircle2, TrendingUp,
+  Phone, Mail, User, ChevronRight, ChevronDown, ChevronUp
 } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
-import type { PlacementPageContent } from "@/routes/placement.$college";
+import { PlacementTestimonialsSlider } from "./PlacementTestimonialsSlider";
+import {
+  type FullPlacementData,
+  type PlacementHighlight,
+  type PlacementTestimonial
+} from "@/lib/placement.functions";
 
-const collegesList = [
-  { slug: "overview",   label: "Overview",              icon: LayoutDashboard },
-  { slug: "svit-degree",label: "SVIT (Degree)",         icon: Building2 },
-  { slug: "svit-coa",   label: "COA (Architecture)",    icon: Building2 },
-  { slug: "svica",      label: "SVICA (Comp. Apps)",    icon: Building2 },
-  { slug: "svion",      label: "SVION (Nursing)",       icon: Building2 },
-];
+const STUDENTS_PER_PAGE = 10;
+const RECRUITERS_PER_PAGE = 12;
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Target,
+  MessagesSquare,
+  Briefcase,
+  CalendarCheck,
+  UserCheck,
+  Award,
+  BookOpen,
+  GraduationCap,
+  Building2,
+  Sparkles,
+  CheckCircle2,
+  TrendingUp,
+};
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return "?";
   return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase() || "?";
 }
 
-// ── Sub-components ─────────────────────────────────────────────
-
-/** Auto-calculated stat highlights bar */
-function StatsBar({ stats }: { stats: PlacementPageContent["autoStats"] }) {
-  if (stats.total === 0) return null;
-  const items = [
-    { label: "Students Placed", value: `${stats.total}+`, icon: Users },
-    ...(stats.highestPackage
-      ? [{ label: "Highest Package", value: `₹${stats.highestPackage} LPA`, icon: Award }]
-      : []),
-    ...(stats.averagePackage
-      ? [{ label: "Average Package", value: `₹${stats.averagePackage} LPA`, icon: TrendingUp }]
-      : []),
-  ];
-  return (
-    <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-      {items.map((item, i) => {
-        const Icon = item.icon;
-        return (
-          <Reveal key={item.label} delay={i * 0.06}>
-            <div className="flex flex-col items-center rounded-2xl border-2 border-navy/15 bg-white p-6 text-center hover:border-gold transition-colors">
-              <Icon className="h-5 w-5 text-crimson mb-2" />
-              <div className="font-display text-3xl md:text-4xl font-bold text-navy">{item.value}</div>
-              <div className="mt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">{item.label}</div>
-            </div>
-          </Reveal>
-        );
-      })}
-    </div>
-  );
+export interface PlacementPageProps {
+  data: FullPlacementData;
 }
 
-/** Auto bar chart from year-wise student counts */
-function YearChart({ byYear }: { byYear: PlacementPageContent["autoStats"]["byYear"] }) {
-  if (!byYear.length) return null;
-  const maxCount = Math.max(...byYear.map((d) => d.count), 1);
-  return (
-    <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8">
-      <div className="flex flex-wrap items-baseline justify-between gap-2 mb-6">
-        <h3 className="font-display text-lg font-bold text-navy">Year-wise Placements</h3>
-        <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-          Auto-calculated from student records
-        </span>
-      </div>
-      <div className="overflow-x-auto pb-2 scrollbar-thin">
-        <div className="flex h-56 min-w-[400px] md:min-w-0 items-end gap-3 md:gap-6">
-          {byYear.map((d) => {
-            const h = Math.max(8, Math.round((d.count / maxCount) * 100));
-            return (
-              <div key={d.year} className="flex flex-1 flex-col items-center gap-2">
-                <div className="text-[11px] font-bold text-navy">{d.count}</div>
-                <div className="flex w-full flex-1 items-end">
-                  <div
-                    className="w-full rounded-t-lg bg-gradient-to-t from-navy to-navy/60 transition-all hover:from-crimson hover:to-gold cursor-default"
-                    style={{ height: `${h}%` }}
-                    title={`${d.year}: ${d.count} students placed`}
-                  />
-                </div>
-                <div className="text-xs font-semibold text-navy">{d.year}</div>
-                <div className="text-[10px] uppercase tracking-wider text-muted-foreground">placed</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    </div>
-  );
-}
+export function PlacementPage({ data }: PlacementPageProps) {
+  const [visibleStudentCount, setVisibleStudentCount] = useState(STUDENTS_PER_PAGE);
+  const [visibleRecruiterCount, setVisibleRecruiterCount] = useState(RECRUITERS_PER_PAGE);
 
-/** Student portrait card */
-function StudentCard({
-  student,
-  placeholder,
-}: {
-  student: PlacementPageContent["placedStudents"][0];
-  placeholder: string | null;
-}) {
-  return (
-    <div className="card-lift flex flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white hover:border-gold transition-colors">
-      <div className="aspect-square w-full bg-secondary/20 flex items-center justify-center relative overflow-hidden">
-        {student.photo || placeholder ? (
-          <img
-            src={student.photo || placeholder!}
-            alt={student.companyName}
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-navy/5 to-navy/15">
-            <UserCircle2 className="h-14 w-14 text-navy/20" />
-          </div>
-        )}
-      </div>
-      <div className="p-3.5 border-t border-navy/8 text-center min-w-0">
-        {student.studentName && student.studentName !== "Student" && (
-          <div className="font-bold text-navy truncate text-xs mb-0.5">{student.studentName}</div>
-        )}
-        <div className="font-semibold text-slate-800 truncate text-sm">{student.companyName}</div>
-        <div className="mt-1 flex items-center justify-center">
-          <span className="rounded-full bg-navy/8 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-navy/60">
-            Batch {student.batchYear || "2024"}
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-}
+  const aboutText = data.aboutText;
+  const officer = data.officer;
+  const graphicalData = data.graphicalData || [];
+  const displayStudents = data.placedStudents;
+  const testimonials: PlacementTestimonial[] = data.testimonials || [];
 
-/** Overview highlight card — top student per college */
-function TopStudentCard({ s }: { s: PlacementPageContent["autoStats"]["topStudents"][0] }) {
-  return (
-    <Reveal>
-      <Link
-        to="/placement/$college"
-        params={{ college: s.collegeSlug }}
-        className="group flex flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white hover:border-gold transition-colors"
-      >
-        {/* Photo */}
-        <div className="aspect-[4/3] w-full overflow-hidden bg-gradient-to-br from-navy/5 to-navy/15 flex items-center justify-center relative">
-          {s.photoUrl ? (
-            <img src={s.photoUrl} alt={s.studentName} className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500" />
-          ) : (
-            <span className="text-4xl font-bold text-navy/20">{initials(s.studentName)}</span>
-          )}
-          {/* Package badge */}
-          {s.packageLpa && (
-            <div className="absolute top-2 right-2 rounded-full bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-white shadow">
-              ₹{s.packageLpa} LPA
-            </div>
-          )}
-        </div>
-        {/* Info */}
-        <div className="p-4 border-t border-navy/8">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-crimson mb-1">{s.collegeName}</div>
-          <div className="font-display font-bold text-navy text-base truncate">{s.studentName}</div>
-          {s.departmentName && (
-            <div className="text-[11px] text-slate-500 truncate mt-0.5">{s.departmentName}</div>
-          )}
-          <div className="text-sm font-semibold text-slate-600 mt-1 truncate">@ {s.companyName}</div>
-          {s.batchYear && (
-            <div className="mt-2 text-[10px] font-bold uppercase tracking-widest text-navy/40">Batch {s.batchYear}</div>
-          )}
-        </div>
-      </Link>
-    </Reveal>
-  );
-}
+  const placedStudentCount = displayStudents.length;
+  const recruiterCount = data.recruiters.length;
 
-/** Placement officer & coordinator card */
-function OfficerCard({ officer }: { officer: PlacementPageContent["placementOfficer"] }) {
-  const name = officer.name || "Training & Placement Officer";
-  const designation = officer.designation || "Head - Training & Placement Cell";
-  const phone = officer.phone || "+91 2692 274489";
-  const email = officer.email || "tnp@svitvasad.ac.in";
-  const photo = officer.photo;
+  const totalPlacedCount = graphicalData.reduce((a, c) => a + c.studentsPlaced, 0);
+  const sortedGraphicalData = [...graphicalData].sort((a, b) => b.studentsPlaced - a.studentsPlaced);
+  const peakYearPoint = sortedGraphicalData[0] || { year: "N/A", studentsPlaced: 0, placementPercentage: 0 };
+  const maxPct = Math.max(...graphicalData.map((d) => d.placementPercentage), 100);
 
-  return (
-    <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8 hover:border-gold transition-colors">
-      <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-        {photo ? (
-          <img
-            src={photo}
-            alt={name}
-            className="h-24 w-24 shrink-0 rounded-full object-cover border-2 border-navy/10"
-          />
-        ) : (
-          <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-navy/10 text-navy font-display text-2xl font-bold">
-            {name ? initials(name) : <User className="h-10 w-10 text-navy" />}
-          </div>
-        )}
-        <div className="min-w-0 flex-1">
-          <div className="font-display text-xl font-bold text-navy">{name}</div>
-          <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-crimson">{designation}</div>
-          <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-            {phone && (
-              <a href={`tel:${phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 hover:text-navy font-medium">
-                <Phone className="h-4 w-4 text-crimson" /> {phone}
-              </a>
-            )}
-            {email && (
-              <a href={`mailto:${email}`} className="inline-flex items-center gap-2 hover:text-navy font-medium">
-                <Mail className="h-4 w-4 text-crimson" /> {email}
-              </a>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+  const sections = data.sectionConfig?.sections || {
+    about: true,
+    trend: true,
+    placedStudents: true,
+    recruiters: true,
+    officer: true,
+    testimonials: true,
+  };
 
-// ── Main Page ──────────────────────────────────────────────────
-export function PlacementPage({ content }: { content: PlacementPageContent }) {
-  const isOverview = content.slug === "overview";
-  const hasStudents = content.placedStudents.length > 0;
-  const hasTopStudents = content.autoStats.topStudents.length > 0;
-  const activeDivisions = (content.divisions && content.divisions.length > 0)
-    ? content.divisions
-    : collegesList;
+  const highlights: PlacementHighlight[] = data.sectionConfig?.highlights || [];
 
   return (
     <>
+      {/* ── Section 1 — Hero ───────────────────────────────────── */}
       <PageHero
-        title={
-          isOverview
-            ? (content.heroTitle?.replace(/OVERVIEW\s*—\s*/i, "") || "Training & Placement Cell")
-            : (content.heroTitle || `${content.shortCode} — Placements`)
-        }
+        title={data.heroTitle}
         accent="Training & Placement"
-        subtitle={content.heroSubtitle || `Placement outcomes, recruiters and support across all SVIT institutions.`}
-        crumbs={
-          isOverview
-            ? [
-                { label: "Home", to: "/" },
-                { label: "Placements" },
-              ]
-            : [
-                { label: "Home", to: "/" },
-                { label: "Placements", to: "/placement/overview" },
-                { label: content.shortCode },
-              ]
-        }
+        subtitle={data.heroSubtitle}
+        crumbs={[
+          { label: "Home", to: "/" },
+          { label: "Placements" },
+        ]}
       />
 
-      <div className="bg-secondary/30">
-        <div className="container-page py-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_minmax(0,1fr)]">
+      {/* ── Section 2 — Metric ticker bar ──────────────────────── */}
+      <div className="bg-navy-deep text-white py-6 border-y-4 border-navy-deep shadow-md">
+        <div className="container-page max-w-6xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-0 md:divide-x divide-white/15 text-center">
+            <div className="px-4">
+              <div className="font-display text-3xl md:text-4xl font-extrabold text-white">
+                {placedStudentCount}+
+              </div>
+              <div className="mt-1 text-xs font-bold uppercase tracking-widest text-white/80">
+                Students Placed
+              </div>
+            </div>
 
-            {/* ── Sidebar ─────────────────────────────────── */}
-            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start space-y-4">
-              <nav
-                aria-label="College placement divisions"
-                className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
-              >
-                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                  Placements Dashboard
-                </div>
-                <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible scrollbar-none pb-1 lg:pb-0">
-                  {activeDivisions.map((item) => {
-                    const isActive =
-                      content.slug === item.slug ||
-                      (item.slug === "svit-degree" && content.slug === "svit") ||
-                      (item.slug === "svit-coa" && content.slug === "coa");
-                    const Icon = item.slug === "overview" ? LayoutDashboard : Building2;
-                    return (
-                      <li key={item.slug} className="shrink-0 lg:shrink">
-                        <Link
-                          to="/placement/$college"
-                          params={{ college: item.slug }}
-                          title={item.label}
-                          className={`flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all whitespace-nowrap lg:whitespace-normal ${
-                            isActive
-                              ? "border-gold bg-navy text-white shadow-sm"
-                              : "border-transparent text-navy hover:border-navy/15 hover:bg-secondary/60"
-                          }`}
-                        >
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span className="truncate">{item.label}</span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
+            <div className="px-4">
+              <div className="font-display text-3xl md:text-4xl font-extrabold text-gold">
+                {data.highestPackage}
+              </div>
+              <div className="mt-1 text-xs font-bold uppercase tracking-widest text-white/80">
+                Highest Package
+              </div>
+            </div>
 
-              {/* On this page section navigation for overview */}
-              {isOverview && (
-                <nav
-                  aria-label="Placement sections"
-                  className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
-                >
-                  <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                    On this page
-                  </div>
-                  <ul className="flex flex-col gap-1">
-                    {[
-                      { id: "about", label: "About T&P Cell", icon: Info },
-                      { id: "stats", label: "Statistics", icon: BarChart3 },
-                      { id: "highlights", label: "Top Performers", icon: Award },
-                      { id: "recruiters", label: "Recruiters", icon: Building2 },
-                      { id: "officer", label: "TNP Officer & Coordinator", icon: UserCircle2 },
-                    ].map((s) => {
-                      const Icon = s.icon;
+            <div className="px-4">
+              <div className="font-display text-3xl md:text-4xl font-extrabold text-white">
+                {data.averagePackage}
+              </div>
+              <div className="mt-1 text-xs font-bold uppercase tracking-widest text-white/80">
+                Average Package
+              </div>
+            </div>
+
+            <div className="px-4">
+              <div className="font-display text-3xl md:text-4xl font-extrabold text-gold">
+                {recruiterCount}+
+              </div>
+              <div className="mt-1 text-xs font-bold uppercase tracking-widest text-white/80">
+                Recruiting Partners
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Page Shell ─────────────────────────────────────────── */}
+      <div className="bg-secondary/30 min-h-screen py-12">
+        <div className="container-page max-w-6xl">
+          <div className="min-w-0 space-y-12">
+
+            {/* ── Section 3 — About (#about) ──────────────────── */}
+            {sections.about && (
+              <section id="about" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Training & Placement"
+                  title="About the T&P Cell"
+                  variant="eyebrow"
+                />
+
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Left column — highlights */}
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-navy mb-2">
+                      Cell Highlights &amp; Support Services
+                    </h4>
+                    {highlights.map((h) => {
+                      const IconComponent = ICON_MAP[h.icon] || Target;
                       return (
-                        <li key={s.id}>
-                          <a
-                            href={`#${s.id}`}
-                            className="flex items-center gap-2.5 rounded-xl border-2 border-transparent px-3 py-2 text-sm font-semibold text-navy transition-all hover:border-navy/15 hover:bg-secondary/60"
-                          >
-                            <Icon className="h-4 w-4 shrink-0" />
-                            <span>{s.label}</span>
-                          </a>
-                        </li>
+                        <div
+                          key={h.id}
+                          className="flex items-center gap-3.5 rounded-xl border-2 border-navy/15 bg-white p-4 shadow-2xs hover:border-navy transition-colors"
+                        >
+                          <div className="h-10 w-10 shrink-0 rounded-xl bg-navy/10 flex items-center justify-center">
+                            <IconComponent className="h-5 w-5 text-navy" />
+                          </div>
+                          <span className="text-xs font-bold text-navy leading-snug">
+                            {h.label}
+                          </span>
+                        </div>
                       );
                     })}
-                  </ul>
-                </nav>
-              )}
+                  </div>
 
-              {/* Quick stats in sidebar */}
-              {isOverview && content.autoStats.total > 0 && (
-                <div className="rounded-2xl border-2 border-navy/15 bg-white p-4 shadow-sm space-y-3">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">Quick Stats</div>
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-slate-500 font-medium">Total Placed</span>
-                      <span className="font-bold text-navy">{content.autoStats.total}</span>
+                  {/* Right column — institutional overview */}
+                  <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8 flex flex-col justify-between shadow-xs relative overflow-hidden">
+                    <div className="absolute top-0 right-0 h-32 w-32 bg-navy/5 rounded-bl-full pointer-events-none" />
+                    <div>
+                      <div className="text-xs font-bold uppercase tracking-widest text-navy/70 mb-3">
+                        Institutional Overview
+                      </div>
+                      <p className="text-sm text-navy/80 leading-relaxed font-medium">
+                        {aboutText}
+                      </p>
                     </div>
-                    {content.autoStats.highestPackage && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-500 font-medium">Highest</span>
-                        <span className="font-bold text-emerald-600">₹{content.autoStats.highestPackage} LPA</span>
-                      </div>
-                    )}
-                    {content.autoStats.averagePackage && (
-                      <div className="flex items-center justify-between text-sm">
-                        <span className="text-slate-500 font-medium">Average</span>
-                        <span className="font-bold text-emerald-700">₹{content.autoStats.averagePackage} LPA</span>
-                      </div>
-                    )}
+                    <div className="mt-6 pt-4 border-t border-navy/10 flex items-center justify-between text-xs font-extrabold text-navy">
+                      <span>SVIT Group Placement Office</span>
+                      <ChevronRight className="h-4 w-4 text-crimson" />
+                    </div>
                   </div>
                 </div>
-              )}
-            </aside>
+              </section>
+            )}
 
-            {/* ── Main content ─────────────────────────────── */}
-            <div className="min-w-0 space-y-10 [&>section]:scroll-mt-24">
+            {/* ── Section 4 — Trend chart (#trend) ────────────── */}
+            {sections.trend && (
+              <section id="trend" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Placement Statistics"
+                  title="Year-on-Year Placement Trend"
+                  variant="eyebrow"
+                />
 
-              {/* OVERVIEW ONLY: About T&P Cell */}
-              {isOverview && content.aboutText && (
-                <section id="about" className="rounded-2xl border-2 border-navy/15 bg-white p-8">
-                  <SectionHeading eyebrow="Training & Placement" title="About the T&P Cell" variant="eyebrow" />
-                  <p className="mt-6 text-muted-foreground leading-relaxed">{content.aboutText}</p>
-                </section>
-              )}
-
-              {/* OVERVIEW ONLY: Auto-Stats bar & chart */}
-              {isOverview && content.autoStats.total > 0 && (
-                <section id="stats">
-                  <SectionHeading
-                    eyebrow="Placement statistics"
-                    title="Group-wide Statistics"
-                    variant="eyebrow"
-                  />
-                  <div className="mt-6 space-y-6">
-                    <StatsBar stats={content.autoStats} />
-                    <YearChart byYear={content.autoStats.byYear} />
+                <div className="mt-6 rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8 shadow-xs">
+                  <div className="flex flex-wrap items-baseline justify-between gap-2 mb-6">
+                    <h3 className="font-display text-lg font-bold text-navy">
+                      Year-wise Recruitment Percentage &amp; Intake
+                    </h3>
+                    <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                      Students placed shown per bar
+                    </span>
                   </div>
-                </section>
-              )}
 
-              {/* OVERVIEW ONLY: Top student highlight per college */}
-              {isOverview && hasTopStudents && (
-                <section id="highlights">
-                  <SectionHeading eyebrow="Top performers" title="Highest Package per Institute" variant="eyebrow" />
-                  <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4">
-                    {content.autoStats.topStudents.map((s) => (
-                      <TopStudentCard key={s.collegeSlug} s={s} />
-                    ))}
+                  <div className="overflow-x-auto pb-2 scrollbar-thin">
+                    <div className="flex h-64 items-end gap-3 md:gap-5 pt-8 min-w-[500px] md:min-w-0">
+                      {graphicalData.map((point) => {
+                        const h = Math.max(
+                          8,
+                          Math.round((point.placementPercentage / maxPct) * 100)
+                        );
+                        return (
+                          <div
+                            key={point.year}
+                            className="flex flex-1 flex-col items-center gap-2 h-full justify-end"
+                          >
+                            <span className="text-[11px] font-extrabold text-navy bg-navy/10 px-2 py-0.5 rounded-md">
+                              {point.placementPercentage}%
+                            </span>
+                            <div className="flex w-full flex-1 items-end">
+                              <div
+                                className="w-full rounded-t-lg bg-gradient-to-t from-navy-deep via-navy to-navy-light transition-all hover:brightness-125 shadow-xs"
+                                style={{ height: `${h}%` }}
+                                title={`${point.year}: ${point.placementPercentage}% placement (${point.studentsPlaced} students)`}
+                              />
+                            </div>
+                            <span className="text-xs font-bold text-navy">
+                              {point.year}
+                            </span>
+                            <span className="text-[10px] font-semibold text-muted-foreground">
+                              {point.studentsPlaced} Placed
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
-                </section>
-              )}
 
-              {/* PER-COLLEGE ONLY: Student Album */}
-              {!isOverview && (
-                <section id="students">
-                  <SectionHeading
-                    eyebrow="Placed Students"
-                    title={`${content.shortCode} Placed Students`}
-                    variant="eyebrow"
-                  />
-                  {content.placedStudents.length > 0 ? (
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-                      {content.placedStudents.map((s, i) => (
-                        <Reveal key={`${s.companyName}-${i}`} delay={i * 0.03}>
-                          <StudentCard student={s} placeholder={content.defaultStudentPlaceholderUrl} />
+                  {/* Summary Tiles */}
+                  <div className="mt-8 pt-6 border-t-2 border-navy/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <div className="p-3 bg-secondary/50 rounded-xl">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Peak Placement Year
+                      </div>
+                      <div className="font-display text-lg font-extrabold text-navy mt-1">
+                        {peakYearPoint.year}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-secondary/50 rounded-xl">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Best Intake Count
+                      </div>
+                      <div className="font-display text-lg font-extrabold text-navy mt-1">
+                        {peakYearPoint.studentsPlaced} Students
+                      </div>
+                    </div>
+                    <div className="p-3 bg-secondary/50 rounded-xl">
+                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                        Total Placed (Shown Years)
+                      </div>
+                      <div className="font-display text-lg font-extrabold text-navy mt-1">
+                        {totalPlacedCount} Graduates
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {/* ── Section 5 — Placed students (#placedStudents) ─ */}
+            {sections.placedStudents && (
+              <section id="placedStudents" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Hall of Fame"
+                  title="Placed Students Showcase"
+                  variant="eyebrow"
+                />
+
+                {displayStudents.length === 0 ? (
+                  <div className="mt-6 rounded-2xl border-2 border-dashed border-navy/15 bg-white p-12 text-center">
+                    <p className="text-sm font-semibold text-muted-foreground">
+                      No placed student records yet. Add student cards via Admin Hub.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                      {displayStudents.slice(0, visibleStudentCount).map((s, i) => (
+                        <Reveal key={s.id || `st-${i}`} delay={(i % STUDENTS_PER_PAGE) * 0.03}>
+                          <div className="card-lift flex h-full flex-col items-center gap-3 rounded-2xl border-2 border-navy/15 bg-white p-4 text-center hover:border-navy transition-all shadow-2xs">
+                            {s.photo ? (
+                              <img
+                                src={s.photo}
+                                alt={s.studentName}
+                                className="h-20 w-20 rounded-full border-2 border-navy/20 object-cover"
+                                loading="lazy"
+                              />
+                            ) : (
+                              <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-navy/20 bg-navy font-display text-xl font-bold text-gold">
+                                {initials(s.studentName)}
+                              </div>
+                            )}
+                            <div className="min-w-0 w-full">
+                              <div className="truncate text-sm font-bold text-navy">
+                                {s.studentName}
+                              </div>
+                              <div className="truncate text-xs font-semibold text-navy/70 mt-0.5">
+                                {s.companyName}
+                              </div>
+                              <div className="mt-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                                Batch {s.batchYear}
+                              </div>
+                            </div>
+                          </div>
                         </Reveal>
                       ))}
                     </div>
-                  ) : (
-                    <div className="mt-6 rounded-xl border border-dashed border-slate-200 bg-slate-50/50 py-10 text-center text-xs text-slate-400">
-                      No placement student cards added yet for {content.shortCode}.
+
+                    {/* Pagination Controls */}
+                    {displayStudents.length > STUDENTS_PER_PAGE && (
+                      <div className="mt-8 text-center">
+                        {visibleStudentCount < displayStudents.length ? (
+                          <button
+                            type="button"
+                            onClick={() => setVisibleStudentCount((prev) => prev + STUDENTS_PER_PAGE)}
+                            className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-2.5 text-xs font-extrabold text-white hover:bg-navy/90 transition-all shadow-sm"
+                          >
+                            <span>Show More Students</span>
+                            <ChevronDown className="h-4 w-4 text-gold" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => setVisibleStudentCount(STUDENTS_PER_PAGE)}
+                            className="inline-flex items-center gap-2 rounded-xl border-2 border-navy/20 bg-white px-6 py-2.5 text-xs font-extrabold text-navy hover:bg-navy/5 transition-all shadow-sm"
+                          >
+                            <span>Show Less</span>
+                            <ChevronUp className="h-4 w-4 text-navy" />
+                          </button>
+                        )}
+                      </div>
+                    )}
+                  </>
+                )}
+              </section>
+            )}
+
+            {/* ── Section 6 — Recruiter logo wall (#recruiters) ── */}
+            {sections.recruiters && (
+              <section id="recruiters" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Corporate Partners"
+                  title="Recruiting Partners Logo Wall"
+                  variant="eyebrow"
+                />
+
+                <div className="mt-6 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {data.recruiters.slice(0, visibleRecruiterCount).map((r, i) => (
+                    <Reveal key={r.id || `rec-${i}`}>
+                      <div className="card-lift flex h-24 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-navy/15 bg-white p-3 text-center hover:border-navy transition-colors">
+                        {r.logo ? (
+                          <img
+                            src={r.logo}
+                            alt={r.companyName}
+                            className="max-h-10 max-w-[80%] object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="h-10 w-full flex items-center justify-center rounded-md bg-navy/5 font-display text-xs font-extrabold text-navy px-2 text-center">
+                            {r.companyName}
+                          </div>
+                        )}
+                        <span className="text-xs font-bold text-navy truncate w-full">
+                          {r.companyName}
+                        </span>
+                      </div>
+                    </Reveal>
+                  ))}
+                </div>
+
+                {data.recruiters.length > RECRUITERS_PER_PAGE && (
+                  <div className="mt-8 text-center">
+                    {visibleRecruiterCount < data.recruiters.length ? (
+                      <button
+                        type="button"
+                        onClick={() => setVisibleRecruiterCount((prev) => prev + RECRUITERS_PER_PAGE)}
+                        className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-2.5 text-xs font-extrabold text-white hover:bg-navy/90 transition-all shadow-sm"
+                      >
+                        <span>Show More Partners</span>
+                        <ChevronDown className="h-4 w-4 text-gold" />
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setVisibleRecruiterCount(RECRUITERS_PER_PAGE)}
+                        className="inline-flex items-center gap-2 rounded-xl border-2 border-navy/20 bg-white px-6 py-2.5 text-xs font-extrabold text-navy hover:bg-navy/5 transition-all shadow-sm"
+                      >
+                        <span>Show Less</span>
+                        <ChevronUp className="h-4 w-4 text-navy" />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </section>
+            )}
+
+            {/* ── Section 7 — Officer card (#officer) ──────────── */}
+            {sections.officer && (
+              <section id="officer" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Placement Leadership"
+                  title="T&P Officer & Coordinators"
+                  variant="eyebrow"
+                />
+
+                <div className="mt-6 rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8 shadow-xs">
+                  <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
+                    {officer.photo ? (
+                      <img
+                        src={officer.photo}
+                        alt={officer.name}
+                        className="h-28 w-28 shrink-0 rounded-2xl object-cover border-2 border-navy/20"
+                      />
+                    ) : (
+                      <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl bg-navy text-gold font-display text-2xl font-bold">
+                        {officer.name ? initials(officer.name) : <User className="h-12 w-12 text-gold" />}
+                      </div>
+                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <div className="font-display text-2xl font-extrabold text-navy">
+                        {officer.name || "T&P Officer"}
+                      </div>
+                      <div className="text-xs font-extrabold uppercase tracking-widest text-navy/70 mt-1">
+                        {officer.designation || "Head — Training & Placement Cell"}
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap gap-3">
+                        {officer.phone && (
+                          <a
+                            href={`tel:${officer.phone.replace(/\s/g, "")}`}
+                            className="inline-flex items-center gap-2 rounded-lg bg-secondary/60 px-3 py-1.5 text-xs font-bold text-navy hover:bg-navy hover:text-white transition-colors"
+                          >
+                            <Phone className="h-3.5 w-3.5 text-crimson" />
+                            <span>{officer.phone}</span>
+                          </a>
+                        )}
+
+                        {officer.email && (
+                          <a
+                            href={`mailto:${officer.email}`}
+                            className="inline-flex items-center gap-2 rounded-lg bg-secondary/60 px-3 py-1.5 text-xs font-bold text-navy hover:bg-navy hover:text-white transition-colors"
+                          >
+                            <Mail className="h-3.5 w-3.5 text-crimson" />
+                            <span>{officer.email}</span>
+                          </a>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </section>
-              )}
-
-              {/* OVERVIEW ONLY: Recruiters */}
-              {isOverview && content.recruiters.length > 0 && (
-                <section id="recruiters">
-                  <SectionHeading eyebrow="Recruiting partners" title="Recruiters" variant="eyebrow" />
-                  <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6">
-                    {content.recruiters.map((r) => (
-                      <Reveal key={r.companyName}>
-                        <div className="card-lift flex h-24 flex-col items-center justify-center gap-1 rounded-xl border-2 border-navy/15 bg-white p-3 text-center hover:border-gold transition-colors">
-                          {r.logo ? (
-                            <img src={r.logo} alt={r.companyName} className="max-h-10 w-full object-contain" />
-                          ) : (
-                            <div className="flex h-10 w-full items-center justify-center rounded bg-secondary/60 text-muted-foreground">
-                              <ImageIcon className="h-5 w-5" />
-                            </div>
-                          )}
-                          <div className="font-display text-xs font-bold text-navy truncate w-full">{r.companyName}</div>
-                        </div>
-                      </Reveal>
-                    ))}
                   </div>
-                </section>
-              )}
+                </div>
+              </section>
+            )}
 
-              {/* OVERVIEW ONLY: TNP Officer & Coordinator (Last section) */}
-              {isOverview && (
-                <section id="officer">
-                  <SectionHeading eyebrow="Get in touch" title="TNP Officer & Coordinator" variant="eyebrow" />
-                  <div className="mt-6">
-                    <OfficerCard officer={content.placementOfficer} />
-                  </div>
-                </section>
-              )}
+            {/* ── Section 8 — Testimonials Sliding Carousel (#testimonials) ─ */}
+            {sections.testimonials !== false && testimonials.length > 0 && (
+              <section id="testimonials" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Student Success Stories"
+                  title="What Our Placed Graduates Say"
+                  variant="eyebrow"
+                />
 
-            </div>
+                <div className="mt-6">
+                  <PlacementTestimonialsSlider items={testimonials} />
+                </div>
+              </section>
+            )}
+
           </div>
         </div>
       </div>
@@ -452,19 +490,19 @@ export function PlacementPage({ content }: { content: PlacementPageContent }) {
 export function PlacementPageNotFound() {
   return (
     <div className="container-page py-24 text-center">
-      <h1 className="font-display text-3xl font-bold text-navy">Placement division not found</h1>
-      <p className="mt-3 text-muted-foreground">Choose one of the available divisions:</p>
+      <h1 className="font-display text-3xl font-bold text-navy">
+        Placement Page
+      </h1>
+      <p className="mt-3 text-muted-foreground">
+        Return to the main placement page:
+      </p>
       <div className="mt-6 flex flex-wrap justify-center gap-3">
-        {(["overview", "svit-degree", "svica", "svion", "svit-coa"] as const).map((slug) => (
-          <Link
-            key={slug}
-            to="/placement/$college"
-            params={{ college: slug }}
-            className="rounded-xl bg-navy px-5 py-2.5 text-sm font-semibold text-white hover:bg-navy/80 transition"
-          >
-            {slug.toUpperCase()}
-          </Link>
-        ))}
+        <Link
+          to="/placement"
+          className="rounded-xl bg-navy px-5 py-2.5 text-sm font-bold text-white hover:bg-navy/80 transition"
+        >
+          View Placement Page
+        </Link>
       </div>
     </div>
   );

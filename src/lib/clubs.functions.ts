@@ -12,6 +12,8 @@ export interface StudentClub {
   student_coordinator_name: string | null;
   featured: boolean;
   status: 'draft' | 'published' | 'archived';
+  department_id: string | null;
+  departmentName: string | null;
   metadata: {
     subtitle?: string;
     accent?: string;
@@ -24,6 +26,17 @@ export interface StudentClub {
   updated_at: string;
 }
 
+const CLUB_SELECT_WITH_DEPARTMENT = '*, departments(name)';
+
+function mapClubRow(row: any): StudentClub {
+  const dept = Array.isArray(row.departments) ? row.departments[0] : row.departments;
+  return {
+    ...row,
+    departmentName: dept?.name ?? null,
+    departments: undefined,
+  } as StudentClub;
+}
+
 /**
  * Fetch all published student clubs
  */
@@ -31,7 +44,7 @@ export const getAllStudentClubs = createServerFn({ method: 'GET' })
   .handler(async () => {
     const { data, error } = await supabase
       .from('student_clubs')
-      .select('*')
+      .select(CLUB_SELECT_WITH_DEPARTMENT)
       .eq('status', 'published')
       .order('name', { ascending: true });
 
@@ -40,7 +53,7 @@ export const getAllStudentClubs = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as unknown as StudentClub[];
+    return (data ?? []).map(mapClubRow);
   });
 
 /**
@@ -50,7 +63,7 @@ export const getFeaturedStudentClubs = createServerFn({ method: 'GET' })
   .handler(async () => {
     const { data, error } = await supabase
       .from('student_clubs')
-      .select('*')
+      .select(CLUB_SELECT_WITH_DEPARTMENT)
       .eq('status', 'published')
       .eq('featured' as any, true)
       .order('name', { ascending: true });
@@ -60,7 +73,7 @@ export const getFeaturedStudentClubs = createServerFn({ method: 'GET' })
       throw error;
     }
 
-    return data as unknown as StudentClub[];
+    return (data ?? []).map(mapClubRow);
   });
 
 /**
@@ -72,14 +85,14 @@ export const getStudentClubBySlug = createServerFn({ method: 'GET' })
     const slug = ctx.data;
     const { data, error } = await supabase
       .from('student_clubs')
-      .select('*')
+      .select(CLUB_SELECT_WITH_DEPARTMENT)
       .eq('slug', slug)
       .eq('status', 'published')
       .maybeSingle();
 
     if (error) throw error;
 
-    return data as unknown as StudentClub | null;
+    return data ? mapClubRow(data) : null;
   });
 
 export interface ClubEvent {

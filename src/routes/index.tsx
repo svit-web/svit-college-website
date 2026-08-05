@@ -300,7 +300,17 @@ function TrustBand() {
 function CTABannerSection() {
   const items = useHomepageItems();
   const promo = promoBySlot(items, "home_cta_banner") ?? null;
-  return <CTABanner promo={promo} />;
+  return (
+    <CTABanner
+      eyebrow={promo?.eyebrow ?? undefined}
+      title={promo?.title ?? undefined}
+      subtitle={promo?.subtitle ?? promo?.body ?? undefined}
+      primaryActionLabel={promo?.link_label ?? undefined}
+      primaryActionTo={promo?.link_href ?? undefined}
+      secondaryActionLabel={promo?.secondary_link_label ?? undefined}
+      secondaryActionTo={promo?.secondary_link_href ?? undefined}
+    />
+  );
 }
 
 function EventsAndEnquiry() {
