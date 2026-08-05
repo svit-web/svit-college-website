@@ -1,10 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
-import { Building2, Users, CalendarDays, ArrowRight } from "lucide-react";
+import { Building2, Users, CalendarDays, GraduationCap, ArrowRight } from "lucide-react";
 import { getAllStudentClubs } from "@/lib/clubs.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllEvents } from "@/lib/events.functions";
+import { getAllCenters } from "@/lib/centers.functions";
 
 export const Route = createFileRoute("/campus-life/")({
   head: () => ({
@@ -14,30 +15,32 @@ export const Route = createFileRoute("/campus-life/")({
     ],
   }),
   loader: async () => {
-    const [clubs, facilities, events] = await Promise.all([
+    const [clubs, facilities, events, centers] = await Promise.all([
       getAllStudentClubs(),
       getAllFacilities(),
       getAllEvents(),
+      getAllCenters(),
     ]);
-    return { clubs, facilities, events };
+    return { clubs, facilities, events, centers };
   },
   component: CampusLifeOverview,
 });
 
 function CampusLifeOverview() {
-  const { clubs, facilities, events } = Route.useLoaderData();
+  const { clubs, facilities, events, centers } = Route.useLoaderData();
 
   const SUMMARY = [
     { icon: Building2, label: "Facilities", count: facilities.length, to: "/campus-life/facilities" },
     { icon: Users, label: "Student Clubs", count: clubs.length, to: "/campus-life/clubs" },
     { icon: CalendarDays, label: "Flagship Events", count: events.length, to: "/campus-life/events" },
+    { icon: GraduationCap, label: "Societies", count: centers.length, to: "/student-corner" },
   ] as const;
 
   return (
     <div className="space-y-12">
       <div>
         <SectionHeading eyebrow="Overview" title="Life beyond the classroom" subtitle="From cricket grounds and smart classrooms to TEDx and Prakarsh, campus life at SVIT is designed around student initiative." />
-        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {SUMMARY.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.05}>
               <Link to={s.to} className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">
@@ -86,6 +89,27 @@ function CampusLifeOverview() {
               >
                 <h4 className="font-display font-bold text-navy">{c.name}</h4>
                 <p className="mt-2 text-sm text-muted-foreground">{c.metadata?.subtitle ?? c.description}</p>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <SectionHeading eyebrow="Societies" title="Centres, cells and chapters" />
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {centers.map((c, i) => (
+            <Reveal key={c.slug} delay={i * 0.04}>
+              <Link
+                to="/student-corner/$slug"
+                params={{ slug: c.slug }}
+                className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
+              >
+                <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">
+                  {c.metadata?.accent ?? "Centre"}
+                </div>
+                <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>
+                <p className="mt-2 text-sm text-muted-foreground">{c.metadata?.subtitle ?? ""}</p>
               </Link>
             </Reveal>
           ))}

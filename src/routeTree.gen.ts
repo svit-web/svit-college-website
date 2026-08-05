@@ -17,7 +17,6 @@ import { Route as AntiRaggingRouteImport } from './routes/anti-ragging'
 import { Route as CampusRouteImport } from './routes/campus'
 import { Route as CampusLifeRouteImport } from './routes/campus-life'
 import { Route as CareersRouteImport } from './routes/careers'
-import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DownloadsRouteImport } from './routes/downloads'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as GrievanceRouteImport } from './routes/grievance'
@@ -124,11 +123,6 @@ const CampusLifeRoute = CampusLifeRouteImport.update({
 const CareersRoute = CareersRouteImport.update({
   id: '/careers',
   path: '/careers',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DownloadsRoute = DownloadsRouteImport.update({
@@ -484,7 +478,6 @@ export interface FileRoutesByFullPath {
   '/campus': typeof CampusRoute
   '/campus-life': typeof CampusLifeRouteWithChildren
   '/careers': typeof CareersRoute
-  '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
   '/gallery': typeof GalleryRouteWithChildren
   '/grievance': typeof GrievanceRoute
@@ -559,7 +552,6 @@ export interface FileRoutesByTo {
   '/anti-ragging': typeof AntiRaggingRoute
   '/campus': typeof CampusRoute
   '/careers': typeof CareersRoute
-  '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
   '/grievance': typeof GrievanceRoute
   '/news': typeof NewsRoute
@@ -635,7 +627,6 @@ export interface FileRoutesById {
   '/campus': typeof CampusRoute
   '/campus-life': typeof CampusLifeRouteWithChildren
   '/careers': typeof CareersRoute
-  '/contact': typeof ContactRoute
   '/downloads': typeof DownloadsRoute
   '/gallery': typeof GalleryRouteWithChildren
   '/grievance': typeof GrievanceRoute
@@ -715,7 +706,6 @@ export interface FileRouteTypes {
     | '/campus'
     | '/campus-life'
     | '/careers'
-    | '/contact'
     | '/downloads'
     | '/gallery'
     | '/grievance'
@@ -790,7 +780,6 @@ export interface FileRouteTypes {
     | '/anti-ragging'
     | '/campus'
     | '/careers'
-    | '/contact'
     | '/downloads'
     | '/grievance'
     | '/news'
@@ -865,7 +854,6 @@ export interface FileRouteTypes {
     | '/campus'
     | '/campus-life'
     | '/careers'
-    | '/contact'
     | '/downloads'
     | '/gallery'
     | '/grievance'
@@ -944,7 +932,6 @@ export interface RootRouteChildren {
   CampusRoute: typeof CampusRoute
   CampusLifeRoute: typeof CampusLifeRouteWithChildren
   CareersRoute: typeof CareersRoute
-  ContactRoute: typeof ContactRoute
   DownloadsRoute: typeof DownloadsRoute
   GalleryRoute: typeof GalleryRouteWithChildren
   GrievanceRoute: typeof GrievanceRoute
@@ -1023,13 +1010,6 @@ declare module '@tanstack/react-router' {
       path: '/careers'
       fullPath: '/careers'
       preLoaderRoute: typeof CareersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/downloads': {
@@ -1683,7 +1663,6 @@ const rootRouteChildren: RootRouteChildren = {
   CampusRoute: CampusRoute,
   CampusLifeRoute: CampusLifeRouteWithChildren,
   CareersRoute: CareersRoute,
-  ContactRoute: ContactRoute,
   DownloadsRoute: DownloadsRoute,
   GalleryRoute: GalleryRouteWithChildren,
   GrievanceRoute: GrievanceRoute,

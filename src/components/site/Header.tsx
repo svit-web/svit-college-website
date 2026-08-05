@@ -1,7 +1,7 @@
 import { useRef, useState, useMemo, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, CalendarDays, ChevronDown, ChevronRight, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, GraduationCap, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
 const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
@@ -9,9 +9,7 @@ const primaryNav = [
   { label: "About SVIT", to: "/about" },
   { label: "Colleges", to: "/colleges" },
   { label: "Campus Life", to: "/campus-life" },
-  { label: "Student Corner", to: "/student-corner" },
   { label: "Placement", to: "/placement" },
-  { label: "Contact Us", to: "/contact" },
 ] as const;
 const topNav = [
   { label: "Parents", to: "/parents" },
@@ -27,18 +25,16 @@ import { useQuery } from "@tanstack/react-query";
 import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getSports } from "@/lib/sports.functions";
-import { ABOUT_SECTIONS } from "@/lib/about-sections";
+import { getAllCenters } from "@/lib/centers.functions";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
-  const [aboutOpen, setAboutOpen] = useState(false);
 
   // Mobile accordion states — all collapsed by default
   const [mobileCollegesOpen, setMobileCollegesOpen] = useState(false);
   const [mobileCampusOpen, setMobileCampusOpen] = useState(false);
-  const [mobileAboutOpen, setMobileAboutOpen] = useState(false);
 
   // Lock body scroll while mobile menu is open
   useEffect(() => {
@@ -50,7 +46,6 @@ export function Header() {
     setOpen(false);
     setMobileCollegesOpen(false);
     setMobileCampusOpen(false);
-    setMobileAboutOpen(false);
   }
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -117,50 +112,6 @@ export function Header() {
         <nav className="hidden items-center gap-1 lg:flex">
           {primaryNav.map((n) => {
             const active = n.to === "/" ? pathname === "/" : pathname.startsWith(n.to);
-            if (n.label === "About SVIT") {
-              return (
-                <div
-                  key={n.to}
-                  className="relative"
-                  onMouseEnter={() => setAboutOpen(true)}
-                  onMouseLeave={() => setAboutOpen(false)}
-                >
-                  <Link
-                    to={n.to}
-                    className={cn(
-                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
-                      active ? "text-navy" : "text-ink/80 hover:text-navy"
-                    )}
-                  >
-                    {n.label} <ChevronDown className="h-3 w-3" />
-                  </Link>
-                  <AnimatePresence>
-                    {aboutOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
-                      >
-                        <div className="grid grid-cols-1 gap-1">
-                          {ABOUT_SECTIONS.map((s) => (
-                            <Link
-                              key={s.to}
-                              to={s.to}
-                              onClick={() => setAboutOpen(false)}
-                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
-                            >
-                              {s.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              );
-            }
             if (n.label === "Colleges") {
               return (
                 <div
@@ -277,34 +228,6 @@ export function Header() {
             <div className="max-h-[calc(100dvh-116px)] overflow-y-auto">
             <div className="container-page flex flex-col gap-1 py-4">
               {primaryNav.map((n) => {
-                if (n.label === "About SVIT") {
-                  return (
-                    <div key={n.to}>
-                      <button
-                        type="button"
-                        onClick={() => setMobileAboutOpen((o) => !o)}
-                        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                      >
-                        {n.label}
-                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileAboutOpen && "rotate-180")} />
-                      </button>
-                      {mobileAboutOpen && (
-                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                          {ABOUT_SECTIONS.map((s) => (
-                            <Link
-                              key={s.to}
-                              to={s.to}
-                              onClick={closeMobileMenu}
-                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                            >
-                              {s.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                }
                 if (n.label === "Colleges") {
                   return (
                     <div key={n.to}>
@@ -425,6 +348,12 @@ function useCampusCategories(): MegaCategory[] {
     staleTime,
   });
 
+  const { data: centers } = useQuery({
+    queryKey: ['centers'],
+    queryFn: () => getAllCenters(),
+    staleTime,
+  });
+
   return [
     {
       key: "facilities",
@@ -465,6 +394,17 @@ function useCampusCategories(): MegaCategory[] {
       allLabel: "All events",
       allTo: "/campus-life/events",
       items: (events ?? []).map((c) => ({ label: c.title.split("—")[0].trim(), to: `/campus-life/events/${c.slug}` })),
+    },
+    {
+      key: "student-corner",
+      title: "Societies",
+      icon: GraduationCap,
+      allLabel: "All centres",
+      allTo: "/student-corner",
+      items: (centers ?? []).map((c) => ({
+        label: c.name.split("(")[0].trim(),
+        to: `/student-corner/${c.slug}`,
+      })),
     },
   ];
 }

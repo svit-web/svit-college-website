@@ -39,7 +39,6 @@ export function Footer() {
     { label: "Campus Life", to: "/campus-life" },
     { label: "Placement", to: "/placement/overview" },
     { label: "News & Events", to: "/news" },
-    { label: "Contact", to: "/contact" },
   ];
   const important = [
     { label: "Anti-Ragging", to: "/anti-ragging" },

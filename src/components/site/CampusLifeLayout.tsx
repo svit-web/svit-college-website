@@ -1,6 +1,6 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Home, Building2, Users, CalendarDays } from "lucide-react";
+import { Home, Building2, Users, CalendarDays, GraduationCap } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { cn } from "@/lib/utils";
 import { heroAppearanceQuery } from "@/lib/homepage";
@@ -10,6 +10,7 @@ const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] =
   { to: "/campus-life/facilities", label: "Facilities", icon: Building2 },
   { to: "/campus-life/clubs", label: "Clubs", icon: Users },
   { to: "/campus-life/events", label: "Events", icon: CalendarDays },
+  { to: "/student-corner", label: "Societies", icon: GraduationCap },
 ];
 
 export function CampusLifeLayout() {

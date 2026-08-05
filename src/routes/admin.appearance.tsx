@@ -238,15 +238,6 @@ function AdminAppearancePage() {
               />
             </div>
           </div>
-          <div>
-            <span className="text-[11px] font-semibold text-slate-500 uppercase">Contact Page</span>
-            <div className="mt-1">
-              <MediaUploader
-                value={settings.contactPhoto ?? ""}
-                onChange={(url) => setSettings((s) => ({ ...s, contactPhoto: url || null }))}
-              />
-            </div>
-          </div>
         </div>
       </div>
     </div>
