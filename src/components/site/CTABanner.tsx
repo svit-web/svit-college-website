@@ -24,8 +24,8 @@ export function CTABanner({
   secondaryActionTo = "/downloads",
 }: CTABannerProps) {
   const { data: misc } = useQuery(miscSettingsQuery);
-  const resolvedEyebrow = eyebrow ?? `Admissions Open ${misc?.admission_year ?? "2026-27"}`;
-  const resolvedSubtitle = subtitle ?? `Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and ${misc?.recruiter_count ?? 200}+ active recruiting partners.`;
+  const resolvedEyebrow = eyebrow ?? (misc?.admission_year ? `Admissions Open ${misc.admission_year}` : undefined);
+  const resolvedSubtitle = subtitle ?? (misc?.recruiter_count ? `Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and ${misc.recruiter_count}+ active recruiting partners.` : undefined);
   return (
     <section className="relative overflow-hidden bg-navy py-16 md:py-24 text-white">
       {/* Radial and blur orbs */}

@@ -15,7 +15,7 @@ function Parents() {
   const feats = [
     { icon: Shield, t: "Safety & Wellbeing", d: "24×7 campus security, medical centre and dedicated wardens in hostels." },
     { icon: MessageCircle, t: "Regular Communication", d: "Term-wise progress updates, PTA meetings and open communication with faculty." },
-    { icon: TrendingUp, t: "Career Growth", d: `Structured internships, industry mentors and ${misc?.placement_percentage ?? 95}% placement track record.` },
+    { icon: TrendingUp, t: "Career Growth", d: misc?.placement_percentage ? `Structured internships, industry mentors and ${misc.placement_percentage}% placement track record.` : "Structured internships, industry mentors and strong placement track record." },
     { icon: CalendarCheck, t: "Parent Portal", d: "Access attendance, marks, fees and calendars via the student portal." },
   ];
   return (

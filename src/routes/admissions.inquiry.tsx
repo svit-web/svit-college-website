@@ -10,8 +10,8 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/admissions/inquiry")({
   head: ({ loaderData }) => {
-    const yr = loaderData?.admissionYear ?? "2026-27";
-    return { meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: `Submit an admission enquiry for ${yr} at SVIT Vasad.` }] };
+    const yr = loaderData?.admissionYear;
+    return { meta: [{ title: "Admission Inquiry — SVIT Vasad" }, { name: "description", content: yr ? `Submit an admission enquiry for ${yr} at SVIT Vasad.` : "Submit an admission enquiry at SVIT Vasad." }] };
   },
   loader: async () => {
     const [programmes, contact, misc] = await Promise.all([
@@ -19,14 +19,14 @@ export const Route = createFileRoute("/admissions/inquiry")({
       getContactInfo(),
       getMiscSettings(),
     ]);
-    return { programmes, phone: contact?.phone ?? "+91 2692 274766", admissionYear: misc.admission_year, placementPct: misc.placement_percentage };
+    return { programmes, phone: contact?.phone, admissionYear: misc.admission_year, placementPct: misc.placement_percentage };
   },
   component: Inquiry,
 });
 
 function Inquiry() {
   const { programmes, phone, admissionYear, placementPct } = Route.useLoaderData();
-  const yr = admissionYear ?? "2026-27";
+  const yr = admissionYear;
   const [sent, setSent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -107,7 +107,7 @@ function Inquiry() {
               <h3 className="mt-2 font-display text-xl font-bold">Join a legacy of 20 years</h3>
               <ul className="mt-4 space-y-2 text-sm text-white/85">
                 <li>&bull; AICTE approved programmes</li>
-                <li>&bull; {placementPct ?? 95}%+ placement record</li>
+                {placementPct && <li>&bull; {placementPct}%+ placement record</li>}
                 <li>&bull; Scholarships available</li>
                 <li>&bull; Modern hostels</li>
               </ul>
@@ -115,9 +115,11 @@ function Inquiry() {
             <div className="rounded-2xl border border-border bg-white p-6">
               <div className="text-xs font-semibold uppercase tracking-widest text-crimson">Helpline</div>
               <h3 className="mt-1 font-display text-lg font-bold text-navy">Talk to admissions</h3>
-              <a href={`tel:${phone.replace(/\s/g, "")}`} className="mt-3 inline-flex items-center gap-2 text-navy hover:text-gold">
-                <Phone className="h-4 w-4" /> {phone}
-              </a>
+              {phone && (
+                <a href={`tel:${phone.replace(/\s/g, "")}`} className="mt-3 inline-flex items-center gap-2 text-navy hover:text-gold">
+                  <Phone className="h-4 w-4" /> {phone}
+                </a>
+              )}
             </div>
           </aside>
         </div>

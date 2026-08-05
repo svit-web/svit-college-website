@@ -5,13 +5,6 @@ import { Logo } from "./Logo";
 import { useQuery } from "@tanstack/react-query";
 import { programmesQuery, contactInfoQuery, miscSettingsQuery } from "@/lib/homepage";
 
-const fallbackSite = {
-  fullName: "Sardar Vallabhbhai Institute of Technology",
-  email: "info@svitvasad.ac.in",
-  phone: "+91 2692 274766",
-  address: "Beside GIDC Vasad, Vasad — 388306, Anand, Gujarat, India",
-};
-
 const socialIconMap: Record<string, typeof Facebook> = {
   Facebook,
   Instagram,
@@ -26,10 +19,10 @@ export function Footer() {
   const { data: misc } = useQuery(miscSettingsQuery);
 
   const site = {
-    fullName: contactInfo?.full_name ?? fallbackSite.fullName,
-    email: contactInfo?.email ?? fallbackSite.email,
-    phone: contactInfo?.phone ?? fallbackSite.phone,
-    address: contactInfo?.address ?? fallbackSite.address,
+    fullName: contactInfo?.full_name,
+    email: contactInfo?.email,
+    phone: contactInfo?.phone,
+    address: contactInfo?.address,
   };
 
   const socialLinks = contactInfo?.social_links ?? {};
@@ -56,12 +49,12 @@ export function Footer() {
           <div className="lg:col-span-2 mb-2 md:mb-0">
             <Logo light />
             <p className="mt-4 text-sm text-white/70 max-w-sm">
-              {site.fullName} — a premier institute committed to excellence in education, research and community impact since {misc?.year_established ?? 1997}.
+              {site.fullName} — a premier institute committed to excellence in education, research and community impact{misc?.year_established ? ` since ${misc.year_established}` : ""}.
             </p>
             <div className="mt-5 space-y-2 text-sm">
-              <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-gold shrink-0" /><span>{site.address}</span></div>
-              <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-gold"><Phone className="h-4 w-4 text-gold" /> {site.phone}</a>
-              <a href={`mailto:${site.email}`} className="flex items-center gap-2 hover:text-gold"><Mail className="h-4 w-4 text-gold" /> {site.email}</a>
+              {site.address && <div className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 text-gold shrink-0" /><span>{site.address}</span></div>}
+              {site.phone && <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="flex items-center gap-2 hover:text-gold"><Phone className="h-4 w-4 text-gold" /> {site.phone}</a>}
+              {site.email && <a href={`mailto:${site.email}`} className="flex items-center gap-2 hover:text-gold"><Mail className="h-4 w-4 text-gold" /> {site.email}</a>}
             </div>
             <div className="mt-5 flex gap-3">
               {Object.entries(socialLinks).map(([platform, url]) => {
@@ -83,7 +76,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-white/60 md:flex-row">
-          <div>&copy; {new Date().getFullYear()} {site.fullName}. All rights reserved.</div>
+          <div>&copy; {new Date().getFullYear()}{site.fullName ? ` ${site.fullName}` : ""}. All rights reserved.</div>
           <div>Vasad, Gujarat &bull; India</div>
         </div>
       </div>

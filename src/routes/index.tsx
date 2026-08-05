@@ -33,7 +33,6 @@ import {
 } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS } from "@/lib/theme.functions";
 import { HeroPhotoLayer } from "@/components/site/HeroPhotoLayer";
-import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -85,14 +84,16 @@ function Hero() {
   const photos =
     resolvedAppearance.homepagePhotos.length > 0
       ? resolvedAppearance.homepagePhotos
-      : [hero?.image_url || campusHero];
+      : hero?.image_url ? [hero.image_url] : [];
 
-  const eyebrow = hero?.eyebrow ?? `Est. ${misc?.year_established ?? 1997} · Vasad, Gujarat`;
+  const eyebrow = hero?.eyebrow ?? (misc?.year_established ? `Est. ${misc.year_established} · Vasad, Gujarat` : "Vasad, Gujarat");
   const title = hero?.title ?? "Build Your Future.";
   const titleAccent = hero?.title_accent ?? "Shape The World.";
   const subtitle =
     hero?.subtitle ??
-    `SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with ${misc?.placement_percentage ?? 95}%+ placement across ${misc?.recruiter_count ?? 200}+ recruiting partners.`;
+    "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences."
+    + (misc?.placement_percentage ? ` ${misc.placement_percentage}%+ placement` : "")
+    + (misc?.recruiter_count ? ` across ${misc.recruiter_count}+ recruiting partners.` : "");
   const primaryLabel = hero?.link_label ?? "Apply Now";
   const primaryHref = hero?.link_href ?? "/admissions/inquiry";
   const secondaryLabel = hero?.secondary_link_label ?? "Explore Courses";
@@ -236,7 +237,7 @@ function HomeCarouselSection() {
   const mapped: CarouselSlide[] | undefined =
     slides.length > 0
       ? slides.map((s) => ({
-          image: s.image_url ?? campusHero,
+          image: s.image_url ?? "",
           eyebrow: s.eyebrow ?? "",
           title: s.title,
           subtitle: s.subtitle ?? "",

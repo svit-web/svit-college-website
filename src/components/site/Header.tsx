@@ -3,7 +3,6 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { Building2, CalendarDays, ChevronDown, ChevronRight, GraduationCap, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
-const fallbackSite = { email: "info@svitvasad.ac.in", phone: "+91 2692 274766" };
 const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About SVIT", to: "/about" },
@@ -66,8 +65,8 @@ export function Header() {
   const { data: contactInfo } = useQuery(contactInfoQuery);
 
   const site = {
-    email: contactInfo?.email ?? fallbackSite.email,
-    phone: contactInfo?.phone ?? fallbackSite.phone,
+    email: contactInfo?.email,
+    phone: contactInfo?.phone,
   };
 
   const displayColleges = useMemo(() => {
@@ -101,12 +100,16 @@ export function Header() {
       <div className="bg-navy-deep text-white/85 text-xs">
         <div className="container-page flex h-9 items-center justify-between">
           <div className="flex items-center gap-4">
-            <a href={`mailto:${site.email}`} className="hidden items-center gap-1.5 hover:text-gold sm:inline-flex">
-              <Mail className="h-3 w-3" /> {site.email}
-            </a>
-            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 hover:text-gold">
-              <Phone className="h-3 w-3" /> {site.phone}
-            </a>
+            {site.email && (
+              <a href={`mailto:${site.email}`} className="hidden items-center gap-1.5 hover:text-gold sm:inline-flex">
+                <Mail className="h-3 w-3" /> {site.email}
+              </a>
+            )}
+            {site.phone && (
+              <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-1.5 hover:text-gold">
+                <Phone className="h-3 w-3" /> {site.phone}
+              </a>
+            )}
           </div>
           <nav className="hidden items-center gap-4 md:flex">
             {topNav.map((n) => (

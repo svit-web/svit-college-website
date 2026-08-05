@@ -6,8 +6,8 @@ import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const Route = createFileRoute("/admissions/intake-fees")({
   head: ({ loaderData }) => {
-    const yr = loaderData?.admissionYear ?? "2026-27";
-    return { meta: [{ title: `Intake & Fees ${yr} — SVIT Vasad` }, { name: "description", content: "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad." }] };
+    const yr = loaderData?.admissionYear;
+    return { meta: [{ title: yr ? `Intake & Fees ${yr} — SVIT Vasad` : "Intake & Fees — SVIT Vasad" }, { name: "description", content: "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad." }] };
   },
   loader: async () => {
     const [courses, misc] = await Promise.all([getAllCoursesWithIntakeFees(), getMiscSettings()]);
@@ -42,7 +42,7 @@ function IntakeFeesPage() {
     <>
       <PageHero
         title="Intake & Fees"
-        accent={admissionYear ?? "2026-27"}
+        accent={admissionYear}
         subtitle="Programme-wise annual intake and tuition fees (per semester) across all SVIT colleges."
         crumbs={[
           { label: "Home", to: "/" },

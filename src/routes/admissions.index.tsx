@@ -9,8 +9,8 @@ import { useState } from "react";
 
 export const Route = createFileRoute("/admissions/")({
   head: ({ loaderData }) => {
-    const yr = loaderData?.admissionYear ?? "2026-27";
-    return { meta: [{ title: `Admissions ${yr} — SVIT Vasad` }, { name: "description", content: `How to apply, eligibility, fees, scholarships and FAQs for admissions at SVIT Vasad.` }] };
+    const yr = loaderData?.admissionYear;
+    return { meta: [{ title: yr ? `Admissions ${yr} — SVIT Vasad` : "Admissions — SVIT Vasad" }, { name: "description", content: `How to apply, eligibility, fees, scholarships and FAQs for admissions at SVIT Vasad.` }] };
   },
   loader: async () => {
     const [programmes, misc] = await Promise.all([getAllProgrammes(), getMiscSettings()]);
@@ -29,7 +29,7 @@ const steps = [
 
 function Admissions() {
   const { programmes, admissionYear } = Route.useLoaderData();
-  const yr = admissionYear ?? "2026-27";
+  const yr = admissionYear;
   const faqs = [
     { q: `When do admissions for ${yr} open?`, a: "Applications open in January. Merit lists are declared as per GTU / ACPC schedule." },
     { q: "Are scholarships available?", a: "Yes — merit-based, need-based, and government scholarships (SC/ST/OBC/EBC) are offered." },
