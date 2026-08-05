@@ -11,12 +11,11 @@ export interface Sport {
   is_active: boolean;
   sort_order: number;
   status: string;
-  metadata: {
-    players_count?: number;
-    coach?: string;
-    coach_image_url?: string;
-    achievements_count?: number;
-  };
+  players_count: number | null;
+  coach_name: string | null;
+  coach_image_url: string | null;
+  achievements_count: number | null;
+  metadata: Record<string, any>;
   created_at: string;
 }
 

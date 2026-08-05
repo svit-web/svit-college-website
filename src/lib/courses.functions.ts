@@ -9,10 +9,22 @@ export interface Course {
   code: string;
   degree_level: 'undergraduate' | 'graduate' | 'doctorate' | 'certificate';
   status: 'draft' | 'published' | 'archived';
+  description: string | null;
+  duration: string | null;
+  eligibility: string | null;
+  short_name: string | null;
+  year_started: number | null;
+  duration_years: number | null;
+  is_programme: boolean;
+  programme_slug: string | null;
+  tagline: string | null;
+  full_name: string | null;
+  color: string | null;
+  accent: string | null;
+  intake: number | null;
   metadata: {
-    description?: string;
-    duration?: string;
-    eligibility?: string;
+    outcomes?: string[];
+    highlights?: string[];
     [key: string]: any;
   };
   created_at: string;

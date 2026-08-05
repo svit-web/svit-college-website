@@ -8,11 +8,10 @@ export interface MOU {
   signed_date: string | null;
   expiry_date: string | null;
   status: string;
-  metadata: {
-    activities?: string[];
-    department?: string;
-    location?: string;
-  };
+  department_name: string | null;
+  location: string | null;
+  activities: string[] | null;
+  metadata: Record<string, any>;
 }
 
 export const getAllMOUs = createServerFn({ method: 'GET' })

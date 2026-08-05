@@ -20,10 +20,10 @@ interface Lab {
   slug: string;
   department_id: string | null;
   status: string;
+  subtitle: string | null;
+  accent_color: string | null;
+  description: string | null;
   metadata: {
-    subtitle?: string;
-    accent?: string;
-    description?: string;
     highlights?: Highlight[];
     imageUrl?: string;
   };
@@ -83,7 +83,7 @@ function AdminLabsPage() {
     setListLoading(true);
     const { data, error } = await supabase
       .from("facilities")
-      .select("id, name, slug, department_id, status, metadata")
+      .select("id, name, slug, department_id, status, subtitle, accent_color, description, metadata")
       .eq("department_id", deptId)
       .eq("facility_type", "laboratory")
       .is("deleted_at", null)
@@ -109,9 +109,9 @@ function AdminLabsPage() {
       name: lab.name,
       slug: lab.slug,
       department_id: lab.department_id ?? "",
-      subtitle: lab.metadata.subtitle ?? "",
-      accent: lab.metadata.accent ?? "",
-      description: lab.metadata.description ?? "",
+      subtitle: lab.subtitle ?? "",
+      accent: lab.accent_color ?? "",
+      description: lab.description ?? "",
       highlights: lab.metadata.highlights ?? [],
       imageUrl: lab.metadata.imageUrl ?? "",
       status: lab.status,
@@ -155,10 +155,10 @@ function AdminLabsPage() {
         department_id: form.department_id,
         facility_type: "laboratory" as const,
         status: form.status,
+        subtitle: form.subtitle.trim() || null,
+        accent_color: form.accent.trim() || null,
+        description: form.description.trim() || null,
         metadata: {
-          subtitle: form.subtitle.trim() || null,
-          accent: form.accent.trim() || null,
-          description: form.description.trim() || null,
           highlights: form.highlights.filter((h) => h.title.trim()),
           imageUrl: form.imageUrl || null,
         },
@@ -284,14 +284,14 @@ function AdminLabsPage() {
               {lab.metadata.imageUrl && (
                 <img src={lab.metadata.imageUrl} alt="" className="mb-3 h-28 w-full rounded-lg object-cover" />
               )}
-              {lab.metadata.accent && (
+              {lab.accent_color && (
                 <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                  {lab.metadata.accent}
+                  {lab.accent_color}
                 </div>
               )}
               <p className="font-semibold text-slate-900 text-sm leading-snug">{lab.name}</p>
-              {lab.metadata.subtitle && (
-                <p className="mt-0.5 text-xs text-slate-500 truncate">{lab.metadata.subtitle}</p>
+              {lab.subtitle && (
+                <p className="mt-0.5 text-xs text-slate-500 truncate">{lab.subtitle}</p>
               )}
               <div className="mt-3 flex items-center justify-between">
                 <span className={cn(
