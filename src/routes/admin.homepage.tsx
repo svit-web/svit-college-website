@@ -11,7 +11,6 @@ import {
   ArrowDown,
   Loader2,
   Grid,
-  Image,
   Palette,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -24,7 +23,7 @@ export const Route = createFileRoute("/admin/homepage")({
 
 function AdminHomepageLayoutPage() {
   const { user } = useAdminAuthContext();
-  const [activeTab, setActiveTab] = useState<"carousel" | "items" | "appearance">("carousel");
+  const [activeTab, setActiveTab] = useState<"items" | "appearance">("items");
 
   return (
     <div className="space-y-6">
@@ -39,13 +38,6 @@ function AdminHomepageLayoutPage() {
       </div>
 
       <div className="flex border-b border-slate-200">
-        <button
-          onClick={() => setActiveTab("carousel")}
-          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === "carousel" ? "border-crimson text-navy" : "border-transparent text-slate-600 hover:text-slate-900"}`}
-        >
-          <Image className="h-4 w-4" />
-          <span>Carousel Slides</span>
-        </button>
         <button
           onClick={() => setActiveTab("items")}
           className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === "items" ? "border-crimson text-navy" : "border-transparent text-slate-600 hover:text-slate-900"}`}
@@ -63,288 +55,9 @@ function AdminHomepageLayoutPage() {
       </div>
 
       <div>
-        {activeTab === "carousel" && <CarouselSlidesManager userId={user?.id} />}
         {activeTab === "items" && <HomepageItemsManager userId={user?.id} />}
         {activeTab === "appearance" && <HeroAppearancePanel />}
       </div>
-    </div>
-  );
-}
-
-// ─── Carousel Slides Manager ──────────────────────────────────────────────────
-
-interface CarouselSlideItem {
-  id: string;
-  eyebrow: string | null;
-  title: string;
-  subtitle: string | null;
-  image_url: string | null;
-  link_href: string | null;
-  link_label: string | null;
-  sort_order: number;
-  is_active: boolean;
-  status: string;
-}
-
-const EMPTY_SLIDE = {
-  eyebrow: "",
-  title: "",
-  subtitle: "",
-  image_url: "",
-  link_href: "",
-  link_label: "",
-  sort_order: 10,
-  is_active: true,
-  status: "published",
-};
-
-function CarouselSlidesManager({ userId }: { userId: string | undefined }) {
-  const [slides, setSlides] = useState<CarouselSlideItem[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingSlide, setEditingSlide] = useState<CarouselSlideItem | null>(null);
-  const [form, setForm] = useState({ ...EMPTY_SLIDE });
-
-  useEffect(() => { loadSlides(); }, []);
-
-  async function loadSlides() {
-    setLoading(true);
-    try {
-      const { data, error } = await (supabase as any)
-        .from("homepage_items")
-        .select("id, eyebrow, title, subtitle, image_url, link_href, link_label, sort_order, is_active, status")
-        .eq("item_type", "carousel_slide")
-        .eq("scope_type", "global")
-        .is("deleted_at", null)
-        .order("sort_order", { ascending: true });
-      if (error) throw error;
-      setSlides(data || []);
-    } catch (err: any) {
-      toast.error(`Failed to load slides: ${err.message}`);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  function openAdd() {
-    setEditingSlide(null);
-    setForm({ ...EMPTY_SLIDE, sort_order: (slides.length + 1) * 10 });
-    setIsModalOpen(true);
-  }
-
-  function openEdit(slide: CarouselSlideItem) {
-    setEditingSlide(slide);
-    setForm({
-      eyebrow: slide.eyebrow || "",
-      title: slide.title || "",
-      subtitle: slide.subtitle || "",
-      image_url: slide.image_url || "",
-      link_href: slide.link_href || "",
-      link_label: slide.link_label || "",
-      sort_order: slide.sort_order ?? 10,
-      is_active: slide.is_active ?? true,
-      status: slide.status || "published",
-    });
-    setIsModalOpen(true);
-  }
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault();
-    try {
-      const payload = {
-        item_type: "carousel_slide",
-        scope_type: "global",
-        college_id: null,
-        eyebrow: form.eyebrow || null,
-        title: form.title,
-        subtitle: form.subtitle || null,
-        image_url: form.image_url || null,
-        link_href: form.link_href || null,
-        link_label: form.link_label || null,
-        sort_order: form.sort_order,
-        is_active: form.is_active,
-        status: form.status,
-      };
-      if (editingSlide) {
-        const { error } = await (supabase as any).from("homepage_items").update(payload).eq("id", editingSlide.id);
-        if (error) throw error;
-        toast.success("Slide updated!");
-      } else {
-        const { error } = await (supabase as any).from("homepage_items").insert({ ...payload, created_by: userId });
-        if (error) throw error;
-        toast.success("Slide added!");
-      }
-      setIsModalOpen(false);
-      loadSlides();
-    } catch (err: any) {
-      toast.error(`Save failed: ${err.message}`);
-    }
-  }
-
-  async function handleDelete(slide: CarouselSlideItem) {
-    if (!confirm("Delete this carousel slide?")) return;
-    const { error } = await (supabase as any)
-      .from("homepage_items")
-      .update({ deleted_at: new Date().toISOString(), deleted_by: userId })
-      .eq("id", slide.id);
-    if (error) toast.error(error.message);
-    else { toast.success("Slide deleted."); loadSlides(); }
-  }
-
-  async function handleShift(slide: CarouselSlideItem, direction: "up" | "down") {
-    const idx = slides.findIndex((s) => s.id === slide.id);
-    const targetIdx = direction === "up" ? idx - 1 : idx + 1;
-    if (targetIdx < 0 || targetIdx >= slides.length) return;
-    const target = slides[targetIdx];
-    const [r1, r2] = await Promise.all([
-      (supabase as any).from("homepage_items").update({ sort_order: target.sort_order }).eq("id", slide.id),
-      (supabase as any).from("homepage_items").update({ sort_order: slide.sort_order }).eq("id", target.id),
-    ]);
-    if (r1.error) toast.error(r1.error.message);
-    else if (r2.error) toast.error(r2.error.message);
-    else loadSlides();
-  }
-
-  const f = (key: keyof typeof EMPTY_SLIDE, val: any) => setForm((p) => ({ ...p, [key]: val }));
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-4">
-        <div>
-          <p className="text-sm font-semibold text-navy">Promo Carousel</p>
-          <p className="text-xs text-slate-500">The large slideshow below the Colleges section. Each slide has a background photo, headline, and CTA button.</p>
-        </div>
-        <button
-          onClick={openAdd}
-          className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90"
-        >
-          <Plus className="h-3.5 w-3.5" /> Add Slide
-        </button>
-      </div>
-
-      {loading ? (
-        <div className="flex h-48 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-crimson" />
-        </div>
-      ) : slides.length === 0 ? (
-        <div className="rounded-xl border border-slate-200 bg-white p-12 text-center">
-          <Image className="mx-auto h-12 w-12 text-slate-300" />
-          <h3 className="mt-4 text-sm font-bold text-navy">No slides yet</h3>
-          <p className="mt-2 text-xs text-slate-500">Add a slide with a background photo, headline, and a CTA button.</p>
-        </div>
-      ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-          <div className="divide-y divide-slate-100">
-            {slides.map((slide, idx) => (
-              <div key={slide.id} className="flex items-center gap-4 px-4 py-3 hover:bg-slate-50 transition">
-                {slide.image_url ? (
-                  <img src={slide.image_url} alt="" className="h-14 w-24 shrink-0 rounded object-cover border border-slate-200" />
-                ) : (
-                  <div className="h-14 w-24 shrink-0 rounded bg-slate-100 border border-slate-200 flex items-center justify-center">
-                    <Image className="h-5 w-5 text-slate-300" />
-                  </div>
-                )}
-                <div className="min-w-0 flex-1">
-                  {slide.eyebrow && <div className="text-[10px] font-semibold uppercase tracking-widest text-gold">{slide.eyebrow}</div>}
-                  <div className="text-sm font-semibold text-slate-800 truncate">{slide.title}</div>
-                  {slide.subtitle && <div className="text-xs text-slate-500 truncate">{slide.subtitle}</div>}
-                  {slide.link_href && <div className="mt-0.5 text-[10px] text-slate-400 truncate">{slide.link_label || "CTA"} → {slide.link_href}</div>}
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${slide.status === "published" ? "bg-emerald-50 text-emerald-600 border-emerald-200" : "bg-amber-50 text-amber-600 border-amber-200"}`}>
-                    {slide.status}
-                  </span>
-                  <button onClick={() => handleShift(slide, "up")} disabled={idx === 0} className="rounded p-1 text-slate-400 hover:text-navy disabled:opacity-30">
-                    <ArrowUp className="h-3.5 w-3.5" />
-                  </button>
-                  <button onClick={() => handleShift(slide, "down")} disabled={idx === slides.length - 1} className="rounded p-1 text-slate-400 hover:text-navy disabled:opacity-30">
-                    <ArrowDown className="h-3.5 w-3.5" />
-                  </button>
-                  <button onClick={() => openEdit(slide)} className="rounded p-1 text-slate-500 hover:text-navy hover:bg-slate-100">
-                    <Edit2 className="h-4 w-4" />
-                  </button>
-                  <button onClick={() => handleDelete(slide)} className="rounded p-1 text-slate-500 hover:text-rose-500 hover:bg-rose-50">
-                    <Trash2 className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-950/80 p-4">
-          <div className="w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="mb-4 font-display text-lg font-bold text-navy">
-              {editingSlide ? "Edit Slide" : "Add Carousel Slide"}
-            </h3>
-            <form onSubmit={handleSave} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase text-slate-600">Background Photo</label>
-                <MediaUploader value={form.image_url} onChange={(url) => f("image_url", url)} bucketName="media" />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase text-slate-600">Eyebrow / Kicker</label>
-                <input value={form.eyebrow} onChange={(e) => f("eyebrow", e.target.value)}
-                  placeholder='e.g. "Admissions Open 2026–27"'
-                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase text-slate-600">Headline *</label>
-                <input required value={form.title} onChange={(e) => f("title", e.target.value)}
-                  placeholder="e.g. Shape Your Engineering Career"
-                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-              </div>
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold uppercase text-slate-600">Subtext</label>
-                <textarea rows={2} value={form.subtitle} onChange={(e) => f("subtitle", e.target.value)}
-                  placeholder="Short supporting description"
-                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">CTA Link</label>
-                  <input value={form.link_href} onChange={(e) => f("link_href", e.target.value)}
-                    placeholder="/admissions"
-                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
-                  <input value={form.link_label} onChange={(e) => f("link_label", e.target.value)}
-                    placeholder="Apply Now"
-                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">Sort Order</label>
-                  <input type="number" value={form.sort_order} onChange={(e) => f("sort_order", Number(e.target.value))}
-                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none" />
-                </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">Status</label>
-                  <select value={form.status} onChange={(e) => f("status", e.target.value)}
-                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none">
-                    <option value="published">Published</option>
-                    <option value="draft">Draft</option>
-                  </select>
-                </div>
-              </div>
-              <div className="flex justify-end gap-3 border-t border-slate-200 pt-4">
-                <button type="button" onClick={() => setIsModalOpen(false)}
-                  className="rounded border border-slate-200 px-4 py-2 text-xs text-slate-500 hover:text-navy">
-                  Cancel
-                </button>
-                <button type="submit"
-                  className="rounded bg-crimson px-4 py-2 text-xs font-semibold text-white hover:bg-crimson/90">
-                  {editingSlide ? "Save Changes" : "Add Slide"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
