@@ -464,8 +464,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           .eq(schema.primary_key, pkVal);
 
         if (error) throw error;
-        toast.success("Record updated successfully!");
-        
+
         // Audit log trigger
         await logAuditAction("UPDATE", pkVal, editingRecord, payload);
       } else {
@@ -481,7 +480,6 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           .single();
 
         if (error) throw error;
-        toast.success("Record created successfully!");
 
         // Audit log trigger
         if (insertedData) {
@@ -532,7 +530,6 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           .eq(schema.primary_key, pkVal);
 
         if (error) throw error;
-        toast.success("Record soft-deleted!");
 
         // Audit log trigger
         await logAuditAction("DELETE", pkVal, record, { deleted_at: new Date().toISOString() });
@@ -543,7 +540,6 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           .eq(schema.primary_key, pkVal);
 
         if (error) throw error;
-        toast.success("Record permanently deleted!");
 
         // Audit log trigger
         await logAuditAction("DELETE", pkVal, record, null);

@@ -7,6 +7,7 @@ const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About SVIT", to: "/about" },
   { label: "Colleges", to: "/colleges" },
+  { label: "Courses", to: "/courses" },
   { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
   { label: "Placement", to: "/placement" },
@@ -535,7 +536,7 @@ function useCampusCategories(): MegaCategory[] {
       allTo: "/campus",
       items: (sports ?? []).map((s) => ({
         label: s.name,
-        to: "/campus",
+        to: `/campus#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
       })),
     },
     {

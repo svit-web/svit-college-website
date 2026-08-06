@@ -258,23 +258,25 @@ export function AdminSidebar({
                 >
                   <group.icon className="h-4 w-4" />
                 </div>
-                {/* Show individual icons for items in collapsed mode */}
+                {/* Show abbreviated labels for items in collapsed mode */}
                 {visibleItems.map((item) => (
                   <Link
                     key={item.to}
                     to={item.to}
+                    aria-label={item.label}
                     className={cn(
-                      "flex justify-center rounded-lg p-2 transition my-0.5",
+                      "flex justify-center rounded-lg py-1.5 transition my-0.5",
                       isActive(item.to)
                         ? "bg-zinc-800 text-white"
-                        : "text-zinc-600 hover:bg-zinc-900 hover:text-zinc-300"
+                        : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300"
                     )}
-                    title={item.label}
                   >
-                    <div className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      isActive(item.to) ? "bg-crimson" : "bg-zinc-600"
-                    )} />
+                    <span className={cn(
+                      "text-[9px] font-bold uppercase leading-none tracking-wide",
+                      isActive(item.to) ? "text-crimson" : "text-zinc-500"
+                    )}>
+                      {item.label.slice(0, 2)}
+                    </span>
                   </Link>
                 ))}
               </div>
