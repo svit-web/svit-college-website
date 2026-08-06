@@ -7,8 +7,6 @@ import {
   Plus,
   Trash2,
   Edit2,
-  ArrowUp,
-  ArrowDown,
   Loader2,
   Grid,
   Palette,
@@ -73,7 +71,6 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
   trust_badge: "Trust Badges",
   highlight_card: "Highlight Cards",
   quick_link: "Quick Links",
-  hero_slide: "Hero Slides (legacy)",
   job: "Job Listings",
 };
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { MediaUploader } from "@/components/admin/MediaUploader";
@@ -17,6 +17,7 @@ import { toast } from "sonner";
 import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/admin/appearance")({
+  loader: () => { throw redirect({ to: "/admin/homepage" }); },
   component: AdminAppearancePage,
 });
 

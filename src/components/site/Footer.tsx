@@ -31,7 +31,7 @@ export function Footer() {
     { label: "About Us", to: "/about" },
     { label: "Admissions", to: "/admissions" },
     { label: "Campus Life", to: "/campus-life" },
-    { label: "Placement", to: "/placement/overview" },
+    { label: "Placement", to: "/placement" },
     { label: "News & Events", to: "/news" },
   ];
   const important = [

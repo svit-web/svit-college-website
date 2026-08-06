@@ -17,15 +17,16 @@ interface Props {
 
 export function HomeCarousel({ slides: slidesProp }: Props = {}) {
   const slides = slidesProp && slidesProp.length > 0 ? slidesProp : [];
-  if (slides.length === 0) return null;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || slides.length <= 1) return;
     const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 5500);
     return () => clearInterval(t);
   }, [paused, slides.length]);
+
+  if (slides.length === 0) return null;
 
   const s = slides[index] ?? slides[0];
   return (

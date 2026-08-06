@@ -1,18 +1,11 @@
 import { Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { PageHero } from "./PageHero";
 import { CollegeLogo } from "./CollegeLogo";
 import type { Department } from "@/lib/departments.functions";
+import { collegesQuery } from "@/lib/homepage";
 import { cn } from "@/lib/utils";
-const BASE = "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/logos";
-
-const COLLEGE_MAP: Record<string, { shortCode: string; name: string; route: string; logo: string }> = {
-  "svit-degree": { shortCode: "SVIT",    name: "Sardar Vallabhbhai Patel Institute of Technology", route: "/colleges/svit-degree", logo: `${BASE}/svit.jpg` },
-  "svit-diploma":{ shortCode: "SVIT-P",  name: "SVIT Polytechnic",                                 route: "/colleges/svit-diploma", logo: `${BASE}/svit.jpg` },
-  svica:         { shortCode: "SVICA",   name: "Sardar Vallabhbhai Patel Institute of Computer Applications", route: "/colleges/svica", logo: `${BASE}/svica.jpg` },
-  svion:         { shortCode: "SVION",   name: "Sardar Vallabhbhai Patel Institute of Nursing",     route: "/colleges/svion", logo: `${BASE}/svion.png` },
-  "svit-coa":    { shortCode: "COA",     name: "College of Architecture",                          route: "/colleges/svit-coa", logo: `${BASE}/coa-svit.png` },
-};
 
 interface Props {
   department: Department;
@@ -27,7 +20,16 @@ const NAV = [
 ] as const;
 
 export function DepartmentLayout({ department }: Props) {
-  const college = COLLEGE_MAP[department.college_slug];
+  const { data: colleges } = useQuery(collegesQuery);
+  const collegeRow = (colleges ?? []).find((c) => c.slug === department.college_slug);
+  const college = collegeRow
+    ? {
+        shortCode: collegeRow.code,
+        name: collegeRow.name,
+        route: `/colleges/${collegeRow.slug}`,
+        logo: collegeRow.logo_url ?? "",
+      }
+    : null;
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const base = `/departments/${department.code}`;
 
