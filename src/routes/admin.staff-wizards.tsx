@@ -45,7 +45,24 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
 ];
 
 function StaffProfilesPage() {
-  const { user } = useAdminAuth();
+  const { user, roles } = useAdminAuth();
+
+  // Determine user scoping parameters (mirrors AdminCrudManager's userScope)
+  const userScope = useMemo(() => {
+    if (!roles || roles.length === 0) return { level: "none" as const };
+    const isGlobalAdmin = roles.some((r) => r.code === "admin");
+    const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, department: 3 };
+    const best = roles.reduce((acc, r) => {
+      const rank = SCOPE_RANK[r.scope_type] ?? 99;
+      const bestRank = SCOPE_RANK[acc.scope_type] ?? 99;
+      return rank < bestRank ? r : acc;
+    }, roles[0]);
+    return {
+      level: isGlobalAdmin ? "global" : (best.scope_type || "none"),
+      collegeId: best.college_id,
+      departmentId: best.department_id,
+    };
+  }, [roles]);
 
   const [staffList, setStaffList] = useState<any[]>([]);
   const [listLoading, setListLoading] = useState(true);
@@ -98,6 +115,7 @@ function StaffProfilesPage() {
           id, title, first_name, last_name, email, status, expertise, metadata,
           staff_department_assignments(
             is_primary,
+            department_id,
             department:department_id(name),
             designation:designation_id(title)
           )
@@ -123,7 +141,7 @@ function StaffProfilesPage() {
 
   async function loadMasters() {
     const [{ data: d }, { data: des }] = await Promise.all([
-      supabase.from("departments").select("id, name, code").is("deleted_at", null).order("name"),
+      supabase.from("departments").select("id, name, code, college_id").is("deleted_at", null).order("name"),
       supabase.from("designations").select("id, title").is("deleted_at", null).order("title"),
     ]);
     setDepartments(d || []);
@@ -314,14 +332,40 @@ function StaffProfilesPage() {
     } catch (err: any) { toast.error(err.message); }
   }
 
+  // Only show staff assigned to a department/college within the caller's own
+  // scope — a department coordinator should never browse other departments'
+  // faculty. Global admins (and profiles with no assignment yet) are unaffected.
+  const scopedDepartmentIds = useMemo(() => {
+    if (userScope.level === "department" && userScope.departmentId) {
+      return new Set([userScope.departmentId]);
+    }
+    if (userScope.level === "college" && userScope.collegeId) {
+      return new Set(departments.filter((d) => d.college_id === userScope.collegeId).map((d) => d.id));
+    }
+    return null;
+  }, [userScope, departments]);
+
+  const visibleStaffList = useMemo(() => {
+    if (!scopedDepartmentIds) return staffList;
+    return staffList.filter((s) =>
+      (s.staff_department_assignments ?? []).some((a: any) => scopedDepartmentIds.has(a.department_id))
+    );
+  }, [staffList, scopedDepartmentIds]);
+
+  // Departments a scoped editor is allowed to assign staff into
+  const scopedDepartments = useMemo(() => {
+    if (!scopedDepartmentIds) return departments;
+    return departments.filter((d) => scopedDepartmentIds.has(d.id));
+  }, [departments, scopedDepartmentIds]);
+
   const filteredStaff = useMemo(() => {
-    if (!searchQuery) return staffList;
+    if (!searchQuery) return visibleStaffList;
     const q = searchQuery.toLowerCase();
-    return staffList.filter((s) => {
+    return visibleStaffList.filter((s) => {
       const name = `${s.first_name || ""} ${s.last_name || ""}`.toLowerCase();
       return name.includes(q) || (s.email || "").toLowerCase().includes(q);
     });
-  }, [staffList, searchQuery]);
+  }, [visibleStaffList, searchQuery]);
 
   // Helper: get primary assignment for a staff member
   const getPrimary = (staff: any) => {
@@ -349,7 +393,7 @@ function StaffProfilesPage() {
             <Users className="h-5 w-5 text-crimson" />
             Faculty & Staff
           </h1>
-          <p className="text-xs text-slate-500 mt-0.5">{staffList.length} profiles total</p>
+          <p className="text-xs text-slate-500 mt-0.5">{visibleStaffList.length} profiles total</p>
         </div>
         <button
           onClick={openNew}
@@ -676,7 +720,7 @@ function StaffProfilesPage() {
                             onChange={(e) => setNewAssignment((p) => ({ ...p, department_id: e.target.value }))}
                             className="field-input">
                             <option value="">Select department…</option>
-                            {departments.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.code})</option>)}
+                            {scopedDepartments.map((d) => <option key={d.id} value={d.id}>{d.name} ({d.code})</option>)}
                           </select>
                         </div>
                         <div className="space-y-1">

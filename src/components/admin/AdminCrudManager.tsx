@@ -1030,9 +1030,9 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
                         disabled={
-                          tableId === "events" &&
-                          ((col.name === "college_id" && userScope.level === "college") ||
-                            (col.name === "department_id" && userScope.level === "department"))
+                          (col.name === "trust_id" && userScope.level === "trust") ||
+                          (col.name === "college_id" && userScope.level === "college") ||
+                          (col.name === "department_id" && userScope.level === "department")
                         }
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
                       >
