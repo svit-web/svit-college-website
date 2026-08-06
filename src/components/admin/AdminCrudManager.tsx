@@ -6,6 +6,8 @@ import { SeoEditor } from "@/components/admin/SeoEditor";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateTableCache } from "@/lib/cache-utils";
 import { sendPasswordResetForUser } from "@/lib/admin-users.functions";
+import { useUserScope } from "@/hooks/useUserScope";
+import { GLOBAL_ONLY_TABLE_IDS } from "@/lib/admin-sections";
 import {
   useReactTable,
   getCoreRowModel,
@@ -166,27 +168,9 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
     return () => clearTimeout(handler);
   }, [searchQuery]);
 
-  // Determine user scoping parameters
-  const userScope = useMemo(() => {
-    if (!roles || roles.length === 0) return { level: "none" };
-
-    const isGlobalAdmin = roles.some(r => r.code === "admin");
-
-    // Pick the broadest-scoped active role rather than an arbitrary array order
-    const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, department: 3 };
-    const userRoleMapping = roles.reduce((best, r) => {
-      const rank = SCOPE_RANK[r.scope_type] ?? 99;
-      const bestRank = SCOPE_RANK[best.scope_type] ?? 99;
-      return rank < bestRank ? r : best;
-    }, roles[0]);
-
-    return {
-      level: isGlobalAdmin ? "global" : userRoleMapping.scope_type || "none",
-      trustId: userRoleMapping.trust_id,
-      collegeId: userRoleMapping.college_id,
-      departmentId: userRoleMapping.department_id
-    };
-  }, [roles]);
+  // Determine user scoping parameters (shared with AdminSidebar, the admin
+  // route guard, and the staff wizard — see src/hooks/useUserScope.ts)
+  const userScope = useUserScope(roles);
 
   // Load Schema Configuration for table
   useEffect(() => {
@@ -601,6 +585,47 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
     }
   };
 
+  // Check if current user has permission to insert/update/delete in this
+  // table. Split into three because some tables allow one but not the other
+  // for a scoped user — e.g. a college-scoped admin may update their own
+  // college's record but never create or delete a college row.
+  const writePermissions = useMemo(() => {
+    if (userScope.level === "global") return { insert: true, update: true, delete: true };
+
+    const none = { insert: false, update: false, delete: false };
+
+    // Website CMS / Campus Life / System / Scholarships tables stay
+    // global-only regardless of whether they happen to carry a
+    // college_id/department_id column.
+    if (GLOBAL_ONLY_TABLE_IDS.has(tableId)) return none;
+
+    // Colleges: a college-scoped admin may edit their own college's record
+    // (already filtered to that one row in loadData), but creating or
+    // deleting colleges stays global-only.
+    if (tableId === "colleges") {
+      return { insert: false, update: userScope.level === "college", delete: false };
+    }
+
+    const cols = schema?.columns?.map((c: any) => c.name) || [];
+
+    if (userScope.level === "trust" && cols.includes("trust_id")) {
+      return { insert: true, update: true, delete: true };
+    }
+    if (userScope.level === "college" && cols.includes("college_id")) {
+      return { insert: true, update: true, delete: true };
+    }
+    if (userScope.level === "department") {
+      // Departments: update own department only, no create/delete.
+      if (tableId === "departments") return { insert: false, update: true, delete: false };
+      if (cols.includes("department_id")) return { insert: true, update: true, delete: true };
+    }
+
+    return none; // Otherwise block edit for settings/global configs
+  }, [userScope, schema, tableId]);
+
+  const hasWritePermission = writePermissions.insert || writePermissions.update || writePermissions.delete;
+  const canShowRowActions = writePermissions.update || writePermissions.delete;
+
   // Generate Table Columns dynamically from Schema
   const tableColumns = useMemo(() => {
     if (!schema?.columns) return [];
@@ -694,8 +719,8 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
       };
     });
 
-    return [selectionColumn, ...mappedColumns];
-  }, [schema, fkCache]);
+    return canShowRowActions ? [selectionColumn, ...mappedColumns] : mappedColumns;
+  }, [schema, fkCache, canShowRowActions]);
 
   // Set up React Table Instance
   const table = useReactTable({
@@ -715,19 +740,6 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
     manualPagination: true,
     manualSorting: true
   });
-
-  // Check if current user has permission to write in this table
-  const hasWritePermission = useMemo(() => {
-    if (userScope.level === "global") return true;
-
-    // Check if table contains scoped field that restricts editors
-    const cols = schema?.columns?.map((c: any) => c.name) || [];
-    if (userScope.level === "trust" && cols.includes("trust_id")) return true;
-    if (userScope.level === "college" && (cols.includes("college_id") || tableId === "colleges")) return true;
-    if (userScope.level === "department" && (cols.includes("department_id") || tableId === "departments")) return true;
-
-    return false; // Otherwise block edit for settings/global configs
-  }, [userScope, schema, tableId]);
 
   if (schemaLoading) {
     return (
@@ -781,7 +793,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
             )}
           </div>
 
-          {hasWritePermission ? (
+          {writePermissions.insert ? (
             <button
               onClick={() => handleOpenModal()}
               className="flex items-center gap-1.5 rounded bg-crimson px-3 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 transition shrink-0"
@@ -789,12 +801,12 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
               <Plus className="h-3.5 w-3.5" />
               Add
             </button>
-          ) : (
+          ) : !hasWritePermission ? (
             <div className="flex items-center gap-1.5 rounded bg-amber-50 px-2.5 py-1.5 text-[10px] font-semibold text-amber-700 border border-amber-200">
               <AlertTriangle className="h-3 w-3" />
               Read-Only
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
@@ -818,7 +830,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         : flexRender(header.column.columnDef.header, header.getContext())}
                     </th>
                   ))}
-                  {hasWritePermission && (
+                  {canShowRowActions && (
                     <th className="px-3 py-2 text-right text-xs font-semibold text-slate-700 w-24" />
                   )}
                 </tr>
@@ -829,8 +841,8 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                 table.getRowModel().rows.map((row) => (
                   <tr
                     key={row.id}
-                    onClick={() => hasWritePermission && handleOpenModal(row.original)}
-                    className={`border-b border-slate-100 transition ${hasWritePermission ? "cursor-pointer hover:bg-crimson/[0.02]" : "hover:bg-slate-50"}`}
+                    onClick={() => writePermissions.update && handleOpenModal(row.original)}
+                    className={`border-b border-slate-100 transition ${writePermissions.update ? "cursor-pointer hover:bg-crimson/[0.02]" : "hover:bg-slate-50"}`}
                   >
                     {row.getVisibleCells().map((cell) => (
                       <td
@@ -841,10 +853,10 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </td>
                     ))}
-                    {hasWritePermission && (
+                    {canShowRowActions && (
                       <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-end gap-1 opacity-60 hover:opacity-100 transition">
-                          {tableId === "user_profiles" && (
+                          {tableId === "user_profiles" && writePermissions.update && (
                             <button
                               onClick={() => handleResetPassword(row.original)}
                               className="rounded p-1 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition"
@@ -853,20 +865,24 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
                               <KeyRound className="h-3.5 w-3.5" />
                             </button>
                           )}
-                          <button
-                            onClick={() => handleOpenModal(row.original)}
-                            className="rounded p-1 text-crimson hover:bg-crimson/10 transition"
-                            title="Edit"
-                          >
-                            <Edit2 className="h-3.5 w-3.5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(row.original)}
-                            className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 transition"
-                            title="Delete"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" />
-                          </button>
+                          {writePermissions.update && (
+                            <button
+                              onClick={() => handleOpenModal(row.original)}
+                              className="rounded p-1 text-crimson hover:bg-crimson/10 transition"
+                              title="Edit"
+                            >
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          {writePermissions.delete && (
+                            <button
+                              onClick={() => handleDelete(row.original)}
+                              className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 transition"
+                              title="Delete"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     )}
@@ -875,7 +891,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
               ) : (
                 <tr>
                   <td
-                    colSpan={tableColumns.length + (hasWritePermission ? 1 : 0)}
+                    colSpan={tableColumns.length + (canShowRowActions ? 1 : 0)}
                     className="px-3 py-10 text-center text-xs text-slate-500"
                   >
                     No matching records found.
@@ -1161,7 +1177,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
       )}
 
       {/* Floating Bulk Action Bar */}
-      {Object.keys(rowSelection).length > 0 && (
+      {canShowRowActions && Object.keys(rowSelection).length > 0 && (
         <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-xl border border-crimson/35 bg-white p-4 shadow-2xl shadow-black/30 animate-in slide-in-from-bottom duration-300">
           <div className="text-xs font-semibold text-slate-600">
             Selected <span className="text-crimson font-bold">{Object.keys(rowSelection).length}</span> rows
@@ -1170,7 +1186,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
           <div className="h-4 w-px border-slate-200" />
           
           <div className="flex gap-2">
-            {schema.columns.some((c: any) => c.name === "status") && (
+            {writePermissions.update && schema.columns.some((c: any) => c.name === "status") && (
               <>
                 <button
                   onClick={async () => {
@@ -1247,6 +1263,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
               </>
             )}
 
+            {writePermissions.delete && (
             <button
               onClick={async () => {
                 if (!schema) return;
@@ -1313,6 +1330,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
             >
               Bulk Delete
             </button>
+            )}
 
             <button
               onClick={() => setRowSelection({})}

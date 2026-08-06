@@ -1,6 +1,8 @@
 import { useEffect, useState, Suspense } from "react";
 import { createFileRoute, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useUserScope } from "@/hooks/useUserScope";
+import { isRouteAllowedForScope } from "@/lib/admin-sections";
 import { AdminAuthProvider } from "@/contexts/AdminAuthContext";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminHeader } from "@/components/admin/AdminHeader";
@@ -73,6 +75,7 @@ function RouteLoadingSkeleton() {
 function AdminLayout() {
   const auth = useAdminAuth();
   const { user, profile, roles, loading, isAuthorized, logout } = auth;
+  const userScope = useUserScope(roles);
   const location = useLocation();
   const navigate = useNavigate();
   const isLoginPage = location.pathname === "/admin/login";
@@ -94,6 +97,15 @@ function AdminLayout() {
       }
     }
   }, [loading, isAuthorized, isLoginPage, navigate]);
+
+  // Sidebar hiding is UX only — also block direct navigation to routes
+  // outside a scoped user's section, since typing/bookmarking the URL
+  // bypasses the sidebar entirely.
+  useEffect(() => {
+    if (!loading && isAuthorized && !isRouteAllowedForScope(location.pathname, userScope.level)) {
+      navigate({ to: "/admin" });
+    }
+  }, [loading, isAuthorized, userScope.level, location.pathname, navigate]);
 
   if (loading) {
     return (

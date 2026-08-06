@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
+import { useUserScope } from "@/hooks/useUserScope";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import {
   Users,
@@ -47,22 +48,9 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
 function StaffProfilesPage() {
   const { user, roles } = useAdminAuthContext();
 
-  // Determine user scoping parameters (mirrors AdminCrudManager's userScope)
-  const userScope = useMemo(() => {
-    if (!roles || roles.length === 0) return { level: "none" as const };
-    const isGlobalAdmin = roles.some((r) => r.code === "admin");
-    const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, department: 3 };
-    const best = roles.reduce((acc, r) => {
-      const rank = SCOPE_RANK[r.scope_type] ?? 99;
-      const bestRank = SCOPE_RANK[acc.scope_type] ?? 99;
-      return rank < bestRank ? r : acc;
-    }, roles[0]);
-    return {
-      level: isGlobalAdmin ? "global" : (best.scope_type || "none"),
-      collegeId: best.college_id,
-      departmentId: best.department_id,
-    };
-  }, [roles]);
+  // Determine user scoping parameters (shared with AdminSidebar, the admin
+  // route guard, and AdminCrudManager — see src/hooks/useUserScope.ts)
+  const userScope = useUserScope(roles);
 
   const [staffList, setStaffList] = useState<any[]>([]);
   const [listLoading, setListLoading] = useState(true);

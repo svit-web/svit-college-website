@@ -15,6 +15,8 @@ import {
   FlaskConical,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useUserScope } from "@/hooks/useUserScope";
+import { isRouteAllowedForScope } from "@/lib/admin-sections";
 
 interface SidebarProps {
   user: any;
@@ -30,7 +32,6 @@ interface SidebarProps {
 interface NavItem {
   label: string;
   to: string;
-  adminOnly?: boolean;
 }
 
 interface NavGroup {
@@ -51,7 +52,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Labs", to: "/admin/labs" },
       { label: "Dept Activities", to: "/admin/tables/department_activities" },
       { label: "Societies", to: "/admin/tables/centers" },
-      { label: "Scholarships", to: "/admin/scholarships", adminOnly: true },
+      { label: "Scholarships", to: "/admin/scholarships" },
     ],
   },
   {
@@ -99,12 +100,12 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Settings,
     items: [
       { label: "Inquiries Inbox", to: "/admin/inquiries" },
-      { label: "User Management", to: "/admin/user-management", adminOnly: true },
+      { label: "User Management", to: "/admin/user-management" },
       { label: "Users & Profiles", to: "/admin/tables/user_profiles" },
       { label: "User Roles", to: "/admin/tables/user_roles" },
       { label: "Audit Logs", to: "/admin/tables/audit_logs" },
       { label: "Trash & Recovery", to: "/admin/trash" },
-      { label: "Settings", to: "/admin/settings", adminOnly: true },
+      { label: "Settings", to: "/admin/settings" },
     ],
   },
 ];
@@ -131,7 +132,21 @@ export function AdminSidebar({
   const isActive = (to: string) => location.pathname === to;
   const groupHasActive = (group: NavGroup) => group.items.some((i) => isActive(i.to));
 
-  const isAdmin = roles.some((r) => r.code === "admin");
+  const userScope = useUserScope(roles);
+  const scopeLabel =
+    userScope.level === "global"
+      ? "Global Admin"
+      : userScope.level === "trust"
+      ? "Trust Admin"
+      : userScope.level === "college"
+      ? "College Admin"
+      : userScope.level === "department"
+      ? "Department Admin"
+      : "Editor";
+  const visibleGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => isRouteAllowedForScope(item.to, userScope.level)),
+  })).filter((group) => group.items.length > 0);
   const userInitial = profile
     ? (profile.first_name?.[0] || profile.last_name?.[0] || "A").toUpperCase()
     : "A";
@@ -189,7 +204,7 @@ export function AdminSidebar({
             <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-semibold text-white leading-none">{userFullName}</p>
               <p className="mt-0.5 text-[10px] text-zinc-500 font-medium">
-                {isAdmin ? "Global Admin" : "Editor"}
+                {scopeLabel}
               </p>
             </div>
           </div>
@@ -225,10 +240,10 @@ export function AdminSidebar({
         </Link>
 
         {/* Groups */}
-        {NAV_GROUPS.map((group) => {
+        {visibleGroups.map((group) => {
           const hasActive = groupHasActive(group);
           const expanded = expandedGroups[group.label] || hasActive;
-          const visibleItems = group.items.filter((item) => !item.adminOnly || isAdmin);
+          const visibleItems = group.items;
 
           if (collapsed && !isMobile) {
             // Icon-only mode: show group icon as a separator-style button with tooltip
