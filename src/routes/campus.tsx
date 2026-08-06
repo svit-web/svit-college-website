@@ -51,11 +51,11 @@ function Campus() {
   const { facilities, sports, achievements } = Route.useLoaderData();
 
   // Split facilities by category for better organization
-  const academicFacilities = facilities.filter((f) => f.metadata?.category === "academic");
-  const wellnessFacilities = facilities.filter((f) => f.metadata?.category === "wellness");
-  const amenityFacilities  = facilities.filter((f) => f.metadata?.category === "amenity");
-  const hostelFacilities   = facilities.filter((f) => f.metadata?.category === "hostel");
-  const sportsFacilities   = facilities.filter((f) => f.metadata?.category === "sports");
+  const academicFacilities = facilities.filter((f) => f.category === "academic");
+  const wellnessFacilities = facilities.filter((f) => f.category === "wellness");
+  const amenityFacilities  = facilities.filter((f) => f.category === "amenity");
+  const hostelFacilities   = facilities.filter((f) => f.category === "hostel");
+  const sportsFacilities   = facilities.filter((f) => f.category === "sports");
 
   return (
     <>
@@ -84,7 +84,7 @@ function Campus() {
                 <Reveal key={f.id} delay={i * 0.04}>
                   <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
                     <h4 className="font-display font-bold text-navy">{f.name}</h4>
-                    <p className="mt-2 text-sm text-muted-foreground">{f.metadata?.description ?? f.metadata?.subtitle ?? ""}</p>
+                    <p className="mt-2 text-sm text-muted-foreground">{f.description ?? f.subtitle ?? ""}</p>
                   </div>
                 </Reveal>
               ))}
@@ -101,16 +101,16 @@ function Campus() {
             {wellnessFacilities.map((f, i) => (
               <Reveal key={f.id} delay={i * 0.04}>
                 <div className="card-lift h-full rounded-2xl border-2 border-emerald-100 bg-white p-6">
-                  {f.metadata?.accent && (
+                  {f.accent_color && (
                     <div className="mb-3 inline-block rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700">
-                      {f.metadata.accent}
+                      {f.accent_color}
                     </div>
                   )}
                   <h4 className="font-display text-lg font-bold text-navy">{f.name}</h4>
-                  {f.metadata?.subtitle && (
-                    <p className="mt-1 text-xs font-semibold text-crimson">{f.metadata.subtitle}</p>
+                  {f.subtitle && (
+                    <p className="mt-1 text-xs font-semibold text-crimson">{f.subtitle}</p>
                   )}
-                  <p className="mt-3 text-sm text-muted-foreground">{f.metadata?.description ?? ""}</p>
+                  <p className="mt-3 text-sm text-muted-foreground">{f.description ?? ""}</p>
                 </div>
               </Reveal>
             ))}
@@ -128,10 +128,10 @@ function Campus() {
                 <Reveal key={f.id} delay={i * 0.04}>
                   <div className="card-lift h-full rounded-2xl border border-border bg-white p-5">
                     <h4 className="font-display text-base font-bold text-navy">{f.name}</h4>
-                    {f.metadata?.subtitle && (
-                      <p className="mt-1 text-xs font-semibold text-slate-500">{f.metadata.subtitle}</p>
+                    {f.subtitle && (
+                      <p className="mt-1 text-xs font-semibold text-slate-500">{f.subtitle}</p>
                     )}
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{f.metadata?.description ?? ""}</p>
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{f.description ?? ""}</p>
                   </div>
                 </Reveal>
               ))}
@@ -149,10 +149,10 @@ function Campus() {
               <Reveal key={h.id} delay={i * 0.05}>
                 <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
                   <h3 className="font-display text-2xl font-bold text-navy">{h.name}</h3>
-                  {h.metadata?.subtitle && (
-                    <p className="mt-1 text-sm font-semibold text-crimson">{h.metadata.subtitle}</p>
+                  {h.subtitle && (
+                    <p className="mt-1 text-sm font-semibold text-crimson">{h.subtitle}</p>
                   )}
-                  <p className="mt-3 text-muted-foreground">{h.metadata?.description ?? ""}</p>
+                  <p className="mt-3 text-muted-foreground">{h.description ?? ""}</p>
                 </div>
               </Reveal>
             ))
@@ -248,10 +248,10 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                     {sport.description && (
                       <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{sport.description}</p>
                     )}
-                    {sport.metadata?.players_count && (
+                    {sport.players_count && (
                       <div className="mt-3 flex items-center gap-1 text-xs text-slate-500">
                         <Users className="h-3.5 w-3.5" />
-                        <span>{sport.metadata.players_count} players</span>
+                        <span>{sport.players_count} players</span>
                       </div>
                     )}
                   </div>
@@ -272,21 +272,21 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                 <div className="card-lift h-full rounded-2xl border border-border bg-white p-5">
                   <div className="flex items-start justify-between gap-2">
                     <h4 className="font-display font-bold text-navy">{f.name}</h4>
-                    {f.metadata?.accent && (
+                    {f.accent_color && (
                       <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-                        f.metadata.accent === "Indoor"
+                        f.accent_color === "Indoor"
                           ? "bg-sky-100 text-sky-700"
                           : "bg-emerald-100 text-emerald-700"
                       }`}>
-                        {f.metadata.accent}
+                        {f.accent_color}
                       </span>
                     )}
                   </div>
-                  {f.metadata?.subtitle && (
-                    <p className="mt-1 text-xs font-semibold text-crimson">{f.metadata.subtitle}</p>
+                  {f.subtitle && (
+                    <p className="mt-1 text-xs font-semibold text-crimson">{f.subtitle}</p>
                   )}
                   <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
-                    {f.metadata?.description ?? ""}
+                    {f.description ?? ""}
                   </p>
                 </div>
               </Reveal>

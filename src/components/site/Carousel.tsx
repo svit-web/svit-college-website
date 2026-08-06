@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import campusHero from "@/assets/campus-hero.jpg";
-import campusAerial from "@/assets/campus-aerial.jpg";
-import students from "@/assets/students.jpg";
 
 export interface CarouselSlide {
   image: string;
@@ -14,36 +11,13 @@ export interface CarouselSlide {
   cta: { label: string; to: string };
 }
 
-const defaultSlides: CarouselSlide[] = [
-  {
-    image: campusHero,
-    eyebrow: "Admissions 2026-27",
-    title: "Where Excellence Meets Innovation",
-    subtitle: "AICTE-approved programmes across engineering, management and applied sciences.",
-    cta: { label: "Apply Now", to: "/admissions/inquiry" },
-  },
-  {
-    image: campusAerial,
-    eyebrow: "15+ Acre Green Campus",
-    title: "Learn in an Inspiring Environment",
-    subtitle: "State-of-the-art labs, digital library, sports facilities and comfortable hostels.",
-    cta: { label: "Explore Campus", to: "/campus" },
-  },
-  {
-    image: students,
-    eyebrow: "95% Placement Record",
-    title: "Careers That Take Off",
-    subtitle: "200+ recruiting partners including TCS, Infosys, L&T, Adani and Reliance.",
-    cta: { label: "See Placements", to: "/placement/svit" },
-  },
-];
-
 interface Props {
   slides?: CarouselSlide[];
 }
 
 export function HomeCarousel({ slides: slidesProp }: Props = {}) {
-  const slides = slidesProp && slidesProp.length > 0 ? slidesProp : defaultSlides;
+  const slides = slidesProp && slidesProp.length > 0 ? slidesProp : [];
+  if (slides.length === 0) return null;
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 

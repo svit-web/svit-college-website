@@ -28,8 +28,8 @@ function ClubLeaf() {
   const transformedItem = {
     slug: item.slug,
     title: item.name,
-    subtitle: item.metadata?.subtitle || "",
-    accent: item.metadata?.accent || "Club",
+    subtitle: item.subtitle || "",
+    accent: item.accent_color || "Club",
     description: item.description || "",
     highlights: Array.isArray(item.metadata?.highlights) ? item.metadata.highlights : [],
     image: item.logo_url || null,

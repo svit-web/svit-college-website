@@ -43,13 +43,13 @@ function EventsIndex() {
               className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
             >
               <div className="flex items-center justify-between gap-2">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">{c.metadata?.accent ?? c.tag}</div>
+                <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">{c.accent_color ?? c.tag}</div>
                 <span className="rounded-full border border-navy/15 bg-navy/5 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-navy/70">
                   {scopeLabel(c)}
                 </span>
               </div>
               <h4 className="mt-1 font-display font-bold text-navy">{c.title}</h4>
-              <p className="mt-2 text-sm text-muted-foreground">{c.metadata?.subtitle ?? c.description}</p>
+              <p className="mt-2 text-sm text-muted-foreground">{c.subtitle ?? c.description}</p>
             </Link>
           </Reveal>
         ))}

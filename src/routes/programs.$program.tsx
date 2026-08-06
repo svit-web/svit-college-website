@@ -32,21 +32,21 @@ function ProgramPage() {
   return (
     <>
       <PageHero
-        title={course.metadata?.shortName ?? course.name}
+        title={course.short_name ?? course.name}
         accent={dept ? dept.name : "Program"}
         crumbs={[
           { label: "Home", to: "/" },
           ...(dept ? [{ label: dept.name, to: `/departments/${dept.code}` }] : []),
-          { label: course.metadata?.shortName ?? course.name },
+          { label: course.short_name ?? course.name },
         ]}
       />
       <section className="container-page py-20">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { k: "Degree Level", v: DEGREE_LABEL[course.degree_level] ?? course.degree_level },
-            { k: "Year Started", v: course.metadata?.yearStarted ? String(course.metadata.yearStarted) : "—" },
-            { k: "Intake", v: course.metadata?.intake ? String(course.metadata.intake) : "—" },
-            { k: "Duration", v: course.metadata?.durationYears ? `${course.metadata.durationYears} years` : "—" },
+            { k: "Year Started", v: course.year_started ? String(course.year_started) : "—" },
+            { k: "Intake", v: course.intake ? String(course.intake) : "—" },
+            { k: "Duration", v: course.duration_years ? `${course.duration_years} years` : "—" },
           ].map((s) => (
             <div key={s.k} className="rounded-2xl border-2 border-navy/15 bg-white p-5">
               <div className="text-xs font-bold uppercase tracking-widest text-crimson">{s.k}</div>

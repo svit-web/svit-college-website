@@ -13,16 +13,20 @@ export interface Department {
   head_of_department_id: string | null;
   logo_url: string | null;
   status: 'draft' | 'published' | 'archived';
+  about: string | null;
+  vision: string | null;
+  mission: string | string[] | null;
+  intake_ug: number | null;
+  intake_pg: number | null;
+  established_year: number | null;
+  level: string | null;
+  degree_type: string | null;
+  short_name: string | null;
+  theme_color: string | null;
+  overview: string | null;
   metadata: {
-    about?: string;
-    description?: string;
-    vision?: string;
-    mission?: string | string[];
-    intake_ug?: number;
-    intake_pg?: number;
-    established?: number;
-    level?: string;
-    degreeType?: string | null;
+    labs?: string[];
+    careers?: string[];
     [key: string]: any;
   };
   created_at: string;
@@ -158,7 +162,11 @@ export interface DeptCourse {
   name: string;
   code: string;
   degree_level: 'undergraduate' | 'graduate' | 'certificate';
-  metadata: { shortName?: string; yearStarted?: number; intake?: number; durationYears?: number; [key: string]: any };
+  short_name: string | null;
+  year_started: number | null;
+  duration_years: number | null;
+  intake: number | null;
+  metadata: { [key: string]: any };
 }
 
 /**
@@ -169,7 +177,7 @@ export const getCoursesByDepartmentId = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('courses')
-      .select('id, name, code, degree_level, metadata')
+      .select('id, name, code, degree_level, metadata, short_name, year_started, duration_years, intake')
       .eq('department_id', ctx.data)
       .eq('status', 'published')
       .order('degree_level', { ascending: true });
@@ -186,7 +194,7 @@ export const getCourseById = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('courses')
-      .select('id, name, code, degree_level, metadata, department_id')
+      .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake')
       .eq('id', ctx.data)
       .eq('status', 'published')
       .maybeSingle();
@@ -203,7 +211,7 @@ export const getCourseWithDept = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('courses')
-      .select('id, name, code, degree_level, metadata, department_id, departments(id, name, code, slug)')
+      .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake, departments(id, name, code, slug)')
       .eq('id', ctx.data)
       .eq('status', 'published')
       .maybeSingle();

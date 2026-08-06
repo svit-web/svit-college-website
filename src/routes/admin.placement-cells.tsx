@@ -1,6 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { TnpMasterHub } from "./admin.tnp-hub";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
+// Placement admin is a single unified hub. Old links to this URL are kept
+// working by redirecting to /admin/tnp-hub instead of 404ing.
 export const Route = createFileRoute("/admin/placement-cells")({
-  component: TnpMasterHub,
+  beforeLoad: () => {
+    throw redirect({ to: "/admin/tnp-hub" });
+  },
 });

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { cn } from "@/lib/utils";
 
-const SVIT_LOGO = "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/logos/svit.jpg";
+const SVIT_LOGO = "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/logos/svit.png";
 
 export function Logo({ light = false }: { light?: boolean }) {
   return (

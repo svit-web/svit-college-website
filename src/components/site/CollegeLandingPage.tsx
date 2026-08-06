@@ -14,7 +14,6 @@ import {
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
-import campusHero from "@/assets/campus-hero.jpg";
 import { heroAppearanceQuery } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles } from "@/lib/theme.functions";
 import { Reveal } from "@/components/site/Reveal";
@@ -81,7 +80,7 @@ function Hero({ college }: { college: College }) {
 
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      <img src={college.hero.imageUrl || campusHero} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
+      {college.hero.imageUrl && <img src={college.hero.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />}
       <div className="absolute inset-0" style={overlayStyle} />
       <div className="container-page relative py-24 md:py-32">
         <motion.div

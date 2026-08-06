@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   Trash2,
   RefreshCw,
@@ -63,7 +63,7 @@ function formatTableName(str: string): string {
 }
 
 function AdminTrashPanelPage() {
-  const { user, isAdmin } = useAdminAuth();
+  const { user, isAdmin } = useAdminAuthContext();
 
   const [selectedTable, setSelectedTable] = useState<string>(SOFT_DELETE_TABLES[0]);
   const [loadingData, setLoadingData] = useState(false);

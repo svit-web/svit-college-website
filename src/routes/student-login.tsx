@@ -1,7 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { PageHero } from "@/components/site/PageHero";
 import { LogIn } from "lucide-react";
 import { toast } from "sonner";
+import { miscSettingsQuery } from "@/lib/homepage";
 
 export const Route = createFileRoute("/student-login")({
   head: () => ({ meta: [{ title: "Student Login — SVIT Vasad" }] }),
@@ -9,6 +11,8 @@ export const Route = createFileRoute("/student-login")({
 });
 
 function StudentLogin() {
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const itEmail = misc?.it_support_email ?? "itsupport@svitvasad.ac.in";
   return (
     <>
       <PageHero title="Student Login" accent="Portal Access" subtitle="Log in to access marks, attendance, fees and notices." crumbs={[{ label: "Home", to: "/" }, { label: "Student Login" }]} />
@@ -24,7 +28,7 @@ function StudentLogin() {
             <button className="w-full rounded-md bg-navy px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Login</button>
           </form>
           <p className="mt-6 text-xs text-muted-foreground text-center">
-            Need help? Contact <a href="mailto:it@svitvasad.ac.in" className="font-semibold text-navy hover:text-gold">it@svitvasad.ac.in</a>
+            Need help? Contact <a href={`mailto:${itEmail}`} className="font-semibold text-navy hover:text-gold">{itEmail}</a>
           </p>
         </div>
       </section>

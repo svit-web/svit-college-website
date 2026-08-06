@@ -14,8 +14,8 @@ export const Route = createFileRoute("/campus-life/events/$slug")({
     const transformedItem = {
       slug: item.slug,
       title: item.title,
-      subtitle: item.metadata?.subtitle ?? "",
-      accent: item.metadata?.accent ?? item.tag ?? "Event",
+      subtitle: item.subtitle ?? "",
+      accent: item.accent_color ?? item.tag ?? "Event",
       description: item.description ?? "",
       highlights: Array.isArray(item.metadata?.highlights) ? item.metadata.highlights : [],
       image: item.featured_image_url ?? null,

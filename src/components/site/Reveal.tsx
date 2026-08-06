@@ -39,6 +39,7 @@ export function Reveal({
       animate={visible || reduce ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
       className={className}
+      suppressHydrationWarning
     >
       {children}
     </motion.div>

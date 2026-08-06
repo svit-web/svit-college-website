@@ -1,0 +1,16 @@
+node_modules
+.output
+.nitro
+.vinxi
+.tanstack
+dist
+dist-ssr
+.wrangler
+.git
+.env
+.env.*
+*.local
+.DS_Store
+.vscode
+.idea
+DATABASE_NORMALIZATION_ANALYSIS.md

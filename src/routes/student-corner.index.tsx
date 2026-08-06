@@ -8,7 +8,7 @@ import { getAllCenters } from "@/lib/centers.functions";
 export const Route = createFileRoute("/student-corner/")({
   head: () => ({
     meta: [
-      { title: "Student Corner — SVIT Vasad" },
+      { title: "Societies — SVIT Vasad" },
       { name: "description", content: "Student, faculty and innovation centres at SVIT Vasad." },
     ],
   }),
@@ -25,10 +25,10 @@ function StudentCornerIndex() {
   return (
     <>
       <PageHero
-        title="Student Corner"
+        title="Societies"
         accent="Beyond the Classroom"
         subtitle="Centres, cells and chapters where students grow beyond the syllabus."
-        crumbs={[{ label: "Home", to: "/" }, { label: "Student Corner" }]}
+        crumbs={[{ label: "Home", to: "/" }, { label: "Societies" }]}
       />
 
       <section className="container-page py-20">
@@ -46,11 +46,11 @@ function StudentCornerIndex() {
                 className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
               >
                 <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">
-                  {c.metadata.accent || "Centre"}
+                  {c.accent_color || "Centre"}
                 </div>
                 <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>
                 <p className="mt-2 text-sm text-muted-foreground">
-                  {c.metadata.subtitle || ""}
+                  {c.subtitle || ""}
                 </p>
               </Link>
             </Reveal>

@@ -35,13 +35,13 @@ export const Route = createFileRoute("/colleges/$college")({
     const college = {
       id: dbCollege.slug as any,
       name: dbCollege.name,
-      shortCode: dbCollege.metadata?.shortCode ?? dbCollege.code,
-      tagline: dbCollege.metadata?.tagline ?? '',
+      shortCode: dbCollege.code,
+      tagline: dbCollege.tagline ?? '',
       logo: dbCollege.logo_url ?? '',
       route: `/colleges/${dbCollege.slug}`,
       hero: {
-        kicker: dbCollege.metadata?.hero?.kicker ?? '',
-        subhead: dbCollege.metadata?.hero?.subhead ?? '',
+        kicker: dbCollege.hero_kicker ?? '',
+        subhead: dbCollege.hero_subhead ?? '',
         imageUrl: heroItem?.image_url ?? null,
       },
       stats: stats.length > 0 ? stats : null,

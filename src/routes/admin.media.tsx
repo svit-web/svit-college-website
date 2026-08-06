@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   Folder,
   File,
@@ -38,7 +38,7 @@ function formatBytes(bytes: number, decimals = 2) {
 }
 
 function AdminMediaPage() {
-  const { user, roles } = useAdminAuth();
+  const { user, roles } = useAdminAuthContext();
   const { mode: compressionMode } = useImageCompressionMode();
 
   // Navigation states

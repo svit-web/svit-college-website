@@ -3,14 +3,18 @@ import { PageHero } from "@/components/site/PageHero";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { Reveal } from "@/components/site/Reveal";
 import { getAllProgrammes } from "@/lib/programmes.functions";
+import { getMiscSettings } from "@/lib/site-settings.functions";
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 
 export const Route = createFileRoute("/admissions/")({
-  head: () => ({ meta: [{ title: "Admissions 2026-27 — SVIT Vasad" }, { name: "description", content: "How to apply, eligibility, fees, scholarships and FAQs for admissions at SVIT Vasad." }] }),
+  head: ({ loaderData }) => {
+    const yr = loaderData?.admissionYear;
+    return { meta: [{ title: yr ? `Admissions ${yr} — SVIT Vasad` : "Admissions — SVIT Vasad" }, { name: "description", content: `How to apply, eligibility, fees, scholarships and FAQs for admissions at SVIT Vasad.` }] };
+  },
   loader: async () => {
-    const programmes = await getAllProgrammes();
-    return { programmes };
+    const [programmes, misc] = await Promise.all([getAllProgrammes(), getMiscSettings()]);
+    return { programmes, admissionYear: misc.admission_year };
   },
   component: Admissions,
 });
@@ -22,18 +26,19 @@ const steps = [
   { n: "04", title: "Admission Confirmation", desc: "Fee payment and seat confirmation." },
 ];
 
-const faqs = [
-  { q: "When do admissions for 2026-27 open?", a: "Applications open in January 2026. Merit lists are declared as per GTU / ACPC schedule." },
-  { q: "Are scholarships available?", a: "Yes — merit-based, need-based, and government scholarships (SC/ST/OBC/EBC) are offered." },
-  { q: "Is hostel accommodation available?", a: "Separate boys' and girls' hostels with mess, Wi-Fi and 24×7 security." },
-  { q: "How do I get a fee breakdown?", a: "Contact the admissions office or download the fee structure from Downloads." },
-];
 
 function Admissions() {
-  const { programmes } = Route.useLoaderData();
+  const { programmes, admissionYear } = Route.useLoaderData();
+  const yr = admissionYear;
+  const faqs = [
+    { q: `When do admissions for ${yr} open?`, a: "Applications open in January. Merit lists are declared as per GTU / ACPC schedule." },
+    { q: "Are scholarships available?", a: "Yes — merit-based, need-based, and government scholarships (SC/ST/OBC/EBC) are offered." },
+    { q: "Is hostel accommodation available?", a: "Separate boys' and girls' hostels with mess, Wi-Fi and 24×7 security." },
+    { q: "How do I get a fee breakdown?", a: "Contact the admissions office or download the fee structure from Downloads." },
+  ];
   return (
     <>
-      <PageHero title="Admissions" accent="2026-27 Batch" subtitle="Everything you need to know about applying to SVIT Vasad." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions" }]}>
+      <PageHero title="Admissions" accent={`${yr} Batch`} subtitle="Everything you need to know about applying to SVIT Vasad." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions" }]}>
         <Link to="/admissions/inquiry" className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft">
           Start Application
         </Link>
@@ -71,9 +76,9 @@ function Admissions() {
                 {programmes.map((c) => (
                   <tr key={c.code} className="border-t border-border">
                     <td className="p-4 font-semibold text-navy">{c.name}</td>
-                    <td className="p-4 text-muted-foreground">{c.metadata.duration}</td>
-                    <td className="p-4 text-muted-foreground">{c.metadata.eligibility}</td>
-                    <td className="p-4 text-muted-foreground">{c.metadata.intake}</td>
+                    <td className="p-4 text-muted-foreground">{c.duration}</td>
+                    <td className="p-4 text-muted-foreground">{c.eligibility}</td>
+                    <td className="p-4 text-muted-foreground">{String(c.intake ?? "—")}</td>
                   </tr>
                 ))}
               </tbody>

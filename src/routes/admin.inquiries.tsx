@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   FileText,
   Download,
@@ -37,7 +37,7 @@ interface SubmissionNode {
 }
 
 function AdminInquiriesPage() {
-  const { user } = useAdminAuth();
+  const { user } = useAdminAuthContext();
   
   // Navigation Tabs
   const [activeTab, setActiveTab] = useState<"submissions" | "forms">("submissions");

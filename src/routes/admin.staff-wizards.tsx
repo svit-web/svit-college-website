@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import {
   Users,
@@ -45,7 +45,7 @@ const TABS: { id: Tab; label: string; icon: any }[] = [
 ];
 
 function StaffProfilesPage() {
-  const { user, roles } = useAdminAuth();
+  const { user, roles } = useAdminAuthContext();
 
   // Determine user scoping parameters (mirrors AdminCrudManager's userScope)
   const userScope = useMemo(() => {

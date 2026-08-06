@@ -14,13 +14,11 @@ export interface StudentClub {
   status: 'draft' | 'published' | 'archived';
   department_id: string | null;
   departmentName: string | null;
+  subtitle: string | null;
+  accent_color: string | null;
   metadata: {
-    subtitle?: string;
-    accent?: string;
-    highlights?: Array<{
-      title: string;
-      description: string;
-    }>;
+    highlights?: Array<{ title: string; description: string }>;
+    [key: string]: any;
   };
   created_at: string;
   updated_at: string;

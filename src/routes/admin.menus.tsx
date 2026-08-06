@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   Menu,
   Plus,
@@ -39,7 +39,7 @@ interface MenuItemNode {
 }
 
 function AdminMenusPage() {
-  const { user } = useAdminAuth();
+  const { user } = useAdminAuthContext();
   
   // States
   const [menusList, setMenusList] = useState<any[]>([]);

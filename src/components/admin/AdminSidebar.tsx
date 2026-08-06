@@ -50,7 +50,8 @@ const NAV_GROUPS: NavGroup[] = [
       { label: "Facilities", to: "/admin/tables/facilities" },
       { label: "Labs", to: "/admin/labs" },
       { label: "Dept Activities", to: "/admin/tables/department_activities" },
-      { label: "Student Corner", to: "/admin/tables/centers" },
+      { label: "Societies", to: "/admin/tables/centers" },
+      { label: "Scholarships", to: "/admin/scholarships", adminOnly: true },
     ],
   },
   {
@@ -65,7 +66,6 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Globe,
     items: [
       { label: "Homepage Layout", to: "/admin/homepage" },
-      { label: "Hero Appearance", to: "/admin/appearance" },
       { label: "Pages & Content", to: "/admin/tables/pages" },
       { label: "Menus / Nav", to: "/admin/menus" },
       { label: "Menu Items", to: "/admin/tables/menu_items" },

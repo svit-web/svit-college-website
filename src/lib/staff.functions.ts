@@ -29,16 +29,16 @@ export interface StaffMember {
 }
 
 /**
- * Fetch a single staff profile by employee code (stored in metadata->>'employeeCode').
+ * Fetch a single staff profile by employee code.
  */
 export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
   .validator((code: string) => code)
   .handler(async (ctx) => {
     const { data, error } = await supabase
       .from('staff_profiles')
-      .select('id, title, first_name, last_name, email, bio, office_hours, social_links, metadata, expertise, joining_year, past_experience_years')
+      .select('id, title, first_name, last_name, email, bio, office_hours, social_links, metadata, expertise, joining_year, past_experience_years, employee_code, photo_url, rank_group, designation, qualification')
       .eq('status', 'published')
-      .filter('metadata->>employeeCode', 'eq', ctx.data)
+      .eq('employee_code', ctx.data)
       .maybeSingle();
 
     if (error) throw error;
@@ -47,7 +47,7 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
     const [assignmentRes, achievementsRes] = await Promise.all([
       supabase
         .from('staff_department_assignments')
-        .select('designation_id, metadata, departments(id, name, code)')
+        .select('designation_id, metadata, rank_group, designation_override, departments(id, name, code)')
         .eq('staff_id', data.id)
         .eq('is_primary', true)
         .eq('status', 'published')
@@ -77,8 +77,6 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
       designationTitle = desig?.title ?? '';
     }
 
-    const meta = (data.metadata ?? {}) as Record<string, any>;
-    const assignMeta = ((assignment?.metadata ?? {}) as Record<string, any>);
     const titlePrefix = data.title ? `${data.title} ` : '';
     const fullName = `${titlePrefix}${data.first_name} ${data.last_name}`.trim();
 
@@ -93,12 +91,12 @@ export const getStaffByEmployeeCode = createServerFn({ method: 'GET' })
     return {
       id: data.id,
       name: fullName,
-      designation: designationTitle || assignMeta.designation || meta.designation || '',
-      rankGroup: assignMeta.rankGroup ?? meta.rankGroup ?? 'Support',
-      employeeCode: meta.employeeCode ?? '',
+      designation: designationTitle || (assignment as any)?.designation_override || (data as any).designation || '',
+      rankGroup: (assignment as any)?.rank_group ?? (data as any).rank_group ?? 'Support',
+      employeeCode: (data as any).employee_code ?? '',
       expertise: (data as any).expertise ?? [],
       email: data.email,
-      photoUrl: meta.photoUrl ?? null,
+      photoUrl: (data as any).photo_url ?? null,
       bio: (data as any).bio ?? null,
       officeHours: (data as any).office_hours ?? null,
       socialLinks: (data as any).social_links ?? null,
@@ -117,7 +115,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
   .handler(async (ctx) => {
     const { data: assignments, error: aErr } = await supabase
       .from('staff_department_assignments')
-      .select('staff_id, designation_id, is_primary, metadata')
+      .select('staff_id, designation_id, is_primary, metadata, rank_group, designation_override')
       .eq('department_id', ctx.data)
       .eq('status', 'published');
 
@@ -135,7 +133,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
     const [{ data: profiles }, { data: designations }] = await Promise.all([
       supabase
         .from('staff_profiles')
-        .select('id, title, first_name, last_name, email, metadata, expertise')
+        .select('id, title, first_name, last_name, email, metadata, expertise, employee_code, photo_url, rank_group, designation')
         .in('id', staffIds),
       supabase
         .from('designations')
@@ -150,21 +148,19 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
       const sp = profileMap.get(a.staff_id);
       const designationId = (a as any).designation_id as string | null;
       const designTitle = designationId ? (designMap.get(designationId) ?? '') : '';
-      const meta = (sp?.metadata ?? {}) as Record<string, any>;
-      const assignMeta = (a.metadata ?? {}) as Record<string, any>;
       const titlePrefix = sp?.title ? `${sp.title} ` : '';
       const fullName = `${titlePrefix}${sp?.first_name ?? ''} ${sp?.last_name ?? ''}`.trim();
 
       return {
         id: sp?.id ?? '',
         name: fullName,
-        designation: designTitle || assignMeta.designation || meta.designation || '',
-        rankGroup: assignMeta.rankGroup ?? meta.rankGroup ?? 'Support',
-        employeeCode: meta.employeeCode ?? '',
+        designation: designTitle || (a as any).designation_override || (sp as any)?.designation || '',
+        rankGroup: (a as any).rank_group ?? (sp as any)?.rank_group ?? 'Support',
+        employeeCode: (sp as any)?.employee_code ?? '',
         expertise: (sp as any)?.expertise ?? [],
         email: sp?.email ?? null,
-        photoUrl: meta.photoUrl ?? null,
-        isHod: Boolean(a.is_primary) && (assignMeta.rankGroup === 'HOD' || meta.rankGroup === 'HOD'),
+        photoUrl: (sp as any)?.photo_url ?? null,
+        isHod: Boolean(a.is_primary) && ((a as any).rank_group === 'HOD' || (sp as any)?.rank_group === 'HOD'),
         achievements: [],
       };
     });

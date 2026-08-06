@@ -28,11 +28,11 @@ import {
   homepageItemsQuery,
   promoBySlot,
   recruitersQuery,
+  miscSettingsQuery,
   type HomepageItem,
 } from "@/lib/homepage";
 import { DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS } from "@/lib/theme.functions";
 import { HeroPhotoLayer } from "@/components/site/HeroPhotoLayer";
-import campusHero from "@/assets/campus-hero.jpg";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
@@ -79,18 +79,21 @@ function Hero() {
   const quickLinks = byType(items, "quick_link");
   const highlightCards = byType(items, "highlight_card");
   const { data: appearance } = useQuery(heroAppearanceQuery);
+  const { data: misc } = useQuery(miscSettingsQuery);
   const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
   const photos =
     resolvedAppearance.homepagePhotos.length > 0
       ? resolvedAppearance.homepagePhotos
-      : [hero?.image_url || campusHero];
+      : hero?.image_url ? [hero.image_url] : [];
 
-  const eyebrow = hero?.eyebrow ?? "Est. 2005 · Vasad, Gujarat";
+  const eyebrow = hero?.eyebrow ?? (misc?.year_established ? `Est. ${misc.year_established} · Vasad, Gujarat` : "Vasad, Gujarat");
   const title = hero?.title ?? "Build Your Future.";
   const titleAccent = hero?.title_accent ?? "Shape The World.";
   const subtitle =
     hero?.subtitle ??
-    "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences with 95%+ placement across 200+ recruiting partners.";
+    "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences."
+    + (misc?.placement_percentage ? ` ${misc.placement_percentage}%+ placement` : "")
+    + (misc?.recruiter_count ? ` across ${misc.recruiter_count}+ recruiting partners.` : "");
   const primaryLabel = hero?.link_label ?? "Apply Now";
   const primaryHref = hero?.link_href ?? "/admissions/inquiry";
   const secondaryLabel = hero?.secondary_link_label ?? "Explore Courses";
@@ -111,7 +114,7 @@ function Hero() {
     <section className="relative overflow-hidden bg-navy-deep text-white">
       <HeroPhotoLayer photos={photos} appearance={resolvedAppearance} rotateMs={HOMEPAGE_ROTATE_MS} />
       <div className="container-page relative py-20 md:py-28">
-        <div className="grid items-center gap-12 lg:grid-cols-[1.15fr_1fr]">
+        <div className={`grid items-center gap-12 ${resolvedAppearance.heroSliderEnabled ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
               {eyebrow}
@@ -147,14 +150,16 @@ function Hero() {
               </Link>
             </div>
           </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 32 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.9, delay: 0.15 }}
-            className="w-full"
-          >
-            <HeroCardSlider items={highlights} />
-          </motion.div>
+          {resolvedAppearance.heroSliderEnabled && (
+            <motion.div
+              initial={{ opacity: 0, y: 32 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: 0.15 }}
+              className="w-full"
+            >
+              <HeroCardSlider items={highlights} />
+            </motion.div>
+          )}
         </div>
       </div>
     </section>
@@ -164,14 +169,13 @@ function Hero() {
 function StatsStrip() {
   const items = useHomepageItems();
   const stats = byType(items, "stat");
-  const rows = stats.map((s) => ({ value: s.title, label: s.subtitle ?? "" }));
   return (
     <section className="bg-navy text-white">
       <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
-        {rows.map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.value}</div>
-            <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.label}</div>
+        {stats.map((s) => (
+          <div key={s.id} className="text-center">
+            <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.title}</div>
+            <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.subtitle ?? ""}</div>
           </div>
         ))}
       </div>
@@ -185,9 +189,9 @@ function CollegesSection() {
     data && data.length > 0
       ? data.map((c) => ({
           id: c.slug,
-          shortCode: (c as any).metadata?.shortCode ?? c.code,
+          shortCode: c.code,
           name: c.name,
-          tagline: (c as any).metadata?.tagline ?? "",
+          tagline: (c as any).tagline ?? "",
           logo: c.logo_url ?? "",
         }))
       : [];
@@ -235,7 +239,7 @@ function HomeCarouselSection() {
   const mapped: CarouselSlide[] | undefined =
     slides.length > 0
       ? slides.map((s) => ({
-          image: s.image_url ?? campusHero,
+          image: s.image_url ?? "",
           eyebrow: s.eyebrow ?? "",
           title: s.title,
           subtitle: s.subtitle ?? "",
@@ -282,14 +286,19 @@ function WhySection() {
 function TrustBand() {
   const items = useHomepageItems();
   const badges = byType(items, "trust_badge");
-  const labels = badges.map((b) => b.title);
+  const seen = new Set<string>();
+  const uniqueBadges = badges.filter((b) => {
+    if (seen.has(b.title)) return false;
+    seen.add(b.title);
+    return true;
+  });
   return (
     <section className="container-page py-14">
       <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-white p-8 md:grid-cols-4">
-        {labels.map((i) => (
-          <div key={i} className="flex items-center justify-center gap-2 text-navy">
+        {uniqueBadges.map((b) => (
+          <div key={b.id} className="flex items-center justify-center gap-2 text-navy">
             <BadgeCheck className="h-5 w-5 text-gold" />
-            <span className="text-sm font-semibold uppercase tracking-wider">{i}</span>
+            <span className="text-sm font-semibold uppercase tracking-wider">{b.title}</span>
           </div>
         ))}
       </div>

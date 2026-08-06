@@ -15,9 +15,9 @@ export const Route = createFileRoute("/campus-life/facilities/$")({
     const item = {
       slug: facility.slug,
       title: facility.name,
-      subtitle: facility.metadata?.subtitle || "",
-      accent: facility.metadata?.accent || "Facility",
-      description: facility.metadata?.description || "",
+      subtitle: facility.subtitle || "",
+      accent: facility.accent_color || "Facility",
+      description: facility.description || "",
       highlights: Array.isArray(facility.metadata?.highlights) ? facility.metadata.highlights : [],
       image: null,
     };

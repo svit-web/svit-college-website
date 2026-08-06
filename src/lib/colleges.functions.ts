@@ -11,14 +11,10 @@ export interface College {
   website_url: string | null;
   sort_order: number;
   status: 'draft' | 'published' | 'archived';
-  metadata: {
-    shortCode?: string;
-    tagline?: string;
-    hero?: {
-      kicker?: string;
-      subhead?: string;
-    };
-  };
+  tagline: string | null;
+  hero_kicker: string | null;
+  hero_subhead: string | null;
+  metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
 }

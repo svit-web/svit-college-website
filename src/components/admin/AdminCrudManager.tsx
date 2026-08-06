@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { useAdminAuth } from "@/hooks/useAdminAuth";
+import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import { MediaUploader } from "@/components/admin/MediaUploader";
 import { SeoEditor } from "@/components/admin/SeoEditor";
 import { useQueryClient } from "@tanstack/react-query";
@@ -125,7 +125,7 @@ interface AdminCrudManagerProps {
 }
 
 export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
-  const { user, roles } = useAdminAuth();
+  const { user, roles } = useAdminAuthContext();
 
   // ✅ Get Query Client for cache invalidation
   const queryClient = useQueryClient();

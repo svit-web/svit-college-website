@@ -9,14 +9,12 @@ export interface Center {
   name: string;
   slug: string;
   status: 'draft' | 'published' | 'archived';
+  subtitle: string | null;
+  accent_color: string | null;
+  description: string | null;
   metadata: {
-    subtitle?: string;
-    accent?: string;
-    description?: string;
-    highlights?: Array<{
-      title: string;
-      description: string;
-    }>;
+    highlights?: Array<{ title: string; description: string }>;
+    [key: string]: any;
   };
   created_at: string;
   updated_at: string;

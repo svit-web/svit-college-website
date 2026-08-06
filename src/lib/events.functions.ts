@@ -17,9 +17,9 @@ export interface CampusEvent {
   is_featured: boolean;
   college: { name: string; slug: string } | null;
   department: { name: string; slug: string } | null;
+  subtitle: string | null;
+  accent_color: string | null;
   metadata: {
-    accent?: string;
-    subtitle?: string;
     highlights?: Array<{ title: string; description: string }>;
     [key: string]: any;
   };

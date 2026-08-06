@@ -16,8 +16,8 @@ export const Route = createFileRoute("/campus-life/facilities/")({
     const facilities = await getAllFacilities();
 
     // Separate by category in metadata (academic vs sports)
-    const academic = facilities.filter(f => f.metadata?.category === 'academic');
-    const sports = facilities.filter(f => f.metadata?.category === 'sports');
+    const academic = facilities.filter(f => f.category === 'academic');
+    const sports = facilities.filter(f => f.category === 'sports');
 
     return { academic, sports };
   },
@@ -41,10 +41,10 @@ function Card({ item, href, i }: { item: Facility; href: string; i: number }) {
         </div>
         <div className="p-5">
           <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">
-            {item.metadata?.accent || "Facility"}
+            {item.accent_color || "Facility"}
           </div>
           <h4 className="mt-1 font-display font-bold text-navy">{item.name}</h4>
-          <p className="mt-1 text-sm text-muted-foreground">{item.metadata?.subtitle || ""}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{item.subtitle || ""}</p>
           <div className="mt-3 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-crimson">
             View <ArrowRight className="h-3 w-3" />
           </div>

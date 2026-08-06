@@ -16,10 +16,13 @@ export type Database = {
     Tables: {
       accreditations: {
         Row: {
+          accreditation_body: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          description: string | null
+          document_url: string | null
           expiry_date: string | null
           id: string
           metadata: Json
@@ -31,10 +34,13 @@ export type Database = {
           value: string
         }
         Insert: {
+          accreditation_body?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          description?: string | null
+          document_url?: string | null
           expiry_date?: string | null
           id?: string
           metadata?: Json
@@ -46,10 +52,13 @@ export type Database = {
           value: string
         }
         Update: {
+          accreditation_body?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          description?: string | null
+          document_url?: string | null
           expiry_date?: string | null
           id?: string
           metadata?: Json
@@ -384,47 +393,56 @@ export type Database = {
       }
       centers: {
         Row: {
+          accent_color: string | null
           college_id: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          description: string | null
           id: string
           institute_id: string | null
           metadata: Json
           name: string
           slug: string
           status: Database["public"]["Enums"]["content_status"]
+          subtitle: string | null
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          accent_color?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          description?: string | null
           id?: string
           institute_id?: string | null
           metadata?: Json
           name: string
           slug: string
           status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          accent_color?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          description?: string | null
           id?: string
           institute_id?: string | null
           metadata?: Json
           name?: string
           slug?: string
           status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -532,14 +550,18 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          hero_kicker: string | null
+          hero_subhead: string | null
           id: string
           institute_id: string
           logo_url: string | null
           metadata: Json
           name: string
+          show_in_navigation: boolean
           slug: string
           sort_order: number
           status: Database["public"]["Enums"]["content_status"]
+          tagline: string | null
           updated_at: string
           updated_by: string | null
           website_url: string | null
@@ -550,14 +572,18 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          hero_kicker?: string | null
+          hero_subhead?: string | null
           id?: string
           institute_id: string
           logo_url?: string | null
           metadata?: Json
           name: string
+          show_in_navigation?: boolean
           slug: string
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
           updated_at?: string
           updated_by?: string | null
           website_url?: string | null
@@ -568,14 +594,18 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          hero_kicker?: string | null
+          hero_subhead?: string | null
           id?: string
           institute_id?: string
           logo_url?: string | null
           metadata?: Json
           name?: string
+          show_in_navigation?: boolean
           slug?: string
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
           updated_at?: string
           updated_by?: string | null
           website_url?: string | null
@@ -664,82 +694,6 @@ export type Database = {
           },
         ]
       }
-      contact_info: {
-        Row: {
-          address: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          email: string | null
-          id: string
-          map_iframe_url: string | null
-          metadata: Json
-          office_hours: Json
-          phone: string | null
-          social_links: Json
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          address?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          email?: string | null
-          id?: string
-          map_iframe_url?: string | null
-          metadata?: Json
-          office_hours?: Json
-          phone?: string | null
-          social_links?: Json
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          address?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          email?: string | null
-          id?: string
-          map_iframe_url?: string | null
-          metadata?: Json
-          office_hours?: Json
-          phone?: string | null
-          social_links?: Json
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "contact_info_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contact_info_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "contact_info_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       content_categories: {
         Row: {
           created_at: string
@@ -809,49 +763,91 @@ export type Database = {
       }
       courses: {
         Row: {
+          accent: string | null
           code: string
+          color: string | null
           created_at: string
           created_by: string | null
           degree_level: Database["public"]["Enums"]["degree_level"]
           deleted_at: string | null
           deleted_by: string | null
           department_id: string | null
+          description: string | null
+          duration: string | null
+          duration_years: number | null
+          eligibility: string | null
+          fees_per_semester: string | null
+          full_name: string | null
           id: string
+          intake: number | null
+          is_programme: boolean | null
           metadata: Json
           name: string
+          programme_slug: string | null
+          short_name: string | null
           status: Database["public"]["Enums"]["content_status"]
+          tagline: string | null
           updated_at: string
           updated_by: string | null
+          year_started: number | null
         }
         Insert: {
+          accent?: string | null
           code: string
+          color?: string | null
           created_at?: string
           created_by?: string | null
           degree_level: Database["public"]["Enums"]["degree_level"]
           deleted_at?: string | null
           deleted_by?: string | null
           department_id?: string | null
+          description?: string | null
+          duration?: string | null
+          duration_years?: number | null
+          eligibility?: string | null
+          fees_per_semester?: string | null
+          full_name?: string | null
           id?: string
+          intake?: number | null
+          is_programme?: boolean | null
           metadata?: Json
           name: string
+          programme_slug?: string | null
+          short_name?: string | null
           status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
           updated_at?: string
           updated_by?: string | null
+          year_started?: number | null
         }
         Update: {
+          accent?: string | null
           code?: string
+          color?: string | null
           created_at?: string
           created_by?: string | null
           degree_level?: Database["public"]["Enums"]["degree_level"]
           deleted_at?: string | null
           deleted_by?: string | null
           department_id?: string | null
+          description?: string | null
+          duration?: string | null
+          duration_years?: number | null
+          eligibility?: string | null
+          fees_per_semester?: string | null
+          full_name?: string | null
           id?: string
+          intake?: number | null
+          is_programme?: boolean | null
           metadata?: Json
           name?: string
+          programme_slug?: string | null
+          short_name?: string | null
           status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
           updated_at?: string
           updated_by?: string | null
+          year_started?: number | null
         }
         Relationships: [
           {
@@ -954,55 +950,88 @@ export type Database = {
       }
       departments: {
         Row: {
+          about: string | null
           code: string
           college_id: string
           created_at: string
           created_by: string | null
+          degree_type: string | null
           deleted_at: string | null
           deleted_by: string | null
+          established_year: number | null
           head_of_department_id: string | null
           id: string
+          intake_pg: number | null
+          intake_ug: number | null
+          level: string | null
           logo_url: string | null
           metadata: Json
+          mission: string | null
           name: string
+          overview: string | null
+          short_name: string | null
           slug: string
           status: Database["public"]["Enums"]["content_status"]
+          theme_color: string | null
           updated_at: string
           updated_by: string | null
+          vision: string | null
         }
         Insert: {
+          about?: string | null
           code: string
           college_id: string
           created_at?: string
           created_by?: string | null
+          degree_type?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          established_year?: number | null
           head_of_department_id?: string | null
           id?: string
+          intake_pg?: number | null
+          intake_ug?: number | null
+          level?: string | null
           logo_url?: string | null
           metadata?: Json
+          mission?: string | null
           name: string
+          overview?: string | null
+          short_name?: string | null
           slug: string
           status?: Database["public"]["Enums"]["content_status"]
+          theme_color?: string | null
           updated_at?: string
           updated_by?: string | null
+          vision?: string | null
         }
         Update: {
+          about?: string | null
           code?: string
           college_id?: string
           created_at?: string
           created_by?: string | null
+          degree_type?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          established_year?: number | null
           head_of_department_id?: string | null
           id?: string
+          intake_pg?: number | null
+          intake_ug?: number | null
+          level?: string | null
           logo_url?: string | null
           metadata?: Json
+          mission?: string | null
           name?: string
+          overview?: string | null
+          short_name?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["content_status"]
+          theme_color?: string | null
           updated_at?: string
           updated_by?: string | null
+          vision?: string | null
         }
         Relationships: [
           {
@@ -1181,6 +1210,7 @@ export type Database = {
       }
       events: {
         Row: {
+          accent_color: string | null
           college_id: string | null
           created_at: string
           created_by: string | null
@@ -1204,12 +1234,14 @@ export type Database = {
           sort_order: number
           start_date: string
           status: Database["public"]["Enums"]["event_status"]
+          subtitle: string | null
           tag: string | null
           title: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          accent_color?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -1233,12 +1265,14 @@ export type Database = {
           sort_order?: number
           start_date: string
           status?: Database["public"]["Enums"]["event_status"]
+          subtitle?: string | null
           tag?: string | null
           title: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          accent_color?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -1262,6 +1296,7 @@ export type Database = {
           sort_order?: number
           start_date?: string
           status?: Database["public"]["Enums"]["event_status"]
+          subtitle?: string | null
           tag?: string | null
           title?: string
           updated_at?: string
@@ -1321,13 +1356,16 @@ export type Database = {
       }
       facilities: {
         Row: {
+          accent_color: string | null
           address: string | null
+          category: string | null
           code: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
           department_id: string | null
+          description: string | null
           facility_type: Database["public"]["Enums"]["facility_type"]
           id: string
           institute_id: string | null
@@ -1337,17 +1375,21 @@ export type Database = {
           room_number: string | null
           slug: string | null
           status: Database["public"]["Enums"]["content_status"]
+          subtitle: string | null
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          accent_color?: string | null
           address?: string | null
+          category?: string | null
           code?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           department_id?: string | null
+          description?: string | null
           facility_type: Database["public"]["Enums"]["facility_type"]
           id?: string
           institute_id?: string | null
@@ -1357,17 +1399,21 @@ export type Database = {
           room_number?: string | null
           slug?: string | null
           status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          accent_color?: string | null
           address?: string | null
+          category?: string | null
           code?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           department_id?: string | null
+          description?: string | null
           facility_type?: Database["public"]["Enums"]["facility_type"]
           id?: string
           institute_id?: string | null
@@ -1377,6 +1423,7 @@ export type Database = {
           room_number?: string | null
           slug?: string | null
           status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -2465,12 +2512,15 @@ export type Database = {
       }
       mous: {
         Row: {
+          activities: string[] | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          department_name: string | null
           expiry_date: string | null
           id: string
+          location: string | null
           logo_url: string | null
           metadata: Json
           partner_organization: string
@@ -2481,12 +2531,15 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          activities?: string[] | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_name?: string | null
           expiry_date?: string | null
           id?: string
+          location?: string | null
           logo_url?: string | null
           metadata?: Json
           partner_organization: string
@@ -2497,12 +2550,15 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          activities?: string[] | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_name?: string | null
           expiry_date?: string | null
           id?: string
+          location?: string | null
           logo_url?: string | null
           metadata?: Json
           partner_organization?: string
@@ -2546,7 +2602,9 @@ export type Database = {
           id: string
           is_homepage: boolean
           metadata: Json
+          page_type: string | null
           parent_id: string | null
+          schema_version: number | null
           seo_id: string | null
           slug: string
           status: Database["public"]["Enums"]["content_status"]
@@ -2563,7 +2621,9 @@ export type Database = {
           id?: string
           is_homepage?: boolean
           metadata?: Json
+          page_type?: string | null
           parent_id?: string | null
+          schema_version?: number | null
           seo_id?: string | null
           slug: string
           status?: Database["public"]["Enums"]["content_status"]
@@ -2580,7 +2640,9 @@ export type Database = {
           id?: string
           is_homepage?: boolean
           metadata?: Json
+          page_type?: string | null
           parent_id?: string | null
+          schema_version?: number | null
           seo_id?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["content_status"]
@@ -3172,6 +3234,54 @@ export type Database = {
           },
         ]
       }
+      scholarships: {
+        Row: {
+          amount: string | null
+          created_at: string | null
+          created_by: string | null
+          description: string | null
+          eligibility: string | null
+          id: string
+          name: string
+          provider: string | null
+          sort_order: number | null
+          status: string
+          type: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          amount?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          eligibility?: string | null
+          id?: string
+          name: string
+          provider?: string | null
+          sort_order?: number | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          description?: string | null
+          eligibility?: string | null
+          id?: string
+          name?: string
+          provider?: string | null
+          sort_order?: number | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       seo_metadata: {
         Row: {
           canonical_url: string | null
@@ -3262,7 +3372,10 @@ export type Database = {
       }
       sports: {
         Row: {
+          achievements_count: number | null
           category: string
+          coach_image_url: string | null
+          coach_name: string | null
           cover_image_url: string | null
           created_at: string
           created_by: string | null
@@ -3273,6 +3386,7 @@ export type Database = {
           is_active: boolean
           metadata: Json
           name: string
+          players_count: number | null
           slug: string
           sort_order: number
           status: string
@@ -3280,7 +3394,10 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          achievements_count?: number | null
           category?: string
+          coach_image_url?: string | null
+          coach_name?: string | null
           cover_image_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -3291,6 +3408,7 @@ export type Database = {
           is_active?: boolean
           metadata?: Json
           name: string
+          players_count?: number | null
           slug: string
           sort_order?: number
           status?: string
@@ -3298,7 +3416,10 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          achievements_count?: number | null
           category?: string
+          coach_image_url?: string | null
+          coach_name?: string | null
           cover_image_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -3309,6 +3430,7 @@ export type Database = {
           is_active?: boolean
           metadata?: Json
           name?: string
+          players_count?: number | null
           slug?: string
           sort_order?: number
           status?: string
@@ -3449,9 +3571,11 @@ export type Database = {
           deleted_by: string | null
           department_id: string
           designation_id: string
+          designation_override: string | null
           id: string
           is_primary: boolean
           metadata: Json
+          rank_group: string | null
           staff_id: string
           status: Database["public"]["Enums"]["content_status"]
           updated_at: string
@@ -3464,9 +3588,11 @@ export type Database = {
           deleted_by?: string | null
           department_id: string
           designation_id: string
+          designation_override?: string | null
           id?: string
           is_primary?: boolean
           metadata?: Json
+          rank_group?: string | null
           staff_id: string
           status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
@@ -3479,9 +3605,11 @@ export type Database = {
           deleted_by?: string | null
           department_id?: string
           designation_id?: string
+          designation_override?: string | null
           id?: string
           is_primary?: boolean
           metadata?: Json
+          rank_group?: string | null
           staff_id?: string
           status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
@@ -3539,9 +3667,12 @@ export type Database = {
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          designation: string | null
           email: string
+          employee_code: string | null
           expertise: string[]
           first_name: string
+          gender: string | null
           id: string
           joining_year: number | null
           last_name: string
@@ -3549,6 +3680,9 @@ export type Database = {
           office_hours: Json
           past_experience_years: number | null
           phone: string | null
+          photo_url: string | null
+          qualification: string | null
+          rank_group: string | null
           social_links: Json
           status: Database["public"]["Enums"]["content_status"]
           title: string | null
@@ -3562,9 +3696,12 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          designation?: string | null
           email: string
+          employee_code?: string | null
           expertise?: string[]
           first_name: string
+          gender?: string | null
           id?: string
           joining_year?: number | null
           last_name: string
@@ -3572,6 +3709,9 @@ export type Database = {
           office_hours?: Json
           past_experience_years?: number | null
           phone?: string | null
+          photo_url?: string | null
+          qualification?: string | null
+          rank_group?: string | null
           social_links?: Json
           status?: Database["public"]["Enums"]["content_status"]
           title?: string | null
@@ -3585,9 +3725,12 @@ export type Database = {
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          designation?: string | null
           email?: string
+          employee_code?: string | null
           expertise?: string[]
           first_name?: string
+          gender?: string | null
           id?: string
           joining_year?: number | null
           last_name?: string
@@ -3595,6 +3738,9 @@ export type Database = {
           office_hours?: Json
           past_experience_years?: number | null
           phone?: string | null
+          photo_url?: string | null
+          qualification?: string | null
+          rank_group?: string | null
           social_links?: Json
           status?: Database["public"]["Enums"]["content_status"]
           title?: string | null
@@ -3635,6 +3781,7 @@ export type Database = {
       }
       student_clubs: {
         Row: {
+          accent_color: string | null
           coordinator_id: string | null
           created_at: string
           created_by: string | null
@@ -3650,10 +3797,12 @@ export type Database = {
           slug: string
           status: Database["public"]["Enums"]["content_status"]
           student_coordinator_name: string | null
+          subtitle: string | null
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          accent_color?: string | null
           coordinator_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -3669,10 +3818,12 @@ export type Database = {
           slug: string
           status?: Database["public"]["Enums"]["content_status"]
           student_coordinator_name?: string | null
+          subtitle?: string | null
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          accent_color?: string | null
           coordinator_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -3688,6 +3839,7 @@ export type Database = {
           slug?: string
           status?: Database["public"]["Enums"]["content_status"]
           student_coordinator_name?: string | null
+          subtitle?: string | null
           updated_at?: string
           updated_by?: string | null
         }
@@ -4054,6 +4206,15 @@ export type Database = {
           p_college_id: string
           p_department_id: string
           p_scope_type: Database["public"]["Enums"]["scope_level"]
+        }
+        Returns: boolean
+      }
+      can_write_scoped_record: {
+        Args: {
+          p_college_id?: string
+          p_department_id?: string
+          p_institute_id?: string
+          p_trust_id?: string
         }
         Returns: boolean
       }

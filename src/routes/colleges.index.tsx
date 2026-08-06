@@ -42,18 +42,18 @@ function CollegesIndex() {
               >
                 <div className="flex items-start gap-5">
                   <CollegeLogo
-                    shortCode={c.metadata?.shortCode ?? c.code}
+                    shortCode={c.code}
                     src={c.logo_url ?? ""}
                     className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
                   />
                   <div className="min-w-0">
-                    <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.metadata?.shortCode ?? c.code}</div>
+                    <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.code}</div>
                     <h3 className="mt-1 font-display text-xl font-bold text-navy leading-tight">{c.name}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground italic">{c.metadata?.tagline}</p>
+                    <p className="mt-2 text-sm text-muted-foreground italic">{c.tagline}</p>
                   </div>
                 </div>
                 <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-navy group-hover:text-gold">
-                  Explore {c.metadata?.shortCode ?? c.code} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  Explore {c.code} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>
             </Reveal>

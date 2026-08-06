@@ -20,7 +20,7 @@ export interface HeroAppearance {
   homepagePhotos: string[]; // up to MAX_HOMEPAGE_PHOTOS — rotates every HOMEPAGE_ROTATE_MS on "/"
   aboutPhoto: string | null; // background photo for /about's hero — empty until an admin sets one
   campusLifePhoto: string | null; // background photo for /campus-life's hero
-  contactPhoto: string | null; // background photo for /contact's hero
+  heroSliderEnabled: boolean; // show/hide the HeroCardSlider on the homepage hero
 }
 
 export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
@@ -30,7 +30,7 @@ export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
   homepagePhotos: [],
   aboutPhoto: null,
   campusLifePhoto: null,
-  contactPhoto: null,
+  heroSliderEnabled: true,
 };
 
 function parseHeroAppearance(value: unknown): HeroAppearance {
@@ -44,7 +44,7 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
       : [],
     aboutPhoto: typeof v.aboutPhoto === 'string' && v.aboutPhoto ? v.aboutPhoto : null,
     campusLifePhoto: typeof v.campusLifePhoto === 'string' && v.campusLifePhoto ? v.campusLifePhoto : null,
-    contactPhoto: typeof v.contactPhoto === 'string' && v.contactPhoto ? v.contactPhoto : null,
+    heroSliderEnabled: typeof v.heroSliderEnabled === 'boolean' ? v.heroSliderEnabled : DEFAULT_HERO_APPEARANCE.heroSliderEnabled,
   };
 }
 
@@ -84,11 +84,9 @@ export const setHeroAppearance = createServerFn({ method: 'POST' })
     };
   })
   .handler(async ({ data: appearance, context }) => {
-    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-
     // requireSupabaseAuth only proves who the caller is (context.userId) —
     // role authorization for this privileged write still has to happen here.
-    const { data: roleRows, error: roleErr } = await supabaseAdmin
+    const { data: roleRows, error: roleErr } = await context.supabase
       .from('user_roles')
       .select('scope_type, role:role_id(code)')
       .eq('user_id', context.userId)
@@ -102,7 +100,7 @@ export const setHeroAppearance = createServerFn({ method: 'POST' })
       throw new Error('Forbidden: only a global admin can change this setting.');
     }
 
-    const { error: upsertErr } = await supabaseAdmin.from('app_settings').upsert({
+    const { error: upsertErr } = await context.supabase.from('app_settings').upsert({
       key: HERO_APPEARANCE_KEY,
       value: appearance as any,
       updated_at: new Date().toISOString(),

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/courses/$course")({
   head: ({ loaderData }) => ({
     meta: [
       { title: loaderData ? `${loaderData.course.name} — SVIT Vasad` : "Course — SVIT Vasad" },
-      { name: "description", content: loaderData?.course.metadata.description ?? "Course details" },
+      { name: "description", content: loaderData?.course.description ?? "Course details" },
     ],
   }),
   notFoundComponent: () => <div className="container-page py-32 text-center"><h1 className="font-display text-3xl font-bold text-navy">Course not found</h1></div>,
@@ -27,7 +27,7 @@ function CoursePage() {
   const m = course.metadata;
   return (
     <>
-      <PageHero title={course.name} accent={m.tagline} subtitle={m.description} crumbs={[{ label: "Home", to: "/" }, { label: "Courses", to: "/courses" }, { label: course.name }]} />
+      <PageHero title={course.name} accent={course.tagline} subtitle={course.description} crumbs={[{ label: "Home", to: "/" }, { label: "Courses", to: "/courses" }, { label: course.name }]} />
 
       <section className="container-page py-20">
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
@@ -60,10 +60,10 @@ function CoursePage() {
             <div className="rounded-2xl bg-gradient-to-br from-navy to-navy-light p-6 text-white">
               <div className="text-xs font-semibold uppercase tracking-widest text-gold">At a glance</div>
               <dl className="mt-4 space-y-3 text-sm">
-                <div><dt className="text-white/60 text-xs">Full Name</dt><dd>{m.fullName}</dd></div>
-                <div><dt className="text-white/60 text-xs">Duration</dt><dd>{m.duration}</dd></div>
-                <div><dt className="text-white/60 text-xs">Eligibility</dt><dd>{m.eligibility}</dd></div>
-                <div><dt className="text-white/60 text-xs">Intake</dt><dd>{m.intake}</dd></div>
+                <div><dt className="text-white/60 text-xs">Full Name</dt><dd>{course.full_name}</dd></div>
+                <div><dt className="text-white/60 text-xs">Duration</dt><dd>{course.duration}</dd></div>
+                <div><dt className="text-white/60 text-xs">Eligibility</dt><dd>{course.eligibility}</dd></div>
+                <div><dt className="text-white/60 text-xs">Intake</dt><dd>{String(course.intake ?? "—")}</dd></div>
               </dl>
               <Link to="/admissions/inquiry" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft">
                 Apply Now

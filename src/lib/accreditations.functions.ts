@@ -9,11 +9,10 @@ export interface Accreditation {
   received_year: number;
   expiry_date: string | null;
   status: 'draft' | 'published' | 'archived';
-  metadata: {
-    body?: string;
-    description?: string;
-    document_url?: string;
-  };
+  accreditation_body: string | null;
+  description: string | null;
+  document_url: string | null;
+  metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
 }
