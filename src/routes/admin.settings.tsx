@@ -3,11 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import { Settings as SettingsIcon, ShieldAlert, Phone, Mail, MapPin, Globe, Building2, Calendar, Shield, Headphones, Share2, BarChart3 } from "lucide-react";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
-import { useImageCompressionMode, IMAGE_COMPRESSION_MODE_QUERY_KEY } from "@/hooks/useImageCompressionMode";
-import { setImageCompressionMode } from "@/lib/app-settings.functions";
-import { Switch } from "@/components/ui/switch";
+import { MediaUploader } from "@/components/admin/MediaUploader";
 import { contactInfoQuery, miscSettingsQuery } from "@/lib/homepage";
 import {
   saveContactInfo,
@@ -25,8 +22,6 @@ export const Route = createFileRoute("/admin/settings")({
 function AdminSettingsPage() {
   const { roles, loading } = useAdminAuthContext();
   const isAdmin = roles.some((r) => r.code === "admin");
-  const { mode } = useImageCompressionMode();
-  const [compressionSaving, setCompressionSaving] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: contactInfo } = useQuery(contactInfoQuery);
@@ -56,22 +51,8 @@ function AdminSettingsPage() {
   }
 
   const getToken = async () => {
-    const { data: { session } } = await supabase.auth.getSession();
+    const { data: { session } } = await (await import("@/integrations/supabase/client")).supabase.auth.getSession();
     return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined;
-  };
-
-  const handleCompressionToggle = async (checked: boolean) => {
-    const nextMode = checked ? "server" : "client";
-    setCompressionSaving(true);
-    try {
-      await setImageCompressionMode({ data: nextMode, headers: await getToken() });
-      await queryClient.invalidateQueries({ queryKey: IMAGE_COMPRESSION_MODE_QUERY_KEY });
-      toast.success(`Image compression now runs ${checked ? "server-side" : "in the browser"}.`);
-    } catch (err: any) {
-      toast.error(`Failed: ${err.message}`);
-    } finally {
-      setCompressionSaving(false);
-    }
   };
 
   const handleSaveContact = async () => {
@@ -206,8 +187,8 @@ function AdminSettingsPage() {
           <Field label="UGC Helpline" icon={<Headphones className="h-3.5 w-3.5" />}>
             <input value={m.ugc_helpline} onChange={(e) => setM({ ugc_helpline: e.target.value })} className={inputCls} />
           </Field>
-          <Field label="OG Image URL" icon={<Globe className="h-3.5 w-3.5" />}>
-            <input type="url" value={m.og_image_url ?? ""} onChange={(e) => setM({ og_image_url: e.target.value || null })} className={inputCls} placeholder="https://..." />
+          <Field label="OG Image (Social Share Preview)" icon={<Globe className="h-3.5 w-3.5" />} full>
+            <MediaUploader value={m.og_image_url ?? ""} onChange={(url) => setM({ og_image_url: url || null })} />
           </Field>
           <Field label="Placement %" icon={<BarChart3 className="h-3.5 w-3.5" />}>
             <input type="number" value={m.placement_percentage} onChange={(e) => setM({ placement_percentage: Number(e.target.value) })} className={inputCls} />
@@ -235,24 +216,6 @@ function AdminSettingsPage() {
         </div>
       </section>
 
-      {/* ── System / Technical ── */}
-      <section className="rounded-xl border border-slate-200 bg-white p-5">
-        <h2 className="font-display text-base font-bold text-navy mb-4 flex items-center gap-2">
-          <SettingsIcon className="h-4 w-4 text-crimson" /> Technical
-        </h2>
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-sm font-semibold text-navy">Server-side image compression</p>
-            <p className="mt-1 text-sm text-slate-500 max-w-md">
-              When on, uploaded images are compressed by a server function instead of in the browser.
-            </p>
-            <p className="mt-2 text-xs text-amber-600">
-              Temporarily unavailable: WASM codecs don't yet load under the Cloudflare Workers runtime. Uploads always use browser-side compression until fixed.
-            </p>
-          </div>
-          <Switch checked={mode === "server"} onCheckedChange={handleCompressionToggle} disabled={compressionSaving} />
-        </div>
-      </section>
     </div>
   );
 }

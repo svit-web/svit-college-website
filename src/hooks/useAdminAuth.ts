@@ -149,9 +149,25 @@ export function useAdminAuth() {
       }
     );
 
+    // Realtime: re-check auth whenever the current user's roles are changed/revoked.
+    // This means if an admin revokes access while the user is logged in, they get
+    // kicked out on the next DB change rather than staying until token expiry.
+    const rolesChannel = supabase
+      .channel("user-roles-watch")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "user_roles" },
+        async () => {
+          if (!mounted || !currentUserId) return;
+          await checkAuth();
+        }
+      )
+      .subscribe();
+
     return () => {
       mounted = false;
       subscription.unsubscribe();
+      supabase.removeChannel(rolesChannel);
     };
   }, [checkAuth]);
 

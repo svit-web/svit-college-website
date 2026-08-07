@@ -88,24 +88,20 @@ function AdminLayout() {
     setMobileOpen(false);
   }, [location.pathname]);
 
+  // Single effect handles all navigation guards:
+  // 1. Unauthenticated → /admin/login
+  // 2. Authenticated on login page → /admin
+  // 3. Scoped user trying to access a route outside their permission level → /admin
   useEffect(() => {
-    if (!loading) {
-      if (!isAuthorized && !isLoginPage) {
-        navigate({ to: "/admin/login" });
-      } else if (isAuthorized && isLoginPage) {
-        navigate({ to: "/admin" });
-      }
-    }
-  }, [loading, isAuthorized, isLoginPage, navigate]);
-
-  // Sidebar hiding is UX only — also block direct navigation to routes
-  // outside a scoped user's section, since typing/bookmarking the URL
-  // bypasses the sidebar entirely.
-  useEffect(() => {
-    if (!loading && isAuthorized && !isRouteAllowedForScope(location.pathname, userScope.level)) {
+    if (loading) return;
+    if (!isAuthorized && !isLoginPage) {
+      navigate({ to: "/admin/login" });
+    } else if (isAuthorized && isLoginPage) {
+      navigate({ to: "/admin" });
+    } else if (isAuthorized && !isRouteAllowedForScope(location.pathname, userScope.level)) {
       navigate({ to: "/admin" });
     }
-  }, [loading, isAuthorized, userScope.level, location.pathname, navigate]);
+  }, [loading, isAuthorized, isLoginPage, userScope.level, location.pathname, navigate]);
 
   if (loading) {
     return (
@@ -119,12 +115,7 @@ function AdminLayout() {
   }
 
   if (isLoginPage) return <Outlet />;
-  // Show spinner while the redirect to /admin/login fires (avoids null flash)
-  if (!isAuthorized) return (
-    <div className="flex h-screen w-screen items-center justify-center admin-bg">
-      <Loader2 className="h-10 w-10 animate-spin text-crimson" />
-    </div>
-  );
+  if (!isAuthorized) return null;
 
   return (
     <AdminAuthProvider value={auth}>

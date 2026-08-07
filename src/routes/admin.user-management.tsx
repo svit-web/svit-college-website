@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { toast } from "sonner";
-import { ShieldAlert, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
+import { ShieldAlert, Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
 import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
 import {
   listPortalUsers,
@@ -233,7 +233,7 @@ function UserManagementPage() {
                         onClick={() => setRolesUser(u)}
                         className="rounded p-1.5 text-slate-500 hover:text-navy hover:bg-slate-100"
                       >
-                        <ShieldAlert className="h-4 w-4" />
+                        <Shield className="h-4 w-4" />
                       </button>
                       <button
                         title="Reset password"
