@@ -48,6 +48,17 @@ async function assertGlobalAdmin(supabaseAdmin: any, userId: string) {
   }
 }
 
+// The "admin" role code is treated as unconditionally global by
+// useUserScope.ts regardless of what scope_type its user_roles row carries —
+// an (admin, scope_type=department) row would grant that user full global
+// access in the UI while still passing scope-blind legacy checks elsewhere.
+// Reject that combination at the one place both grant paths go through.
+function assertRoleScopeSane(roleCode: string, scopeType: string) {
+  if (roleCode === "admin" && scopeType !== "global") {
+    throw new Error('The "Administrator" role can only be granted at Global scope.');
+  }
+}
+
 export const listPortalUsers = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }): Promise<PortalUser[]> => {
@@ -159,6 +170,7 @@ export const createPortalUser = createServerFn({ method: "POST" })
     if (input.password.length < 8) {
       throw new Error("Password must be at least 8 characters.");
     }
+    assertRoleScopeSane(input.roleCode, input.scopeType);
 
     const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
       email: input.email,
@@ -209,6 +221,7 @@ export const assignPortalUserRole = createServerFn({ method: "POST" })
   .handler(async ({ data: input, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await assertGlobalAdmin(supabaseAdmin, context.userId);
+    assertRoleScopeSane(input.roleCode, input.scopeType);
 
     const { data: role, error: roleErr } = await supabaseAdmin
       .from("roles")

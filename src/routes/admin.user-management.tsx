@@ -54,31 +54,23 @@ function ScopeFields({
   const entityOptions =
     scopeType === "trust" ? options.trusts : scopeType === "college" ? options.colleges : scopeType === "department" ? options.departments : [];
 
+  // "Administrator" is unconditionally global-access in this app (see
+  // useUserScope.ts) regardless of what scope it's paired with — offering it
+  // alongside a Trust/College/Department scope reads like "the admin of this
+  // department" but actually grants full site access. Only show it at Global.
+  const roleOptions = scopeType === "global" ? options.roles : options.roles.filter((r) => r.code !== "admin");
+
   return (
     <>
-      <div className="space-y-1.5">
-        <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Role</label>
-        <select
-          value={roleCode}
-          onChange={(e) => setRoleCode(e.target.value)}
-          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-crimson/30"
-        >
-          <option value="">Select a role…</option>
-          {options.roles.map((r) => (
-            <option key={r.code} value={r.code}>
-              {r.name}
-            </option>
-          ))}
-        </select>
-      </div>
-
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Access Scope</label>
         <select
           value={scopeType}
           onChange={(e) => {
-            setScopeType(e.target.value);
+            const nextScope = e.target.value;
+            setScopeType(nextScope);
             setScopeId("");
+            if (nextScope !== "global" && roleCode === "admin") setRoleCode("");
           }}
           className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-crimson/30"
         >
@@ -87,6 +79,25 @@ function ScopeFields({
           <option value="college">College</option>
           <option value="department">Department</option>
         </select>
+      </div>
+
+      <div className="space-y-1.5">
+        <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider">Role</label>
+        <select
+          value={roleCode}
+          onChange={(e) => setRoleCode(e.target.value)}
+          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-crimson/30"
+        >
+          <option value="">Select a role…</option>
+          {roleOptions.map((r) => (
+            <option key={r.code} value={r.code}>
+              {r.name}
+            </option>
+          ))}
+        </select>
+        {scopeType !== "global" && (
+          <p className="text-[11px] text-slate-500">Administrator is only available at Global scope.</p>
+        )}
       </div>
 
       {entityLabel && (

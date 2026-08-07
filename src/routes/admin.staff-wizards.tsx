@@ -188,7 +188,7 @@ function StaffProfilesPage() {
     try {
       const { data, error } = await supabase
         .from("staff_profiles")
-        .insert({ ...newStaffForm, status: "published" })
+        .insert({ ...newStaffForm, status: "published", created_by: user?.id })
         .select().single();
       if (error) throw error;
       toast.success("Staff profile created!");
