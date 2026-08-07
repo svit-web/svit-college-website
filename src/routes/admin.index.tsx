@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminAuthContext } from "@/contexts/AdminAuthContext";
+import { useUserScope } from "@/hooks/useUserScope";
+import { isRouteAllowedForScope } from "@/lib/admin-sections";
 import {
   Calendar,
   FileText,
@@ -13,11 +14,9 @@ import {
   Loader2,
   ArrowRight,
   Building,
-  TrendingUp,
   ShieldCheck,
   Home,
   GraduationCap,
-  UserSquare2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -47,16 +46,19 @@ const ACTION_MAP: Record<string, string> = {
   DELETE: "bg-rose-500/10 text-rose-400",
 };
 
+const SCOPE_LABEL: Record<string, string> = {
+  global: "Global Administrator",
+  trust: "Trust Admin",
+  college: "College Admin",
+  department: "Department Admin",
+  none: "No Role",
+};
+
 function AdminDashboardHome() {
   const { profile, roles } = useAdminAuthContext();
   const sb = supabase as any;
-
-  const userScope = useMemo(() => {
-    if (!roles?.length) return "No Role";
-    if (roles.some((r: any) => r.code === "admin")) return "Global Administrator";
-    const types: Record<string, string> = { trust: "Trust Editor", college: "College Editor", department: "Department Editor" };
-    return types[roles[0].scope_type] || "Scoped Editor";
-  }, [roles]);
+  const userScope = useUserScope(roles);
+  const scopeLabel = SCOPE_LABEL[userScope.level] ?? "Scoped Editor";
 
   const { data: metrics, isLoading: metricsLoading } = useQuery({
     queryKey: ["admin", "dashboard-metrics"],
@@ -93,13 +95,19 @@ function AdminDashboardHome() {
   });
 
   const { data: auditLogs, isLoading: logsLoading } = useQuery({
-    queryKey: ["admin", "dashboard-logs"],
+    queryKey: ["admin", "dashboard-logs", userScope.level],
     queryFn: async () => {
-      const { data, error } = await sb
+      const { data: { session } } = await supabase.auth.getSession();
+      let query = sb
         .from("audit_logs")
         .select("id, action, table_name, record_id, created_at, user:user_id(first_name, last_name)")
         .order("created_at", { ascending: false })
         .limit(8);
+      // Non-global admins only see their own actions
+      if (userScope.level !== "global" && session?.user?.id) {
+        query = query.eq("user_id", session.user.id);
+      }
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
@@ -109,25 +117,30 @@ function AdminDashboardHome() {
     ? `${profile.first_name || ""} ${profile.last_name || ""}`.trim() || "Admin"
     : "Admin";
 
+  const visiblePrimaryCards = PRIMARY_CARDS.filter((c) => isRouteAllowedForScope(c.link, userScope.level));
+  const visibleSecondaryCards = SECONDARY_CARDS.filter((c) => isRouteAllowedForScope(c.link, userScope.level));
+  const visibleQuickLinks = [
+    { label: "T&P Master Hub (All Placements)", link: "/admin/tnp-hub" },
+    { label: "Add New Event",                   link: "/admin/events" },
+    { label: "Staff Profiles",                  link: "/admin/staff-wizards" },
+    { label: "Homepage Layout",                 link: "/admin/homepage" },
+    { label: "Trash & Recovery",                link: "/admin/trash" },
+    { label: "Media Library",                   link: "/admin/media" },
+  ].filter((l) => isRouteAllowedForScope(l.link, userScope.level));
+
   return (
     <div className="space-y-6 max-w-6xl">
       {/* Welcome row */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold text-navy">Welcome back, {userName}</h1>
-          <p className="text-xs text-slate-500 mt-0.5">{userScope}</p>
-        </div>
-        <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="text-xs font-medium text-emerald-400">Live</span>
-        </div>
+      <div>
+        <h1 className="text-xl font-bold text-navy">Welcome back, {userName}</h1>
+        <p className="text-xs text-slate-500 mt-0.5">{scopeLabel}</p>
       </div>
 
       {/* Primary stat cards */}
       <div>
         <p className="mb-3 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Frequently Updated</p>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {PRIMARY_CARDS.map((card) => {
+          {visiblePrimaryCards.map((card) => {
             const Icon = card.icon;
             const value = metrics?.[card.key as keyof typeof metrics];
             return (
@@ -211,7 +224,7 @@ function AdminDashboardHome() {
         <div className="lg:col-span-2 space-y-3">
           <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider">Structure</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-2">
-            {SECONDARY_CARDS.map((card) => {
+            {visibleSecondaryCards.map((card) => {
               const Icon = card.icon;
               const value = metrics?.[card.key as keyof typeof metrics];
               return (
@@ -235,26 +248,21 @@ function AdminDashboardHome() {
           </div>
 
           {/* Quick links */}
-          <div className="rounded-xl border admin-border admin-card p-4 space-y-2">
-            <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Quick Links</p>
-            {[
-              { label: "T&P Master Hub (All Placements)", link: "/admin/tnp-hub" },
-              { label: "Add New Event",            link: "/admin/events" },
-              { label: "Staff Profiles",            link: "/admin/staff-wizards" },
-              { label: "Homepage Layout",           link: "/admin/homepage" },
-              { label: "Trash & Recovery",          link: "/admin/trash" },
-              { label: "Media Library",             link: "/admin/media" },
-            ].map((item) => (
-              <Link
-                key={item.link}
-                to={item.link}
-                className="flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-navy transition group"
-              >
-                {item.label}
-                <ArrowRight className="h-3 w-3 text-slate-400 group-hover:text-crimson transition" />
-              </Link>
-            ))}
-          </div>
+          {visibleQuickLinks.length > 0 && (
+            <div className="rounded-xl border admin-border admin-card p-4 space-y-2">
+              <p className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-3">Quick Links</p>
+              {visibleQuickLinks.map((item) => (
+                <Link
+                  key={item.link}
+                  to={item.link}
+                  className="flex items-center justify-between rounded-lg px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 hover:text-navy transition group"
+                >
+                  {item.label}
+                  <ArrowRight className="h-3 w-3 text-slate-400 group-hover:text-crimson transition" />
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
