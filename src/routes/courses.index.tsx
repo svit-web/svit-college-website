@@ -43,7 +43,7 @@ function CoursesIndex() {
                 <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4 text-xs">
                   <div><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold text-navy">{c.duration}</dd></div>
                   <div><dt className="text-muted-foreground">Intake</dt><dd className="font-semibold text-navy">{String(c.intake ?? "—")}</dd></div>
-                  <div><dt className="text-muted-foreground">Eligibility</dt><dd className="font-semibold text-navy text-[10px] leading-tight">{c.eligibility}</dd></div>
+                  <div><dt className="text-muted-foreground">Eligibility</dt><dd className="font-semibold text-navy text-xs leading-tight">{c.eligibility}</dd></div>
                 </dl>
                 <div className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-gold">
                   View Details <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />

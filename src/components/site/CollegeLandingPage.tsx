@@ -133,7 +133,7 @@ function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
         {data.map((s) => (
           <div key={s.label} className="text-center">
             <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.value}</div>
-            <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.label}</div>
+            <div className="mt-1 text-xs uppercase tracking-widest text-white/70">{s.label}</div>
           </div>
         ))}
       </div>
@@ -243,7 +243,7 @@ function EventsAndEnquiry({ college }: { college: College }) {
           <ul className="mt-6 space-y-4">
             {events.map((e) => (
               <li key={e.title} className="card-lift rounded-2xl border border-border bg-white p-5">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">{e.tag}</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{e.tag}</div>
                 <div className="mt-1 font-display text-base font-bold text-navy">{e.title}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{e.date}</div>
               </li>

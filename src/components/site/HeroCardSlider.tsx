@@ -52,7 +52,7 @@ export function HeroCardSlider({ items = [] }: Props) {
             <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
               {current.eyebrow && (
-                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
+                <div className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-gold">
                   {current.eyebrow}
                 </div>
               )}
@@ -80,7 +80,7 @@ export function HeroCardSlider({ items = [] }: Props) {
             <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
               {next.eyebrow && (
-                <div className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold/90">
+                <div className="mb-1 text-xs font-bold uppercase tracking-[0.2em] text-gold/90">
                   {next.eyebrow}
                 </div>
               )}

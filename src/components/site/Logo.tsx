@@ -20,7 +20,7 @@ export function Logo({ light = false }: { light?: boolean }) {
         <div className={cn("font-display font-bold text-base", light ? "text-white" : "text-navy")}>
           SVIT Vasad
         </div>
-        <div className={cn("text-[10px] uppercase tracking-widest", light ? "text-white/70" : "text-muted-foreground")}>
+        <div className={cn("text-xs uppercase tracking-widest", light ? "text-white/70" : "text-muted-foreground")}>
           Institute of Technology
         </div>
       </div>

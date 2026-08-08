@@ -16,6 +16,7 @@ export interface MiscSettings {
   recruiter_count: number;
   campus_size_acres: number;
   meta_description: string;
+  colleges_label: string;
 }
 
 export interface ContactInfoSettings {
@@ -34,6 +35,7 @@ const MISC_KEYS: (keyof MiscSettings)[] = [
   'admission_year', 'year_established', 'antiragging_email',
   'it_support_email', 'ugc_helpline', 'og_description', 'og_image_url',
   'placement_percentage', 'recruiter_count', 'campus_size_acres', 'meta_description',
+  'colleges_label',
 ];
 
 export const DEFAULT_MISC: MiscSettings = {
@@ -48,6 +50,7 @@ export const DEFAULT_MISC: MiscSettings = {
   recruiter_count: 200,
   campus_size_acres: 15,
   meta_description: 'AICTE-approved engineering, management and applied sciences programmes on a 15-acre campus in Vasad, Gujarat. 95% placements, modern labs, vibrant campus life.',
+  colleges_label: 'Colleges',
 };
 
 export const DEFAULT_CONTACT: ContactInfoSettings = {
@@ -87,6 +90,7 @@ export const getMiscSettings = createServerFn({ method: 'GET' })
       recruiter_count: (map.recruiter_count as number) ?? DEFAULT_MISC.recruiter_count,
       campus_size_acres: (map.campus_size_acres as number) ?? DEFAULT_MISC.campus_size_acres,
       meta_description: (map.meta_description as string) ?? DEFAULT_MISC.meta_description,
+      colleges_label: (map.colleges_label as string) ?? DEFAULT_MISC.colleges_label,
     };
   });
 

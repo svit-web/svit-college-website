@@ -199,7 +199,13 @@ function AdminSettingsPage() {
           <Field label="Campus Size (acres)" icon={<MapPin className="h-3.5 w-3.5" />}>
             <input type="number" value={m.campus_size_acres} onChange={(e) => setM({ campus_size_acres: Number(e.target.value) })} className={inputCls} />
           </Field>
+          <Field label="'Colleges' Section Label" icon={<Building2 className="h-3.5 w-3.5" />}>
+            <input value={m.colleges_label} onChange={(e) => setM({ colleges_label: e.target.value })} className={inputCls} placeholder="Colleges" />
+          </Field>
         </div>
+        <p className="text-xs text-slate-500 -mt-2">
+          Controls the word used across the site for "Colleges" — e.g. change to "Institutes". Updates the nav menu, homepage section heading, and the colleges listing page.
+        </p>
 
         <Field label="Site Meta Description" full>
           <textarea rows={2} value={m.meta_description} onChange={(e) => setM({ meta_description: e.target.value })} className={inputCls} />

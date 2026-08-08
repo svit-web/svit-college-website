@@ -62,7 +62,7 @@ export function AboutLayout() {
                 aria-label="About sections"
                 className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
               >
-                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                <div className="px-3 pb-2 pt-1 text-xs font-bold uppercase tracking-widest text-crimson">
                   About SVIT
                 </div>
                 <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">

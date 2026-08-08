@@ -37,7 +37,7 @@ function ClubsIndex() {
               params={{ slug: c.slug }}
               className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
             >
-              <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">
+              <div className="text-xs font-bold uppercase tracking-widest text-crimson">
                 {c.accent_color || "Club"}
               </div>
               <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>

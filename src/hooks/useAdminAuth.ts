@@ -38,10 +38,10 @@ export function useAdminAuth() {
     checkingRef.current = true;
 
     try {
-      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
+        setLoading(true);
         setUser(null);
         setProfile(null);
         setRoles([]);
@@ -51,11 +51,15 @@ export function useAdminAuth() {
 
       const sessionUser = session.user;
 
-      // Skip re-fetch if user hasn't changed (e.g. token refresh for same user)
+      // Skip re-fetch if user hasn't changed (e.g. token refresh, or a
+      // tab-focus SIGNED_IN re-fire for the same session). Checked before
+      // setLoading(true) so an unchanged session never flips the admin
+      // portal into its full-screen loading state.
       if (currentUserId && currentUserId === sessionUser.id) {
         return;
       }
 
+      setLoading(true);
       setUser(sessionUser);
 
       // Fetch profile + roles in parallel
@@ -126,8 +130,9 @@ export function useAdminAuth() {
         if (!mounted) return;
 
         if (event === "SIGNED_IN") {
-          // Full re-check on new sign-in
-          await checkAuth();
+          // Re-check, but skip the loading flash if it's the same user
+          // (supabase-js re-fires SIGNED_IN with the same session on tab focus)
+          await checkAuth(currentUserId);
           currentUserId = session?.user?.id;
         } else if (event === "TOKEN_REFRESHED") {
           // Skip re-fetch if it's the same user — token refreshes happen every hour

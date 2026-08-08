@@ -150,11 +150,11 @@ export function DeptAboutView({ department, courses = [], labs = [] }: Props) {
                 className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
               >
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-navy px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+                  <span className="rounded-full bg-navy px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
                     {DEGREE_LABEL[c.degree_level] ?? c.degree_level}
                   </span>
                   {c.year_started && (
-                    <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                       Since {c.year_started}
                     </span>
                   )}
@@ -223,7 +223,7 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
       {/* Details */}
       <div className="min-w-0 flex-1 py-1">
         {featured && (
-          <div className="mb-2 inline-flex items-center rounded-full bg-gold/20 px-3 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gold-strong">
+          <div className="mb-2 inline-flex items-center rounded-full bg-gold/20 px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-gold-strong">
             Head of Department
           </div>
         )}
@@ -308,7 +308,7 @@ export function DeptStaffView({ staff = [] }: Props) {
                 <AvatarPlaceholder name={m.name} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-semibold text-navy">{m.name}</div>
-                  <div className="truncate text-[11px] text-muted-foreground">{m.designation}</div>
+                  <div className="truncate text-xs text-muted-foreground">{m.designation}</div>
                 </div>
               </li>
             ))}

@@ -48,10 +48,10 @@ function Card({ testimonial: t }: { testimonial: PlacementTestimonial }) {
           <div className="font-bold text-xs text-navy truncate">
             {t.studentName}
           </div>
-          <div className="text-[11px] font-semibold text-crimson truncate">
+          <div className="text-xs font-semibold text-crimson truncate">
             {t.designation} @ {t.companyName}
           </div>
-          <div className="text-[10px] text-muted-foreground truncate">
+          <div className="text-xs text-muted-foreground truncate">
             {t.departmentName} &bull; Batch {t.batchYear}
           </div>
         </div>
