@@ -70,11 +70,16 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
   why_choose: "Why Choose Us",
   trust_badge: "Trust Badges",
   highlight_card: "Highlight Cards",
-  quick_link: "Quick Links",
+  quick_link: "Quick Links (no longer shown on site)",
+  hero_slide: "Hero Slides (legacy)",
   job: "Job Listings",
 };
 
-const ITEM_TYPES = Object.keys(ITEM_TYPE_LABELS);
+// Quick Links no longer render anywhere on the site (removed from the hero pill
+// row) and Hero Slides is a legacy type — both kept out of the Add/Edit type
+// picker so admins can't create new dead items, but existing ones stay visible
+// above under their label so they can be reviewed or deleted.
+const ITEM_TYPES = Object.keys(ITEM_TYPE_LABELS).filter((t) => t !== "quick_link" && t !== "hero_slide");
 
 const EMPTY_FORM = {
   item_type: "stat",
@@ -84,6 +89,7 @@ const EMPTY_FORM = {
   subtitle: "",
   body: "",
   icon_name: "",
+  pretitle: "",
   eyebrow: "",
   title_accent: "",
   image_url: "",
@@ -161,6 +167,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
       subtitle: item.subtitle || "",
       body: item.body || "",
       icon_name: item.icon_name || "",
+      pretitle: item.pretitle || "",
       eyebrow: item.eyebrow || "",
       title_accent: item.title_accent || "",
       image_url: item.image_url || "",
@@ -327,6 +334,16 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </select>
               </div>
 
+              {/* Pretitle — hero only, renders above the eyebrow badge */}
+              {form.item_type === "hero" && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Pretitle (line above the eyebrow badge)</label>
+                  <input value={form.pretitle} onChange={(e) => f("pretitle", e.target.value)}
+                    placeholder='e.g. "Sardar Vallabhbhai Patel Institute of Technology"'
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none" />
+                </div>
+              )}
+
               {/* Eyebrow — hero, carousel_slide, promo_card, hero_slide */}
               {["hero", "carousel_slide", "promo_card", "hero_slide"].includes(form.item_type) && (
                 <div className="space-y-1.5">
@@ -343,7 +360,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                   {form.item_type === "stat" ? 'Value (e.g. "5000+")' : "Title"}
                 </label>
                 <input
-                  required
+                  required={form.item_type !== "hero"}
                   value={form.title}
                   onChange={(e) => f("title", e.target.value)}
                   className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"

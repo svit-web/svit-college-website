@@ -1,8 +1,16 @@
 import { useRef, useState, useMemo, useEffect } from "react";
 import { Link, useRouterState } from "@tanstack/react-router";
 import { AnimatePresence, motion } from "framer-motion";
-import { Building2, CalendarDays, ChevronDown, ChevronRight, GraduationCap, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
+import { Building2, CalendarDays, ChevronDown, ChevronRight, Facebook, GraduationCap, Instagram, Mail, Menu, Phone, Trophy, Users, X } from "lucide-react";
 import { Logo } from "./Logo";
+
+function LinkedinIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+    </svg>
+  );
+}
 const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About SVIT", to: "/about" },
@@ -28,7 +36,7 @@ import { getAllDepartments, type Department } from "@/lib/departments.functions"
 import { CollegeLogo } from "./CollegeLogo";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { collegesQuery, contactInfoQuery } from "@/lib/homepage";
+import { collegesQuery, contactInfoQuery, miscSettingsQuery } from "@/lib/homepage";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getSports } from "@/lib/sports.functions";
 import { getAllCenters } from "@/lib/centers.functions";
@@ -63,10 +71,15 @@ export function Header() {
 
   const { data: dbColleges } = useQuery(collegesQuery);
   const { data: contactInfo } = useQuery(contactInfoQuery);
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const collegesLabel = misc?.colleges_label || "Colleges";
 
   const site = {
     email: contactInfo?.email,
     phone: contactInfo?.phone,
+    facebook: contactInfo?.social_links?.Facebook,
+    instagram: contactInfo?.social_links?.Instagram,
+    linkedin: contactInfo?.social_links?.LinkedIn,
   };
 
   const displayColleges = useMemo(() => {
@@ -77,7 +90,7 @@ export function Header() {
         shortCode: c.code,
         name: c.name,
         tagline: (c as any).tagline ?? "",
-        logo: c.logo_url ?? "",
+        logo: c.logo_url ?? undefined,
       }));
   }, [dbColleges]);
 
@@ -117,6 +130,23 @@ export function Header() {
                 {n.label}
               </Link>
             ))}
+            <div className="flex items-center gap-3 border-l border-white/20 pl-4">
+              {site.facebook && (
+                <a href={site.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="hover:text-gold transition-colors">
+                  <Facebook className="h-3.5 w-3.5" />
+                </a>
+              )}
+              {site.instagram && (
+                <a href={site.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="hover:text-gold transition-colors">
+                  <Instagram className="h-3.5 w-3.5" />
+                </a>
+              )}
+              {site.linkedin && (
+                <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="hover:text-gold transition-colors">
+                  <LinkedinIcon className="h-3.5 w-3.5" />
+                </a>
+              )}
+            </div>
           </nav>
         </div>
       </div>
@@ -230,7 +260,7 @@ export function Header() {
                       active ? "text-navy" : "text-ink/80 hover:text-navy"
                     )}
                   >
-                    {n.label} <ChevronDown className="h-3 w-3" />
+                    {collegesLabel} <ChevronDown className="h-3 w-3" />
                   </Link>
                   <AnimatePresence>
                     {coursesOpen && (
@@ -395,7 +425,7 @@ export function Header() {
                         onClick={() => setMobileCollegesOpen((o) => !o)}
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
-                        {n.label}
+                        {collegesLabel}
                         <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileCollegesOpen && "rotate-180")} />
                       </button>
                       {mobileCollegesOpen && (
@@ -454,6 +484,23 @@ export function Header() {
                   {n.label}
                 </Link>
               ))}
+              <div className="flex items-center gap-4 px-3 py-2">
+                {site.facebook && (
+                  <a href={site.facebook} target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-muted-foreground hover:text-navy">
+                    <Facebook className="h-4 w-4" />
+                  </a>
+                )}
+                {site.instagram && (
+                  <a href={site.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-muted-foreground hover:text-navy">
+                    <Instagram className="h-4 w-4" />
+                  </a>
+                )}
+                {site.linkedin && (
+                  <a href={site.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className="text-muted-foreground hover:text-navy">
+                    <LinkedinIcon className="h-4 w-4" />
+                  </a>
+                )}
+              </div>
               <Link
                 to="/admissions/inquiry"
                 onClick={closeMobileMenu}
@@ -568,7 +615,7 @@ function useCampusCategories(): MegaCategory[] {
   ];
 }
 
-type NavCollege = { id: string; shortCode: string; name: string; tagline: string; logo: string };
+type NavCollege = { id: string; shortCode: string; name: string; tagline: string; logo?: string };
 
 function CollegesMega({
   colleges,

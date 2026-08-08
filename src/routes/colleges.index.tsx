@@ -4,32 +4,36 @@ import { PageHero } from "@/components/site/PageHero";
 import { CollegeLogo } from "@/components/site/CollegeLogo";
 import { Reveal } from "@/components/site/Reveal";
 import { getAllColleges } from "@/lib/colleges.functions";
+import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const Route = createFileRoute("/colleges/")({
-  head: () => ({
-    meta: [
-      { title: "Our Colleges — SVIT Group" },
-      { name: "description", content: "Explore the four constituent colleges of the SVIT Group — SVIT, SVICA, SVION, and SVIT COA." },
-      { property: "og:title", content: "Our Colleges — SVIT Group" },
-      { property: "og:description", content: "Explore the four constituent colleges of the SVIT Group." },
-    ],
-  }),
+  head: ({ loaderData }) => {
+    const label = loaderData?.collegesLabel ?? "Colleges";
+    return {
+      meta: [
+        { title: `Our ${label} — SVIT Group` },
+        { name: "description", content: "Explore the four constituent colleges of the SVIT Group — SVIT, SVICA, SVION, and SVIT COA." },
+        { property: "og:title", content: `Our ${label} — SVIT Group` },
+        { property: "og:description", content: "Explore the four constituent colleges of the SVIT Group." },
+      ],
+    };
+  },
   loader: async () => {
-    const colleges = await getAllColleges();
-    return { colleges };
+    const [colleges, misc] = await Promise.all([getAllColleges(), getMiscSettings()]);
+    return { colleges, collegesLabel: misc.colleges_label };
   },
   component: CollegesIndex,
 });
 
 function CollegesIndex() {
-  const { colleges } = Route.useLoaderData();
+  const { colleges, collegesLabel } = Route.useLoaderData();
   return (
     <>
       <PageHero
         accent="SVIT Group"
-        title="Our Colleges"
+        title={`Our ${collegesLabel}`}
         subtitle="Four constituent institutes under one campus — engineering, computer applications, nursing, and architecture."
-        crumbs={[{ label: "Home", to: "/" }, { label: "Colleges" }]}
+        crumbs={[{ label: "Home", to: "/" }, { label: collegesLabel }]}
       />
       <section className="container-page py-20">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-2">
@@ -43,7 +47,7 @@ function CollegesIndex() {
                 <div className="flex items-start gap-5">
                   <CollegeLogo
                     shortCode={c.code}
-                    src={c.logo_url ?? ""}
+                    src={c.logo_url ?? undefined}
                     className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
                   />
                   <div className="min-w-0">

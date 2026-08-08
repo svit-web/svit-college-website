@@ -1653,6 +1653,7 @@ export type Database = {
           link_href: string | null
           link_label: string | null
           metadata: Json
+          pretitle: string | null
           scope_type: Database["public"]["Enums"]["scope_level"]
           secondary_link_href: string | null
           secondary_link_label: string | null
@@ -1681,6 +1682,7 @@ export type Database = {
           link_href?: string | null
           link_label?: string | null
           metadata?: Json
+          pretitle?: string | null
           scope_type?: Database["public"]["Enums"]["scope_level"]
           secondary_link_href?: string | null
           secondary_link_label?: string | null
@@ -1709,6 +1711,7 @@ export type Database = {
           link_href?: string | null
           link_label?: string | null
           metadata?: Json
+          pretitle?: string | null
           scope_type?: Database["public"]["Enums"]["scope_level"]
           secondary_link_href?: string | null
           secondary_link_label?: string | null

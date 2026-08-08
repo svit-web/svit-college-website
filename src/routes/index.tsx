@@ -76,7 +76,6 @@ function Home() {
 function Hero() {
   const items = useHomepageItems();
   const hero = byType(items, "hero")[0];
-  const quickLinks = byType(items, "quick_link");
   const highlightCards = byType(items, "highlight_card");
   const { data: appearance } = useQuery(heroAppearanceQuery);
   const { data: misc } = useQuery(miscSettingsQuery);
@@ -86,20 +85,25 @@ function Hero() {
       ? resolvedAppearance.homepagePhotos
       : hero?.image_url ? [hero.image_url] : [];
 
-  const eyebrow = hero?.eyebrow ?? (misc?.year_established ? `Est. ${misc.year_established} · Vasad, Gujarat` : "Vasad, Gujarat");
-  const title = hero?.title ?? "Build Your Future.";
-  const titleAccent = hero?.title_accent ?? "Shape The World.";
-  const subtitle =
-    hero?.subtitle ??
-    "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences."
-    + (misc?.placement_percentage ? ` ${misc.placement_percentage}%+ placement` : "")
-    + (misc?.recruiter_count ? ` across ${misc.recruiter_count}+ recruiting partners.` : "");
+  // Once a hero row exists, its fields are used as-is (trimmed) even when left
+  // blank — an admin clearing a field means "don't show this," not "fall back
+  // to placeholder text." Defaults only apply before any hero row is set up.
+  const textOrEmpty = (v: string | null | undefined) => (typeof v === "string" ? v.trim() : "");
+  const pretitle = textOrEmpty(hero?.pretitle);
+  const eyebrow = hero
+    ? textOrEmpty(hero.eyebrow)
+    : (misc?.year_established ? `Est. ${misc.year_established} · Vasad, Gujarat` : "Vasad, Gujarat");
+  const title = hero ? textOrEmpty(hero.title) : "Build Your Future.";
+  const titleAccent = hero ? textOrEmpty(hero.title_accent) : "Shape The World.";
+  const subtitle = hero
+    ? textOrEmpty(hero.subtitle)
+    : "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences."
+      + (misc?.placement_percentage ? ` ${misc.placement_percentage}%+ placement` : "")
+      + (misc?.recruiter_count ? ` across ${misc.recruiter_count}+ recruiting partners.` : "");
   const primaryLabel = hero?.link_label ?? "Apply Now";
   const primaryHref = hero?.link_href ?? "/admissions/inquiry";
   const secondaryLabel = hero?.secondary_link_label ?? "Explore Courses";
   const secondaryHref = hero?.secondary_link_href ?? "/courses";
-
-  const chips = quickLinks.map((q) => ({ label: q.title, href: q.link_href ?? "#" }));
 
   const highlights =
     highlightCards.map((h) => ({
@@ -116,25 +120,38 @@ function Hero() {
       <div className="container-page relative py-20 md:py-28">
         <div className={`grid items-center gap-12 ${resolvedAppearance.heroSliderEnabled ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-            <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-              {eyebrow}
-            </div>
-            <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.02]">
-              {title} <br />
-              <span className="text-gold">{titleAccent}</span>
-            </h1>
-            <p className="mt-6 text-lg text-white/85 max-w-2xl">{subtitle}</p>
-            <div className="mt-6 flex flex-wrap gap-2 text-xs">
-              {chips.map((c) => (
-                <a
-                  key={c.label + c.href}
-                  href={c.href}
-                  className="rounded-full border border-white/20 bg-white/5 px-3 py-1.5 text-white/85 hover:border-gold hover:text-gold transition-colors"
-                >
-                  {c.label}
-                </a>
-              ))}
-            </div>
+            {pretitle && (
+              <p className="mb-3 font-display text-3xl md:text-5xl font-bold leading-[1.05] text-white">
+                {pretitle.includes(" of Technology") ? (
+                  <>
+                    {pretitle.replace(" of Technology", "")}
+                    <br />
+                    of Technology
+                  </>
+                ) : (
+                  pretitle
+                )}
+              </p>
+            )}
+            {eyebrow && (
+              <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+                {eyebrow}
+              </div>
+            )}
+            {(title || titleAccent) && (
+              <h1 className="font-display text-2xl md:text-4xl font-bold leading-[1.05]">
+                {title && (
+                  <>
+                    {title}
+                    {titleAccent && <br />}
+                  </>
+                )}
+                {titleAccent && <span className="text-gold">{titleAccent}</span>}
+              </h1>
+            )}
+            {subtitle && (
+              <p className="mt-6 text-lg text-white/85 max-w-2xl">{subtitle}</p>
+            )}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
                 to={primaryHref}
@@ -185,6 +202,8 @@ function StatsStrip() {
 
 function CollegesSection() {
   const { data } = useQuery(collegesQuery);
+  const { data: misc } = useQuery(miscSettingsQuery);
+  const collegesLabel = misc?.colleges_label || "Colleges";
   const rows =
     data && data.length > 0
       ? data.map((c) => ({
@@ -192,7 +211,7 @@ function CollegesSection() {
           shortCode: c.code,
           name: c.name,
           tagline: (c as any).tagline ?? "",
-          logo: c.logo_url ?? "",
+          logo: c.logo_url ?? undefined,
         }))
       : [];
 
@@ -201,7 +220,7 @@ function CollegesSection() {
       <SectionHeading
         center
         eyebrow="SVIT Group"
-        title="Our Colleges"
+        title={`Our ${collegesLabel}`}
         subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
       />
       <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-2">

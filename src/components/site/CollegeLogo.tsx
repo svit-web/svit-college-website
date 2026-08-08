@@ -3,7 +3,7 @@ import { useState } from "react";
 
 interface Props {
   shortCode: string;
-  src: string;
+  src?: string;
   alt?: string;
   className?: string;
 }
@@ -17,7 +17,7 @@ interface Props {
  */
 export function CollegeLogo({ shortCode, src, alt, className }: Props) {
   const [errored, setErrored] = useState(false);
-  if (errored) {
+  if (errored || !src) {
     return (
       <div
         className={cn(
