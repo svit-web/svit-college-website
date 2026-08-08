@@ -15,7 +15,6 @@ const primaryNav = [
   { label: "Home", to: "/" },
   { label: "About SVIT", to: "/about" },
   { label: "Colleges", to: "/colleges" },
-  { label: "Courses", to: "/courses" },
   { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
   { label: "Placement", to: "/placement" },
