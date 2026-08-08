@@ -2,14 +2,16 @@
 
 Issues surfaced during a codebase exploration (2026-07-29) that need attention but aren't blocking current work.
 
-## 1. Schema drift on `user_roles`
+## 1. Schema drift on `user_roles` — RESOLVED (2026-08-07)
 
 Two different migrations define conflicting shapes for `user_roles`:
 
 - `supabase/migrations/20260722000000_auth_tables.sql` — role-FK + `scope_type` model (`role_id` referencing a `roles` table, `scope_type` enum trust/institute/college/department).
 - `supabase/migrations/20260728120000_schema_restructure.sql` — a second, differently-shaped `user_roles` table using a `user_role_enum` (`super_admin`/`college_admin`/`dept_coordinator`) that references `auth.users` directly, instead of going through the `roles` table.
 
-Need to determine which shape is actually live in the DB and reconcile the migration history so it isn't ambiguous. This affects `useAdminAuth.ts` and the scoping logic in `AdminCrudManager.tsx`, both of which assume a specific shape.
+Confirmed against the live DB: the role-FK + `scope_type` shape (first migration) is what's actually live — `20260728120000`'s `CREATE TABLE IF NOT EXISTS` never ran (the table already existed), so it's inert dead SQL sitting in migration history, not a live conflict. `useAdminAuth.ts` and the RLS scoping logic (`can_write_scoped_record`, `is_global_admin`) all correctly assume the role-FK + `scope_type` shape. No action needed beyond this note — left the historical migration file untouched rather than rewriting already-applied history.
+
+A related but separate gap found during the same review: the RLS policies directly on `roles`/`user_roles` (the tables that decide who has what access) were using three helper functions — `current_user_is_admin()`, `current_user_is_editor()`, `current_user_is_college_admin_for()` — that were never in tracked migration history at all (applied directly to the live DB, same pattern as the `placement_cells` issue below) and were scope-blind (checked role code only, not `scope_type`), which let any scoped editor read the entire `user_roles` table and made an (role=admin, scope_type=department) row a privilege-escalation path. Fixed in `supabase/migrations/20260807042646_rbac_harden_user_roles_and_media_storage.sql` — those three functions are dropped and the five policies now use `is_global_admin()` like everything else.
 
 ## 2. `placement_cells` table has no tracked `CREATE TABLE`
 
