@@ -27,7 +27,7 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
       .select(`
         is_primary,
         designations ( title ),
-        staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, metadata )
+        staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, employee_code, photo_url )
       `)
       .eq('department_id', departmentId)
       .eq('status', 'published');
@@ -53,8 +53,8 @@ export const getStaffByDepartmentId = createServerFn({ method: 'GET' })
           designation,
           rankGroup,
           email: s.email ?? null,
-          avatarUrl: (s.metadata as any)?.photoUrl || s.avatar_url || null,
-          employeeCode: (s.metadata as any)?.employeeCode ?? null,
+          avatarUrl: s.photo_url ?? null,
+          employeeCode: s.employee_code ?? null,
           joiningYear: s.joining_year ?? null,
           pastExperienceYears: s.past_experience_years ?? null,
         };
