@@ -102,7 +102,7 @@ function StaffProfilePage() {
       <div className="container-page pb-16">
         {dept && (
           <div className="mb-8 border-b border-navy/10 pb-4">
-            <div className="mb-1 text-[11px] font-bold uppercase tracking-widest text-crimson">Department</div>
+            <div className="mb-1 text-xs font-bold uppercase tracking-widest text-crimson">Department</div>
             <h1 className="font-display text-3xl font-bold text-navy md:text-4xl">{dept.name}</h1>
           </div>
         )}
@@ -123,7 +123,7 @@ function StaffProfilePage() {
             )}
 
             {profile.rankGroup === "HOD" && (
-              <div className="mt-4.5 mb-1 inline-flex items-center rounded-full bg-gold/20 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-gold-strong">
+              <div className="mt-4.5 mb-1 inline-flex items-center rounded-full bg-gold/20 px-2.5 py-0.5 text-xs font-bold uppercase tracking-widest text-gold-strong">
                 Head of Department
               </div>
             )}
@@ -172,7 +172,7 @@ function StaffProfilePage() {
 
             {profile.officeHours && profile.officeHours.length > 0 && (
               <div className="mt-4.5 border-t border-navy/10 pt-4.5">
-                <div className="mb-2 text-[10px] font-bold uppercase tracking-widest text-crimson">Office Hours</div>
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest text-crimson">Office Hours</div>
                 <ul className="flex flex-col gap-1">
                   {profile.officeHours.map((oh: { day: string; time: string }, i: number) => (
                     <li key={i} className="text-xs text-ink">

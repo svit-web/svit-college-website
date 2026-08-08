@@ -50,7 +50,7 @@ function ClubEventsPage() {
                   <img src={e.imageUrl} alt={e.title} className="h-40 w-full object-cover" />
                 )}
                 <div className="p-5">
-                  <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">
+                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
                     {new Date(e.eventDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
                   </div>
                   <h4 className="mt-1 font-display font-bold text-navy">{e.title}</h4>

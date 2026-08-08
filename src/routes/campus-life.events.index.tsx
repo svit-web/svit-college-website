@@ -43,8 +43,8 @@ function EventsIndex() {
               className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
             >
               <div className="flex items-center justify-between gap-2">
-                <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">{c.accent_color ?? c.tag}</div>
-                <span className="rounded-full border border-navy/15 bg-navy/5 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-navy/70">
+                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.accent_color ?? c.tag}</div>
+                <span className="rounded-full border border-navy/15 bg-navy/5 px-2 py-0.5 text-xs font-semibold uppercase tracking-wide text-navy/70">
                   {scopeLabel(c)}
                 </span>
               </div>

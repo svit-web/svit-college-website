@@ -175,7 +175,7 @@ function StatsStrip() {
         {stats.map((s) => (
           <div key={s.id} className="text-center">
             <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.title}</div>
-            <div className="mt-1 text-[11px] uppercase tracking-widest text-white/70">{s.subtitle ?? ""}</div>
+            <div className="mt-1 text-xs uppercase tracking-widest text-white/70">{s.subtitle ?? ""}</div>
           </div>
         ))}
       </div>

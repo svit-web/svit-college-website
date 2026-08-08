@@ -238,7 +238,7 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                       </div>
                     )}
                     {/* Category badge */}
-                    <span className={`absolute top-3 left-3 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${CATEGORY_COLOR[sport.category] ?? "bg-slate-100 text-slate-600"}`}>
+                    <span className={`absolute top-3 left-3 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${CATEGORY_COLOR[sport.category] ?? "bg-slate-100 text-slate-600"}`}>
                       {CATEGORY_LABEL[sport.category] ?? sport.category}
                     </span>
                   </div>
@@ -273,7 +273,7 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                   <div className="flex items-start justify-between gap-2">
                     <h4 className="font-display font-bold text-navy">{f.name}</h4>
                     {f.accent_color && (
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${
                         f.accent_color === "Indoor"
                           ? "bg-sky-100 text-sky-700"
                           : "bg-emerald-100 text-emerald-700"
@@ -318,12 +318,12 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                       <div className="p-5">
                         {/* Level + Position badges */}
                         <div className="flex flex-wrap gap-2 mb-3">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider ${cfg.color}`}>
+                          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${cfg.color}`}>
                             <Icon className="h-3 w-3" />
                             {cfg.label}
                           </span>
                           {a.position && (
-                            <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-[11px] font-semibold text-slate-600">
+                            <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-xs font-semibold text-slate-600">
                               {a.position}
                             </span>
                           )}

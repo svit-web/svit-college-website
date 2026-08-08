@@ -65,7 +65,7 @@ export function DepartmentLayout({ department }: Props) {
           <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
             <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
               <nav aria-label="Department sections" className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm">
-                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                <div className="px-3 pb-2 pt-1 text-xs font-bold uppercase tracking-widest text-crimson">
                   In this department
                 </div>
                 <ul className="flex flex-col gap-1">

@@ -25,7 +25,7 @@ function Card({ slide }: { slide: EventSlide }) {
         )}
       </div>
       <div className="mt-4">
-        <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">{slide.tag}</div>
+        <div className="text-xs font-bold uppercase tracking-widest text-crimson">{slide.tag}</div>
         <h3 className="mt-1 font-display text-lg font-bold leading-snug text-navy line-clamp-2">{slide.title}</h3>
         {slide.date && (
           <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">

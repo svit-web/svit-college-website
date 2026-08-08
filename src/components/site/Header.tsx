@@ -651,7 +651,7 @@ function CollegesMega({
             transition={{ duration: 0.12 }}
             className="w-[260px] shrink-0 border-l border-border bg-white py-3"
           >
-            <div className="px-4 pb-1.5 text-[10px] font-bold uppercase tracking-widest text-crimson">
+            <div className="px-4 pb-1.5 text-xs font-bold uppercase tracking-widest text-crimson">
               {active.shortCode} Departments
             </div>
             <ul>
@@ -786,7 +786,7 @@ function MobileCampusAccordion({ onNavigate }: { onNavigate: () => void }) {
                 <Link
                   to={c.allTo}
                   onClick={onNavigate}
-                  className="rounded-md px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-crimson hover:bg-secondary"
+                  className="rounded-md px-2 py-1.5 text-xs font-bold uppercase tracking-wider text-crimson hover:bg-secondary"
                 >
                   {c.allLabel}
                 </Link>

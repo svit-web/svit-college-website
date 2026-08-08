@@ -35,7 +35,7 @@ export function CampusLifeLayout() {
                 aria-label="Campus Life sections"
                 className="min-w-0 rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
               >
-                <div className="px-3 pb-2 pt-1 text-[10px] font-bold uppercase tracking-widest text-crimson">
+                <div className="px-3 pb-2 pt-1 text-xs font-bold uppercase tracking-widest text-crimson">
                   Campus Life
                 </div>
                 <ul className="-mx-1 flex min-w-0 gap-1 overflow-x-auto px-1 lg:mx-0 lg:flex-col lg:overflow-visible lg:px-0">

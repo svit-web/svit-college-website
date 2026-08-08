@@ -217,7 +217,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                             key={point.year}
                             className="flex flex-1 flex-col items-center gap-2 h-full justify-end"
                           >
-                            <span className="text-[11px] font-extrabold text-navy bg-navy/10 px-2 py-0.5 rounded-md">
+                            <span className="text-xs font-extrabold text-navy bg-navy/10 px-2 py-0.5 rounded-md">
                               {point.placementPercentage}%
                             </span>
                             <div className="flex w-full flex-1 items-end">
@@ -230,7 +230,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                             <span className="text-xs font-bold text-navy">
                               {point.year}
                             </span>
-                            <span className="text-[10px] font-semibold text-muted-foreground">
+                            <span className="text-xs font-semibold text-muted-foreground">
                               {point.studentsPlaced} Placed
                             </span>
                           </div>
@@ -242,7 +242,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                   {/* Summary Tiles */}
                   <div className="mt-8 pt-6 border-t-2 border-navy/10 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
                     <div className="p-3 bg-secondary/50 rounded-xl">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         Peak Placement Year
                       </div>
                       <div className="font-display text-lg font-extrabold text-navy mt-1">
@@ -250,7 +250,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                       </div>
                     </div>
                     <div className="p-3 bg-secondary/50 rounded-xl">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         Best Intake Count
                       </div>
                       <div className="font-display text-lg font-extrabold text-navy mt-1">
@@ -258,7 +258,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                       </div>
                     </div>
                     <div className="p-3 bg-secondary/50 rounded-xl">
-                      <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                      <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         Total Placed (Shown Years)
                       </div>
                       <div className="font-display text-lg font-extrabold text-navy mt-1">
@@ -310,7 +310,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                               <div className="truncate text-xs font-semibold text-navy/70 mt-0.5">
                                 {s.companyName}
                               </div>
-                              <div className="mt-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                              <div className="mt-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                                 Batch {s.batchYear}
                               </div>
                             </div>

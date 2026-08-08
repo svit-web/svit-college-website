@@ -40,7 +40,7 @@ function Card({ item, href, i }: { item: Facility; href: string; i: number }) {
           <ImageIcon className="h-8 w-8 text-muted-foreground" />
         </div>
         <div className="p-5">
-          <div className="text-[10px] font-bold uppercase tracking-widest text-crimson">
+          <div className="text-xs font-bold uppercase tracking-widest text-crimson">
             {item.accent_color || "Facility"}
           </div>
           <h4 className="mt-1 font-display font-bold text-navy">{item.name}</h4>

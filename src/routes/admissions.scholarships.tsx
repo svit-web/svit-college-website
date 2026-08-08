@@ -50,7 +50,7 @@ function ScholarshipCard({ s }: { s: Scholarship }) {
       {s.description && <p className="text-sm text-ink/70 leading-relaxed flex-1">{s.description}</p>}
       {s.eligibility && (
         <div className="rounded-lg bg-secondary/60 px-4 py-3">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Eligibility</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Eligibility</p>
           <p className="text-sm text-ink/80">{s.eligibility}</p>
         </div>
       )}
