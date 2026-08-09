@@ -55,7 +55,7 @@ export function PageHero({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
             className="max-w-4xl flex-1"
           >
             {accent && (
@@ -77,7 +77,7 @@ export function PageHero({
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ type: "spring", bounce: 0, duration: 0.5, delay: 0.05 }}
               className="hidden shrink-0 lg:block"
             >
               {rightSlot}

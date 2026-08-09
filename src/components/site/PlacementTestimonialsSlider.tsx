@@ -11,7 +11,7 @@ function initials(name: string): string {
 
 function Card({ testimonial: t }: { testimonial: PlacementTestimonial }) {
   return (
-    <div className="block h-full w-full rounded-2xl border-2 border-navy/15 bg-white p-6 shadow-sm hover:border-navy transition-all relative overflow-hidden select-none flex flex-col justify-between">
+    <div className="block h-full w-full rounded-2xl border-2 border-navy/15 bg-white p-6 shadow-sm hover:border-navy transition-[border-color] duration-200 relative overflow-hidden select-none flex flex-col justify-between">
       {/* Top star rating & quote mark */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1 text-amber-400">
@@ -110,7 +110,7 @@ export function PlacementTestimonialsSlider({ items }: { items: PlacementTestimo
                 opacity: isActive ? 1 : 0.55,
                 zIndex: isActive ? 10 : 5 - Math.abs(pos),
               }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
               onClick={() => !isActive && setIndex(i)}
             >
               <Card testimonial={t} />
@@ -128,7 +128,7 @@ export function PlacementTestimonialsSlider({ items }: { items: PlacementTestimo
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.4 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.35 }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
@@ -144,14 +144,14 @@ export function PlacementTestimonialsSlider({ items }: { items: PlacementTestimo
         <>
           <button
             onClick={() => go(-1)}
-            className="absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-navy/20 bg-white p-2.5 text-navy shadow-sm hover:bg-navy hover:text-white transition-all md:flex cursor-pointer"
+            className="absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-navy/20 bg-white p-2.5 text-navy shadow-sm hover:bg-navy hover:text-white active:scale-90 transition-[background-color,color,transform] duration-100 md:flex cursor-pointer"
             aria-label="Previous testimonial"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => go(1)}
-            className="absolute right-0 top-1/2 z-20 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-navy/20 bg-white p-2.5 text-navy shadow-sm hover:bg-navy hover:text-white transition-all md:flex cursor-pointer"
+            className="absolute right-0 top-1/2 z-20 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-navy/20 bg-white p-2.5 text-navy shadow-sm hover:bg-navy hover:text-white active:scale-90 transition-[background-color,color,transform] duration-100 md:flex cursor-pointer"
             aria-label="Next testimonial"
           >
             <ChevronRight className="h-5 w-5" />

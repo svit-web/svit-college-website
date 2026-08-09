@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/site/Reveal";
 import { getGalleryAlbumWithMedia } from "@/lib/gallery.functions";
 import type { GalleryMedia } from "@/lib/gallery.functions";
@@ -34,7 +35,11 @@ function Lightbox({
   }
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ type: "spring", bounce: 0, duration: 0.25 }}
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
       onClick={onClose}
       onKeyDown={handleKey}
@@ -44,7 +49,7 @@ function Lightbox({
     >
       {/* Close */}
       <button
-        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors"
+        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150"
         onClick={onClose}
         aria-label="Close"
       >
@@ -53,7 +58,7 @@ function Lightbox({
 
       {/* Prev */}
       <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors disabled:opacity-20"
+        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20"
         onClick={(e) => { e.stopPropagation(); onChange(index - 1); }}
         disabled={index === 0}
         aria-label="Previous"
@@ -61,17 +66,24 @@ function Lightbox({
         <ChevronLeft className="h-6 w-6" />
       </button>
 
-      {/* Image */}
-      <img
-        src={img.url}
-        alt={img.caption || ""}
-        className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
-        onClick={(e) => e.stopPropagation()}
-      />
+      {/* Image — crossfade on index change */}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.img
+          key={img.url}
+          src={img.url}
+          alt={img.caption || ""}
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.97 }}
+          transition={{ type: "spring", bounce: 0, duration: 0.25 }}
+          className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </AnimatePresence>
 
       {/* Next */}
       <button
-        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition-colors disabled:opacity-20"
+        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20"
         onClick={(e) => { e.stopPropagation(); onChange(index + 1); }}
         disabled={index === images.length - 1}
         aria-label="Next"
@@ -83,7 +95,7 @@ function Lightbox({
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/40 px-4 py-1.5 text-sm text-white/80">
         {index + 1} / {images.length}
       </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -116,7 +128,7 @@ function AlbumPage() {
           {album.media.map((img: GalleryMedia, i: number) => (
             <Reveal key={img.id} delay={i * 0.015}>
               <button
-                className="group relative aspect-square w-full overflow-hidden rounded-xl bg-navy/5"
+                className="group relative aspect-square w-full overflow-hidden rounded-xl bg-navy/5 active:scale-[0.97] transition-transform duration-75"
                 onClick={() => setLightboxIndex(i)}
               >
                 <img
@@ -133,14 +145,16 @@ function AlbumPage() {
       </div>
 
       {/* Lightbox */}
-      {lightboxIndex !== null && (
-        <Lightbox
-          images={album.media}
-          index={lightboxIndex}
-          onClose={() => setLightboxIndex(null)}
-          onChange={setLightboxIndex}
-        />
-      )}
+      <AnimatePresence>
+        {lightboxIndex !== null && (
+          <Lightbox
+            images={album.media}
+            index={lightboxIndex}
+            onClose={() => setLightboxIndex(null)}
+            onChange={setLightboxIndex}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

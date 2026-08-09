@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter, Youtube, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
 import { useQuery } from "@tanstack/react-query";
@@ -96,14 +97,36 @@ function FooterCol({ title, links }: { title: string; links: { label: string; to
         className="flex w-full items-center justify-between py-3 md:hidden"
       >
         <h4 className="font-display text-sm font-bold uppercase tracking-widest text-white">{title}</h4>
-        <ChevronDown className={`h-4 w-4 text-white/50 transition-transform duration-200 ${open ? "rotate-180" : ""}`} />
+        <motion.div animate={{ rotate: open ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+        <ChevronDown className="h-4 w-4 text-white/50" />
+      </motion.div>
       </button>
 
       {/* Desktop: always visible heading */}
       <h4 className="hidden md:block font-display text-sm font-bold uppercase tracking-widest text-white">{title}</h4>
 
-      {/* Links: hidden on mobile until open, always visible on desktop */}
-      <ul className={`space-y-2 text-sm pb-3 md:pb-0 md:mt-4 md:block ${open ? "block mt-1" : "hidden"}`}>
+      {/* Mobile: animated accordion */}
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.ul
+            key="mobile-links"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            className="overflow-hidden space-y-2 text-sm pb-3 md:hidden"
+          >
+            {links.map((l) => (
+              <li key={l.to} className="pt-1 first:pt-0">
+                <Link to={l.to} className="hover:text-gold transition-colors">{l.label}</Link>
+              </li>
+            ))}
+          </motion.ul>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop: always visible */}
+      <ul className="hidden md:block space-y-2 text-sm mt-4">
         {links.map((l) => (
           <li key={l.to}>
             <Link to={l.to} className="hover:text-gold transition-colors">{l.label}</Link>

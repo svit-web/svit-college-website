@@ -37,7 +37,7 @@ export function Reveal({
       ref={ref}
       initial={reduce ? undefined : { opacity: 0, y: 24 }}
       animate={visible || reduce ? { opacity: 1, y: 0 } : undefined}
-      transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ type: "spring", bounce: 0, duration: 0.45, delay }}
       className={className}
       suppressHydrationWarning
     >

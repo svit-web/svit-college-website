@@ -43,6 +43,7 @@ import { getAllCenters } from "@/lib/centers.functions";
 
 export function Header() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const [coursesOpen, setCoursesOpen] = useState(false);
   const [campusOpen, setCampusOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
@@ -59,6 +60,13 @@ export function Header() {
     document.body.style.overflow = open ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  // Scroll-triggered shadow
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   function closeMobileMenu() {
     setOpen(false);
@@ -108,7 +116,11 @@ export function Header() {
   }, [allDepartments]);
 
   return (
-    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-border">
+    <header className={cn(
+      "sticky top-0 z-50 bg-white/80 backdrop-blur-md transition-shadow duration-200",
+      scrolled ? "shadow-[0_1px_12px_0_oklch(0.18_0.02_260_/_0.08)]" : "shadow-none",
+      open && "shadow-none"
+    )}>
       {/* Top strip */}
       <div className="bg-navy-deep text-white/85 text-xs">
         <div className="container-page flex h-9 items-center justify-between">
@@ -177,11 +189,12 @@ export function Header() {
                   <AnimatePresence>
                     {aboutOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.18 }}
+                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
                         className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                        style={{ transformOrigin: "top center" }}
                       >
                         <div className="grid grid-cols-1 gap-1">
                           {ABOUT_SECTIONS.map((s) => (
@@ -221,11 +234,12 @@ export function Header() {
                   <AnimatePresence>
                     {admissionsOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.18 }}
+                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
                         className="absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                        style={{ transformOrigin: "top center" }}
                       >
                         <div className="grid grid-cols-1 gap-1">
                           {admissionsLinks.map((s) => (
@@ -265,11 +279,12 @@ export function Header() {
                   <AnimatePresence>
                     {coursesOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8, x: -190 }}
-                        animate={{ opacity: 1, y: 0, x: -190 }}
-                        exit={{ opacity: 0, y: 8, x: -190 }}
-                        transition={{ duration: 0.18 }}
-                        className="absolute left-1/2 top-full z-50 pt-1"
+                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+                        className="absolute right-0 top-full z-50 pt-1"
+                        style={{ transformOrigin: "top right" }}
                       >
                         <CollegesMega
                           colleges={displayColleges}
@@ -302,11 +317,12 @@ export function Header() {
                   <AnimatePresence>
                     {campusOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.18 }}
+                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
                         className="absolute right-0 top-full z-50 w-[720px] max-w-[92vw] overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
+                        style={{ transformOrigin: "top right" }}
                       >
                         <CampusMega onNavigate={() => setCampusOpen(false)} />
                       </motion.div>
@@ -334,7 +350,7 @@ export function Header() {
         <div className="flex items-center gap-3">
           <Link
             to="/admissions/inquiry"
-            className="hidden rounded-md bg-gold px-5 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors md:inline-flex"
+            className="hidden rounded-md bg-gold px-5 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft active:scale-95 transition-[background-color,transform] duration-100 md:inline-flex"
           >
             Apply Now
           </Link>
@@ -355,7 +371,7 @@ export function Header() {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.15 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
             className="overflow-hidden border-t border-border bg-white lg:hidden"
           >
             <div className="max-h-[calc(100dvh-116px)] overflow-y-auto">
@@ -504,7 +520,7 @@ export function Header() {
               <Link
                 to="/admissions/inquiry"
                 onClick={closeMobileMenu}
-                className="mt-3 rounded-md bg-gold px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.08em] text-navy-deep"
+                className="mt-3 rounded-md bg-gold px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.08em] text-navy-deep active:scale-95 transition-transform duration-75"
               >
                 Apply Now
               </Link>

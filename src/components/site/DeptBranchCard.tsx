@@ -25,10 +25,10 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, to
       {...(wrapperProps as any)}
       className={cn("group block aspect-square", to && "cursor-pointer")}
     >
-      <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-all duration-500 ease-in-out group-hover:border-gold group-hover:shadow-lg">
+      <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-[border-color,box-shadow] duration-200 group-hover:border-gold group-hover:shadow-lg group-active:scale-[0.97] group-active:transition-[transform] group-active:duration-75">
 
         {/* Logo / initials — always visible, blurs + scales on hover */}
-        <div className="absolute inset-0 flex items-center justify-center p-2 transition-all duration-500 ease-in-out group-hover:blur-[3px]">
+        <div className="absolute inset-0 flex items-center justify-center p-2 transition-[filter] duration-200 group-hover:blur-[3px]">
           {iconUrl ? (
             <img src={iconUrl} alt={name} className="h-full w-full object-contain" />
           ) : (
@@ -44,7 +44,7 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, to
         </div>
 
         {/* Hover overlay — text on dark backdrop */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/75 p-6 text-center opacity-0 transition-opacity duration-500 ease-in-out group-hover:opacity-100">
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/75 p-6 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
           <h4 className="font-display text-xl font-bold leading-snug text-white">{name}</h4>
           {to ? (
             <div className="flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-3 py-1 text-xs font-semibold text-gold">

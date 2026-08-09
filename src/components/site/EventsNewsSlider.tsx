@@ -104,7 +104,7 @@ export function EventsNewsSlider({ items }: { items: EventSlide[] }) {
                 opacity: isActive ? 1 : 0.55,
                 zIndex: isActive ? 10 : 5 - Math.abs(pos),
               }}
-              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ type: "spring", bounce: 0, duration: 0.4 }}
               onClick={() => !isActive && setIndex(i)}
             >
               <Card slide={slide} />
@@ -122,7 +122,7 @@ export function EventsNewsSlider({ items }: { items: EventSlide[] }) {
             initial={{ opacity: 0, x: 40 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -40 }}
-            transition={{ duration: 0.4 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.35 }}
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
             dragElastic={0.2}
@@ -137,14 +137,14 @@ export function EventsNewsSlider({ items }: { items: EventSlide[] }) {
         <>
           <button
             onClick={() => go(-1)}
-            className="absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-white p-2 text-navy shadow-sm hover:bg-secondary md:flex"
+            className="absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-white p-2 text-navy shadow-sm hover:bg-secondary active:scale-90 transition-[background-color,transform] duration-100 md:flex"
             aria-label="Previous"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => go(1)}
-            className="absolute right-0 top-1/2 z-20 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-white p-2 text-navy shadow-sm hover:bg-secondary md:flex"
+            className="absolute right-0 top-1/2 z-20 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-white p-2 text-navy shadow-sm hover:bg-secondary active:scale-90 transition-[background-color,transform] duration-100 md:flex"
             aria-label="Next"
           >
             <ChevronRight className="h-5 w-5" />

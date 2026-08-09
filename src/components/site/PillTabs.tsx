@@ -21,7 +21,7 @@ export function PillTabs({ items, ariaLabel }: { items: PillTabItem[]; ariaLabel
             key={it.to}
             to={it.to}
             className={cn(
-              "rounded-full border-2 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-all",
+              "rounded-full border-2 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-[border-color,background-color,color,box-shadow] duration-150 active:scale-95 active:transition-transform active:duration-75",
               active
                 ? "border-gold bg-navy text-white shadow-sm"
                 : "border-navy/15 bg-white text-navy hover:border-navy/40"

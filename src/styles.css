@@ -86,7 +86,11 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.01em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); }
+  h1 { letter-spacing: -0.03em; }
+  h2 { letter-spacing: -0.02em; }
+  h3 { letter-spacing: -0.015em; }
+  h4 { letter-spacing: -0.01em; }
 }
 
 @utility container-page {
@@ -123,10 +127,15 @@
 }
 
 @utility card-lift {
-  transition: transform 300ms ease, box-shadow 300ms ease, border-color 300ms ease;
+  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
   &:hover {
     transform: translateY(-4px);
     box-shadow: 0 20px 40px -20px color-mix(in oklab, var(--navy) 30%, transparent);
+  }
+  &:active {
+    transform: scale(0.98);
+    box-shadow: none;
+    transition-duration: 80ms;
   }
 }
 

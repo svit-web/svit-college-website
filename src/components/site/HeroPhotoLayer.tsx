@@ -36,7 +36,7 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs }: Props) {
           key={src + i}
           src={src}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out"
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-in-out"
           style={{ opacity: i === index ? activeOpacity : 0 }}
         />
       ))}

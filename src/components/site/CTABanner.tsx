@@ -52,7 +52,7 @@ export function CTABanner({
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               to={primaryActionTo}
-              className="inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3.5 text-sm font-extrabold text-navy hover:bg-gold/90 transition-all shadow-lg hover:shadow-gold/20"
+              className="inline-flex items-center gap-2 rounded-xl bg-gold px-6 py-3.5 text-sm font-extrabold text-navy hover:bg-gold/90 active:scale-95 transition-[background-color,transform] duration-100 shadow-lg"
             >
               <span>{primaryActionLabel}</span>
               <ArrowRight className="h-4 w-4" />
@@ -60,7 +60,7 @@ export function CTABanner({
 
             <Link
               to={secondaryActionTo}
-              className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-white/5 px-6 py-3.5 text-sm font-extrabold text-white hover:bg-white/10 hover:border-white/50 transition-all backdrop-blur-xs"
+              className="inline-flex items-center gap-2 rounded-xl border-2 border-white/30 bg-white/5 px-6 py-3.5 text-sm font-extrabold text-white hover:bg-white/10 hover:border-white/50 active:scale-95 transition-[background-color,border-color,transform] duration-100 backdrop-blur-xs"
             >
               <Download className="h-4 w-4 text-gold" />
               <span>{secondaryActionLabel}</span>

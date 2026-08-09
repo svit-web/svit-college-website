@@ -43,7 +43,7 @@ export function HeroCardSlider({ items = [] }: Props) {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ type: "spring", bounce: 0, duration: 0.4 }}
             className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-2xl backdrop-blur"
           >
             <div className="aspect-[4/5] w-full">
@@ -71,7 +71,7 @@ export function HeroCardSlider({ items = [] }: Props) {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 24 }}
             exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.5, delay: 0.05 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.4, delay: 0.05 }}
             className="relative hidden overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl backdrop-blur sm:block"
           >
             <div className="aspect-[4/5] w-full">
@@ -108,14 +108,14 @@ export function HeroCardSlider({ items = [] }: Props) {
           <button
             onClick={() => setIndex((i) => (i - 1 + count) % count)}
             aria-label="Previous photo"
-            className="rounded-full border border-white/25 bg-white/10 p-2 text-white backdrop-blur transition-colors hover:bg-white/20"
+            className="rounded-full border border-white/25 bg-white/10 p-2 text-white backdrop-blur transition-[background-color,transform] duration-100 hover:bg-white/20 active:scale-90"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             onClick={() => setIndex((i) => (i + 1) % count)}
             aria-label="Next photo"
-            className="rounded-full border border-white/25 bg-white/10 p-2 text-white backdrop-blur transition-colors hover:bg-white/20"
+            className="rounded-full border border-white/25 bg-white/10 p-2 text-white backdrop-blur transition-[background-color,transform] duration-100 hover:bg-white/20 active:scale-90"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
