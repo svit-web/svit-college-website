@@ -122,8 +122,13 @@
   background-size: 0% 2px;
   background-position: 0 100%;
   background-repeat: no-repeat;
-  transition: background-size 300ms ease;
-  &:hover { background-size: 100% 2px; }
+  /* slow retract — ease-in */
+  transition: background-size 350ms cubic-bezier(0.55, 0, 1, 0.45);
+  &:hover {
+    background-size: 100% 2px;
+    /* fast expand — ease-out */
+    transition: background-size 220ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
 }
 
 @utility card-lift {

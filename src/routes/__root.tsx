@@ -8,6 +8,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "sonner";
 
@@ -146,7 +147,17 @@ function RootComponent() {
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1">
-            <Outlet />
+            <AnimatePresence mode="sync" initial={false}>
+              <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+              >
+                <Outlet />
+              </motion.div>
+            </AnimatePresence>
           </main>
           <Footer />
         </div>

@@ -1,10 +1,31 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useMotionValue, useTransform, type PanInfo } from "framer-motion";
 import { Reveal } from "@/components/site/Reveal";
 import { getGalleryAlbumWithMedia } from "@/lib/gallery.functions";
 import type { GalleryMedia } from "@/lib/gallery.functions";
 import { ChevronLeft, ChevronRight, X, ArrowLeft } from "lucide-react";
+
+function AlbumSkeleton() {
+  return (
+    <div>
+      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep py-12 text-white">
+        <div className="container-page">
+          <div className="h-4 w-24 rounded bg-white/20 animate-pulse mb-4" />
+          <div className="h-9 w-64 rounded bg-white/20 animate-pulse" />
+          <div className="mt-3 h-4 w-96 rounded bg-white/10 animate-pulse" />
+        </div>
+      </section>
+      <div className="container-page py-12">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className="aspect-square w-full rounded-xl bg-navy/8 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/gallery/$albumId")({
   loader: async ({ params }) => {
@@ -12,6 +33,7 @@ export const Route = createFileRoute("/gallery/$albumId")({
     if (!album) throw new Error("Album not found");
     return { album };
   },
+  pendingComponent: AlbumSkeleton,
   component: AlbumPage,
 });
 
@@ -27,11 +49,21 @@ function Lightbox({
   onChange: (i: number) => void;
 }) {
   const img = images[index];
+  const dragY = useMotionValue(0);
+  const bgOpacity = useTransform(dragY, [-200, 0, 200], [0, 0.9, 0]);
 
   function handleKey(e: React.KeyboardEvent) {
     if (e.key === "ArrowLeft" && index > 0) onChange(index - 1);
     if (e.key === "ArrowRight" && index < images.length - 1) onChange(index + 1);
     if (e.key === "Escape") onClose();
+  }
+
+  function handleDragEnd(_: unknown, info: PanInfo) {
+    if (Math.abs(info.offset.y) > 80 || Math.abs(info.velocity.y) > 500) {
+      onClose();
+    } else {
+      dragY.set(0);
+    }
   }
 
   return (
@@ -40,16 +72,22 @@ function Lightbox({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ type: "spring", bounce: 0, duration: 0.25 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/90"
-      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center"
       onKeyDown={handleKey}
       tabIndex={0}
       // eslint-disable-next-line jsx-a11y/no-autofocus
       autoFocus
     >
+      {/* Background — dims with drag distance */}
+      <motion.div
+        className="absolute inset-0 bg-black"
+        style={{ opacity: bgOpacity }}
+        onClick={onClose}
+      />
+
       {/* Close */}
       <button
-        className="absolute right-4 top-4 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150"
+        className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150"
         onClick={onClose}
         aria-label="Close"
       >
@@ -58,7 +96,7 @@ function Lightbox({
 
       {/* Prev */}
       <button
-        className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20"
+        className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20"
         onClick={(e) => { e.stopPropagation(); onChange(index - 1); }}
         disabled={index === 0}
         aria-label="Previous"
@@ -66,24 +104,33 @@ function Lightbox({
         <ChevronLeft className="h-6 w-6" />
       </button>
 
-      {/* Image — crossfade on index change */}
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.img
-          key={img.url}
-          src={img.url}
-          alt={img.caption || ""}
-          initial={{ opacity: 0, scale: 0.97 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.97 }}
-          transition={{ type: "spring", bounce: 0, duration: 0.25 }}
-          className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
-          onClick={(e) => e.stopPropagation()}
-        />
-      </AnimatePresence>
+      {/* Draggable image — swipe up/down to dismiss */}
+      <motion.div
+        style={{ y: dragY }}
+        drag="y"
+        dragConstraints={{ top: 0, bottom: 0 }}
+        dragElastic={0.25}
+        onDragEnd={handleDragEnd}
+        className="relative z-10 cursor-grab active:cursor-grabbing"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.img
+            key={img.url}
+            src={img.url}
+            alt={img.caption || ""}
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.97 }}
+            transition={{ type: "spring", bounce: 0, duration: 0.25 }}
+            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain pointer-events-none select-none"
+          />
+        </AnimatePresence>
+      </motion.div>
 
       {/* Next */}
       <button
-        className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20"
+        className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20"
         onClick={(e) => { e.stopPropagation(); onChange(index + 1); }}
         disabled={index === images.length - 1}
         aria-label="Next"
@@ -92,7 +139,7 @@ function Lightbox({
       </button>
 
       {/* Counter */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-black/40 px-4 py-1.5 text-sm text-white/80">
+      <div className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-black/40 px-4 py-1.5 text-sm text-white/80">
         {index + 1} / {images.length}
       </div>
     </motion.div>

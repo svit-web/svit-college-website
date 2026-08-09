@@ -5,11 +5,39 @@ import { getAllGalleryAlbums } from "@/lib/gallery.functions";
 import type { GalleryAlbum } from "@/lib/gallery.functions";
 import { Images } from "lucide-react";
 
+function GalleryIndexSkeleton() {
+  return (
+    <div>
+      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep py-16 text-white">
+        <div className="container-page text-center">
+          <div className="mx-auto h-3 w-24 rounded bg-white/20 animate-pulse" />
+          <div className="mx-auto mt-4 h-10 w-40 rounded bg-white/20 animate-pulse" />
+          <div className="mx-auto mt-4 h-4 w-72 rounded bg-white/10 animate-pulse" />
+        </div>
+      </section>
+      <div className="container-page py-16">
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="overflow-hidden rounded-2xl border-2 border-navy/10 bg-white animate-pulse">
+              <div className="aspect-video w-full bg-navy/8" />
+              <div className="p-5">
+                <div className="h-5 w-3/4 rounded bg-navy/8" />
+                <div className="mt-2 h-4 w-full rounded bg-navy/8" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export const Route = createFileRoute("/gallery/")({
   loader: async () => {
     const albums = await getAllGalleryAlbums();
     return { albums };
   },
+  pendingComponent: GalleryIndexSkeleton,
   component: GalleryIndex,
 });
 

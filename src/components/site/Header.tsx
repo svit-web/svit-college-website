@@ -386,22 +386,29 @@ export function Header() {
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {n.label}
-                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileAboutOpen && "rotate-180")} />
+                        <motion.span animate={{ rotate: mobileAboutOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                          <ChevronDown className="h-4 w-4 text-navy/40" />
+                        </motion.span>
                       </button>
-                      {mobileAboutOpen && (
-                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                          {ABOUT_SECTIONS.map((s) => (
-                            <Link
-                              key={s.to}
-                              to={s.to}
-                              onClick={closeMobileMenu}
-                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                            >
-                              {s.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+                      <AnimatePresence initial={false}>
+                        {mobileAboutOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
+                              {ABOUT_SECTIONS.map((s) => (
+                                <Link key={s.to} to={s.to} onClick={closeMobileMenu} className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy">
+                                  {s.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 }
@@ -414,22 +421,29 @@ export function Header() {
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {n.label}
-                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileAdmissionsOpen && "rotate-180")} />
+                        <motion.span animate={{ rotate: mobileAdmissionsOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                          <ChevronDown className="h-4 w-4 text-navy/40" />
+                        </motion.span>
                       </button>
-                      {mobileAdmissionsOpen && (
-                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                          {admissionsLinks.map((s) => (
-                            <Link
-                              key={s.to}
-                              to={s.to}
-                              onClick={closeMobileMenu}
-                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                            >
-                              {s.label}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+                      <AnimatePresence initial={false}>
+                        {mobileAdmissionsOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
+                              {admissionsLinks.map((s) => (
+                                <Link key={s.to} to={s.to} onClick={closeMobileMenu} className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy">
+                                  {s.label}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 }
@@ -442,23 +456,29 @@ export function Header() {
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {collegesLabel}
-                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileCollegesOpen && "rotate-180")} />
+                        <motion.span animate={{ rotate: mobileCollegesOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                          <ChevronDown className="h-4 w-4 text-navy/40" />
+                        </motion.span>
                       </button>
-                      {mobileCollegesOpen && (
-                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3">
-                          {displayColleges.map((c) => (
-                            <Link
-                              key={c.id}
-                              to="/colleges/$college"
-                              params={{ college: c.id }}
-                              onClick={closeMobileMenu}
-                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                            >
-                              {c.shortCode} — {c.name}
-                            </Link>
-                          ))}
-                        </div>
-                      )}
+                      <AnimatePresence initial={false}>
+                        {mobileCollegesOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
+                              {displayColleges.map((c) => (
+                                <Link key={c.id} to="/colleges/$college" params={{ college: c.id }} onClick={closeMobileMenu} className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy">
+                                  {c.shortCode} — {c.name}
+                                </Link>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 }
@@ -472,9 +492,23 @@ export function Header() {
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {n.label}
-                        <ChevronDown className={cn("h-4 w-4 transition-transform text-navy/40", mobileCampusOpen && "rotate-180")} />
+                        <motion.span animate={{ rotate: mobileCampusOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                          <ChevronDown className="h-4 w-4 text-navy/40" />
+                        </motion.span>
                       </button>
-                      {mobileCampusOpen && <MobileCampusAccordion onNavigate={closeMobileMenu} />}
+                      <AnimatePresence initial={false}>
+                        {mobileCampusOpen && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            className="overflow-hidden"
+                          >
+                            <MobileCampusAccordion onNavigate={closeMobileMenu} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   );
                 }
