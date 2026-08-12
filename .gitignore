@@ -39,3 +39,4 @@ dist-ssr
 # Regenerate with scripts/capture-baseline-html.sh. The extracted
 # metadata.tsv IS committed — it is the Phase 8 diff target.
 docs/baseline/html/
+.next/

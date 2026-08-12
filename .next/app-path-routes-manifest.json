@@ -1,7 +1,0 @@
-{
-  "/_global-error/page": "/_global-error",
-  "/_not-found/page": "/_not-found",
-  "/auth-test/login/page": "/auth-test/login",
-  "/auth-test/page": "/auth-test",
-  "/page": "/"
-}
