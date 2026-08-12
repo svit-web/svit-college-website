@@ -1,0 +1,27 @@
+{
+  "node": {
+    "60d4898a209f4e97e209b596f1412514e362877d2c": {
+      "workers": {
+        "app/auth-test/login/page": {
+          "moduleId": 71430,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "login",
+      "filename": "src/app/auth-test/login/actions.ts"
+    },
+    "0092d0101b239747b66cf9e5791552899c1ab2a3af": {
+      "workers": {
+        "app/auth-test/login/page": {
+          "moduleId": 71430,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "exportedName": "logout",
+      "filename": "src/app/auth-test/login/actions.ts"
+    }
+  },
+  "edge": {}
+}

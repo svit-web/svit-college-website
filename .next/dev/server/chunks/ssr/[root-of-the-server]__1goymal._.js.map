@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///Users/porus/code/svit-college-website/src/app/page.tsx"],"sourcesContent":["export default function HomePage() {\n  return (\n    <main className=\"min-h-screen bg-background text-foreground\">\n      <div className=\"container-page py-20\">\n        <div className=\"text-center\">\n          <h1 className=\"text-5xl font-bold text-navy mb-6\">\n            SVIT Vasad\n          </h1>\n          <p className=\"text-xl text-muted-foreground mb-8\">\n            Sardar Vallabhbhai Institute of Technology\n          </p>\n          <div className=\"inline-flex items-center gap-2 px-4 py-2 bg-gold-soft rounded-lg\">\n            <span className=\"text-sm font-medium text-navy\">\n              Next.js 16 Scaffold — Phase 1 Complete\n            </span>\n          </div>\n        </div>\n      </div>\n    </main>\n  );\n}\n"],"names":["HomePage","className"],"mappings":";;;;;;AAAe,SAASA;IACtB,qBACE,8OAAC;QAAKC,WAAU;kBACd,cAAA,8OAAC;YAAIA,WAAU;sBACb,cAAA,8OAAC;gBAAIA,WAAU;;kCACb,8OAAC;wBAAGA,WAAU;kCAAoC;;;;;;kCAGlD,8OAAC;wBAAEA,WAAU;kCAAqC;;;;;;kCAGlD,8OAAC;wBAAIA,WAAU;kCACb,cAAA,8OAAC;4BAAKA,WAAU;sCAAgC;;;;;;;;;;;;;;;;;;;;;;;;;;;AAQ5D"}}]
+}
