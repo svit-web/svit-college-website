@@ -1,6 +1,5 @@
 // Server functions for student clubs data from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface StudentClub {
   id: string;
@@ -38,60 +37,58 @@ function mapClubRow(row: any): StudentClub {
 /**
  * Fetch all published student clubs
  */
-export const getAllStudentClubs = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('student_clubs')
-      .select(CLUB_SELECT_WITH_DEPARTMENT)
-      .eq('status', 'published')
-      .order('name', { ascending: true });
+export async function getAllStudentClubs() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('student_clubs')
+    .select(CLUB_SELECT_WITH_DEPARTMENT)
+    .eq('status', 'published')
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching student clubs:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching student clubs:', error);
+    throw error;
+  }
 
-    return (data ?? []).map(mapClubRow);
-  });
+  return (data ?? []).map(mapClubRow);
+}
 
 /**
  * Fetch only featured student clubs (for menu bar, home page, etc.)
  */
-export const getFeaturedStudentClubs = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('student_clubs')
-      .select(CLUB_SELECT_WITH_DEPARTMENT)
-      .eq('status', 'published')
-      .eq('featured' as any, true)
-      .order('name', { ascending: true });
+export async function getFeaturedStudentClubs() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('student_clubs')
+    .select(CLUB_SELECT_WITH_DEPARTMENT)
+    .eq('status', 'published')
+    .eq('featured' as any, true)
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching featured student clubs:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching featured student clubs:', error);
+    throw error;
+  }
 
-    return (data ?? []).map(mapClubRow);
-  });
+  return (data ?? []).map(mapClubRow);
+}
 
 /**
  * Fetch a single student club by slug
  */
-export const getStudentClubBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const slug = ctx.data;
-    const { data, error } = await supabase
-      .from('student_clubs')
-      .select(CLUB_SELECT_WITH_DEPARTMENT)
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getStudentClubBySlug(slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('student_clubs')
+    .select(CLUB_SELECT_WITH_DEPARTMENT)
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (error) throw error;
+  if (error) throw error;
 
-    return data ? mapClubRow(data) : null;
-  });
+  return data ? mapClubRow(data) : null;
+}
 
 export interface ClubEvent {
   id: string;
@@ -108,60 +105,56 @@ export interface ClubEvent {
  * no auto-archiving; this preview is capped at the 3 most recent for the
  * slider, plus the true total so callers know whether to show "View more".
  */
-export const getClubEvents = createServerFn({ method: 'GET' })
-  .validator((clubId: string) => clubId)
-  .handler(async (ctx) => {
-    const clubId = ctx.data;
-    const { data, error, count } = await supabase
-      .from('club_events')
-      .select('id, title, description, event_date, image_url', { count: 'exact' })
-      .eq('club_id', clubId)
-      .eq('status', 'published')
-      .order('event_date', { ascending: false })
-      .limit(3);
+export async function getClubEvents(clubId: string) {
+  const supabase = publicSupabase();
+  const { data, error, count } = await supabase
+    .from('club_events')
+    .select('id, title, description, event_date, image_url', { count: 'exact' })
+    .eq('club_id', clubId)
+    .eq('status', 'published')
+    .order('event_date', { ascending: false })
+    .limit(3);
 
-    if (error) {
-      console.error('Error fetching club events:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching club events:', error);
+    throw error;
+  }
 
-    return {
-      events: (data ?? []).map((e): ClubEvent => ({
-        id: e.id,
-        title: e.title,
-        description: e.description,
-        eventDate: e.event_date,
-        imageUrl: e.image_url,
-      })),
-      total: count ?? 0,
-    };
-  });
-
-/**
- * Fetch all of a club's published events (no cap) — backs the "View more"
- * destination linked from the club page's events preview.
- */
-export const getAllClubEvents = createServerFn({ method: 'GET' })
-  .validator((clubId: string) => clubId)
-  .handler(async (ctx) => {
-    const clubId = ctx.data;
-    const { data, error } = await supabase
-      .from('club_events')
-      .select('id, title, description, event_date, image_url')
-      .eq('club_id', clubId)
-      .eq('status', 'published')
-      .order('event_date', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching all club events:', error);
-      throw error;
-    }
-
-    return (data ?? []).map((e): ClubEvent => ({
+  return {
+    events: (data ?? []).map((e): ClubEvent => ({
       id: e.id,
       title: e.title,
       description: e.description,
       eventDate: e.event_date,
       imageUrl: e.image_url,
-    }));
-  });
+    })),
+    total: count ?? 0,
+  };
+}
+
+/**
+ * Fetch all of a club's published events (no cap) — backs the "View more"
+ * destination linked from the club page's events preview.
+ */
+export async function getAllClubEvents(clubId: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('club_events')
+    .select('id, title, description, event_date, image_url')
+    .eq('club_id', clubId)
+    .eq('status', 'published')
+    .order('event_date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching all club events:', error);
+    throw error;
+  }
+
+  return (data ?? []).map((e): ClubEvent => ({
+    id: e.id,
+    title: e.title,
+    description: e.description,
+    eventDate: e.event_date,
+    imageUrl: e.image_url,
+  }));
+}

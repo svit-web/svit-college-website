@@ -1,6 +1,5 @@
 // Server functions for events from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface CampusEvent {
   id: string;
@@ -34,34 +33,32 @@ const EVENT_WITH_SCOPE_SELECT =
  * Fetch all published events ordered by sort_order, across every scope
  * (department, college and institute-wide) for the public events listing.
  */
-export const getAllEvents = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('events')
-      .select(EVENT_WITH_SCOPE_SELECT)
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .order('sort_order', { ascending: true });
+export async function getAllEvents() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('events')
+    .select(EVENT_WITH_SCOPE_SELECT)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .order('sort_order', { ascending: true });
 
-    if (error) throw error;
-    return data as unknown as CampusEvent[];
-  });
+  if (error) throw error;
+  return data as unknown as CampusEvent[];
+}
 
 /**
  * Fetch a single event by slug
  */
-export const getEventBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const slug = ctx.data;
-    const { data, error } = await supabase
-      .from('events')
-      .select(EVENT_WITH_SCOPE_SELECT)
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .is('deleted_at', null)
-      .maybeSingle();
+export async function getEventBySlug(slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('events')
+    .select(EVENT_WITH_SCOPE_SELECT)
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .maybeSingle();
 
-    if (error) throw error;
-    return data as unknown as CampusEvent | null;
-  });
+  if (error) throw error;
+  return data as unknown as CampusEvent | null;
+}

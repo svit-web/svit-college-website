@@ -14,8 +14,10 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Enable typed routes
-  typedRoutes: true,
+  // Typed routes disabled during the route port: Header/Footer link to many
+  // pages that don't exist as Next.js routes yet (About/Admissions/Campus
+  // Life/etc sub-pages). Re-enable once nav coverage matches actual routes.
+  typedRoutes: false,
 
   // Allow dev server access from localhost
   allowedDevOrigins: ["localhost", "127.0.0.1"],

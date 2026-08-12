@@ -1,6 +1,5 @@
 // Server functions for departments data from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface Department {
   id: string;
@@ -68,94 +67,84 @@ function mapRow(row: any): Department {
   };
 }
 
-
 /**
  * Fetch all published departments
  */
-export const getAllDepartments = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*, colleges(slug)')
-      .eq('status', 'published')
-      .order('name', { ascending: true });
+export async function getAllDepartments() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('departments')
+    .select('*, colleges(slug)')
+    .eq('status', 'published')
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching departments:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching departments:', error);
+    throw error;
+  }
 
-    return (data ?? []).map(mapRow) as Department[];
-  });
+  return (data ?? []).map(mapRow) as Department[];
+}
 
 /**
  * Fetch departments by college
  */
-export const getDepartmentsByCollege = createServerFn({ method: 'GET' })
-  .validator((collegeId: string) => collegeId)
-  .handler(async (ctx) => {
-    const collegeId = ctx.data;
+export async function getDepartmentsByCollege(collegeId: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('departments')
+    .select('*, colleges(slug)')
+    .eq('college_id', collegeId)
+    .eq('status', 'published')
+    .order('name', { ascending: true });
 
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*, colleges(slug)')
-      .eq('college_id', collegeId)
-      .eq('status', 'published')
-      .order('name', { ascending: true });
+  if (error) {
+    console.error('Error fetching departments by college:', error);
+    throw error;
+  }
 
-    if (error) {
-      console.error('Error fetching departments by college:', error);
-      throw error;
-    }
-
-    return (data ?? []).map(mapRow) as Department[];
-  });
+  return (data ?? []).map(mapRow) as Department[];
+}
 
 /**
  * Fetch a single department by slug
  */
-export const getDepartmentBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const slug = ctx.data;
+export async function getDepartmentBySlug(slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('departments')
+    .select('*, colleges(slug)')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*, colleges(slug)')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle();
+  if (error) {
+    console.error('Error fetching department by slug:', error);
+    throw error;
+  }
 
-    if (error) {
-      console.error('Error fetching department by slug:', error);
-      throw error;
-    }
-
-    return data ? mapRow(data) as Department : null;
-  });
+  return data ? mapRow(data) as Department : null;
+}
 
 /**
  * Fetch a single department by code
  */
-export const getDepartmentByCode = createServerFn({ method: 'GET' })
-  .validator((code: string) => code)
-  .handler(async (ctx) => {
-    const code = ctx.data;
+export async function getDepartmentByCode(code: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('departments')
+    .select('*, colleges(slug)')
+    .eq('code', code)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    const { data, error } = await supabase
-      .from('departments')
-      .select('*, colleges(slug)')
-      .eq('code', code)
-      .eq('status', 'published')
-      .maybeSingle();
+  if (error) {
+    console.error('Error fetching department by code:', error);
+    throw error;
+  }
 
-    if (error) {
-      console.error('Error fetching department by code:', error);
-      throw error;
-    }
-
-    return data ? mapRow(data) as Department : null;
-  });
+  return data ? mapRow(data) as Department : null;
+}
 
 export interface DeptCourse {
   id: string;
@@ -172,60 +161,57 @@ export interface DeptCourse {
 /**
  * Fetch courses linked to a department
  */
-export const getCoursesByDepartmentId = createServerFn({ method: 'GET' })
-  .validator((departmentId: string) => departmentId)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('courses')
-      .select('id, name, code, degree_level, metadata, short_name, year_started, duration_years, intake')
-      .eq('department_id', ctx.data)
-      .eq('status', 'published')
-      .order('degree_level', { ascending: true });
+export async function getCoursesByDepartmentId(departmentId: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('courses')
+    .select('id, name, code, degree_level, metadata, short_name, year_started, duration_years, intake')
+    .eq('department_id', departmentId)
+    .eq('status', 'published')
+    .order('degree_level', { ascending: true });
 
-    if (error) throw error;
-    return (data ?? []) as DeptCourse[];
-  });
+  if (error) throw error;
+  return (data ?? []) as DeptCourse[];
+}
 
 /**
  * Fetch a single course by ID
  */
-export const getCourseById = createServerFn({ method: 'GET' })
-  .validator((id: string) => id)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('courses')
-      .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake')
-      .eq('id', ctx.data)
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getCourseById(id: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('courses')
+    .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake')
+    .eq('id', id)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (error) throw error;
-    return data as (DeptCourse & { department_id: string }) | null;
-  });
+  if (error) throw error;
+  return data as (DeptCourse & { department_id: string }) | null;
+}
 
 /**
  * Fetch a course by ID with its department info
  */
-export const getCourseWithDept = createServerFn({ method: 'GET' })
-  .validator((id: string) => id)
-  .handler(async (ctx) => {
-    const { data, error } = await supabase
-      .from('courses')
-      .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake, departments(id, name, code, slug)')
-      .eq('id', ctx.data)
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getCourseWithDept(id: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('courses')
+    .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake, departments(id, name, code, slug)')
+    .eq('id', id)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (error) throw error;
-    if (!data) return null;
+  if (error) throw error;
+  if (!data) return null;
 
-    const dept = Array.isArray(data.departments) ? data.departments[0] : data.departments;
-    return {
-      id: data.id,
-      name: data.name,
-      code: data.code,
-      degree_level: data.degree_level as DeptCourse['degree_level'],
-      metadata: data.metadata as DeptCourse['metadata'],
-      dept: dept ? { name: dept.name, code: dept.code, slug: dept.slug } : null,
-    };
-  });
+  const dept = Array.isArray(data.departments) ? data.departments[0] : data.departments;
+  return {
+    id: data.id,
+    name: data.name,
+    code: data.code,
+    degree_level: data.degree_level as DeptCourse['degree_level'],
+    metadata: data.metadata as DeptCourse['metadata'],
+    dept: dept ? { name: dept.name, code: dept.code, slug: dept.slug } : null,
+  };
+}

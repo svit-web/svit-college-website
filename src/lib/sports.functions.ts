@@ -1,5 +1,4 @@
-import { createServerFn } from "@tanstack/react-start";
-import { supabase } from "@/integrations/supabase/client";
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface Sport {
   id: string;
@@ -35,7 +34,8 @@ export interface SportAchievement {
   sport?: { name: string; slug: string } | null;
 }
 
-export const getSports = createServerFn({ method: "GET" }).handler(async () => {
+export async function getSports() {
+  const supabase = publicSupabase();
   const { data, error } = await (supabase as any)
     .from("sports")
     .select("id, name, slug, category, description, cover_image_url, is_active, sort_order, status, metadata, created_at")
@@ -45,9 +45,10 @@ export const getSports = createServerFn({ method: "GET" }).handler(async () => {
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return (data ?? []) as Sport[];
-});
+}
 
-export const getSportsAchievements = createServerFn({ method: "GET" }).handler(async () => {
+export async function getSportsAchievements() {
+  const supabase = publicSupabase();
   const { data, error } = await (supabase as any)
     .from("sports_achievements")
     .select("id, sport_id, title, description, achievement_date, level, position, image_url, is_active, sort_order, status, metadata, sport:sport_id(name, slug)")
@@ -57,4 +58,4 @@ export const getSportsAchievements = createServerFn({ method: "GET" }).handler(a
     .order("achievement_date", { ascending: false });
   if (error) throw new Error(error.message);
   return (data ?? []) as SportAchievement[];
-});
+}

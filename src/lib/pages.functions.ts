@@ -1,29 +1,5 @@
 // Server functions for CMS pages and contact info from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from '@/integrations/supabase/types';
-import { supabase } from '@/integrations/supabase/client';
-
-function serverClient() {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-  return createClient<Database>(url, key, {
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    global: {
-      fetch: (input, init) => {
-        const headers = new Headers(init?.headers);
-        if (
-          (key.startsWith('sb_publishable_') || key.startsWith('sb_secret_')) &&
-          headers.get('Authorization') === `Bearer ${key}`
-        ) {
-          headers.delete('Authorization');
-        }
-        headers.set('apikey', key);
-        return fetch(input, { ...init, headers });
-      },
-    },
-  });
-}
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface AboutPageData {
   hero: { accent: string; title: string; introText: string; portraitUrl?: string };
@@ -100,19 +76,19 @@ export interface ContactInfo {
 /**
  * Fetch the about page content from the pages table
  */
-export const getAboutPage = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('pages')
-      .select('metadata')
-      .eq('slug', 'about')
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getAboutPage() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('pages')
+    .select('metadata')
+    .eq('slug', 'about')
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (error) throw error;
+  if (error) throw error;
 
-    return data?.metadata as AboutPageData | null;
-  });
+  return data?.metadata as AboutPageData | null;
+}
 
 export interface AlumniPageData {
   kpis: { v: string; l: string }[];
@@ -130,33 +106,31 @@ export interface Testimonial {
 /**
  * Fetch alumni page metadata (KPIs etc.) from the pages table
  */
-export const getAlumniPage = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const supabase = serverClient();
-    const { data, error } = await supabase
-      .from('pages')
-      .select('metadata')
-      .eq('slug', 'alumni')
-      .eq('status', 'published')
-      .maybeSingle();
-    if (error) throw error;
-    return data?.metadata as AlumniPageData | null;
-  });
+export async function getAlumniPage() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('pages')
+    .select('metadata')
+    .eq('slug', 'alumni')
+    .eq('status', 'published')
+    .maybeSingle();
+  if (error) throw error;
+  return data?.metadata as AlumniPageData | null;
+}
 
 /**
  * Fetch all published testimonials
  */
-export const getAllTestimonials = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const supabase = serverClient();
-    const { data, error } = await supabase
-      .from('testimonials')
-      .select('id, author_name, author_role, company_or_institution, quote, avatar_url')
-      .eq('status', 'published')
-      .is('deleted_at', null);
-    if (error) throw error;
-    return (data ?? []) as Testimonial[];
-  });
+export async function getAllTestimonials() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('testimonials')
+    .select('id, author_name, author_role, company_or_institution, quote, avatar_url')
+    .eq('status', 'published')
+    .is('deleted_at', null);
+  if (error) throw error;
+  return (data ?? []) as Testimonial[];
+}
 
 const DEFAULT_CONTACT_INFO: ContactInfo = {
   phone: '+91 2692 274766',
@@ -173,18 +147,18 @@ const DEFAULT_CONTACT_INFO: ContactInfo = {
 /**
  * Fetch contact info from app_settings (key = 'contact_info')
  */
-export const getContactInfo = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('app_settings')
-      .select('value')
-      .eq('key', 'contact_info')
-      .maybeSingle();
+export async function getContactInfo() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('app_settings')
+    .select('value')
+    .eq('key', 'contact_info')
+    .maybeSingle();
 
-    if (error) {
-      console.error('Error fetching contact info:', error);
-      return DEFAULT_CONTACT_INFO;
-    }
+  if (error) {
+    console.error('Error fetching contact info:', error);
+    return DEFAULT_CONTACT_INFO;
+  }
 
-    return (data?.value ?? DEFAULT_CONTACT_INFO) as ContactInfo;
-  });
+  return (data?.value ?? DEFAULT_CONTACT_INFO) as ContactInfo;
+}

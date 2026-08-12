@@ -1,6 +1,5 @@
 // Server functions for facilities data from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface Facility {
   id: string;
@@ -29,81 +28,77 @@ export interface Facility {
 /**
  * Fetch all published facilities
  */
-export const getAllFacilities = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('facilities')
-      .select('*')
-      .eq('status', 'published')
-      .is('department_id', null)
-      .order('name', { ascending: true });
+export async function getAllFacilities() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('facilities')
+    .select('*')
+    .eq('status', 'published')
+    .is('department_id', null)
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching facilities:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching facilities:', error);
+    throw error;
+  }
 
-    return data as Facility[];
-  });
+  return data as Facility[];
+}
 
 /**
  * Fetch facilities by type (campus, building, laboratory)
  */
-export const getFacilitiesByType = createServerFn({ method: 'GET' })
-  .validator((type: 'campus' | 'building' | 'laboratory') => type)
-  .handler(async ({ data: type }) => {
-    const { data, error } = await supabase
-      .from('facilities')
-      .select('*')
-      .eq('status', 'published')
-      .eq('facility_type', type)
-      .order('name', { ascending: true });
+export async function getFacilitiesByType(type: 'campus' | 'building' | 'laboratory') {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('facilities')
+    .select('*')
+    .eq('status', 'published')
+    .eq('facility_type', type)
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching facilities by type:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching facilities by type:', error);
+    throw error;
+  }
 
-    return data as Facility[];
-  });
+  return data as Facility[];
+}
 
 /**
  * Fetch a single facility by slug
  */
-export const getFacilityBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const slug = ctx.data;
-    const { data, error } = await supabase
-      .from('facilities')
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getFacilityBySlug(slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('facilities')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (error) throw error;
+  if (error) throw error;
 
-    return data as Facility | null;
-  });
+  return data as Facility | null;
+}
 
 /**
  * Fetch labs for a specific department
  */
-export const getLabsByDepartmentId = createServerFn({ method: 'GET' })
-  .validator((departmentId: string) => departmentId)
-  .handler(async ({ data: departmentId }) => {
-    const { data, error } = await supabase
-      .from('facilities')
-      .select('*')
-      .eq('status', 'published')
-      .eq('facility_type', 'laboratory')
-      .eq('department_id', departmentId)
-      .order('name', { ascending: true });
+export async function getLabsByDepartmentId(departmentId: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('facilities')
+    .select('*')
+    .eq('status', 'published')
+    .eq('facility_type', 'laboratory')
+    .eq('department_id', departmentId)
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching labs for department:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching labs for department:', error);
+    throw error;
+  }
 
-    return (data ?? []) as Facility[];
-  });
+  return (data ?? []) as Facility[];
+}

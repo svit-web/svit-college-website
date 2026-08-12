@@ -1,6 +1,5 @@
 // Server functions for centers data from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface Center {
   id: string;
@@ -23,37 +22,35 @@ export interface Center {
 /**
  * Fetch all published centers
  */
-export const getAllCenters = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('centers')
-      .select('*')
-      .eq('status', 'published')
-      .order('name', { ascending: true });
+export async function getAllCenters() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('centers')
+    .select('*')
+    .eq('status', 'published')
+    .order('name', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching centers:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching centers:', error);
+    throw error;
+  }
 
-    return data as Center[];
-  });
+  return data as Center[];
+}
 
 /**
  * Fetch a single center by slug
  */
-export const getCenterBySlug = createServerFn({ method: 'GET' })
-  .validator((slug: string) => slug)
-  .handler(async (ctx) => {
-    const slug = ctx.data;
-    const { data, error } = await supabase
-      .from('centers')
-      .select('*')
-      .eq('slug', slug)
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getCenterBySlug(slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('centers')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (error) throw error;
+  if (error) throw error;
 
-    return data as Center | null;
-  });
+  return data as Center | null;
+}
