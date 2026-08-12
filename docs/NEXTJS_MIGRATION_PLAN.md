@@ -1,6 +1,6 @@
 # Next.js Migration Plan
 
-**Status:** Planned, not started
+**Status:** Phase 0 complete ✓
 **Created:** 2026-08-12
 **Source stack:** TanStack Start 1.168 (Vite 8 + Nitro) · React 19 · Tailwind v4 · Supabase
 **Target stack:** Next.js 15 App Router · React 19 · Tailwind v4 · Supabase (`@supabase/ssr`)
