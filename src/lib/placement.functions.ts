@@ -9,10 +9,8 @@
 //
 // Reads run through server functions so the page renders correctly under SSR.
 // Writes run in the browser with the admin's session so RLS sees `authenticated`.
-import { createServerFn } from "@tanstack/react-start";
-import { createClient } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import type { Database } from "@/integrations/supabase/types";
+import { publicSupabase } from "@/lib/supabase-public";
 
 /** The single placement_cells row that backs the unified page. */
 export const OVERVIEW_CODE = "overview";
@@ -21,24 +19,7 @@ export const OVERVIEW_CODE = "overview";
 // schema — it is missing placed_students entirely and the placement_cells
 // hero_title / hero_subtitle columns. Regenerating it is tracked separately.
 function serverClient(): any {
-  const url = process.env.SUPABASE_URL!;
-  const key = process.env.SUPABASE_PUBLISHABLE_KEY!;
-  return createClient<Database>(url, key, {
-    auth: { storage: undefined, persistSession: false, autoRefreshToken: false },
-    global: {
-      fetch: (input, init) => {
-        const headers = new Headers(init?.headers);
-        if (
-          (key.startsWith("sb_publishable_") || key.startsWith("sb_secret_")) &&
-          headers.get("Authorization") === `Bearer ${key}`
-        ) {
-          headers.delete("Authorization");
-        }
-        headers.set("apikey", key);
-        return fetch(input, { ...init, headers });
-      },
-    },
-  });
+  return publicSupabase();
 }
 
 // ── Types ───────────────────────────────────────────────────────────
@@ -192,9 +173,8 @@ export function isPersistedId(id: string): boolean {
 
 // ── Reads ───────────────────────────────────────────────────────────
 
-export const getPlacementContent = createServerFn({ method: "GET" }).handler(
-  async (): Promise<FullPlacementData> => {
-    const sb = serverClient();
+export async function getPlacementContent(): Promise<FullPlacementData> {
+  const sb = serverClient();
 
     const [cellRes, studentsRes, recruitersRes] = await Promise.all([
       sb
@@ -261,44 +241,39 @@ export const getPlacementContent = createServerFn({ method: "GET" }).handler(
       graphicalData: meta.graphicalData ?? [],
       testimonials: meta.testimonials ?? [],
     };
-  },
-);
+}
 
 /** Recruiter list for pages outside the placement hub (e.g. course pages). */
-export const getAllRecruiters = createServerFn({ method: "GET" }).handler(
-  async (): Promise<RecruiterItem[]> => {
-    const sb = serverClient();
-    const { data, error } = await sb
-      .from("recruiters")
-      .select("id, company_name, logo_url, sort_order")
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .order("sort_order", { ascending: true });
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((r: any) => ({
-      id: r.id,
-      companyName: r.company_name,
-      company_name: r.company_name,
-      logo: r.logo_url ?? null,
-      sortOrder: r.sort_order ?? 0,
-    }));
-  },
-);
+export async function getAllRecruiters(): Promise<RecruiterItem[]> {
+  const sb = serverClient();
+  const { data, error } = await sb
+    .from("recruiters")
+    .select("id, company_name, logo_url, sort_order")
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .order("sort_order", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((r: any) => ({
+    id: r.id,
+    companyName: r.company_name,
+    company_name: r.company_name,
+    logo: r.logo_url ?? null,
+    sortOrder: r.sort_order ?? 0,
+  }));
+}
 
 /** Colleges available to tag a placed student against. */
-export const getPlacementColleges = createServerFn({ method: "GET" }).handler(
-  async (): Promise<CollegeOption[]> => {
-    const sb = serverClient();
-    const { data, error } = await sb
-      .from("colleges")
-      .select("slug, name, code")
-      .eq("status", "published")
-      .is("deleted_at", null)
-      .order("sort_order", { ascending: true });
-    if (error) throw new Error(error.message);
-    return (data ?? []).map((c: any) => ({ slug: c.slug, name: c.name, code: c.code }));
-  },
-);
+export async function getPlacementColleges(): Promise<CollegeOption[]> {
+  const sb = serverClient();
+  const { data, error } = await sb
+    .from("colleges")
+    .select("slug, name, code")
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .order("sort_order", { ascending: true });
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((c: any) => ({ slug: c.slug, name: c.name, code: c.code }));
+}
 
 // ── Write ───────────────────────────────────────────────────────────
 
