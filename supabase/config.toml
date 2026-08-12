@@ -1,1 +1,14 @@
-project_id = "mzlvjgtsrepzxynntbtt"
+# Supabase CLI project link.
+#
+# This points at the DEV project. Production (`rpspvheghvtlaznricmr`) is never
+# targeted from this file — link to it explicitly and deliberately:
+#
+#   supabase link --project-ref rpspvheghvtlaznricmr
+#
+# Environments:
+#   dev   agezrfclusigfqysbxwb  ("test-gpu", ap-southeast-2)  ← this file
+#   prod  rpspvheghvtlaznricmr  ("prod",     ap-northeast-1)
+#
+# The previous value here (mzlvjgtsrepzxynntbtt) referenced a project that
+# exists in neither environment. See docs/NEXTJS_MIGRATION_PLAN.md §4.
+project_id = "agezrfclusigfqysbxwb"

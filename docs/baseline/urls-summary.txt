@@ -1,0 +1,3 @@
+static     31
+dynamic   429
+TOTAL     460
