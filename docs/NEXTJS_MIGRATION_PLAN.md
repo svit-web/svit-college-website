@@ -138,9 +138,25 @@ The consequence is specific and serious: Phase 2 will generate new auth/RLS migr
 
 Dev is in Sydney, prod in Tokyo. Latency-sensitive measurements taken on dev will not match production. Phase 0 Lighthouse baselines and the Phase 8 comparison must both be measured against the same environment or the comparison is meaningless.
 
-### Branch divergence
+### Feature freeze
 
-`main` sits 213 commits behind `admin-portal-test`; `prod` sits 19 behind. If content and features keep shipping during a multi-week migration, `nextjs-migration` accumulates the same drift and the merge becomes its own project. Either freeze feature work during the port or plan regular rebases onto `admin-portal-test`.
+**The project is fully paused for the duration of the migration.** No content or feature work ships to `admin-portal-test` while the port is underway.
+
+This removes branch-divergence risk entirely — no rebase cadence is needed, and `nextjs-migration` cannot rot the way `main` did (213 commits behind). It also changes the coexistence strategy below.
+
+### How long the two apps coexist
+
+Because nobody needs the TanStack dev server for feature work, the two stacks only need to coexist while the Next.js work is **purely additive**:
+
+| Phase | TanStack app | Why |
+|---|---|---|
+| 0–2 | Runnable | Next scaffolding and `@supabase/ssr` auth are new files; nothing shared is rewritten yet |
+| 3 | **Breaks** | Converting `createServerFn` rewrites the shared `src/lib/*.functions.ts` the old app imports |
+| 4–8 | Deleted | See below |
+
+The only real friction during 0–2 is `tsconfig.json`: Next requires `jsx: "preserve"`, while the current config uses `jsx: "react-jsx"` with `allowImportingTsExtensions: true`. Keep the existing file as `tsconfig.tanstack.json` and let Next own `tsconfig.json`.
+
+**Delete the TanStack app at the end of Phase 3, not Phase 8.** Once Phase 3 breaks it, carrying a dead app through four more phases adds noise and tempts half-migrations. The reference material that actually matters is the Phase 0 HTML snapshots and the deployed `prod` site — not stale source in the working tree. Git history holds the rest.
 
 ---
 
@@ -179,6 +195,7 @@ Implements §3 in full. Nothing else ships in this phase.
 - 73 GET server fns → plain `async` functions with `import "server-only"`. The existing `serverClient()` helper in each `*.functions.ts` already isolates Supabase access cleanly, so this is largely unwrapping `createServerFn().handler()`.
 - 10 POST server fns → `"use server"` Server Actions with `revalidatePath`/`revalidateTag`.
 - Keep the module layout; rename `*.functions.ts` → `*.queries.ts` and `*.actions.ts` to make the server/client boundary legible.
+- **Delete the TanStack app** as the final commit of this phase: `src/routes/`, `routeTree.gen.ts`, `src/server.ts`, `src/start.ts`, `vite.config.ts`, `tsconfig.tanstack.json`, `src/integrations/supabase/auth-attacher.ts`, `auth-middleware.ts`, and the Vite/Nitro/Lovable dependencies. Isolated commit, trivially revertable, with `prod` still deployed.
 
 **Gate:** every converted function unit-covered or manually exercised against real Supabase data.
 
@@ -226,9 +243,12 @@ Largest phase by volume — 63% of route code. Depends on Phase 2 being solid.
 
 ### Phase 8 — Cutover
 - Diff every URL against Phase 0 snapshots. Any divergence is a bug or needs a 301.
-- Lighthouse comparison; no SEO/performance regression permitted.
-- Delete the TanStack app, `routeTree.gen.ts`, Lovable config, Vite config, Nitro deps.
+- Lighthouse comparison against the Phase 0 baseline, measured on the same environment (see the region caveat in §4); no SEO/performance regression permitted.
+- Apply the Phase 2 auth/RLS migrations to prod Supabase — only safe because the ledger was repaired in Phase 0.
+- Merge `nextjs-migration` → `admin-portal-test` → `prod`, and deploy.
 - Resubmit sitemap to Search Console; monitor coverage and rankings for 30 days.
+
+*(The TanStack app was already removed at the end of Phase 3.)*
 
 **Gate:** 30-day Search Console watch with no ranking loss.
 
@@ -245,6 +265,7 @@ Largest phase by volume — 63% of route code. Depends on Phase 2 being solid.
 | Admin is 63% of route code; scope creep in Phase 6 | **High** | Strict route-by-route commits; resist refactoring while porting |
 | Service-role key leaking into client bundle via `NEXT_PUBLIC_` | **High** | Explicit env audit in Phase 1; grep the built bundle in Phase 7 |
 | Vercel/Docker behavioral divergence found late | **Medium** | `output: "standalone"` from Phase 1, not Phase 7; parity gate |
+| ~~Long-lived branch divergence~~ | **Eliminated** | Project fully frozen for the migration (§4) |
 | Page-transition animations lost | **Low** | Flagged in Phase 4 as an explicit decision, not a silent regression |
 | Tailwind v4 + Next 15 integration friction | **Low** | Isolated to Phase 1 |
 
