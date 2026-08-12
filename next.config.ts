@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
 
   // Enable typed routes
   typedRoutes: true,
+
+  // Allow dev server access from localhost
+  allowedDevOrigins: ["localhost", "127.0.0.1"],
 };
 
 export default nextConfig;
