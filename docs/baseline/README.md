@@ -47,6 +47,53 @@ This quantifies Phase 5's `app/sitemap.ts` work: a generated sitemap takes cover
 42 to 460 and cannot drift again. It is also the clearest evidence that the SEO gaps are
 real and independent of the framework choice — the same fix applies to TanStack Start.
 
+## Rendered HTML capture
+
+`scripts/capture-baseline-html.sh` fetched all 460 URLs from a local production build
+(`NITRO_PRESET=node-server`) against dev Supabase. Full HTML lives in `html/` (16MB,
+gitignored); `metadata.tsv` holds the extracted per-URL SEO fields and **is committed** —
+it is the Phase 8 diff target.
+
+```
+460 URLs captured   453 × 200   7 × 404   5 redirects   0 errors
+```
+
+### The 7 × 404 are intentional
+
+`/courses/{architecture,bba,bsc,diploma,engineering,mba,mca}/faculty` all 404 because
+`src/routes/courses.$course.faculty.tsx` unconditionally throws `notFound()` — a
+deliberate tombstone route. They stay in the inventory so Phase 8 verifies Next.js
+still returns 404 rather than accidentally rendering something.
+
+### The 5 redirects must be preserved
+
+| From | To |
+|---|---|
+| `/about` | `/about/history-vision-mission` |
+| `/placement/svica`, `/svion`, `/svit-coa`, `/svit-degree` | `/placement` |
+
+### SEO coverage measured across all 460
+
+| Field | Missing |
+|---|---|
+| `<title>` | 0 |
+| `<meta description>` | 1 |
+| `og:title` | 0 |
+| **`<link rel=canonical>`** | **460 (100%)** |
+| **JSON-LD** | **460 (100%)** |
+| `<h1>` | 25 |
+
+### The headline finding: 453 pages, 141 unique titles
+
+**All 249 staff profile pages emit the homepage's title** —
+`SVIT Vasad — Sardar Vallabhbhai Institute of Technology` — because
+`src/routes/staff.$staff.tsx` defines no `head()`. Every faculty profile is a
+duplicate-title page to a crawler, and 25 of them have no `<h1>` either.
+
+This is the concrete cost of the 15 routes missing `head()`, and it is by far the
+largest single SEO defect on the site. It is also **entirely fixable on the current
+stack** — it needs a `head()` function, not Next.js.
+
 ## Caveats
 
 - Counts reflect **dev** data. Prod (`rpspvheghvtlaznricmr`) has minor content drift
