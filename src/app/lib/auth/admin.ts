@@ -132,7 +132,9 @@ export function isEditor(admin: AdminUser): boolean {
 }
 
 /**
- * Get scope constraints for a user (for RLS-aware queries)
+ * Get scope constraints for a user (for RLS-aware queries).
+ * Derived from each role's own scope_type, not the role code — a role
+ * code like "editor" can carry either a global or department-scoped grant.
  */
 export function getScopeConstraints(admin: AdminUser): {
   scopeType: string;
@@ -140,13 +142,13 @@ export function getScopeConstraints(admin: AdminUser): {
   collegeId?: string;
   departmentId?: string;
 } | null {
-  // Global admin/editor has no constraints
-  if (hasAnyRole(admin, ['admin', 'editor'])) {
+  // Global admin, or any role explicitly granted at global scope
+  if (hasRole(admin, 'admin') || admin.roles.some((r) => r.scope_type === 'global')) {
     return null;
   }
 
-  // Department admin - scoped to their department
-  const deptRole = admin.roles.find((r) => r.code === 'department_admin');
+  // Department-scoped role
+  const deptRole = admin.roles.find((r) => r.scope_type === 'department');
   if (deptRole) {
     return {
       scopeType: 'department',
@@ -154,12 +156,21 @@ export function getScopeConstraints(admin: AdminUser): {
     };
   }
 
-  // College admin - scoped to their college
-  const collegeRole = admin.roles.find((r) => r.code === 'college_admin');
+  // College-scoped role
+  const collegeRole = admin.roles.find((r) => r.scope_type === 'college');
   if (collegeRole) {
     return {
       scopeType: 'college',
       collegeId: collegeRole.college_id || undefined,
+    };
+  }
+
+  // Trust-scoped role
+  const trustRole = admin.roles.find((r) => r.scope_type === 'trust');
+  if (trustRole) {
+    return {
+      scopeType: 'trust',
+      trustId: trustRole.trust_id || undefined,
     };
   }
 
