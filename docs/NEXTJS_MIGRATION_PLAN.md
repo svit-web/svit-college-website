@@ -97,13 +97,63 @@ This is the highest-risk work in the migration and the reason admin cannot be po
 
 ---
 
-## 4. Phases
+## 4. Environments, rollback & schema parity
+
+### Topology
+
+| | Branch | Supabase project | Region | Role |
+|---|---|---|---|---|
+| **Dev** | `admin-portal-test` | `agezrfclusigfqysbxwb` ("test-gpu") | ap-southeast-2 | Disposable. All migration work happens here. |
+| **Prod** | `prod` | `rpspvheghvtlaznricmr` ("prod") | ap-northeast-1 | Untouched until Phase 8 cutover. |
+| **Legacy** | `main` | — | — | Original Lovable static code. Not a rollback target. |
+
+Dev and prod are **fully separate Supabase projects**. This is the single biggest de-risking factor in the whole migration: the Phase 2 auth rewrite can freely alter RLS policies, roles, and session handling on dev without any possibility of touching production data.
+
+### Rollback model
+
+There are no file-level backups and none are needed. The safety net is that **`prod` remains a live, deployable TanStack Start app pointed at a separate database** for the entire migration. Rollback is a redeploy, not a restore.
+
+Rules:
+
+- Migration work happens on a `nextjs-migration` branch cut from `admin-portal-test`. Never commit to `prod`.
+- **Tag each phase gate** (`nextjs-phase-4-complete`). Phase-per-commit alone gives poor granularity across a multi-week branch; tags make `git reset --hard <tag>` viable.
+- Phase 8's deletion of the TanStack app is an isolated commit.
+- Prod Supabase credentials must not appear in any dev `.env` during the migration.
+
+### Two defects found during planning — fix before Phase 1
+
+**1. `supabase/config.toml` points at a dead project.**
+It declares `project_id = "mzlvjgtsrepzxynntbtt"`, which is **neither** dev nor prod and does not exist in the organisation. Any `supabase link` or `db push` run from this repo targets a nonexistent ref. Fix to the dev project and make environment selection explicit rather than implicit in a committed file.
+
+**2. Prod has no migration history — this blocks cutover.**
+Dev's ledger records 52 applied migrations. Prod's ledger is **empty**, yet prod carries the full 52-table schema with live data (250 staff profiles, 233 gallery media, 167 audit logs). Prod was evidently cloned or dumped from dev around 2026-08-07 rather than migrated into existence.
+
+Schemas currently match — both projects have the same 52 tables, with only content drift (`homepage_items` 85 vs 84, `app_settings` 15 vs 14, `inquiry_submissions` 1 vs 0).
+
+The consequence is specific and serious: Phase 2 will generate new auth/RLS migrations that must reach prod at cutover. With an empty ledger, `supabase db push` has no baseline and will attempt to replay all 52 existing migrations against a schema that already contains them — failing, or worse, partially applying destructive DDL.
+
+**Repair prod's ledger before Phase 8** — mark the 52 existing migrations as applied (`supabase migration repair --status applied`) so subsequent pushes are incremental. Do this early, verify with a no-op `db push --dry-run`, and never discover it during cutover.
+
+### Region caveat
+
+Dev is in Sydney, prod in Tokyo. Latency-sensitive measurements taken on dev will not match production. Phase 0 Lighthouse baselines and the Phase 8 comparison must both be measured against the same environment or the comparison is meaningless.
+
+### Branch divergence
+
+`main` sits 213 commits behind `admin-portal-test`; `prod` sits 19 behind. If content and features keep shipping during a multi-week migration, `nextjs-migration` accumulates the same drift and the merge becomes its own project. Either freeze feature work during the port or plan regular rebases onto `admin-portal-test`.
+
+---
+
+## 5. Phases
 
 Each phase ends in a commit. No phase begins before its predecessor's gate passes.
 
 ### Phase 0 — Baseline & safety net
 *No production code changes.*
 
+- **Fix `supabase/config.toml`** to reference the dev project (§4).
+- **Repair prod's migration ledger** and verify with `db push --dry-run` (§4). Cheap now, catastrophic if deferred to cutover.
+- Cut the `nextjs-migration` branch from `admin-portal-test`.
 - Enumerate every public URL, including dynamic ones expanded from Supabase (departments, staff, events, clubs, gallery albums, colleges, programs). The existing `public/sitemap.xml` covers only 42 hand-written URLs and is **not** a reliable inventory.
 - Snapshot rendered SSR HTML for each URL (`curl` against a production build) → `docs/baseline/`. This is the diff target for Phase 8.
 - Record Lighthouse SEO/performance scores for ~10 representative pages.
@@ -184,11 +234,13 @@ Largest phase by volume — 63% of route code. Depends on Phase 2 being solid.
 
 ---
 
-## 5. Risk register
+## 6. Risk register
 
 | Risk | Severity | Mitigation |
 |---|---|---|
-| Auth rewrite silently breaks scope-aware RLS — empty results, no error | **Critical** | Phase 2 validation gate with scoped test accounts before any route port |
+| Auth rewrite silently breaks scope-aware RLS — empty results, no error | **Critical** | Phase 2 validation gate with scoped test accounts before any route port. Confined to dev Supabase, so prod data is never at risk. |
+| Prod migration ledger empty — `db push` at cutover replays 52 migrations onto an existing schema | **Critical** | Repair the ledger in Phase 0, not Phase 8 (§4) |
+| `supabase/config.toml` targets a nonexistent project ref | **Medium** | Fix in Phase 0 (§4) |
 | URL drift during flat-dot → directory conversion costs rankings | **High** | Phase 0 inventory + Phase 8 diff; 301s for anything that moves |
 | Admin is 63% of route code; scope creep in Phase 6 | **High** | Strict route-by-route commits; resist refactoring while porting |
 | Service-role key leaking into client bundle via `NEXT_PUBLIC_` | **High** | Explicit env audit in Phase 1; grep the built bundle in Phase 7 |
@@ -196,11 +248,11 @@ Largest phase by volume — 63% of route code. Depends on Phase 2 being solid.
 | Page-transition animations lost | **Low** | Flagged in Phase 4 as an explicit decision, not a silent regression |
 | Tailwind v4 + Next 15 integration friction | **Low** | Isolated to Phase 1 |
 
-## 6. Sequencing rationale
+## 7. Sequencing rationale
 
 Auth precedes everything because it is the only piece that can invalidate work already done — porting admin routes against the old bearer-token model would mean porting them twice. Public site precedes admin because it carries the SEO value and is a third of the volume, so it de-risks the pattern before the large surface. SEO work sits in Phase 5 rather than at the end because it is the one phase producing value the current stack does not already deliver.
 
-## 7. Open items
+## 8. Open items
 
 - Decide the page-transition fate (Phase 4).
 - Confirm the production domain handles `/sitemap.xml` from `app/sitemap.ts` (route) rather than `public/` (static file); the static file must be deleted or it will shadow the route.
