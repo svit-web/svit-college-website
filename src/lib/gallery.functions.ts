@@ -1,5 +1,4 @@
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface GalleryMedia {
   id: string;
@@ -26,42 +25,41 @@ export interface GalleryAlbumWithMedia extends GalleryAlbum {
   media: GalleryMedia[];
 }
 
-export const getAllGalleryAlbums = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('gallery_albums')
-      .select('*')
-      .eq('status', 'published')
-      .order('created_at', { ascending: false });
+export async function getAllGalleryAlbums() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('gallery_albums')
+    .select('*')
+    .eq('status', 'published')
+    .order('created_at', { ascending: false });
 
-    if (error) throw error;
-    return data as unknown as GalleryAlbum[];
-  });
+  if (error) throw error;
+  return data as unknown as GalleryAlbum[];
+}
 
-export const getGalleryAlbumWithMedia = createServerFn({ method: 'GET' })
-  .validator((albumId: string) => albumId)
-  .handler(async (ctx) => {
-    const { data: album, error: albumError } = await supabase
-      .from('gallery_albums')
-      .select('*')
-      .eq('id', ctx.data)
-      .eq('status', 'published')
-      .maybeSingle();
+export async function getGalleryAlbumWithMedia(albumId: string) {
+  const supabase = publicSupabase();
+  const { data: album, error: albumError } = await supabase
+    .from('gallery_albums')
+    .select('*')
+    .eq('id', albumId)
+    .eq('status', 'published')
+    .maybeSingle();
 
-    if (albumError) throw albumError;
-    if (!album) return null;
+  if (albumError) throw albumError;
+  if (!album) return null;
 
-    const { data: media, error: mediaError } = await supabase
-      .from('gallery_media')
-      .select('*')
-      .eq('album_id', ctx.data)
-      .eq('status', 'published')
-      .order('sort_order', { ascending: true });
+  const { data: media, error: mediaError } = await supabase
+    .from('gallery_media')
+    .select('*')
+    .eq('album_id', albumId)
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true });
 
-    if (mediaError) throw mediaError;
+  if (mediaError) throw mediaError;
 
-    return {
-      ...(album as unknown as GalleryAlbum),
-      media: (media ?? []) as unknown as GalleryMedia[],
-    } as GalleryAlbumWithMedia;
-  });
+  return {
+    ...(album as unknown as GalleryAlbum),
+    media: (media ?? []) as unknown as GalleryMedia[],
+  } as GalleryAlbumWithMedia;
+}
