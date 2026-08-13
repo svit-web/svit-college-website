@@ -176,3 +176,25 @@ export function getScopeConstraints(admin: AdminUser): {
 
   return null;
 }
+
+const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, department: 3 };
+
+/**
+ * Get the broadest scope level a user holds — used for route/nav visibility
+ * (distinct from getScopeConstraints, which returns RLS filter values).
+ * A user holding multiple role grants is treated as operating at their
+ * widest one. Mirrors the old client-side useUserScope() hook exactly.
+ */
+export function getScopeLevel(admin: AdminUser): 'global' | 'trust' | 'college' | 'department' | 'none' {
+  if (admin.roles.length === 0) return 'none';
+
+  if (hasRole(admin, 'admin')) return 'global';
+
+  const best = admin.roles.reduce((acc, r) => {
+    const rank = SCOPE_RANK[r.scope_type] ?? 99;
+    const bestRank = SCOPE_RANK[acc.scope_type] ?? 99;
+    return rank < bestRank ? r : acc;
+  }, admin.roles[0]);
+
+  return (best.scope_type as 'global' | 'trust' | 'college' | 'department') || 'none';
+}
