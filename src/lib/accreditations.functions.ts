@@ -1,6 +1,5 @@
 // Server functions for accreditations data from Supabase
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface Accreditation {
   id: string;
@@ -20,39 +19,38 @@ export interface Accreditation {
 /**
  * Fetch all published accreditations
  */
-export const getAllAccreditations = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('accreditations')
-      .select('*')
-      .eq('status', 'published')
-      .order('organization', { ascending: true });
+export async function getAllAccreditations() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('accreditations')
+    .select('*')
+    .eq('status', 'published')
+    .order('organization', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching accreditations:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching accreditations:', error);
+    throw error;
+  }
 
-    return data as Accreditation[];
-  });
+  return data as Accreditation[];
+}
 
 /**
  * Fetch a single accreditation by organization
  */
-export const getAccreditationByOrg = createServerFn({ method: 'GET' })
-  .validator((org: string) => org)
-  .handler(async ({ data: org }) => {
-    const { data, error } = await supabase
-      .from('accreditations')
-      .select('*')
-      .eq('organization', org)
-      .eq('status', 'published')
-      .single();
+export async function getAccreditationByOrg(org: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('accreditations')
+    .select('*')
+    .eq('organization', org)
+    .eq('status', 'published')
+    .single();
 
-    if (error) {
-      console.error('Error fetching accreditation:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching accreditation:', error);
+    throw error;
+  }
 
-    return data as Accreditation;
-  });
+  return data as Accreditation;
+}

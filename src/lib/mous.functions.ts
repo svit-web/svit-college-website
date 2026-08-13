@@ -1,5 +1,4 @@
-import { createServerFn } from '@tanstack/react-start';
-import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface MOU {
   id: string;
@@ -14,14 +13,14 @@ export interface MOU {
   metadata: Record<string, any>;
 }
 
-export const getAllMOUs = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('mous')
-      .select('*')
-      .eq('status', 'published')
-      .order('signed_date', { ascending: false });
+export async function getAllMOUs() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('mous')
+    .select('*')
+    .eq('status', 'published')
+    .order('signed_date', { ascending: false });
 
-    if (error) throw error;
-    return data as unknown as MOU[];
-  });
+  if (error) throw error;
+  return data as unknown as MOU[];
+}
