@@ -1,5 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { supabase } from '@/integrations/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 
 export interface Scholarship {
   id: string;
@@ -15,38 +16,38 @@ export interface Scholarship {
   updated_at: string;
 }
 
-export const getAllScholarships = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('scholarships')
-      .select('*')
-      .eq('status', 'published')
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true });
+export async function getAllScholarships() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('scholarships')
+    .select('*')
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching scholarships:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching scholarships:', error);
+    throw error;
+  }
 
-    return data as Scholarship[];
-  });
+  return data as Scholarship[];
+}
 
-export const getAllScholarshipsAdmin = createServerFn({ method: 'GET' })
-  .handler(async () => {
-    const { data, error } = await supabase
-      .from('scholarships')
-      .select('*')
-      .order('sort_order', { ascending: true })
-      .order('created_at', { ascending: true });
+export async function getAllScholarshipsAdmin() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('scholarships')
+    .select('*')
+    .order('sort_order', { ascending: true })
+    .order('created_at', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching scholarships:', error);
-      throw error;
-    }
+  if (error) {
+    console.error('Error fetching scholarships:', error);
+    throw error;
+  }
 
-    return data as Scholarship[];
-  });
+  return data as Scholarship[];
+}
 
 export const upsertScholarship = createServerFn({ method: 'POST' })
   .validator((input: Partial<Scholarship> & { name: string; type: string }) => input)
