@@ -212,6 +212,10 @@ export async function getCourseWithDept(id: string) {
     code: data.code,
     degree_level: data.degree_level as DeptCourse['degree_level'],
     metadata: data.metadata as DeptCourse['metadata'],
+    short_name: data.short_name,
+    year_started: data.year_started,
+    duration_years: data.duration_years,
+    intake: data.intake,
     dept: dept ? { name: dept.name, code: dept.code, slug: dept.slug } : null,
   };
 }
