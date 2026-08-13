@@ -9,7 +9,7 @@
 //
 // Reads run through server functions so the page renders correctly under SSR.
 // Writes run in the browser with the admin's session so RLS sees `authenticated`.
-import { supabase } from "@/integrations/supabase/client";
+import { createClient as createNextBrowserClient } from "@/app/lib/supabase/client";
 import { publicSupabase } from "@/lib/supabase-public";
 
 /** The single placement_cells row that backs the unified page. */
@@ -283,7 +283,7 @@ export async function getPlacementColleges(): Promise<CollegeOption[]> {
  * Throws on failure — callers surface the message rather than swallowing it.
  */
 export async function savePlacementContent(data: FullPlacementData): Promise<void> {
-  const sb = supabase as any;
+  const sb = createNextBrowserClient() as any;
 
   // 1 ── overview row: hero, about, officer, and everything JSON-shaped
   const { error: cellError } = await sb.from("placement_cells").upsert(

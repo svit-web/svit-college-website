@@ -31,7 +31,7 @@ export interface ContactInfoSettings {
   social_links: Record<string, string>;
 }
 
-const MISC_KEYS: (keyof MiscSettings)[] = [
+export const MISC_KEYS: (keyof MiscSettings)[] = [
   'admission_year', 'year_established', 'antiragging_email',
   'it_support_email', 'ugc_helpline', 'og_description', 'og_image_url',
   'placement_percentage', 'recruiter_count', 'campus_size_acres', 'meta_description',

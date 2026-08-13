@@ -2,6 +2,11 @@ import { createServerFn } from '@tanstack/react-start';
 import { supabase } from '@/integrations/supabase/client';
 import { publicSupabase } from '@/lib/supabase-public';
 
+// Next.js admin panel writes go through upsertScholarshipNext / deleteScholarshipNext
+// in src/lib/scholarships-next.ts instead of the createServerFn exports below,
+// which depend on the Vite-only supabase client and TanStack Start's server
+// function runtime — neither available under Next.js.
+
 export interface Scholarship {
   id: string;
   name: string;
