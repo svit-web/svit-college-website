@@ -581,7 +581,13 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
 
     setDataLoading(true);
     try {
-      const result = await sendPasswordResetForUser({ data: pkVal });
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      const result = await sendPasswordResetForUser({
+        data: pkVal,
+        headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : undefined,
+      });
       toast.success(`Password reset email sent to ${result.email}`);
       await logAuditAction("UPDATE", pkVal, null, { action: "password_reset_requested" });
     } catch (err: any) {
