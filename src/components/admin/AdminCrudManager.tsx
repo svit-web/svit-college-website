@@ -122,6 +122,21 @@ const STATUS_STYLES: Record<string, string> = {
   archived: "bg-rose-100 text-rose-700 border-rose-300"
 };
 
+// FK dropdown / cell-label loading falls back to a `name` column by default,
+// which not every table has. Tables that need a different (or split) label
+// column go here — keep in sync with the actual schema, not guesses.
+const FK_LABEL_COLUMNS: Record<string, string> = {
+  roles: "code",
+  designations: "title",
+  gallery_albums: "title",
+  homepage_sections: "title",
+  inquiry_forms: "form_name",
+  menu_items: "title",
+  pages: "title",
+  seo_metadata: "meta_title"
+};
+const FK_NAME_SPLIT_TABLES = new Set(["user_profiles", "staff_profiles"]);
+
 interface AdminCrudManagerProps {
   tableId: string;
 }
@@ -212,15 +227,11 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
         schema.foreign_keys.map(async (fk: any) => {
           try {
             // Find columns to select: we want the PK and a label column (name, title, code, etc.)
-            let labelCol = "name";
-            if (fk.foreign_table === "user_profiles") {
-              labelCol = "first_name"; // will combine with last_name in mapping
-            } else if (fk.foreign_table === "roles") {
-              labelCol = "code";
-            }
+            const isNameSplit = FK_NAME_SPLIT_TABLES.has(fk.foreign_table);
+            const labelCol = isNameSplit ? "first_name" : (FK_LABEL_COLUMNS[fk.foreign_table] ?? "name");
 
             // We do a select from the target foreign table
-            let query = supabaseAdmin.from(fk.foreign_table).select(`id, ${labelCol}`);
+            let query = supabaseAdmin.from(fk.foreign_table).select(isNameSplit ? "id, first_name, last_name" : `id, ${labelCol}`);
             
             // Apply sorting if relevant
             query = query.order(labelCol, { ascending: true });
@@ -232,7 +243,7 @@ export function AdminCrudManager({ tableId }: AdminCrudManagerProps) {
               cache[fk.foreign_table] = {};
               options[fk.foreign_table] = data.map((row: any) => {
                 let display = row[labelCol] || row.id;
-                if (fk.foreign_table === "user_profiles") {
+                if (isNameSplit) {
                   display = `${row.first_name || ""} ${row.last_name || ""}`.trim() || row.id;
                 }
                 cache[fk.foreign_table][row.id] = display;

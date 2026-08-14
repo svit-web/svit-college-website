@@ -121,6 +121,21 @@ const STATUS_STYLES: Record<string, string> = {
   archived: 'bg-rose-100 text-rose-700 border-rose-300',
 };
 
+// FK dropdown / cell-label loading falls back to a `name` column by default,
+// which not every table has. Tables that need a different (or split) label
+// column go here — keep in sync with the actual schema, not guesses.
+const FK_LABEL_COLUMNS: Record<string, string> = {
+  roles: 'code',
+  designations: 'title',
+  gallery_albums: 'title',
+  homepage_sections: 'title',
+  inquiry_forms: 'form_name',
+  menu_items: 'title',
+  pages: 'title',
+  seo_metadata: 'meta_title',
+};
+const FK_NAME_SPLIT_TABLES = new Set(['user_profiles', 'staff_profiles']);
+
 interface AdminCrudManagerProps {
   tableId: string;
   admin: AdminUser;
@@ -199,13 +214,8 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
       await Promise.all(
         schema.foreign_keys.map(async (fk: any) => {
           try {
-            const isNameSplit = fk.foreign_table === 'user_profiles' || fk.foreign_table === 'staff_profiles';
-            let labelCol = 'name';
-            if (isNameSplit) {
-              labelCol = 'first_name';
-            } else if (fk.foreign_table === 'roles') {
-              labelCol = 'code';
-            }
+            const isNameSplit = FK_NAME_SPLIT_TABLES.has(fk.foreign_table);
+            const labelCol = isNameSplit ? 'first_name' : (FK_LABEL_COLUMNS[fk.foreign_table] ?? 'name');
 
             let query = supabaseAdmin.from(fk.foreign_table).select(isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`);
             query = query.order(labelCol, { ascending: true });
