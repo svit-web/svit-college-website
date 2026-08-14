@@ -199,14 +199,15 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
       await Promise.all(
         schema.foreign_keys.map(async (fk: any) => {
           try {
+            const isNameSplit = fk.foreign_table === 'user_profiles' || fk.foreign_table === 'staff_profiles';
             let labelCol = 'name';
-            if (fk.foreign_table === 'user_profiles') {
+            if (isNameSplit) {
               labelCol = 'first_name';
             } else if (fk.foreign_table === 'roles') {
               labelCol = 'code';
             }
 
-            let query = supabaseAdmin.from(fk.foreign_table).select(`id, ${labelCol}`);
+            let query = supabaseAdmin.from(fk.foreign_table).select(isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`);
             query = query.order(labelCol, { ascending: true });
 
             const { data, error } = await query;
@@ -216,7 +217,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
               cache[fk.foreign_table] = {};
               options[fk.foreign_table] = data.map((row: any) => {
                 let display = row[labelCol] || row.id;
-                if (fk.foreign_table === 'user_profiles') {
+                if (isNameSplit) {
                   display = `${row.first_name || ''} ${row.last_name || ''}`.trim() || row.id;
                 }
                 cache[fk.foreign_table][row.id] = display;
