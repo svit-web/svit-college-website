@@ -3,11 +3,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
 import { useUserScope } from '@/hooks/useUserScope';
+import type { UserScope } from '@/hooks/useUserScope';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { Users, Plus, Trash2, Loader2, Save, Award, Search, X, Tag, School, UserCircle } from 'lucide-react';
+import { Users, Plus, Trash2, Loader2, Save, Award, Search, X, Tag, School, UserCircle, Upload, FileUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/app/lib/auth/admin';
+import { parseFacultyCsv, importFacultyCsv, buildFacultyTemplateCsv, type FacultyImportSummary } from '@/lib/faculty-import';
+import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/achievements-import';
 
 type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience';
 
@@ -62,6 +65,9 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   const [newTag, setNewTag] = useState('');
   const [newStaffForm, setNewStaffForm] = useState({ title: 'Dr.', first_name: '', last_name: '', email: '', phone: '' });
   const [createLoading, setCreateLoading] = useState(false);
+
+  const [importFacultyOpen, setImportFacultyOpen] = useState(false);
+  const [importAchievementsOpen, setImportAchievementsOpen] = useState(false);
 
   useEffect(() => {
     loadStaffList();
@@ -335,6 +341,11 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     return departments.filter((d) => scopedDepartmentIds.has(d.id));
   }, [departments, scopedDepartmentIds]);
 
+  const ownDepartmentCode = useMemo(() => {
+    if (userScope.level !== 'department' || !userScope.departmentId) return undefined;
+    return departments.find((d) => d.id === userScope.departmentId)?.code;
+  }, [departments, userScope]);
+
   const filteredStaff = useMemo(() => {
     if (!searchQuery) return visibleStaffList;
     const q = searchQuery.toLowerCase();
@@ -369,10 +380,26 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">{visibleStaffList.length} profiles total</p>
         </div>
-        <button onClick={openNew} className="flex items-center gap-1.5 rounded-lg bg-crimson px-3.5 py-2 text-sm font-semibold text-white hover:bg-crimson/90 transition shadow-sm">
-          <Plus className="h-4 w-4" />
-          Add Faculty
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setImportAchievementsOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 hover:border-crimson hover:text-crimson transition"
+          >
+            <FileUp className="h-4 w-4" />
+            Import Achievements
+          </button>
+          <button
+            onClick={() => setImportFacultyOpen(true)}
+            className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-600 hover:border-crimson hover:text-crimson transition"
+          >
+            <Upload className="h-4 w-4" />
+            Import Faculty
+          </button>
+          <button onClick={openNew} className="flex items-center gap-1.5 rounded-lg bg-crimson px-3.5 py-2 text-sm font-semibold text-white hover:bg-crimson/90 transition shadow-sm">
+            <Plus className="h-4 w-4" />
+            Add Faculty
+          </button>
+        </div>
       </div>
 
       <div className="relative max-w-sm">
@@ -868,6 +895,274 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           </div>
         </>
       )}
+
+      {importFacultyOpen && (
+        <ImportFacultyModal
+          supabase={supabase}
+          admin={admin}
+          scope={userScope}
+          departments={departments}
+          designations={designations}
+          ownDepartmentCode={ownDepartmentCode}
+          onClose={() => setImportFacultyOpen(false)}
+          onDone={loadStaffList}
+        />
+      )}
+
+      {importAchievementsOpen && (
+        <ImportAchievementsModal supabase={supabase} scope={userScope} departments={departments} onClose={() => setImportAchievementsOpen(false)} />
+      )}
+    </div>
+  );
+}
+
+function ImportModalShell({ title, subtitle, onClose, children }: { title: string; subtitle: string; onClose: () => void; children: React.ReactNode }) {
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-slate-900/80 p-4 overflow-y-auto">
+      <div className="relative w-full max-w-md rounded-lg border border-slate-200 bg-white p-6 shadow-2xl shadow-black/30">
+        <button onClick={onClose} className="absolute top-4 right-4 text-slate-500 hover:text-navy">
+          <X className="h-5 w-5" />
+        </button>
+        <h2 className="font-display text-lg font-bold text-navy">{title}</h2>
+        <p className="text-xs text-slate-500 mt-1 mb-4">{subtitle}</p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+function downloadCsv(filename: string, csv: string) {
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function ImportFacultyModal({
+  supabase,
+  admin,
+  scope,
+  departments,
+  designations,
+  ownDepartmentCode,
+  onClose,
+  onDone,
+}: {
+  supabase: ReturnType<typeof createClient>;
+  admin: AdminUser;
+  scope: UserScope;
+  departments: any[];
+  designations: any[];
+  ownDepartmentCode?: string;
+  onClose: () => void;
+  onDone: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [summary, setSummary] = useState<FacultyImportSummary | null>(null);
+
+  async function handleImport() {
+    if (!file) return;
+    setImporting(true);
+    try {
+      const { rows, parseErrors } = await parseFacultyCsv(file);
+      const result = await importFacultyCsv(supabase, rows, { adminId: admin.id, scope, departments, designations });
+      result.errors = [...parseErrors, ...result.errors];
+      setSummary(result);
+      if (result.created + result.updated > 0) {
+        toast.success(`Imported ${result.created + result.updated} faculty record(s).`);
+        onDone();
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Import failed.');
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  return (
+    <ImportModalShell title="Import Faculty" subtitle="Upload a CSV for your department. Existing faculty (matched by email) are updated; new emails create new profiles." onClose={onClose}>
+      {!summary ? (
+        <div className="space-y-4">
+          <button type="button" onClick={() => downloadCsv('faculty_import_template.csv', buildFacultyTemplateCsv(ownDepartmentCode))} className="text-xs text-crimson hover:underline">
+            Download CSV template →
+          </button>
+
+          <label className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-sm font-medium text-slate-600 cursor-pointer hover:border-crimson hover:text-crimson transition">
+            <Upload className="h-4 w-4 shrink-0" />
+            <span className="truncate">{file ? file.name : 'Choose CSV file…'}</span>
+            <input type="file" accept=".csv,text/csv" onChange={(e) => setFile(e.target.files?.[0] || null)} className="hidden" />
+          </label>
+
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:text-navy transition">
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={!file || importing}
+              onClick={handleImport}
+              className="flex items-center gap-2 rounded-lg bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson/90 disabled:opacity-50 transition"
+            >
+              {importing && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Import
+            </button>
+          </div>
+        </div>
+      ) : (
+        <ImportResultSummary
+          badges={[
+            { label: `${summary.created} created`, tone: 'emerald' },
+            { label: `${summary.updated} updated`, tone: 'sky' },
+            { label: `${summary.errors.length} error(s)`, tone: 'rose' },
+          ]}
+          errors={summary.errors}
+          onReset={() => {
+            setSummary(null);
+            setFile(null);
+          }}
+          onClose={onClose}
+        />
+      )}
+    </ImportModalShell>
+  );
+}
+
+function ImportAchievementsModal({
+  supabase,
+  scope,
+  departments,
+  onClose,
+}: {
+  supabase: ReturnType<typeof createClient>;
+  scope: UserScope;
+  departments: any[];
+  onClose: () => void;
+}) {
+  const [file, setFile] = useState<File | null>(null);
+  const [importing, setImporting] = useState(false);
+  const [summary, setSummary] = useState<AchievementImportSummary | null>(null);
+
+  async function handleImport() {
+    if (!file) return;
+    setImporting(true);
+    try {
+      const { rows, parseErrors } = await parseAchievementsCsv(file);
+      const result = await importAchievementsCsv(supabase, rows, { scope, departments });
+      result.errors = [...parseErrors, ...result.errors];
+      setSummary(result);
+      if (result.created > 0) {
+        toast.success(`Imported ${result.created} achievement(s).`);
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Import failed.');
+    } finally {
+      setImporting(false);
+    }
+  }
+
+  return (
+    <ImportModalShell
+      title="Import Achievements"
+      subtitle="Upload a CSV of achievements, keyed by faculty email. The faculty member must already exist and be in your department."
+      onClose={onClose}
+    >
+      {!summary ? (
+        <div className="space-y-4">
+          <button type="button" onClick={() => downloadCsv('achievements_import_template.csv', buildAchievementsTemplateCsv())} className="text-xs text-crimson hover:underline">
+            Download CSV template →
+          </button>
+
+          <label className="flex items-center justify-center gap-2 rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-sm font-medium text-slate-600 cursor-pointer hover:border-crimson hover:text-crimson transition">
+            <Upload className="h-4 w-4 shrink-0" />
+            <span className="truncate">{file ? file.name : 'Choose CSV file…'}</span>
+            <input type="file" accept=".csv,text/csv" onChange={(e) => setFile(e.target.files?.[0] || null)} className="hidden" />
+          </label>
+
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:text-navy transition">
+              Cancel
+            </button>
+            <button
+              type="button"
+              disabled={!file || importing}
+              onClick={handleImport}
+              className="flex items-center gap-2 rounded-lg bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson/90 disabled:opacity-50 transition"
+            >
+              {importing && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+              Import
+            </button>
+          </div>
+        </div>
+      ) : (
+        <ImportResultSummary
+          badges={[
+            { label: `${summary.created} created`, tone: 'emerald' },
+            { label: `${summary.skipped} skipped (duplicate)`, tone: 'sky' },
+            { label: `${summary.errors.length} error(s)`, tone: 'rose' },
+          ]}
+          errors={summary.errors}
+          onReset={() => {
+            setSummary(null);
+            setFile(null);
+          }}
+          onClose={onClose}
+        />
+      )}
+    </ImportModalShell>
+  );
+}
+
+const BADGE_TONE_CLASSES: Record<string, string> = {
+  emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  sky: 'bg-sky-50 text-sky-700 border-sky-200',
+  rose: 'bg-rose-50 text-rose-700 border-rose-200',
+};
+
+function ImportResultSummary({
+  badges,
+  errors,
+  onReset,
+  onClose,
+}: {
+  badges: { label: string; tone: string }[];
+  errors: { row: number; email?: string; message: string }[];
+  onReset: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-2 text-xs">
+        {badges.map((b) => (
+          <span key={b.label} className={cn('rounded-full border px-2.5 py-1 font-semibold', BADGE_TONE_CLASSES[b.tone])}>
+            {b.label}
+          </span>
+        ))}
+      </div>
+      {errors.length > 0 && (
+        <div className="max-h-56 overflow-y-auto rounded-lg border border-slate-200 divide-y divide-slate-100">
+          {errors.map((e, idx) => (
+            <div key={idx} className="px-3 py-2 text-xs">
+              <span className="font-semibold text-slate-700">
+                Row {e.row}
+                {e.email ? ` (${e.email})` : ''}:{' '}
+              </span>
+              <span className="text-rose-600">{e.message}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="flex justify-end gap-2 pt-2">
+        <button type="button" onClick={onReset} className="rounded-lg border border-slate-200 px-4 py-2 text-sm text-slate-600 hover:text-navy transition">
+          Import another file
+        </button>
+        <button type="button" onClick={onClose} className="rounded-lg bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson/90 transition">
+          Done
+        </button>
+      </div>
     </div>
   );
 }
