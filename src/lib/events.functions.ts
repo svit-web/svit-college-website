@@ -30,7 +30,7 @@ const EVENT_WITH_SCOPE_SELECT =
   '*, college:colleges(name, slug), department:departments(name, slug)';
 
 /**
- * Fetch all published events ordered by sort_order, across every scope
+ * Fetch all published events newest-first by start_date, across every scope
  * (department, college and institute-wide) for the public events listing.
  */
 export async function getAllEvents() {
@@ -40,7 +40,7 @@ export async function getAllEvents() {
     .select(EVENT_WITH_SCOPE_SELECT)
     .eq('status', 'published')
     .is('deleted_at', null)
-    .order('sort_order', { ascending: true });
+    .order('start_date', { ascending: false });
 
   if (error) throw error;
   return data as unknown as CampusEvent[];
