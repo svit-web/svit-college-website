@@ -32,6 +32,6 @@ The toggle UI (`/admin/settings`) is disabled with an explanatory note; `app_set
 
 ## Other stale-doc notes (lower priority)
 
-- `implemented/status_summary.md` lists "Homepage Layout Builder" and "Inquiry Forms & Submissions Dashboard" as outstanding (Phase 4), but `implemented/5_homepage_inquiries.md` documents both as completed — `status_summary.md` is stale.
-- `TESTING_REPORT.md` flagged an SSR hydration bug where clubs/centers index pages render 0 cards server-side; this was never explicitly marked fixed even though `SESSION_SUMMARY.md`/`MIGRATION_STATUS.md` call Phase 1 "100% complete."
-- `SUPABASE_SCHEMA.md` is called out in `PHASE4_COMPLETE.md` as a stale one-time audit snapshot that undercounts real row counts — don't treat it as current.
+- `migration/implemented/status_summary.md` lists "Homepage Layout Builder" and "Inquiry Forms & Submissions Dashboard" as outstanding (Phase 4), but `migration/implemented/5_homepage_inquiries.md` documents both as completed — `status_summary.md` is stale.
+- `testing/TESTING_REPORT.md` flagged an SSR hydration bug where clubs/centers index pages render 0 cards server-side; this was never explicitly marked fixed even though `sessions/SESSION_SUMMARY.md`/`migration/MIGRATION_STATUS.md` call Phase 1 "100% complete."
+- `database/SUPABASE_SCHEMA.md` is called out in `migration/PHASE4_COMPLETE.md` as a stale one-time audit snapshot that undercounts real row counts — don't treat it as current.

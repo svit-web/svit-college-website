@@ -3,7 +3,7 @@
 Captured 2026-08-12 against **dev** Supabase (`agezrfclusigfqysbxwb`) on branch `nextjs-migration`.
 
 This is the diff target for the Phase 8 cutover check. Regenerate with
-`scripts/build-url-inventory.sh`. See `docs/NEXTJS_MIGRATION_PLAN.md` §5.
+`scripts/build-url-inventory.sh`. See `docs/migration/NEXTJS_MIGRATION_PLAN.md` §5.
 
 ## Files
 
