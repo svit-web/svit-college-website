@@ -47,7 +47,9 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
             transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
             className="absolute inset-0"
           >
-            <img src={s.image} alt="" className="h-full w-full object-cover" />
+            {s.image && (
+              <img src={s.image} alt="" className="h-full w-full object-cover" />
+            )}
             <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/90 via-navy-deep/70 to-transparent" />
           </motion.div>
         </AnimatePresence>
