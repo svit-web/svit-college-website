@@ -212,10 +212,10 @@ export function Header({
                   <AnimatePresence>
                     {aboutOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
+                        transition={{ duration: 0.08, ease: "easeOut" }}
                         className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
                         style={{ transformOrigin: "top center" }}
                       >
@@ -257,10 +257,10 @@ export function Header({
                   <AnimatePresence>
                     {admissionsOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
+                        transition={{ duration: 0.08, ease: "easeOut" }}
                         className="absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
                         style={{ transformOrigin: "top center" }}
                       >
@@ -302,12 +302,12 @@ export function Header({
                   <AnimatePresence>
                     {coursesOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
-                        className="absolute right-0 top-full z-50 pt-1"
-                        style={{ transformOrigin: "top right" }}
+                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
+                        transition={{ duration: 0.08, ease: "easeOut" }}
+                        className="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 pt-1"
+                        style={{ transformOrigin: "top center" }}
                       >
                         <CollegesMega
                           colleges={displayColleges}
@@ -340,10 +340,10 @@ export function Header({
                   <AnimatePresence>
                     {campusOpen && (
                       <motion.div
-                        initial={{ opacity: 0, y: 6, scale: 0.97 }}
+                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 6, scale: 0.97 }}
-                        transition={{ type: "spring", bounce: 0, duration: 0.2 }}
+                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
+                        transition={{ duration: 0.08, ease: "easeOut" }}
                         className="absolute right-0 top-full z-50 w-[720px] max-w-[92vw] overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
                         style={{ transformOrigin: "top right" }}
                       >
@@ -393,7 +393,7 @@ export function Header({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+            transition={{ duration: 0.12, ease: "easeOut" }}
             className="overflow-hidden border-t border-border bg-white lg:hidden"
           >
             <div className="max-h-[calc(100dvh-116px)] overflow-y-auto">
@@ -408,7 +408,7 @@ export function Header({
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {n.label}
-                        <motion.span animate={{ rotate: mobileAboutOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                        <motion.span animate={{ rotate: mobileAboutOpen ? 180 : 0 }} transition={{ duration: 0.1, ease: "easeOut" }}>
                           <ChevronDown className="h-4 w-4 text-navy/40" />
                         </motion.span>
                       </button>
@@ -418,7 +418,7 @@ export function Header({
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            transition={{ duration: 0.12, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
                             <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
@@ -443,7 +443,7 @@ export function Header({
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {n.label}
-                        <motion.span animate={{ rotate: mobileAdmissionsOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                        <motion.span animate={{ rotate: mobileAdmissionsOpen ? 180 : 0 }} transition={{ duration: 0.1, ease: "easeOut" }}>
                           <ChevronDown className="h-4 w-4 text-navy/40" />
                         </motion.span>
                       </button>
@@ -453,7 +453,7 @@ export function Header({
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            transition={{ duration: 0.12, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
                             <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
@@ -478,7 +478,7 @@ export function Header({
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {collegesLabel}
-                        <motion.span animate={{ rotate: mobileCollegesOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                        <motion.span animate={{ rotate: mobileCollegesOpen ? 180 : 0 }} transition={{ duration: 0.1, ease: "easeOut" }}>
                           <ChevronDown className="h-4 w-4 text-navy/40" />
                         </motion.span>
                       </button>
@@ -488,7 +488,7 @@ export function Header({
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            transition={{ duration: 0.12, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
                             <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
@@ -514,7 +514,7 @@ export function Header({
                         className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
                       >
                         {n.label}
-                        <motion.span animate={{ rotate: mobileCampusOpen ? 180 : 0 }} transition={{ type: "spring", bounce: 0, duration: 0.25 }}>
+                        <motion.span animate={{ rotate: mobileCampusOpen ? 180 : 0 }} transition={{ duration: 0.1, ease: "easeOut" }}>
                           <ChevronDown className="h-4 w-4 text-navy/40" />
                         </motion.span>
                       </button>
@@ -524,7 +524,7 @@ export function Header({
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ type: "spring", bounce: 0, duration: 0.28 }}
+                            transition={{ duration: 0.12, ease: "easeOut" }}
                             className="overflow-hidden"
                           >
                             <MobileCampusAccordion categories={campusCategories} onNavigate={closeMobileMenu} />
@@ -683,7 +683,7 @@ function CollegesMega({
 
   function activate(id: string) {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setActiveId(id), 60);
+    hoverTimer.current = setTimeout(() => setActiveId(id), 20);
   }
   function deactivate() {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
@@ -739,7 +739,7 @@ function CollegesMega({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.12 }}
+            transition={{ duration: 0.06 }}
             className="w-[260px] shrink-0 border-l border-border bg-white py-3"
           >
             <div className="px-4 pb-1.5 text-xs font-bold uppercase tracking-widest text-crimson">
@@ -773,7 +773,7 @@ function CampusMega({ categories, onNavigate }: { categories: MegaCategory[]; on
 
   const scheduleActivate = (key: string) => {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    hoverTimer.current = setTimeout(() => setActiveKey(key), 120);
+    hoverTimer.current = setTimeout(() => setActiveKey(key), 30);
   };
   const cancelSchedule = () => {
     if (hoverTimer.current) {
@@ -821,7 +821,7 @@ function CampusMega({ categories, onNavigate }: { categories: MegaCategory[]; on
             initial={{ opacity: 0, x: 6 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -6 }}
-            transition={{ duration: 0.15 }}
+            transition={{ duration: 0.08 }}
           >
             <Link
               href={active.allTo}
