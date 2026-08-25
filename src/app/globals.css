@@ -78,7 +78,11 @@
 
 @layer base {
   * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; }
+  html {
+    scroll-behavior: smooth;
+    font-size: calc(100% * var(--font-scale, 1));
+    transition: font-size 150ms ease-out;
+  }
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);

@@ -4,8 +4,13 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { BookOpen, Lock, Mail, Loader2, Eye, EyeOff } from 'lucide-react';
 import { login, requestPasswordReset } from './actions';
+import { useFontScale } from '@/hooks/useFontScale';
 
 export default function AdminLogin() {
+  // No visible control here — just keeps the page in sync with whatever
+  // admin font-size preference was last saved (e.g. arriving from the
+  // dashboard after logging out), rather than inheriting the public site's.
+  useFontScale('admin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);

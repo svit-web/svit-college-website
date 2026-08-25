@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import type { AdminUser } from '@/app/lib/auth/admin';
+import { FontSizeControl } from '@/components/a11y/FontSizeControl';
 
 interface HeaderProps {
   admin: AdminUser;
@@ -71,6 +72,8 @@ export function AdminHeader({ admin, logout, onMobileMenuToggle }: HeaderProps) 
       </div>
 
       <div className="flex items-center gap-3">
+        <FontSizeControl scope="admin" variant="inline" />
+
         <button className="relative rounded-full p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy transition">
           <Bell className="h-4 w-4" />
           <span className="absolute top-1 right-1 h-1.5 w-1.5 rounded-full bg-crimson" />
