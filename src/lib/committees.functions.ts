@@ -1,12 +1,12 @@
 // Server functions for committees data from Supabase
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
 export interface Committee {
   id: string;
   college_id: string;
   name: string;
   slug: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   metadata: {
     description?: string;
     vision?: string;
@@ -22,19 +22,14 @@ export interface Committee {
  */
 export async function getCommitteesByCollege(collegeId: string) {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('committees')
-    .select('*')
-    .eq('college_id', collegeId)
-    .eq('status', 'published')
-    .order('name', { ascending: true });
+  const result = await supabase
+    .from("committees")
+    .select("*")
+    .eq("college_id", collegeId)
+    .eq("status", "published")
+    .order("name", { ascending: true });
 
-  if (error) {
-    console.error('Error fetching committees:', error);
-    throw error;
-  }
-
-  return data as Committee[];
+  return unwrap<Committee[]>(result as any, "committees");
 }
 
 /**
@@ -42,18 +37,13 @@ export async function getCommitteesByCollege(collegeId: string) {
  */
 export async function getAllCommittees() {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('committees')
-    .select('*')
-    .eq('status', 'published')
-    .order('name', { ascending: true });
+  const result = await supabase
+    .from("committees")
+    .select("*")
+    .eq("status", "published")
+    .order("name", { ascending: true });
 
-  if (error) {
-    console.error('Error fetching committees:', error);
-    throw error;
-  }
-
-  return data as Committee[];
+  return unwrap<Committee[]>(result as any, "committees");
 }
 
 /**
@@ -61,17 +51,12 @@ export async function getAllCommittees() {
  */
 export async function getCommitteeBySlug(slug: string) {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('committees')
-    .select('*')
-    .eq('slug', slug)
-    .eq('status', 'published')
+  const result = await supabase
+    .from("committees")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
     .single();
 
-  if (error) {
-    console.error('Error fetching committee:', error);
-    throw error;
-  }
-
-  return data as Committee;
+  return unwrap<Committee>(result as any, "committee");
 }

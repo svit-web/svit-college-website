@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { ImageIcon } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
@@ -16,19 +17,29 @@ export function CampusLeafPage({ item }: { item: CampusItem }) {
   return (
     <div className="space-y-8">
       {/* Hero image placeholder */}
-      <div className="aspect-video max-h-72 w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-secondary/60 flex items-center justify-center">
+      <div className="relative aspect-video max-h-72 w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-secondary/60 flex items-center justify-center">
         {item.image ? (
-          <img src={item.image} alt={item.title} className="h-full w-full object-cover" />
+          <Image
+            src={item.image}
+            alt={item.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 768px"
+            className="object-cover"
+          />
         ) : (
           <div className="flex flex-col items-center gap-2 text-muted-foreground">
             <ImageIcon className="h-10 w-10" />
-            <span className="text-xs font-semibold uppercase tracking-widest">Photo coming soon</span>
+            <span className="text-xs font-semibold uppercase tracking-widest">
+              Photo coming soon
+            </span>
           </div>
         )}
       </div>
 
       <div>
-        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">{item.accent}</div>
+        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
+          {item.accent}
+        </div>
         <h2 className="mt-2 font-display text-3xl md:text-4xl font-bold text-navy">{item.title}</h2>
         <p className="mt-2 text-sm font-semibold uppercase tracking-widest text-muted-foreground">
           {item.subtitle}

@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote, Star } from "lucide-react";
 import type { PlacementTestimonial } from "@/lib/placement.functions";
@@ -31,12 +32,15 @@ function Card({ testimonial: t }: { testimonial: PlacementTestimonial }) {
 
       <div className="pt-3 border-t border-navy/10 flex items-center gap-3.5">
         {t.photoUrl ? (
-          <img
-            src={t.photoUrl}
-            alt={t.studentName}
-            className="h-10 w-10 shrink-0 rounded-full object-cover border-2 border-navy/20"
-            loading="lazy"
-          />
+          <div className="relative h-10 w-10 shrink-0 rounded-full border-2 border-navy/20 overflow-hidden">
+            <Image
+              src={t.photoUrl}
+              alt={t.studentName}
+              fill
+              sizes="40px"
+              className="object-cover"
+            />
+          </div>
         ) : (
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy font-display text-xs font-bold text-gold">
             {initials(t.studentName)}
@@ -44,9 +48,7 @@ function Card({ testimonial: t }: { testimonial: PlacementTestimonial }) {
         )}
 
         <div className="min-w-0 flex-1">
-          <div className="font-bold text-xs text-navy truncate">
-            {t.studentName}
-          </div>
+          <div className="font-bold text-xs text-navy truncate">{t.studentName}</div>
           <div className="text-xs font-semibold text-crimson truncate">
             {t.designation} @ {t.companyName}
           </div>

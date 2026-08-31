@@ -1,4 +1,4 @@
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase } from "@/lib/supabase-public";
 
 export interface CourseWithCollegeInfo {
   id: string;
@@ -7,6 +7,7 @@ export interface CourseWithCollegeInfo {
   degree_level: string;
   intake: number | null;
   fees_per_semester: string | null;
+  duration: string | null;
   metadata: Record<string, any>;
   department_name: string;
   college_name: string;
@@ -16,9 +17,10 @@ export interface CourseWithCollegeInfo {
 export async function getAllCoursesWithIntakeFees() {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('courses')
-    .select(`
-      id, name, code, degree_level, intake, fees_per_semester, metadata,
+    .from("courses")
+    .select(
+      `
+      id, name, code, degree_level, intake, fees_per_semester, duration, metadata,
       departments!inner (
         name,
         colleges!inner (
@@ -26,12 +28,13 @@ export async function getAllCoursesWithIntakeFees() {
           slug
         )
       )
-    `)
-    .eq('status', 'published')
-    .order('name', { ascending: true });
+    `,
+    )
+    .eq("status", "published")
+    .order("name", { ascending: true });
 
   if (error) {
-    console.error('Error fetching courses with intake/fees:', error);
+    console.error("Error fetching courses with intake/fees:", error);
     throw error;
   }
 
@@ -42,9 +45,10 @@ export async function getAllCoursesWithIntakeFees() {
     degree_level: c.degree_level,
     intake: c.intake,
     fees_per_semester: c.fees_per_semester,
+    duration: c.duration,
     metadata: c.metadata ?? {},
-    department_name: c.departments?.name ?? '',
-    college_name: c.departments?.colleges?.name ?? '',
-    college_slug: c.departments?.colleges?.slug ?? '',
+    department_name: c.departments?.name ?? "",
+    college_name: c.departments?.colleges?.name ?? "",
+    college_slug: c.departments?.colleges?.slug ?? "",
   })) as CourseWithCollegeInfo[];
 }

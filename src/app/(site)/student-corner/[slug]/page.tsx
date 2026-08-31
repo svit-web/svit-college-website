@@ -6,10 +6,7 @@ import { PillTabs } from "@/components/site-next/PillTabs";
 import { getAllCenters, getCenterBySlug } from "@/lib/centers.functions";
 
 async function loadCentre(slug: string) {
-  const [item, allCenters] = await Promise.all([
-    getCenterBySlug(slug),
-    getAllCenters(),
-  ]);
+  const [item, allCenters] = await Promise.all([getCenterBySlug(slug), getAllCenters()]);
   if (!item) return null;
 
   const transformedItem = {
@@ -18,7 +15,7 @@ async function loadCentre(slug: string) {
     subtitle: item.subtitle || "",
     accent: item.accent_color || "Centre",
     description: item.description || "",
-    highlights: Array.isArray((item.metadata as any)?.highlights) ? (item.metadata as any).highlights : [],
+    highlights: item.metadata?.highlights ?? [],
     image: null,
   };
 
@@ -39,11 +36,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function CentreLeaf({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function CentreLeaf({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await loadCentre(slug);
   if (!result) notFound();
@@ -56,13 +49,20 @@ export default async function CentreLeaf({
         title="Societies"
         accent="Beyond the Classroom"
         subtitle="Centres, cells and chapters where students grow beyond the syllabus."
-        crumbs={[{ label: "Home", to: "/" }, { label: "Societies", to: "/student-corner" }, { label: item.title }]}
+        crumbs={[
+          { label: "Home", to: "/" },
+          { label: "Societies", to: "/student-corner" },
+          { label: item.title },
+        ]}
       />
 
       <section className="container-page py-20">
         <PillTabs
           ariaLabel="Centres"
-          items={allCenters.map((c) => ({ label: c.name.split("(")[0].trim(), to: `/student-corner/${c.slug}` }))}
+          items={allCenters.map((c) => ({
+            label: c.name.split("(")[0].trim(),
+            to: `/student-corner/${c.slug}`,
+          }))}
         />
         <CampusLeafPage item={item} />
       </section>

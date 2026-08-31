@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { AdminRole } from "@/hooks/useAdminAuth";
+import type { AdminRole } from "@/app/lib/auth/admin";
 
 export type ScopeLevel = "global" | "trust" | "college" | "department" | "none";
 

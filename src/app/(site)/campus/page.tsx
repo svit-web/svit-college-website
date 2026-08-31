@@ -1,9 +1,15 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { PageHero } from "@/components/site-next/PageHero";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getAllFacilities, type Facility } from "@/lib/facilities.functions";
-import { getSports, getSportsAchievements, type Sport, type SportAchievement } from "@/lib/sports.functions";
+import {
+  getSports,
+  getSportsAchievements,
+  type Sport,
+  type SportAchievement,
+} from "@/lib/sports.functions";
 import campusHero from "@/assets/campus-hero.jpg";
 import campusAerial from "@/assets/campus-aerial.jpg";
 import { Trophy, Medal, Star, Users } from "lucide-react";
@@ -21,16 +27,19 @@ const CATEGORY_LABEL: Record<string, string> = {
 
 const CATEGORY_COLOR: Record<string, string> = {
   outdoor: "bg-emerald-100 text-emerald-700",
-  indoor:  "bg-sky-100 text-sky-700",
+  indoor: "bg-sky-100 text-sky-700",
   aquatic: "bg-cyan-100 text-cyan-700",
-  combat:  "bg-orange-100 text-orange-700",
+  combat: "bg-orange-100 text-orange-700",
 };
 
-const LEVEL_CONFIG: Record<string, { label: string; color: string; icon: React.ComponentType<{ className?: string }> }> = {
+const LEVEL_CONFIG: Record<
+  string,
+  { label: string; color: string; icon: React.ComponentType<{ className?: string }> }
+> = {
   international: { label: "International", color: "bg-purple-600 text-white", icon: Star },
-  national:      { label: "National",      color: "bg-gold text-navy-deep",   icon: Trophy },
-  state:         { label: "State",         color: "bg-navy text-white",        icon: Medal },
-  university:    { label: "University",    color: "bg-emerald-600 text-white", icon: Users },
+  national: { label: "National", color: "bg-gold text-navy-deep", icon: Trophy },
+  state: { label: "State", color: "bg-navy text-white", icon: Medal },
+  university: { label: "University", color: "bg-emerald-600 text-white", icon: Users },
 };
 
 function formatDate(dateStr: string | null): string {
@@ -46,10 +55,10 @@ export default async function Campus() {
   ]);
 
   const academicFacilities = facilities.filter((f) => f.category === "academic");
-  const wellnessFacilities = facilities.filter((f) => (f as any).category === "wellness");
-  const amenityFacilities  = facilities.filter((f) => (f as any).category === "amenity");
-  const hostelFacilities   = facilities.filter((f) => (f as any).category === "hostel");
-  const sportsFacilities   = facilities.filter((f) => f.category === "sports");
+  const wellnessFacilities = facilities.filter((f) => f.category === "wellness");
+  const amenityFacilities = facilities.filter((f) => f.category === "amenity");
+  const hostelFacilities = facilities.filter((f) => f.category === "hostel");
+  const sportsFacilities = facilities.filter((f) => f.category === "sports");
 
   return (
     <>
@@ -63,8 +72,19 @@ export default async function Campus() {
       {/* Hero images */}
       <section className="container-page py-20">
         <div className="grid gap-6 md:grid-cols-2">
-          <img src={campusHero.src}   alt="Campus"  className="rounded-2xl object-cover w-full h-72 md:h-96" loading="lazy" />
-          <img src={campusAerial.src} alt="Aerial"  className="rounded-2xl object-cover w-full h-72 md:h-96" loading="lazy" />
+          <Image
+            src={campusHero}
+            alt="Campus"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="rounded-2xl object-cover w-full h-72 md:h-96"
+            priority
+          />
+          <Image
+            src={campusAerial}
+            alt="Aerial"
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="rounded-2xl object-cover w-full h-72 md:h-96"
+          />
         </div>
       </section>
 
@@ -78,7 +98,9 @@ export default async function Campus() {
                 <Reveal key={f.id} delay={i * 0.04}>
                   <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
                     <h4 className="font-display font-bold text-navy">{f.name}</h4>
-                    <p className="mt-2 text-sm text-muted-foreground">{f.description ?? f.subtitle ?? ""}</p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {f.description ?? f.subtitle ?? ""}
+                    </p>
                   </div>
                 </Reveal>
               ))}
@@ -125,7 +147,9 @@ export default async function Campus() {
                     {f.subtitle && (
                       <p className="mt-1 text-xs font-semibold text-slate-500">{f.subtitle}</p>
                     )}
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{f.description ?? ""}</p>
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                      {f.description ?? ""}
+                    </p>
                   </div>
                 </Reveal>
               ))}
@@ -138,44 +162,60 @@ export default async function Campus() {
       <section className="container-page py-20">
         <SectionHeading center eyebrow="Hostel & Living" title="A home away from home" />
         <div className="mt-12 grid gap-6 md:grid-cols-2">
-          {hostelFacilities.length > 0 ? (
-            hostelFacilities.map((h, i) => (
-              <Reveal key={h.id} delay={i * 0.05}>
-                <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
-                  <h3 className="font-display text-2xl font-bold text-navy">{h.name}</h3>
-                  {h.subtitle && (
-                    <p className="mt-1 text-sm font-semibold text-crimson">{h.subtitle}</p>
-                  )}
-                  <p className="mt-3 text-muted-foreground">{h.description ?? ""}</p>
-                </div>
-              </Reveal>
-            ))
-          ) : (
-            [
-              { t: "Boys' Hostel", d: "600-bed capacity, mess, Wi-Fi, common room, gymnasium and 24×7 security." },
-              { t: "Girls' Hostel", d: "400-bed capacity, dedicated warden, mess, indoor games and safe environment." },
-            ].map((h) => (
-              <Reveal key={h.t}>
-                <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
-                  <h3 className="font-display text-2xl font-bold text-navy">{h.t}</h3>
-                  <p className="mt-3 text-muted-foreground">{h.d}</p>
-                </div>
-              </Reveal>
-            ))
-          )}
+          {hostelFacilities.length > 0
+            ? hostelFacilities.map((h, i) => (
+                <Reveal key={h.id} delay={i * 0.05}>
+                  <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
+                    <h3 className="font-display text-2xl font-bold text-navy">{h.name}</h3>
+                    {h.subtitle && (
+                      <p className="mt-1 text-sm font-semibold text-crimson">{h.subtitle}</p>
+                    )}
+                    <p className="mt-3 text-muted-foreground">{h.description ?? ""}</p>
+                  </div>
+                </Reveal>
+              ))
+            : [
+                {
+                  t: "Boys' Hostel",
+                  d: "600-bed capacity, mess, Wi-Fi, common room, gymnasium and 24×7 security.",
+                },
+                {
+                  t: "Girls' Hostel",
+                  d: "400-bed capacity, dedicated warden, mess, indoor games and safe environment.",
+                },
+              ].map((h) => (
+                <Reveal key={h.t}>
+                  <div className="card-lift rounded-2xl border-2 border-navy/10 bg-white p-8">
+                    <h3 className="font-display text-2xl font-bold text-navy">{h.t}</h3>
+                    <p className="mt-3 text-muted-foreground">{h.d}</p>
+                  </div>
+                </Reveal>
+              ))}
         </div>
       </section>
 
       {/* Sports Section */}
-      <SportsSection sports={sports} achievements={achievements} sportsFacilities={sportsFacilities} />
+      <SportsSection
+        sports={sports}
+        achievements={achievements}
+        sportsFacilities={sportsFacilities}
+      />
     </>
   );
 }
 
-function SportsSection({ sports, achievements, sportsFacilities }: { sports: Sport[]; achievements: SportAchievement[]; sportsFacilities: Facility[] }) {
+function SportsSection({
+  sports,
+  achievements,
+  sportsFacilities,
+}: {
+  sports: Sport[];
+  achievements: SportAchievement[];
+  sportsFacilities: Facility[];
+}) {
   const totalTrophies = achievements.length;
   const outdoorCount = sports.filter((s) => s.category === "outdoor").length;
-  const indoorCount  = sports.filter((s) => s.category === "indoor").length;
+  const indoorCount = sports.filter((s) => s.category === "indoor").length;
 
   return (
     <>
@@ -183,24 +223,34 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
       <section className="bg-navy text-white py-20">
         <div className="container-page">
           <div>
-            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">Sports & Athletics</div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-white">Champions On and Off the Field</h2>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+              Sports & Athletics
+            </div>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
+              Champions On and Off the Field
+            </h2>
             <p className="mt-4 text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
-              SVIT believes sports build character as much as academics. Our state-of-the-art grounds and courts have produced university, state, and national-level athletes.
+              SVIT believes sports build character as much as academics. Our state-of-the-art
+              grounds and courts have produced university, state, and national-level athletes.
             </p>
           </div>
 
           {/* Stats */}
           <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { value: `${sports.length}+`,   label: "Sports Offered" },
-              { value: `${outdoorCount}`,      label: "Outdoor Disciplines" },
-              { value: `${indoorCount}`,       label: "Indoor Disciplines" },
-              { value: `${totalTrophies}+`,    label: "Trophies & Medals" },
+              { value: `${sports.length}+`, label: "Sports Offered" },
+              { value: `${outdoorCount}`, label: "Outdoor Disciplines" },
+              { value: `${indoorCount}`, label: "Indoor Disciplines" },
+              { value: `${totalTrophies}+`, label: "Trophies & Medals" },
             ].map((s) => (
-              <div key={s.label} className="rounded-xl border border-white/10 bg-white/5 p-6 text-center">
+              <div
+                key={s.label}
+                className="rounded-xl border border-white/10 bg-white/5 p-6 text-center"
+              >
                 <div className="font-display text-4xl font-bold text-gold">{s.value}</div>
-                <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-white/60">{s.label}</div>
+                <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-white/60">
+                  {s.label}
+                </div>
               </div>
             ))}
           </div>
@@ -218,11 +268,12 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                   {/* Cover photo */}
                   <div className="relative h-44 w-full overflow-hidden bg-navy/5">
                     {sport.cover_image_url ? (
-                      <img
+                      <Image
                         src={sport.cover_image_url}
                         alt={sport.name}
-                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center">
@@ -230,7 +281,9 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                       </div>
                     )}
                     {/* Category badge */}
-                    <span className={`absolute top-3 left-3 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${CATEGORY_COLOR[sport.category] ?? "bg-slate-100 text-slate-600"}`}>
+                    <span
+                      className={`absolute top-3 left-3 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${CATEGORY_COLOR[sport.category] ?? "bg-slate-100 text-slate-600"}`}
+                    >
                       {CATEGORY_LABEL[sport.category] ?? sport.category}
                     </span>
                   </div>
@@ -238,7 +291,9 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                   <div className="p-5">
                     <h3 className="font-display text-lg font-bold text-navy">{sport.name}</h3>
                     {sport.description && (
-                      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{sport.description}</p>
+                      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                        {sport.description}
+                      </p>
                     )}
                     {sport.players_count && (
                       <div className="mt-3 flex items-center gap-1 text-xs text-slate-500">
@@ -265,11 +320,13 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                   <div className="flex items-start justify-between gap-2">
                     <h4 className="font-display font-bold text-navy">{f.name}</h4>
                     {f.accent_color && (
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${
-                        f.accent_color === "Indoor"
-                          ? "bg-sky-100 text-sky-700"
-                          : "bg-emerald-100 text-emerald-700"
-                      }`}>
+                      <span
+                        className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-bold uppercase tracking-wider ${
+                          f.accent_color === "Indoor"
+                            ? "bg-sky-100 text-sky-700"
+                            : "bg-emerald-100 text-emerald-700"
+                        }`}
+                      >
                         {f.accent_color}
                       </span>
                     )}
@@ -305,12 +362,22 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
                   <Reveal key={a.id} delay={i * 0.04}>
                     <div className="card-lift h-full overflow-hidden rounded-2xl border border-border bg-white">
                       {a.image_url && (
-                        <img src={a.image_url} alt={a.title} className="h-40 w-full object-cover" loading="lazy" />
+                        <div className="relative h-40 w-full">
+                          <Image
+                            src={a.image_url}
+                            alt={a.title}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover"
+                          />
+                        </div>
                       )}
                       <div className="p-5">
                         {/* Level + Position badges */}
                         <div className="flex flex-wrap gap-2 mb-3">
-                          <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${cfg.color}`}>
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider ${cfg.color}`}
+                          >
                             <Icon className="h-3 w-3" />
                             {cfg.label}
                           </span>
@@ -323,12 +390,16 @@ function SportsSection({ sports, achievements, sportsFacilities }: { sports: Spo
 
                         <h4 className="font-display font-bold text-navy leading-snug">{a.title}</h4>
                         {a.description && (
-                          <p className="mt-1.5 text-sm text-muted-foreground line-clamp-3">{a.description}</p>
+                          <p className="mt-1.5 text-sm text-muted-foreground line-clamp-3">
+                            {a.description}
+                          </p>
                         )}
 
                         {/* Sport name + date footer */}
                         <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-                          {a.sport?.name && <span className="font-semibold text-crimson">{a.sport.name}</span>}
+                          {a.sport?.name && (
+                            <span className="font-semibold text-crimson">{a.sport.name}</span>
+                          )}
                           {a.achievement_date && <span>{formatDate(a.achievement_date)}</span>}
                         </div>
                       </div>

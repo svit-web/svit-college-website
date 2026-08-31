@@ -1,5 +1,5 @@
 // Server functions for the Board of Management (trustees) from Supabase
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
 export interface BoardMember {
   id: string;
@@ -8,7 +8,7 @@ export interface BoardMember {
   designation: string;
   photo_url: string | null;
   sort_order: number;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
 }
 
 /**
@@ -16,16 +16,11 @@ export interface BoardMember {
  */
 export async function getAllBoardMembers() {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('board_members')
-    .select('*')
-    .eq('status', 'published')
-    .order('sort_order', { ascending: true });
+  const result = await supabase
+    .from("board_members")
+    .select("*")
+    .eq("status", "published")
+    .order("sort_order", { ascending: true });
 
-  if (error) {
-    console.error('Error fetching board members:', error);
-    throw error;
-  }
-
-  return data as BoardMember[];
+  return unwrap<BoardMember[]>(result, "board members");
 }

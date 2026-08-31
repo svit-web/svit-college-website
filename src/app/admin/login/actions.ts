@@ -1,7 +1,7 @@
 'use server';
 
 import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 function makeClient(cookieStore: Awaited<ReturnType<typeof cookies>>) {
@@ -38,6 +38,23 @@ export async function login(email: string, password: string) {
   }
 
   redirect('/admin');
+}
+
+export async function loginWithGoogle() {
+  const cookieStore = await cookies();
+  const supabase = makeClient(cookieStore);
+  const origin = (await headers()).get('origin');
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: `${origin}/admin/auth/callback` },
+  });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  redirect(data.url);
 }
 
 export async function requestPasswordReset(email: string) {

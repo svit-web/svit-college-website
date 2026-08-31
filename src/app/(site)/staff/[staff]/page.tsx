@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, ExternalLink, Linkedin, BookOpen, ChevronDown } from "lucide-react";
 import { getStaffByEmployeeCode } from "@/lib/staff.functions";
 
@@ -21,7 +22,14 @@ const ACHIEVEMENT_LABELS: Record<string, string> = {
 };
 
 // Order the accordion sections appear in, after the bio-driven "Profile" card
-const ACHIEVEMENT_ORDER = ["qualification", "research", "publication", "patent", "award", "experience"];
+const ACHIEVEMENT_ORDER = [
+  "qualification",
+  "research",
+  "publication",
+  "patent",
+  "award",
+  "experience",
+];
 
 export async function generateMetadata({
   params,
@@ -34,16 +42,12 @@ export async function generateMetadata({
   return { title: `${profile.name} — SVIT Vasad` };
 }
 
-export default async function StaffProfilePage({
-  params,
-}: {
-  params: Promise<{ staff: string }>;
-}) {
+export default async function StaffProfilePage({ params }: { params: Promise<{ staff: string }> }) {
   const { staff: employeeCode } = await params;
   const profile = await getStaffByEmployeeCode(employeeCode).catch(() => null);
   if (!profile) notFound();
 
-  const dept = (profile as any).department;
+  const dept = profile.department;
 
   const achievementGroups: Record<string, typeof profile.achievements> = {};
   for (const a of profile.achievements) {
@@ -91,13 +95,22 @@ export default async function StaffProfilePage({
     <div className="bg-white">
       {/* Breadcrumb */}
       <div className="container-page flex items-center gap-1.5 pt-6 pb-2 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-navy transition-colors">Home</Link>
+        <Link href="/" className="hover:text-navy transition-colors">
+          Home
+        </Link>
         {dept && (
           <>
             <span>/</span>
-            <Link href={`/departments/${dept.code}`} className="hover:text-navy transition-colors">{dept.name}</Link>
+            <Link href={`/departments/${dept.code}`} className="hover:text-navy transition-colors">
+              {dept.name}
+            </Link>
             <span>/</span>
-            <Link href={`/departments/${dept.code}/staff`} className="hover:text-navy transition-colors">Staff</Link>
+            <Link
+              href={`/departments/${dept.code}/staff`}
+              className="hover:text-navy transition-colors"
+            >
+              Staff
+            </Link>
           </>
         )}
         <span>/</span>
@@ -107,7 +120,9 @@ export default async function StaffProfilePage({
       <div className="container-page pb-16">
         {dept && (
           <div className="mb-8 border-b border-navy/10 pb-4">
-            <div className="mb-1 text-xs font-bold uppercase tracking-widest text-crimson">Department</div>
+            <div className="mb-1 text-xs font-bold uppercase tracking-widest text-crimson">
+              Department
+            </div>
             <h1 className="font-display text-3xl font-bold text-navy md:text-4xl">{dept.name}</h1>
           </div>
         )}
@@ -116,11 +131,16 @@ export default async function StaffProfilePage({
           {/* LEFT — identity & contact */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             {profile.photoUrl ? (
-              <img
-                src={profile.photoUrl}
-                alt={profile.name}
-                className="aspect-3/4 w-full rounded-2xl object-cover object-top shadow-md"
-              />
+              <div className="relative aspect-3/4 w-full rounded-2xl shadow-md overflow-hidden">
+                <Image
+                  src={profile.photoUrl}
+                  alt={profile.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 280px"
+                  priority
+                  className="object-cover object-top"
+                />
+              </div>
             ) : (
               <div className="flex aspect-3/4 w-full items-center justify-center rounded-2xl bg-navy/10 font-display text-5xl font-bold text-navy shadow-md">
                 {initials(profile.name)}
@@ -132,7 +152,9 @@ export default async function StaffProfilePage({
                 Head of Department
               </div>
             )}
-            <h2 className="mt-3.5 font-display text-xl font-bold leading-tight text-navy">{profile.name}</h2>
+            <h2 className="mt-3.5 font-display text-xl font-bold leading-tight text-navy">
+              {profile.name}
+            </h2>
             {profile.designation && (
               <p className="mt-1 text-sm font-bold text-crimson">{profile.designation}</p>
             )}
@@ -152,32 +174,49 @@ export default async function StaffProfilePage({
               </div>
             )}
 
-            {profile.socialLinks && (profile.socialLinks.linkedin || profile.socialLinks.googleScholar || profile.socialLinks.orcid) && (
-              <div className="mt-4.5 flex flex-wrap gap-4 border-t border-navy/10 pt-4.5">
-                {profile.socialLinks.linkedin && (
-                  <a href={profile.socialLinks.linkedin} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy">
-                    <Linkedin className="h-3.5 w-3.5" /> LinkedIn
-                  </a>
-                )}
-                {profile.socialLinks.googleScholar && (
-                  <a href={profile.socialLinks.googleScholar} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy">
-                    <BookOpen className="h-3.5 w-3.5" /> Scholar
-                  </a>
-                )}
-                {profile.socialLinks.orcid && (
-                  <a href={profile.socialLinks.orcid} target="_blank" rel="noreferrer"
-                    className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy">
-                    <ExternalLink className="h-3.5 w-3.5" /> ORCID
-                  </a>
-                )}
-              </div>
-            )}
+            {profile.socialLinks &&
+              (profile.socialLinks.linkedin ||
+                profile.socialLinks.googleScholar ||
+                profile.socialLinks.orcid) && (
+                <div className="mt-4.5 flex flex-wrap gap-4 border-t border-navy/10 pt-4.5">
+                  {profile.socialLinks.linkedin && (
+                    <a
+                      href={profile.socialLinks.linkedin}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy"
+                    >
+                      <Linkedin className="h-3.5 w-3.5" /> LinkedIn
+                    </a>
+                  )}
+                  {profile.socialLinks.googleScholar && (
+                    <a
+                      href={profile.socialLinks.googleScholar}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy"
+                    >
+                      <BookOpen className="h-3.5 w-3.5" /> Scholar
+                    </a>
+                  )}
+                  {profile.socialLinks.orcid && (
+                    <a
+                      href={profile.socialLinks.orcid}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" /> ORCID
+                    </a>
+                  )}
+                </div>
+              )}
 
             {profile.officeHours && profile.officeHours.length > 0 && (
               <div className="mt-4.5 border-t border-navy/10 pt-4.5">
-                <div className="mb-2 text-xs font-bold uppercase tracking-widest text-crimson">Office Hours</div>
+                <div className="mb-2 text-xs font-bold uppercase tracking-widest text-crimson">
+                  Office Hours
+                </div>
                 <ul className="flex flex-col gap-1">
                   {profile.officeHours.map((oh: { day: string; time: string }, i: number) => (
                     <li key={i} className="text-xs text-ink">
@@ -190,8 +229,10 @@ export default async function StaffProfilePage({
 
             {dept && (
               <div className="mt-4.5 border-t border-navy/10 pt-4.5">
-                <Link href={`/departments/${dept.code}/staff`}
-                  className="text-xs font-semibold text-navy/50 transition-colors hover:text-navy">
+                <Link
+                  href={`/departments/${dept.code}/staff`}
+                  className="text-xs font-semibold text-navy/50 transition-colors hover:text-navy"
+                >
                   ← Back to {dept.name} Staff
                 </Link>
               </div>
@@ -210,7 +251,11 @@ export default async function StaffProfilePage({
             {sections.length > 0 ? (
               <div className="border-y border-navy/10">
                 {sections.map((section, i) => (
-                  <details key={section.key} open={i === 0} className="group border-b border-navy/10 py-4.5 last:border-b-0">
+                  <details
+                    key={section.key}
+                    open={i === 0}
+                    className="group border-b border-navy/10 py-4.5 last:border-b-0"
+                  >
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
                       <h3 className="font-display text-lg font-bold text-navy">{section.title}</h3>
                       <ChevronDown className="h-4 w-4 shrink-0 text-crimson transition-transform group-open:rotate-180" />
@@ -220,7 +265,9 @@ export default async function StaffProfilePage({
                 ))}
               </div>
             ) : (
-              <p className="text-sm italic text-muted-foreground">No additional details listed yet.</p>
+              <p className="text-sm italic text-muted-foreground">
+                No additional details listed yet.
+              </p>
             )}
           </div>
         </div>

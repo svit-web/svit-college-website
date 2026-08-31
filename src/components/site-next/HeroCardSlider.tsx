@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 export interface HeroHighlight {
@@ -28,7 +29,7 @@ export function HeroCardSlider({ items = [] }: Props) {
 
   if (!count) return null;
 
-  const next = (items[(index + 1) % count]) as HeroHighlight;
+  const next = items[(index + 1) % count] as HeroHighlight;
   const current = items[index] as HeroHighlight;
 
   return (
@@ -48,8 +49,15 @@ export function HeroCardSlider({ items = [] }: Props) {
             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
             className="relative overflow-hidden rounded-2xl border border-white/15 bg-white/5 shadow-2xl backdrop-blur"
           >
-            <div className="aspect-[4/5] w-full">
-              <img src={current.image} alt={current.title} className="h-full w-full object-cover" />
+            <div className="relative aspect-[4/5] w-full">
+              <Image
+                src={current.image}
+                alt={current.title}
+                fill
+                sizes="(max-width: 640px) 100vw, 50vw"
+                priority={index === 0}
+                className="object-cover"
+              />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/90 via-navy-deep/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">
@@ -76,8 +84,14 @@ export function HeroCardSlider({ items = [] }: Props) {
             transition={{ type: "spring", bounce: 0, duration: 0.4, delay: 0.05 }}
             className="relative hidden overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl backdrop-blur sm:block"
           >
-            <div className="aspect-[4/5] w-full">
-              <img src={next.image} alt={next.title} className="h-full w-full object-cover opacity-90" />
+            <div className="relative aspect-[4/5] w-full">
+              <Image
+                src={next.image}
+                alt={next.title}
+                fill
+                sizes="(max-width: 640px) 100vw, 50vw"
+                className="object-cover opacity-90"
+              />
             </div>
             <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/85 via-navy-deep/30 to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5 text-white">

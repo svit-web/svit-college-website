@@ -26,11 +26,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function ClubLeaf({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ClubLeaf({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await loadClub(slug);
   if (!result) return null;
@@ -43,7 +39,7 @@ export default async function ClubLeaf({
     subtitle: item.subtitle || "",
     accent: item.accent_color || "Club",
     description: item.description || "",
-    highlights: Array.isArray((item.metadata as any)?.highlights) ? (item.metadata as any).highlights : [],
+    highlights: item.metadata?.highlights ?? [],
     image: item.logo_url || null,
   };
 
@@ -52,7 +48,11 @@ export default async function ClubLeaf({
     slug: null,
     title: e.title,
     tag: "Event",
-    date: new Date(e.eventDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+    date: new Date(e.eventDate).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }),
     imageUrl: e.imageUrl,
   }));
 

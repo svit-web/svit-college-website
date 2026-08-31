@@ -1,11 +1,11 @@
 // Server functions for programme-level data from Supabase
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
 export interface Programme {
   id: string;
   code: string;
   name: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   is_programme: boolean;
   programme_slug: string;
   tagline: string;
@@ -28,7 +28,7 @@ export interface EngDeptRecord {
   code: string;
   name: string;
   slug: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   short_name: string;
   theme_color: string;
   overview: string;
@@ -43,19 +43,14 @@ export interface EngDeptRecord {
  */
 export async function getAllProgrammes() {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('status', 'published')
-    .eq('is_programme', true)
-    .is('department_id', null);
+  const result = await supabase
+    .from("courses")
+    .select("*")
+    .eq("status", "published")
+    .eq("is_programme", true)
+    .is("department_id", null);
 
-  if (error) {
-    console.error('Error fetching programmes:', error);
-    throw error;
-  }
-
-  return data as unknown as Programme[];
+  return unwrap<Programme[]>(result as any, "programmes");
 }
 
 /**
@@ -64,12 +59,12 @@ export async function getAllProgrammes() {
 export async function getProgrammeBySlug(slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('courses')
-    .select('*')
-    .eq('status', 'published')
-    .eq('code', slug)
-    .eq('is_programme', true)
-    .is('department_id', null)
+    .from("courses")
+    .select("*")
+    .eq("status", "published")
+    .eq("code", slug)
+    .eq("is_programme", true)
+    .is("department_id", null)
     .maybeSingle();
 
   if (error) throw error;
@@ -82,20 +77,15 @@ export async function getProgrammeBySlug(slug: string) {
  */
 export async function getEngDepts() {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('departments')
-    .select('id, code, name, slug, status, short_name, theme_color, overview, metadata')
-    .eq('status', 'published')
-    .eq('level', 'UG')
-    .eq('degree_type', 'BE')
-    .not('slug', 'is', null);
+  const result = await supabase
+    .from("departments")
+    .select("id, code, name, slug, status, short_name, theme_color, overview, metadata")
+    .eq("status", "published")
+    .eq("level", "UG")
+    .eq("degree_type", "BE")
+    .not("slug", "is", null);
 
-  if (error) {
-    console.error('Error fetching engineering departments:', error);
-    throw error;
-  }
-
-  return data as EngDeptRecord[];
+  return unwrap<EngDeptRecord[]>(result as any, "engineering departments");
 }
 
 /**
@@ -104,10 +94,10 @@ export async function getEngDepts() {
 export async function getEngDeptBySlug(engSlug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('departments')
-    .select('id, code, name, slug, status, short_name, theme_color, overview, metadata')
-    .eq('status', 'published')
-    .eq('slug', engSlug)
+    .from("departments")
+    .select("id, code, name, slug, status, short_name, theme_color, overview, metadata")
+    .eq("status", "published")
+    .eq("slug", engSlug)
     .maybeSingle();
 
   if (error) throw error;

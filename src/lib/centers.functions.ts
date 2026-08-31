@@ -1,5 +1,5 @@
 // Server functions for centers data from Supabase
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
 export interface Center {
   id: string;
@@ -7,7 +7,7 @@ export interface Center {
   institute_id: string | null;
   name: string;
   slug: string;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   subtitle: string | null;
   accent_color: string | null;
   description: string | null;
@@ -24,18 +24,13 @@ export interface Center {
  */
 export async function getAllCenters() {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('centers')
-    .select('*')
-    .eq('status', 'published')
-    .order('name', { ascending: true });
+  const result = await supabase
+    .from("centers")
+    .select("*")
+    .eq("status", "published")
+    .order("name", { ascending: true });
 
-  if (error) {
-    console.error('Error fetching centers:', error);
-    throw error;
-  }
-
-  return data as Center[];
+  return unwrap<Center[]>(result as any, "centers");
 }
 
 /**
@@ -44,10 +39,10 @@ export async function getAllCenters() {
 export async function getCenterBySlug(slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('centers')
-    .select('*')
-    .eq('slug', slug)
-    .eq('status', 'published')
+    .from("centers")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
     .maybeSingle();
 
   if (error) throw error;

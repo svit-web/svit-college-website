@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site-next/PageHero";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
-import { getAllCoursesWithIntakeFees, type CourseWithCollegeInfo } from "@/lib/intake-fees.functions";
+import {
+  getAllCoursesWithIntakeFees,
+  type CourseWithCollegeInfo,
+} from "@/lib/intake-fees.functions";
 import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -9,7 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const yr = misc?.admission_year;
   return {
     title: yr ? `Intake & Fees ${yr} — SVIT Vasad` : "Intake & Fees — SVIT Vasad",
-    description: "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad.",
+    description:
+      "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad.",
   };
 }
 
@@ -53,7 +57,9 @@ export default async function IntakeFeesPage() {
 
       <section className="container-page py-16 space-y-14">
         {groups.length === 0 && (
-          <p className="text-center text-muted-foreground py-20">Fee information will be published soon.</p>
+          <p className="text-center text-muted-foreground py-20">
+            Fee information will be published soon.
+          </p>
         )}
         {groups.map((college) => (
           <div key={college.slug}>
@@ -71,10 +77,15 @@ export default async function IntakeFeesPage() {
                 </thead>
                 <tbody>
                   {college.courses.map((c, i) => (
-                    <tr key={c.id} className={`border-t border-border ${i % 2 === 1 ? "bg-secondary/30" : ""}`}>
+                    <tr
+                      key={c.id}
+                      className={`border-t border-border ${i % 2 === 1 ? "bg-secondary/30" : ""}`}
+                    >
                       <td className="p-4 font-semibold text-navy">{c.name}</td>
-                      <td className="p-4 text-muted-foreground">{DEGREE_LABEL[c.degree_level] ?? c.degree_level}</td>
-                      <td className="p-4 text-muted-foreground">{(c as any).duration ?? "—"}</td>
+                      <td className="p-4 text-muted-foreground">
+                        {DEGREE_LABEL[c.degree_level] ?? c.degree_level}
+                      </td>
+                      <td className="p-4 text-muted-foreground">{c.duration ?? "—"}</td>
                       <td className="p-4 text-center font-semibold text-navy">
                         {c.intake != null ? c.intake : "—"}
                       </td>
@@ -86,7 +97,10 @@ export default async function IntakeFeesPage() {
                 </tbody>
                 <tfoot className="bg-secondary/40">
                   <tr className="border-t border-border">
-                    <td colSpan={3} className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <td
+                      colSpan={3}
+                      className="p-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider"
+                    >
                       Total Seats
                     </td>
                     <td className="p-4 text-center font-bold text-navy">
@@ -98,7 +112,8 @@ export default async function IntakeFeesPage() {
               </table>
             </div>
             <p className="mt-3 text-xs text-muted-foreground">
-              * Fees are subject to revision by the respective university/regulatory authority. Contact the admissions office for the latest fee structure.
+              * Fees are subject to revision by the respective university/regulatory authority.
+              Contact the admissions office for the latest fee structure.
             </p>
           </div>
         ))}

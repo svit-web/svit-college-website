@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getStudentClubBySlug, getAllClubEvents } from "@/lib/clubs.functions";
@@ -23,11 +24,7 @@ export async function generateMetadata({
   return { title: `${result.club.name} — Events — SVIT Vasad` };
 }
 
-export default async function ClubEventsPage({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}) {
+export default async function ClubEventsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await loadClubEvents(slug);
   if (!result) notFound();
@@ -52,15 +49,29 @@ export default async function ClubEventsPage({
             <Reveal key={e.id} delay={i * 0.03}>
               <div className="card-lift h-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white hover:border-gold">
                 {e.imageUrl && (
-                  <img src={e.imageUrl} alt={e.title} className="h-40 w-full object-cover" />
+                  <div className="relative h-40 w-full">
+                    <Image
+                      src={e.imageUrl}
+                      alt={e.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover"
+                    />
+                  </div>
                 )}
                 <div className="p-5">
                   <div className="text-xs font-bold uppercase tracking-widest text-crimson">
-                    {new Date(e.eventDate).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}
+                    {new Date(e.eventDate).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </div>
                   <h4 className="mt-1 font-display font-bold text-navy">{e.title}</h4>
                   {e.description && (
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{e.description}</p>
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
+                      {e.description}
+                    </p>
                   )}
                 </div>
               </div>

@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -48,7 +49,14 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
             className="absolute inset-0"
           >
             {s.image && (
-              <img src={s.image} alt="" className="h-full w-full object-cover" />
+              <Image
+                src={s.image}
+                alt=""
+                fill
+                sizes="100vw"
+                priority={index === 0}
+                className="object-cover"
+              />
             )}
             <div className="absolute inset-0 bg-gradient-to-r from-navy-deep/90 via-navy-deep/70 to-transparent" />
           </motion.div>

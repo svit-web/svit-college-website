@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,16 +26,22 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, hr
       className={cn("group block aspect-square", href && "cursor-pointer")}
     >
       <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-[border-color,box-shadow] duration-200 group-hover:border-gold group-hover:shadow-lg group-active:scale-[0.97] group-active:transition-[transform] group-active:duration-75">
-
         {/* Logo / initials — always visible, blurs + scales on hover */}
         <div className="absolute inset-0 flex items-center justify-center p-2 transition-[filter] duration-200 group-hover:blur-[3px]">
           {iconUrl ? (
-            <img src={iconUrl} alt={name} className="h-full w-full object-contain" />
+            <Image
+              src={iconUrl}
+              alt={name}
+              fill
+              sizes="(max-width: 640px) 50vw, 25vw"
+              className="object-contain"
+            />
           ) : (
             <div
               className={cn(
                 "flex h-full w-full items-center justify-center rounded-xl text-4xl font-bold",
-                fallbackColor ?? "border-2 border-dashed border-navy/25 bg-secondary text-muted-foreground"
+                fallbackColor ??
+                  "border-2 border-dashed border-navy/25 bg-secondary text-muted-foreground",
               )}
             >
               {fallbackLabel}

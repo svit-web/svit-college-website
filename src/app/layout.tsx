@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import { getFontScaleInitScript } from "@/lib/font-scale";
 import "./globals.css";
+
+const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -32,6 +35,20 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Toaster position="top-right" richColors />
+        {GA4_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4-init" strategy="afterInteractive">
+              {`window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA4_ID}');`}
+            </Script>
+          </>
+        )}
       </body>
     </html>
   );

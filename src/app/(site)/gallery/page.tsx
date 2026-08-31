@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getAllGalleryAlbums } from "@/lib/gallery.functions";
@@ -19,7 +20,9 @@ export default async function GalleryIndex() {
       {/* Hero */}
       <section className="bg-gradient-to-br from-navy via-navy to-navy-deep py-16 text-white">
         <div className="container-page text-center">
-          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">SVIT Vasad</div>
+          <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+            SVIT Vasad
+          </div>
           <h1 className="mt-3 font-display text-4xl font-bold md:text-5xl">Gallery</h1>
           <p className="mt-4 text-white/70 max-w-xl mx-auto">
             A glimpse into campus life, student achievements, and the vibrant community at SVIT.
@@ -42,10 +45,12 @@ export default async function GalleryIndex() {
                 >
                   <div className="relative aspect-video w-full overflow-hidden bg-navy/5">
                     {album.cover_image_url ? (
-                      <img
+                      <Image
                         src={album.cover_image_url}
                         alt={album.title}
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-navy/20">

@@ -1,10 +1,6 @@
 // Server functions for site-wide appearance settings (stored in app_settings).
-// Reads are public (matches app_settings' RLS policy); writes are gated to
-// global admins, re-checked server-side — never trust a client-supplied
-// isAdmin flag for a privileged write. Mirrors setImageCompressionMode in
-// app-settings.functions.ts, the established pattern for this table.
-import { createServerFn } from '@tanstack/react-start';
-import { requireSupabaseAuth } from '@/integrations/supabase/auth-middleware';
+// Reads are public (matches app_settings' RLS policy); writes live in
+// theme-next.ts, gated by the app_settings global-admin-only RLS policy.
 import { publicSupabase } from '@/lib/supabase-public';
 import { DEFAULT_HERO_APPEARANCE, MAX_HOMEPAGE_PHOTOS, type HeroAppearance } from '@/lib/theme';
 
@@ -48,44 +44,3 @@ export async function getHeroAppearance(): Promise<HeroAppearance> {
 
   return parseHeroAppearance(data.value);
 }
-
-export const setHeroAppearance = createServerFn({ method: 'POST' })
-  .middleware([requireSupabaseAuth])
-  .validator((appearance: unknown): HeroAppearance => {
-    const a = appearance as Partial<HeroAppearance> | null;
-    const clamp = (n: unknown, min: number, max: number, fallback: number) =>
-      typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
-    return {
-      ...parseHeroAppearance(a),
-      heroImageOpacity: clamp(a?.heroImageOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroImageOpacity),
-      heroOverlayOpacity: clamp(a?.heroOverlayOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroOverlayOpacity),
-      heroBlurPx: clamp(a?.heroBlurPx, 0, 20, DEFAULT_HERO_APPEARANCE.heroBlurPx),
-    };
-  })
-  .handler(async ({ data: appearance, context }) => {
-    // requireSupabaseAuth only proves who the caller is (context.userId) —
-    // role authorization for this privileged write still has to happen here.
-    const { data: roleRows, error: roleErr } = await context.supabase
-      .from('user_roles')
-      .select('scope_type, role:role_id(code)')
-      .eq('user_id', context.userId)
-      .eq('status', 'published');
-    if (roleErr) throw new Error(roleErr.message);
-
-    const isGlobalAdmin = (roleRows ?? []).some(
-      (r: any) => r.role?.code === 'admin' && r.scope_type === 'global'
-    );
-    if (!isGlobalAdmin) {
-      throw new Error('Forbidden: only a global admin can change this setting.');
-    }
-
-    const { error: upsertErr } = await context.supabase.from('app_settings').upsert({
-      key: HERO_APPEARANCE_KEY,
-      value: appearance as any,
-      updated_at: new Date().toISOString(),
-      updated_by: context.userId,
-    });
-    if (upsertErr) throw new Error(upsertErr.message);
-
-    return appearance;
-  });

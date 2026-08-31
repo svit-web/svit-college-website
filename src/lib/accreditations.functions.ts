@@ -1,5 +1,5 @@
 // Server functions for accreditations data from Supabase
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
 export interface Accreditation {
   id: string;
@@ -7,7 +7,7 @@ export interface Accreditation {
   value: string;
   received_year: number;
   expiry_date: string | null;
-  status: 'draft' | 'published' | 'archived';
+  status: "draft" | "published" | "archived";
   accreditation_body: string | null;
   description: string | null;
   document_url: string | null;
@@ -21,18 +21,13 @@ export interface Accreditation {
  */
 export async function getAllAccreditations() {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('accreditations')
-    .select('*')
-    .eq('status', 'published')
-    .order('organization', { ascending: true });
+  const result = await supabase
+    .from("accreditations")
+    .select("*")
+    .eq("status", "published")
+    .order("organization", { ascending: true });
 
-  if (error) {
-    console.error('Error fetching accreditations:', error);
-    throw error;
-  }
-
-  return data as Accreditation[];
+  return unwrap<Accreditation[]>(result as any, "accreditations");
 }
 
 /**
@@ -40,17 +35,12 @@ export async function getAllAccreditations() {
  */
 export async function getAccreditationByOrg(org: string) {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('accreditations')
-    .select('*')
-    .eq('organization', org)
-    .eq('status', 'published')
+  const result = await supabase
+    .from("accreditations")
+    .select("*")
+    .eq("organization", org)
+    .eq("status", "published")
     .single();
 
-  if (error) {
-    console.error('Error fetching accreditation:', error);
-    throw error;
-  }
-
-  return data as Accreditation;
+  return unwrap<Accreditation>(result as any, "accreditation");
 }

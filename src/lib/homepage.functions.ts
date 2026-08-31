@@ -1,4 +1,4 @@
-import { publicSupabase } from '@/lib/supabase-public';
+import { publicSupabase } from "@/lib/supabase-public";
 
 export async function getGlobalHomepageItems() {
   const supabase = publicSupabase();
@@ -21,7 +21,7 @@ export async function getCollegesGrid() {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("colleges")
-    .select("slug, code, name, logo_url, sort_order, metadata")
+    .select("slug, code, name, logo_url, sort_order, metadata, show_in_navigation, tagline")
     .eq("status", "published")
     .is("deleted_at", null)
     .order("sort_order", { ascending: true });
@@ -86,7 +86,9 @@ export async function getLatestEvents() {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("events")
-    .select("id, slug, title, tag, start_date, description, featured_image_url, registration_link, sort_order")
+    .select(
+      "id, slug, title, tag, start_date, description, featured_image_url, registration_link, sort_order",
+    )
     .eq("status", "published")
     .eq("is_featured", true)
     .is("deleted_at", null)

@@ -1,10 +1,26 @@
-'use client';
+"use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import {
-  Target, MessagesSquare, Briefcase, CalendarCheck, UserCheck, Award,
-  BookOpen, GraduationCap, Building2, Sparkles, CheckCircle2, TrendingUp,
-  Phone, Mail, User, ChevronRight, ChevronDown, ChevronUp
+  Target,
+  MessagesSquare,
+  Briefcase,
+  CalendarCheck,
+  UserCheck,
+  Award,
+  BookOpen,
+  GraduationCap,
+  Building2,
+  Sparkles,
+  CheckCircle2,
+  TrendingUp,
+  Phone,
+  Mail,
+  User,
+  ChevronRight,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { Reveal } from "./Reveal";
@@ -13,7 +29,7 @@ import { PlacementTestimonialsSlider } from "./PlacementTestimonialsSlider";
 import {
   type FullPlacementData,
   type PlacementHighlight,
-  type PlacementTestimonial
+  type PlacementTestimonial,
 } from "@/lib/placement.functions";
 
 const STUDENTS_PER_PAGE = 10;
@@ -58,8 +74,14 @@ export function PlacementPage({ data }: PlacementPageProps) {
   const recruiterCount = data.recruiters.length;
 
   const totalPlacedCount = graphicalData.reduce((a, c) => a + c.studentsPlaced, 0);
-  const sortedGraphicalData = [...graphicalData].sort((a, b) => b.studentsPlaced - a.studentsPlaced);
-  const peakYearPoint = sortedGraphicalData[0] || { year: "N/A", studentsPlaced: 0, placementPercentage: 0 };
+  const sortedGraphicalData = [...graphicalData].sort(
+    (a, b) => b.studentsPlaced - a.studentsPlaced,
+  );
+  const peakYearPoint = sortedGraphicalData[0] || {
+    year: "N/A",
+    studentsPlaced: 0,
+    placementPercentage: 0,
+  };
   const maxPct = Math.max(...graphicalData.map((d) => d.placementPercentage), 100);
 
   const sections = data.sectionConfig?.sections || {
@@ -80,10 +102,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
         title={data.heroTitle}
         accent="Training & Placement"
         subtitle={data.heroSubtitle}
-        crumbs={[
-          { label: "Home", to: "/" },
-          { label: "Placements" },
-        ]}
+        crumbs={[{ label: "Home", to: "/" }, { label: "Placements" }]}
       />
 
       {/* ── Section 2 — Metric ticker bar ──────────────────────── */}
@@ -133,7 +152,6 @@ export function PlacementPage({ data }: PlacementPageProps) {
       <div className="bg-secondary/30 min-h-screen py-12">
         <div className="container-page max-w-6xl">
           <div className="min-w-0 space-y-12">
-
             {/* ── Section 3 — About (#about) ──────────────────── */}
             {sections.about && (
               <section id="about" className="scroll-mt-24">
@@ -209,7 +227,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                       {graphicalData.map((point) => {
                         const h = Math.max(
                           8,
-                          Math.round((point.placementPercentage / maxPct) * 100)
+                          Math.round((point.placementPercentage / maxPct) * 100),
                         );
                         return (
                           <div
@@ -226,9 +244,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                                 title={`${point.year}: ${point.placementPercentage}% placement (${point.studentsPlaced} students)`}
                               />
                             </div>
-                            <span className="text-xs font-bold text-navy">
-                              {point.year}
-                            </span>
+                            <span className="text-xs font-bold text-navy">{point.year}</span>
                             <span className="text-xs font-semibold text-muted-foreground">
                               {point.studentsPlaced} Placed
                             </span>
@@ -290,12 +306,15 @@ export function PlacementPage({ data }: PlacementPageProps) {
                         <Reveal key={s.id || `st-${i}`} delay={(i % STUDENTS_PER_PAGE) * 0.03}>
                           <div className="card-lift flex h-full flex-col items-center gap-3 rounded-2xl border-2 border-navy/15 bg-white p-4 text-center hover:border-navy transition-all shadow-2xs">
                             {s.photo ? (
-                              <img
-                                src={s.photo}
-                                alt={s.studentName}
-                                className="h-20 w-20 rounded-full border-2 border-navy/20 object-cover"
-                                loading="lazy"
-                              />
+                              <div className="relative h-20 w-20 rounded-full border-2 border-navy/20 overflow-hidden">
+                                <Image
+                                  src={s.photo}
+                                  alt={s.studentName}
+                                  fill
+                                  sizes="80px"
+                                  className="object-cover"
+                                />
+                              </div>
                             ) : (
                               <div className="flex h-20 w-20 items-center justify-center rounded-full border-2 border-navy/20 bg-navy font-display text-xl font-bold text-gold">
                                 {initials(s.studentName)}
@@ -322,7 +341,9 @@ export function PlacementPage({ data }: PlacementPageProps) {
                         {visibleStudentCount < displayStudents.length ? (
                           <button
                             type="button"
-                            onClick={() => setVisibleStudentCount((prev) => prev + STUDENTS_PER_PAGE)}
+                            onClick={() =>
+                              setVisibleStudentCount((prev) => prev + STUDENTS_PER_PAGE)
+                            }
                             className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-2.5 text-xs font-extrabold text-white hover:bg-navy/90 transition-all shadow-sm"
                           >
                             <span>Show More Students</span>
@@ -359,12 +380,15 @@ export function PlacementPage({ data }: PlacementPageProps) {
                     <Reveal key={r.id || `rec-${i}`}>
                       <div className="card-lift flex h-24 flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-navy/15 bg-white p-3 text-center hover:border-navy transition-colors">
                         {r.logo ? (
-                          <img
-                            src={r.logo}
-                            alt={r.companyName}
-                            className="max-h-10 max-w-[80%] object-contain"
-                            loading="lazy"
-                          />
+                          <div className="relative h-10 w-[80%]">
+                            <Image
+                              src={r.logo}
+                              alt={r.companyName}
+                              fill
+                              sizes="120px"
+                              className="object-contain"
+                            />
+                          </div>
                         ) : (
                           <div className="h-10 w-full flex items-center justify-center rounded-md bg-navy/5 font-display text-xs font-extrabold text-navy px-2 text-center">
                             {r.companyName}
@@ -383,7 +407,9 @@ export function PlacementPage({ data }: PlacementPageProps) {
                     {visibleRecruiterCount < data.recruiters.length ? (
                       <button
                         type="button"
-                        onClick={() => setVisibleRecruiterCount((prev) => prev + RECRUITERS_PER_PAGE)}
+                        onClick={() =>
+                          setVisibleRecruiterCount((prev) => prev + RECRUITERS_PER_PAGE)
+                        }
                         className="inline-flex items-center gap-2 rounded-xl bg-navy px-6 py-2.5 text-xs font-extrabold text-white hover:bg-navy/90 transition-all shadow-sm"
                       >
                         <span>Show More Partners</span>
@@ -416,14 +442,22 @@ export function PlacementPage({ data }: PlacementPageProps) {
                 <div className="mt-6 rounded-2xl border-2 border-navy/15 bg-white p-6 md:p-8 shadow-xs">
                   <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-center">
                     {officer.photo ? (
-                      <img
-                        src={officer.photo}
-                        alt={officer.name}
-                        className="h-28 w-28 shrink-0 rounded-2xl object-cover border-2 border-navy/20"
-                      />
+                      <div className="relative h-28 w-28 shrink-0 rounded-2xl border-2 border-navy/20 overflow-hidden">
+                        <Image
+                          src={officer.photo}
+                          alt={officer.name}
+                          fill
+                          sizes="112px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="flex h-28 w-28 shrink-0 items-center justify-center rounded-2xl bg-navy text-gold font-display text-2xl font-bold">
-                        {officer.name ? initials(officer.name) : <User className="h-12 w-12 text-gold" />}
+                        {officer.name ? (
+                          initials(officer.name)
+                        ) : (
+                          <User className="h-12 w-12 text-gold" />
+                        )}
                       </div>
                     )}
 
@@ -476,7 +510,6 @@ export function PlacementPage({ data }: PlacementPageProps) {
                 </div>
               </section>
             )}
-
           </div>
         </div>
       </div>

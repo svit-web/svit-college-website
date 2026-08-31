@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, Calendar, Image as ImageIcon } from "lucide-react";
 
@@ -17,9 +18,15 @@ export interface EventSlide {
 function Card({ slide }: { slide: EventSlide }) {
   const content = (
     <>
-      <div className="aspect-video w-full overflow-hidden rounded-xl bg-secondary/60">
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-secondary/60">
         {slide.imageUrl ? (
-          <img src={slide.imageUrl} alt={slide.title} className="h-full w-full object-cover" />
+          <Image
+            src={slide.imageUrl}
+            alt={slide.title}
+            fill
+            sizes="(max-width: 768px) 100vw, 340px"
+            className="object-cover"
+          />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-muted-foreground">
             <ImageIcon className="h-10 w-10" aria-hidden />
@@ -28,7 +35,9 @@ function Card({ slide }: { slide: EventSlide }) {
       </div>
       <div className="mt-4">
         <div className="text-xs font-bold uppercase tracking-widest text-crimson">{slide.tag}</div>
-        <h3 className="mt-1 font-display text-lg font-bold leading-snug text-navy line-clamp-2">{slide.title}</h3>
+        <h3 className="mt-1 font-display text-lg font-bold leading-snug text-navy line-clamp-2">
+          {slide.title}
+        </h3>
         {slide.date && (
           <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Calendar className="h-3.5 w-3.5" /> {slide.date}

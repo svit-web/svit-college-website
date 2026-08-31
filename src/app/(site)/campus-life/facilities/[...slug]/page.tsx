@@ -16,7 +16,7 @@ async function loadFacility(segments: string[]) {
     subtitle: facility.subtitle || "",
     accent: facility.accent_color || "Facility",
     description: facility.description || "",
-    highlights: Array.isArray((facility.metadata as any)?.highlights) ? (facility.metadata as any).highlights : [],
+    highlights: facility.metadata?.highlights ?? [],
     image: null,
   };
 }
@@ -35,11 +35,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function FacilityLeaf({
-  params,
-}: {
-  params: Promise<{ slug: string[] }>;
-}) {
+export default async function FacilityLeaf({ params }: { params: Promise<{ slug: string[] }> }) {
   const { slug } = await params;
   const item = await loadFacility(slug);
   if (!item) notFound();

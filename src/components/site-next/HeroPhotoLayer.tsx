@@ -1,6 +1,7 @@
-'use client';
+"use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { heroOverlayStyles, type HeroAppearance } from "@/lib/theme";
 
 interface Props {
@@ -34,11 +35,14 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs }: Props) {
   return (
     <>
       {photos.map((src, i) => (
-        <img
+        <Image
           key={src + i}
           src={src}
           alt=""
-          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ease-in-out"
+          fill
+          sizes="100vw"
+          priority={i === 0}
+          className="object-cover transition-opacity duration-500 ease-in-out"
           style={{ opacity: i === index ? activeOpacity : 0 }}
         />
       ))}

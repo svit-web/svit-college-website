@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import {
   ArrowRight,
   Award,
@@ -18,13 +19,20 @@ import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
 import { EnquiryForm } from "@/components/site-next/EnquiryForm";
 
 export interface CollegeDept {
-  id: string; name: string; slug: string; code: string;
+  id: string;
+  name: string;
+  slug: string;
+  code: string;
   logo_url?: string | null;
   metadata: { degree_type?: string | null; [key: string]: any };
 }
 
 export interface College {
-  id: string; name: string; shortCode: string; tagline: string; logo: string;
+  id: string;
+  name: string;
+  shortCode: string;
+  tagline: string;
+  logo: string;
   route: string;
   hero: { kicker: string; subhead: string; imageUrl?: string | null };
   stats: { value: string; label: string }[] | null;
@@ -52,7 +60,13 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
  * Reuses the exact section order, components, and design tokens from the
  * homepage — only text/logo/links change per college.
  */
-export function CollegeLandingPage({ college, appearance }: { college: College; appearance: HeroAppearance | null }) {
+export function CollegeLandingPage({
+  college,
+  appearance,
+}: {
+  college: College;
+  appearance: HeroAppearance | null;
+}) {
   const displayStats = college.stats ?? [];
   const displayWhy = college.whyChoose ?? [];
   const displayRecruiters = college.recruiters;
@@ -75,7 +89,17 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
 
   return (
     <section className="relative overflow-hidden bg-navy-deep text-white">
-      {college.hero.imageUrl && <img src={college.hero.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />}
+      {college.hero.imageUrl && (
+        <Image
+          src={college.hero.imageUrl}
+          alt=""
+          fill
+          sizes="100vw"
+          priority
+          className="object-cover"
+          style={imageStyle}
+        />
+      )}
       <div className="absolute inset-0" style={overlayStyle} />
       <div className="container-page relative py-24 md:py-32">
         <div className="max-w-3xl">
@@ -230,7 +254,9 @@ function EventsAndEnquiry({ college }: { college: College }) {
           <ul className="mt-6 space-y-4">
             {events.map((e) => (
               <li key={e.title} className="card-lift rounded-2xl border border-border bg-white p-5">
-                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{e.tag}</div>
+                <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                  {e.tag}
+                </div>
                 <div className="mt-1 font-display text-base font-bold text-navy">{e.title}</div>
                 <div className="mt-1 text-xs text-muted-foreground">{e.date}</div>
               </li>
@@ -238,11 +264,13 @@ function EventsAndEnquiry({ college }: { college: College }) {
           </ul>
         </div>
         <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-navy to-navy-light p-8 text-white">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">Admissions Open</div>
+          <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">
+            Admissions Open
+          </div>
           <h3 className="font-display text-2xl font-bold">Join {college.shortCode}</h3>
           <p className="mt-3 text-sm text-white/80">
-            Merit-based scholarships, hostel accommodation, and dedicated placement support — start your journey with{" "}
-            {college.shortCode} today.
+            Merit-based scholarships, hostel accommodation, and dedicated placement support — start
+            your journey with {college.shortCode} today.
           </p>
           <Link
             href="/admissions"
@@ -266,7 +294,10 @@ function RecruitersStrip({ data }: { data: string[] }) {
         </div>
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
           {data.map((r) => (
-            <span key={r} className="font-display text-lg font-bold text-navy/50 hover:text-navy transition-colors">
+            <span
+              key={r}
+              className="font-display text-lg font-bold text-navy/50 hover:text-navy transition-colors"
+            >
               {r}
             </span>
           ))}

@@ -5,7 +5,8 @@ import { getAllCommittees } from "@/lib/committees.functions";
 
 export const metadata: Metadata = {
   title: "SVIT Committees — SVIT Vasad",
-  description: "Governance committees at SVIT Vasad: Women Development Cell, Grievance Redressal, IQAC and more.",
+  description:
+    "Governance committees at SVIT Vasad: Women Development Cell, Grievance Redressal, IQAC and more.",
 };
 
 export default async function CommitteesPage() {
@@ -20,18 +21,18 @@ export default async function CommitteesPage() {
             <div className="h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold transition-colors">
               <h3 className="font-display text-lg font-bold text-navy">{cm.name}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {(cm.metadata as any)?.description}
+                {cm.metadata?.description}
               </p>
-              {(cm.metadata as any)?.vision && (
+              {cm.metadata?.vision && (
                 <p className="mt-3 text-sm text-muted-foreground">
                   <span className="font-semibold text-navy">Vision: </span>
-                  {(cm.metadata as any).vision}
+                  {cm.metadata.vision}
                 </p>
               )}
-              {(cm.metadata as any)?.mission && (
+              {cm.metadata?.mission && (
                 <p className="mt-2 text-sm text-muted-foreground">
                   <span className="font-semibold text-navy">Mission: </span>
-                  {(cm.metadata as any).mission}
+                  {cm.metadata.mission}
                 </p>
               )}
               {cm.metadata.keyActivities && cm.metadata.keyActivities.length > 0 && (

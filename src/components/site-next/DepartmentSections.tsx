@@ -1,15 +1,15 @@
 import Link from "next/link";
+import NextImage from "next/image";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import type { Department, DeptCourse } from "@/lib/departments.functions";
-import type { DeptStaffMember, DeptAchievement, DeptClub } from "@/lib/department-content.functions";
+import type {
+  DeptStaffMember,
+  DeptAchievement,
+  DeptClub,
+} from "@/lib/department-content.functions";
 import type { Facility } from "@/lib/facilities.functions";
-import {
-  GraduationCap,
-  Calendar,
-  Image as ImageIcon,
-  Mail,
-} from "lucide-react";
+import { GraduationCap, Calendar, Image as ImageIcon, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -28,12 +28,17 @@ export function initials(name: string): string {
 }
 
 function AvatarPlaceholder({ name, size = "md" }: { name: string; size?: "sm" | "md" | "lg" }) {
-  const dim = size === "lg" ? "h-24 w-24 text-2xl" : size === "sm" ? "h-10 w-10 text-xs" : "h-16 w-16 text-lg";
+  const dim =
+    size === "lg"
+      ? "h-24 w-24 text-2xl"
+      : size === "sm"
+        ? "h-10 w-10 text-xs"
+        : "h-16 w-16 text-lg";
   return (
     <div
       className={cn(
         "flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-navy via-navy-light to-crimson font-display font-bold text-white ring-2 ring-white shadow-sm",
-        dim
+        dim,
       )}
       aria-hidden
     >
@@ -44,7 +49,12 @@ function AvatarPlaceholder({ name, size = "md" }: { name: string; size?: "sm" | 
 
 function ImagePlaceholder({ className }: { className?: string }) {
   return (
-    <div className={cn("flex items-center justify-center rounded-lg bg-secondary/70 text-muted-foreground", className)}>
+    <div
+      className={cn(
+        "flex items-center justify-center rounded-lg bg-secondary/70 text-muted-foreground",
+        className,
+      )}
+    >
       <ImageIcon className="h-8 w-8" aria-hidden />
     </div>
   );
@@ -52,7 +62,11 @@ function ImagePlaceholder({ className }: { className?: string }) {
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    return new Date(iso).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   } catch {
     return iso;
   }
@@ -67,9 +81,9 @@ const DEGREE_LABEL: Record<string, string> = {
 // -------- About + Programs --------
 export function DeptAboutView({ department, courses = [] }: Props) {
   const m = department.metadata;
-  const aboutText = (m as any).about ?? (m as any).description;
-  const vision = (m as any).vision;
-  const mission = (m as any).mission;
+  const aboutText = m.about ?? m.description;
+  const vision = m.vision;
+  const mission = m.mission;
   const missionLines = Array.isArray(mission) ? mission : mission ? [mission] : [];
 
   return (
@@ -87,41 +101,47 @@ export function DeptAboutView({ department, courses = [] }: Props) {
             <div className="grid gap-4 sm:grid-cols-2">
               {vision && (
                 <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
-                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">Vision</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                    Vision
+                  </div>
                   <p className="mt-2 text-sm leading-relaxed text-ink">{vision}</p>
                 </div>
               )}
               {missionLines.length > 0 && (
                 <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
-                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">Mission</div>
+                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                    Mission
+                  </div>
                   {missionLines.length === 1 ? (
                     <p className="mt-2 text-sm leading-relaxed text-ink">{missionLines[0]}</p>
                   ) : (
                     <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-ink list-disc list-inside">
-                      {missionLines.map((l, i) => <li key={i}>{l}</li>)}
+                      {missionLines.map((l, i) => (
+                        <li key={i}>{l}</li>
+                      ))}
                     </ul>
                   )}
                 </div>
               )}
             </div>
           )}
-          {((m as any).intake_ug || (m as any).intake_pg || (m as any).established) && (
+          {(m.intake_ug || m.intake_pg || m.established) && (
             <div className="flex flex-wrap gap-4">
-              {(m as any).intake_ug && (
+              {m.intake_ug && (
                 <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
-                  <div className="font-display text-2xl font-bold text-navy">{(m as any).intake_ug}</div>
+                  <div className="font-display text-2xl font-bold text-navy">{m.intake_ug}</div>
                   <div className="text-xs text-muted-foreground">UG Intake</div>
                 </div>
               )}
-              {(m as any).intake_pg && (
+              {m.intake_pg && (
                 <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
-                  <div className="font-display text-2xl font-bold text-navy">{(m as any).intake_pg}</div>
+                  <div className="font-display text-2xl font-bold text-navy">{m.intake_pg}</div>
                   <div className="text-xs text-muted-foreground">PG Intake</div>
                 </div>
               )}
-              {(m as any).established && (
+              {m.established && (
                 <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
-                  <div className="font-display text-2xl font-bold text-navy">{(m as any).established}</div>
+                  <div className="font-display text-2xl font-bold text-navy">{m.established}</div>
                   <div className="text-xs text-muted-foreground">Established</div>
                 </div>
               )}
@@ -159,7 +179,9 @@ export function DeptAboutView({ department, courses = [] }: Props) {
                   </div>
                   <div>
                     <dt className="text-muted-foreground">Duration</dt>
-                    <dd className="font-bold text-navy">{c.duration_years ? `${c.duration_years} yrs` : "—"}</dd>
+                    <dd className="font-bold text-navy">
+                      {c.duration_years ? `${c.duration_years} yrs` : "—"}
+                    </dd>
                   </div>
                 </dl>
                 <div className="mt-4 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
@@ -169,11 +191,12 @@ export function DeptAboutView({ department, courses = [] }: Props) {
             </Reveal>
           ))}
           {courses.length === 0 && (
-            <p className="text-sm text-muted-foreground col-span-full">Program details will be published soon.</p>
+            <p className="text-sm text-muted-foreground col-span-full">
+              Program details will be published soon.
+            </p>
           )}
         </div>
       </section>
-
     </div>
   );
 }
@@ -184,7 +207,7 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
     "group flex gap-5 rounded-2xl border-2 bg-white transition-all",
     featured
       ? "border-gold/30 bg-gradient-to-br from-navy/5 via-white to-white p-6 items-center shadow-sm"
-      : "border-navy/10 p-4 items-start hover:border-gold hover:shadow-md"
+      : "border-navy/10 p-4 items-start hover:border-gold hover:shadow-md",
   );
 
   const inner = (
@@ -192,19 +215,24 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
       {/* Photo */}
       <div className="shrink-0">
         {member.avatarUrl ? (
-          <img
-            src={member.avatarUrl}
-            alt={member.name}
-            className={cn(
-              "rounded-xl object-cover object-top shadow-sm",
-              featured ? "h-36 w-28" : "h-28 w-22"
-            )}
-          />
+          <div
+            className={cn("relative rounded-xl shadow-sm", featured ? "h-36 w-28" : "h-28 w-22")}
+          >
+            <NextImage
+              src={member.avatarUrl}
+              alt={member.name}
+              fill
+              sizes="150px"
+              className="rounded-xl object-cover object-top"
+            />
+          </div>
         ) : (
-          <div className={cn(
-            "flex items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-deep font-display font-bold text-white shadow-sm",
-            featured ? "h-36 w-28 text-3xl" : "h-28 w-22 text-2xl"
-          )}>
+          <div
+            className={cn(
+              "flex items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-deep font-display font-bold text-white shadow-sm",
+              featured ? "h-36 w-28 text-3xl" : "h-28 w-22 text-2xl",
+            )}
+          >
             {initials(member.name)}
           </div>
         )}
@@ -217,18 +245,26 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
             Head of Department
           </div>
         )}
-        <h3 className={cn("font-display font-bold text-navy leading-tight", featured ? "text-xl" : "text-base")}>
+        <h3
+          className={cn(
+            "font-display font-bold text-navy leading-tight",
+            featured ? "text-xl" : "text-base",
+          )}
+        >
           {member.name}
         </h3>
         <div className="mt-1 text-sm font-semibold text-crimson">{member.designation}</div>
-        {(member.joiningYear || member.pastExperienceYears != null) && (() => {
-          const totalExp = (member.pastExperienceYears ?? 0) + (member.joiningYear ? new Date().getFullYear() - member.joiningYear : 0);
-          return totalExp > 0 ? (
-            <div className="mt-2 text-xs text-muted-foreground">
-              <span className="font-semibold text-navy">{totalExp}</span> yrs experience
-            </div>
-          ) : null;
-        })()}
+        {(member.joiningYear || member.pastExperienceYears != null) &&
+          (() => {
+            const totalExp =
+              (member.pastExperienceYears ?? 0) +
+              (member.joiningYear ? new Date().getFullYear() - member.joiningYear : 0);
+            return totalExp > 0 ? (
+              <div className="mt-2 text-xs text-muted-foreground">
+                <span className="font-semibold text-navy">{totalExp}</span> yrs experience
+              </div>
+            ) : null;
+          })()}
         {member.email && (
           <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
             <Mail className="h-3.5 w-3.5 shrink-0 text-navy/40" />
@@ -275,7 +311,9 @@ export function DeptStaffView({ staff = [] }: Props) {
 
       {faculty.length > 0 && (
         <div className="mt-10">
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">Faculty ({faculty.length})</h3>
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
+            Faculty ({faculty.length})
+          </h3>
           <div className="grid gap-4 sm:grid-cols-2">
             {faculty.map((m, i) => (
               <Reveal key={m.id} delay={i * 0.03}>
@@ -293,7 +331,10 @@ export function DeptStaffView({ staff = [] }: Props) {
           </h3>
           <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {support.map((m) => (
-              <li key={m.id} className="flex items-center gap-3 rounded-lg border border-navy/10 bg-secondary/30 p-3">
+              <li
+                key={m.id}
+                className="flex items-center gap-3 rounded-lg border border-navy/10 bg-secondary/30 p-3"
+              >
                 <AvatarPlaceholder name={m.name} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-semibold text-navy">{m.name}</div>
@@ -306,7 +347,9 @@ export function DeptStaffView({ staff = [] }: Props) {
       )}
 
       {staff.length === 0 && (
-        <p className="mt-10 text-center text-muted-foreground">Staff information will be published soon.</p>
+        <p className="mt-10 text-center text-muted-foreground">
+          Staff information will be published soon.
+        </p>
       )}
     </div>
   );
@@ -321,7 +364,9 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
 
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">Recent Achievements</h3>
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
+            Recent Achievements
+          </h3>
           {sorted.length === 0 ? (
             <p className="text-sm text-muted-foreground">No achievements published yet.</p>
           ) : (
@@ -335,7 +380,9 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                         <Calendar className="h-3.5 w-3.5" /> {formatDate(a.date)}
                       </div>
                       <h4 className="mt-1 font-display text-base font-bold text-navy">{a.title}</h4>
-                      <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{a.description}</p>
+                      <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                        {a.description}
+                      </p>
                     </div>
                   </article>
                 </Reveal>
@@ -345,7 +392,9 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
         </div>
 
         <div>
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">Student Clubs</h3>
+          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
+            Student Clubs
+          </h3>
           {clubs.length === 0 ? (
             <p className="text-sm text-muted-foreground">No clubs listed yet.</p>
           ) : (
@@ -358,8 +407,14 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                   >
                     <div className="flex items-center gap-3">
                       {c.logoUrl ? (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary/40 p-1">
-                          <img src={c.logoUrl} alt="" className="h-full w-full object-contain" />
+                        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary/40 p-1">
+                          <NextImage
+                            src={c.logoUrl}
+                            alt=""
+                            fill
+                            sizes="40px"
+                            className="object-contain"
+                          />
                         </div>
                       ) : (
                         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-navy/5 text-navy">
@@ -369,7 +424,9 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                       <div className="font-display font-bold text-navy">{c.name}</div>
                     </div>
                     {c.description && (
-                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">{c.description}</p>
+                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                        {c.description}
+                      </p>
                     )}
                   </Link>
                 </li>
@@ -402,35 +459,40 @@ export function DeptLabsView({ labs = [] }: Props) {
         {labs.map((lab, i) => (
           <Reveal key={lab.id} delay={i * 0.04}>
             <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden">
-              {(lab.metadata as any)?.imageUrl && (
-                <img
-                  src={(lab.metadata as any).imageUrl}
-                  alt={lab.name}
-                  className="h-40 w-full object-cover"
-                />
+              {lab.metadata?.imageUrl && (
+                <div className="relative h-40 w-full">
+                  <NextImage
+                    src={lab.metadata.imageUrl}
+                    alt={lab.name}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                    className="object-cover"
+                  />
+                </div>
               )}
               <div className="p-6">
-                {(lab.metadata as any)?.accent && (
+                {lab.metadata?.accent && (
                   <div className="mb-2 inline-block rounded-full bg-navy/5 px-3 py-1 text-xs font-bold text-navy">
-                    {(lab.metadata as any).accent}
+                    {lab.metadata.accent}
                   </div>
                 )}
                 <h3 className="font-display text-base font-bold text-navy">{lab.name}</h3>
-                {(lab.metadata as any)?.subtitle && (
-                  <p className="mt-1 text-xs font-semibold text-crimson">{(lab.metadata as any).subtitle}</p>
+                {lab.metadata?.subtitle && (
+                  <p className="mt-1 text-xs font-semibold text-crimson">{lab.metadata.subtitle}</p>
                 )}
-                {(lab.metadata as any)?.description && (
+                {lab.metadata?.description && (
                   <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    {(lab.metadata as any).description}
+                    {lab.metadata.description}
                   </p>
                 )}
-                {(lab.metadata as any)?.highlights?.length > 0 && (
+                {lab.metadata?.highlights && lab.metadata.highlights.length > 0 && (
                   <ul className="mt-3 space-y-1.5">
-                    {((lab.metadata as any).highlights as { title: string; description: string }[]).map((h, j) => (
+                    {lab.metadata.highlights.map((h, j) => (
                       <li key={j} className="flex items-start gap-2 text-xs text-muted-foreground">
                         <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                         <span>
-                          <span className="font-semibold text-navy">{h.title}:</span> {h.description}
+                          <span className="font-semibold text-navy">{h.title}:</span>{" "}
+                          {h.description}
                         </span>
                       </li>
                     ))}
