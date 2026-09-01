@@ -421,12 +421,6 @@ export function Header({
         </nav>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/admissions/inquiry"
-            className="hidden rounded-md bg-gold px-5 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft active:scale-95 transition-[background-color,transform] duration-100 md:inline-flex"
-          >
-            Apply Now
-          </Link>
           <button
             onClick={() => setOpen((o) => !o)}
             className="rounded-md border border-border p-2 lg:hidden"
@@ -672,13 +666,6 @@ export function Header({
                     </a>
                   )}
                 </div>
-                <Link
-                  href="/admissions/inquiry"
-                  onClick={closeMobileMenu}
-                  className="mt-3 rounded-md bg-gold px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.08em] text-navy-deep active:scale-95 transition-transform duration-75"
-                >
-                  Apply Now
-                </Link>
               </div>
             </div>
           </motion.nav>
