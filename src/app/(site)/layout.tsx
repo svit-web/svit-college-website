@@ -1,6 +1,5 @@
 import { Header } from "@/components/site-next/Header";
 import { Footer } from "@/components/site-next/Footer";
-import { FontSizeControl } from "@/components/a11y/FontSizeControl";
 import { getCollegesGrid } from "@/lib/homepage.functions";
 import { getContactInfo } from "@/lib/pages.functions";
 import { getMiscSettings } from "@/lib/site-settings.functions";
@@ -54,7 +53,6 @@ export default async function SiteLayout({
         misc={misc}
         logoUrl={logoUrl}
       />
-      <FontSizeControl scope="site" variant="floating" />
     </div>
   );
 }
