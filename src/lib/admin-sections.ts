@@ -36,6 +36,7 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/audit_logs",
   "/admin/trash",
   "/admin/settings",
+  "/admin/library",
   "/admin/scholarships",
   "/admin/tables/placed_students",
 ] as const;
