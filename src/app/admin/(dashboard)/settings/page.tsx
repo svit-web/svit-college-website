@@ -1,8 +1,7 @@
 import { redirect } from "next/navigation";
 import { requireAdmin, getScopeLevel } from "@/app/lib/auth/admin";
 import { isRouteAllowedForScope } from "@/lib/admin-sections";
-import { getContactInfo } from "@/lib/pages.functions";
-import { getMiscSettings } from "@/lib/site-settings.functions";
+import { getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
 import { AdminSettingsPage } from "@/components/admin-next/pages/AdminSettingsPage";
 import { DEFAULT_CONTACT, type ContactInfoSettings } from "@/lib/site-settings-types";
 

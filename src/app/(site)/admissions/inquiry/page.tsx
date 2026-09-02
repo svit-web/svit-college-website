@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/site-next/PageHero";
 import { InquiryForm } from "@/components/site-next/InquiryForm";
 import { getAllProgrammes } from "@/lib/programmes.functions";
-import { getContactInfo } from "@/lib/pages.functions";
-import { getMiscSettings } from "@/lib/site-settings.functions";
+import { getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
 
 export async function generateMetadata(): Promise<Metadata> {
   const misc = await getMiscSettings().catch(() => null);

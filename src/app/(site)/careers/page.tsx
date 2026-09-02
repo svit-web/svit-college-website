@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageHero } from "@/components/site-next/PageHero";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getJobListings } from "@/lib/homepage.functions";
-import { getContactInfo } from "@/lib/pages.functions";
+import { getContactInfo } from "@/lib/site-settings.functions";
 import { Briefcase, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {

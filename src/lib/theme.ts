@@ -1,8 +1,6 @@
-// Client-safe hero-appearance types and pure helpers — split out from
-// theme.functions.ts so client components (HeroPhotoLayer) never pull in
-// theme.functions.ts's server-only createServerFn/requireSupabaseAuth
-// mutation, which drags Node-only TanStack Start internals into the browser
-// bundle.
+// Types + pure helpers, shared by both halves of the hero-appearance seam:
+// the public read in theme.functions.ts and the RLS-gated admin write in
+// theme-next.ts.
 import type { CSSProperties } from 'react';
 
 export const MAX_HOMEPAGE_PHOTOS = 5;

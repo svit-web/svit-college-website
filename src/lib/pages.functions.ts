@@ -57,22 +57,6 @@ export interface AboutPageData {
   contact: { address: string; phone: string; email: string; website: string };
 }
 
-export interface ContactInfo {
-  phone: string | null;
-  email: string | null;
-  address: string | null;
-  office_hours: {
-    weekdays?: string;
-    saturday?: string;
-    sunday?: string;
-  };
-  map_iframe_url: string | null;
-  social_links: Record<string, string>;
-  institute_name: string;
-  full_name: string;
-  website_url: string | null;
-}
-
 /**
  * Fetch the about page content from the pages table
  */
@@ -132,33 +116,3 @@ export async function getAllTestimonials() {
   return (data ?? []) as Testimonial[];
 }
 
-const DEFAULT_CONTACT_INFO: ContactInfo = {
-  phone: '+91 2692 274766',
-  email: 'info@svitvasad.ac.in',
-  address: 'Beside GIDC Vasad, Vasad – 388306, Anand, Gujarat, India',
-  office_hours: { weekdays: '9:00 – 17:00', saturday: '9:00 – 13:00', sunday: 'Closed' },
-  map_iframe_url: null,
-  social_links: {},
-  institute_name: 'SVIT',
-  full_name: 'Sardar Vallabhbhai Institute of Technology',
-  website_url: 'https://svitvasad.ac.in',
-};
-
-/**
- * Fetch contact info from app_settings (key = 'contact_info')
- */
-export async function getContactInfo() {
-  const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('app_settings')
-    .select('value')
-    .eq('key', 'contact_info')
-    .maybeSingle();
-
-  if (error) {
-    console.error('Error fetching contact info:', error);
-    return DEFAULT_CONTACT_INFO;
-  }
-
-  return (data?.value ?? DEFAULT_CONTACT_INFO) as ContactInfo;
-}

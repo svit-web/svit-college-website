@@ -1,10 +1,9 @@
-// Server functions for site-wide settings stored in app_settings.
-// Covers contact info (migrated from contact_info table) and misc settings.
-// Types/defaults live in site-settings-types.ts (writes are in
-// site-settings-next.ts); re-exported here so existing read-side imports of
-// this module keep working from one path.
+// Public reads for site-wide settings stored in app_settings (contact info
+// and misc settings). Types/defaults live in site-settings-types.ts; writes
+// are in site-settings-next.ts, RLS-gated to global admins — this file is
+// the public-read half of that seam.
 import { publicSupabase } from '@/lib/supabase-public';
-import { MISC_KEYS, DEFAULT_MISC, type MiscSettings } from '@/lib/site-settings-types';
+import { MISC_KEYS, DEFAULT_MISC, DEFAULT_CONTACT, type MiscSettings } from '@/lib/site-settings-types';
 
 export {
   MISC_KEYS,
@@ -13,6 +12,43 @@ export {
   type MiscSettings,
   type ContactInfoSettings,
 } from '@/lib/site-settings-types';
+
+// Kept distinct from ContactInfoSettings (the admin write form's shape,
+// which requires every field): this is what a public page actually gets
+// back from app_settings, where any field can be missing.
+export interface ContactInfo {
+  phone: string | null;
+  email: string | null;
+  address: string | null;
+  office_hours: {
+    weekdays?: string;
+    saturday?: string;
+    sunday?: string;
+  };
+  map_iframe_url: string | null;
+  social_links: Record<string, string>;
+  institute_name: string;
+  full_name: string;
+  website_url: string | null;
+}
+
+const DEFAULT_CONTACT_INFO: ContactInfo = DEFAULT_CONTACT;
+
+export async function getContactInfo(): Promise<ContactInfo> {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('app_settings')
+    .select('value')
+    .eq('key', 'contact_info')
+    .maybeSingle();
+
+  if (error) {
+    console.error('Error fetching contact info:', error);
+    return DEFAULT_CONTACT_INFO;
+  }
+
+  return (data?.value ?? DEFAULT_CONTACT_INFO) as ContactInfo;
+}
 
 export async function getMiscSettings(): Promise<MiscSettings> {
   const supabase = publicSupabase();

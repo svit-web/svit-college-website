@@ -5,8 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Facebook, Instagram, Linkedin, Mail, MapPin, Phone, Twitter, Youtube, ChevronDown } from "lucide-react";
 import { Logo } from "./Logo";
-import type { MiscSettings } from "@/lib/site-settings.functions";
-import type { ContactInfo } from "@/lib/pages.functions";
+import type { MiscSettings, ContactInfo } from "@/lib/site-settings.functions";
 import type { Programme } from "@/lib/programmes.functions";
 
 const socialIconMap: Record<string, typeof Facebook> = {

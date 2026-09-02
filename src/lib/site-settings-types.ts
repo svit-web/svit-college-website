@@ -1,7 +1,6 @@
-// Client-safe types + defaults — split out from site-settings.functions.ts so
-// client components (AdminSettingsPage) never pull in that file's
-// createServerFn/requireSupabaseAuth imports, which drag TanStack Start's
-// server-only runtime into the browser bundle.
+// Types + defaults, shared by both halves of the site-settings seam: the
+// public reads in site-settings.functions.ts and the RLS-gated admin writes
+// in site-settings-next.ts.
 export interface MiscSettings {
   admission_year: string;
   year_established: number;
