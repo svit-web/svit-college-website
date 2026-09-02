@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useMemo, useEffect } from "react";
+import type { ReactNode, CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -242,167 +243,97 @@ export function Header({
             const active = n.to === "/" ? pathname === "/" : pathname?.startsWith(n.to);
             if (n.label === "About SVIT") {
               return (
-                <div
+                <DesktopDropdownNavItem
                   key={n.to}
-                  className="relative"
-                  onMouseEnter={() => setAboutOpen(true)}
-                  onMouseLeave={() => setAboutOpen(false)}
+                  href={n.to}
+                  label={n.label}
+                  active={active}
+                  triggerClassName="px-3 tracking-wider"
+                  panelClassName="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                  isOpen={aboutOpen}
+                  onOpen={() => setAboutOpen(true)}
+                  onClose={() => setAboutOpen(false)}
                 >
-                  <Link
-                    href={n.to}
-                    className={cn(
-                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
-                      active ? "text-navy" : "text-ink/80 hover:text-navy",
-                    )}
-                  >
-                    {n.label} <ChevronDown className="h-3 w-3" />
-                  </Link>
-                  <AnimatePresence>
-                    {aboutOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
-                        transition={{ duration: 0.08, ease: "easeOut" }}
-                        className="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
-                        style={{ transformOrigin: "top center" }}
+                  <div className="grid grid-cols-1 gap-1">
+                    {ABOUT_SECTIONS.map((s) => (
+                      <Link
+                        key={s.to}
+                        href={s.to}
+                        onClick={() => setAboutOpen(false)}
+                        className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
                       >
-                        <div className="grid grid-cols-1 gap-1">
-                          {ABOUT_SECTIONS.map((s) => (
-                            <Link
-                              key={s.to}
-                              href={s.to}
-                              onClick={() => setAboutOpen(false)}
-                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
-                            >
-                              {s.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                        {s.label}
+                      </Link>
+                    ))}
+                  </div>
+                </DesktopDropdownNavItem>
               );
             }
             if (n.label === "Admissions") {
               return (
-                <div
+                <DesktopDropdownNavItem
                   key={n.to}
-                  className="relative"
-                  onMouseEnter={() => setAdmissionsOpen(true)}
-                  onMouseLeave={() => setAdmissionsOpen(false)}
+                  href={n.to}
+                  label={n.label}
+                  active={active}
+                  triggerClassName="px-3 tracking-wider"
+                  panelClassName="absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
+                  isOpen={admissionsOpen}
+                  onOpen={() => setAdmissionsOpen(true)}
+                  onClose={() => setAdmissionsOpen(false)}
                 >
-                  <Link
-                    href={n.to}
-                    className={cn(
-                      "link-underline flex items-center gap-1 px-3 py-2 text-sm font-semibold uppercase tracking-wider",
-                      active ? "text-navy" : "text-ink/80 hover:text-navy",
-                    )}
-                  >
-                    {n.label} <ChevronDown className="h-3 w-3" />
-                  </Link>
-                  <AnimatePresence>
-                    {admissionsOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
-                        transition={{ duration: 0.08, ease: "easeOut" }}
-                        className="absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
-                        style={{ transformOrigin: "top center" }}
+                  <div className="grid grid-cols-1 gap-1">
+                    {admissionsLinks.map((s) => (
+                      <Link
+                        key={s.to}
+                        href={s.to}
+                        onClick={() => setAdmissionsOpen(false)}
+                        className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
                       >
-                        <div className="grid grid-cols-1 gap-1">
-                          {admissionsLinks.map((s) => (
-                            <Link
-                              key={s.to}
-                              href={s.to}
-                              onClick={() => setAdmissionsOpen(false)}
-                              className="rounded-md px-3 py-2.5 text-sm font-semibold text-navy hover:bg-secondary transition-colors"
-                            >
-                              {s.label}
-                            </Link>
-                          ))}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                        {s.label}
+                      </Link>
+                    ))}
+                  </div>
+                </DesktopDropdownNavItem>
               );
             }
             if (n.label === "Colleges") {
               return (
-                <div
+                <DesktopDropdownNavItem
                   key={n.to}
-                  className="relative"
-                  onMouseEnter={() => setCoursesOpen(true)}
-                  onMouseLeave={() => setCoursesOpen(false)}
+                  href={n.to}
+                  label={collegesLabel}
+                  active={active}
+                  triggerClassName="px-2.5 tracking-wide whitespace-nowrap"
+                  panelClassName="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 pt-1"
+                  isOpen={coursesOpen}
+                  onOpen={() => setCoursesOpen(true)}
+                  onClose={() => setCoursesOpen(false)}
                 >
-                  <Link
-                    href={n.to}
-                    className={cn(
-                      "link-underline flex items-center gap-1 px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
-                      active ? "text-navy" : "text-ink/80 hover:text-navy",
-                    )}
-                  >
-                    {collegesLabel} <ChevronDown className="h-3 w-3" />
-                  </Link>
-                  <AnimatePresence>
-                    {coursesOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
-                        transition={{ duration: 0.08, ease: "easeOut" }}
-                        className="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 pt-1"
-                        style={{ transformOrigin: "top center" }}
-                      >
-                        <CollegesMega
-                          colleges={displayColleges}
-                          departmentsByCollege={departmentsByCollege}
-                          onNavigate={() => setCoursesOpen(false)}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                  <CollegesMega
+                    colleges={displayColleges}
+                    departmentsByCollege={departmentsByCollege}
+                    onNavigate={() => setCoursesOpen(false)}
+                  />
+                </DesktopDropdownNavItem>
               );
             }
             if (n.label === "Campus Life") {
               return (
-                <div
+                <DesktopDropdownNavItem
                   key={n.to}
-                  className="relative"
-                  onMouseEnter={() => setCampusOpen(true)}
-                  onMouseLeave={() => setCampusOpen(false)}
+                  href={n.to}
+                  label={n.label}
+                  active={active}
+                  triggerClassName="px-2.5 tracking-wide whitespace-nowrap"
+                  panelClassName="absolute right-0 top-full z-50 w-[720px] max-w-[92vw] overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
+                  panelStyle={{ transformOrigin: "top right" }}
+                  isOpen={campusOpen}
+                  onOpen={() => setCampusOpen(true)}
+                  onClose={() => setCampusOpen(false)}
                 >
-                  <Link
-                    href={n.to}
-                    className={cn(
-                      "link-underline flex items-center gap-1 px-2.5 py-2 text-sm font-semibold uppercase tracking-wide whitespace-nowrap",
-                      active ? "text-navy" : "text-ink/80 hover:text-navy",
-                    )}
-                  >
-                    {n.label} <ChevronDown className="h-3 w-3" />
-                  </Link>
-                  <AnimatePresence>
-                    {campusOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 3, scale: 0.98 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 3, scale: 0.98 }}
-                        transition={{ duration: 0.08, ease: "easeOut" }}
-                        className="absolute right-0 top-full z-50 w-[720px] max-w-[92vw] overflow-hidden rounded-2xl border border-border bg-white shadow-xl"
-                        style={{ transformOrigin: "top right" }}
-                      >
-                        <CampusMega
-                          categories={campusCategories}
-                          onNavigate={() => setCampusOpen(false)}
-                        />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                  <CampusMega categories={campusCategories} onNavigate={() => setCampusOpen(false)} />
+                </DesktopDropdownNavItem>
               );
             }
             return (
@@ -452,167 +383,84 @@ export function Header({
                 {primaryNav.map((n) => {
                   if (n.label === "About SVIT") {
                     return (
-                      <div key={n.to}>
-                        <button
-                          type="button"
-                          onClick={() => setMobileAboutOpen((o) => !o)}
-                          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                        >
-                          {n.label}
-                          <motion.span
-                            animate={{ rotate: mobileAboutOpen ? 180 : 0 }}
-                            transition={{ duration: 0.1, ease: "easeOut" }}
-                          >
-                            <ChevronDown className="h-4 w-4 text-navy/40" />
-                          </motion.span>
-                        </button>
-                        <AnimatePresence initial={false}>
-                          {mobileAboutOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.12, ease: "easeOut" }}
-                              className="overflow-hidden"
+                      <MobileAccordionNavItem
+                        key={n.to}
+                        label={n.label}
+                        isOpen={mobileAboutOpen}
+                        onToggle={() => setMobileAboutOpen((o) => !o)}
+                      >
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
+                          {ABOUT_SECTIONS.map((s) => (
+                            <Link
+                              key={s.to}
+                              href={s.to}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
                             >
-                              <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
-                                {ABOUT_SECTIONS.map((s) => (
-                                  <Link
-                                    key={s.to}
-                                    href={s.to}
-                                    onClick={closeMobileMenu}
-                                    className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                                  >
-                                    {s.label}
-                                  </Link>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </MobileAccordionNavItem>
                     );
                   }
                   if (n.label === "Admissions") {
                     return (
-                      <div key={n.to}>
-                        <button
-                          type="button"
-                          onClick={() => setMobileAdmissionsOpen((o) => !o)}
-                          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                        >
-                          {n.label}
-                          <motion.span
-                            animate={{ rotate: mobileAdmissionsOpen ? 180 : 0 }}
-                            transition={{ duration: 0.1, ease: "easeOut" }}
-                          >
-                            <ChevronDown className="h-4 w-4 text-navy/40" />
-                          </motion.span>
-                        </button>
-                        <AnimatePresence initial={false}>
-                          {mobileAdmissionsOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.12, ease: "easeOut" }}
-                              className="overflow-hidden"
+                      <MobileAccordionNavItem
+                        key={n.to}
+                        label={n.label}
+                        isOpen={mobileAdmissionsOpen}
+                        onToggle={() => setMobileAdmissionsOpen((o) => !o)}
+                      >
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
+                          {admissionsLinks.map((s) => (
+                            <Link
+                              key={s.to}
+                              href={s.to}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
                             >
-                              <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
-                                {admissionsLinks.map((s) => (
-                                  <Link
-                                    key={s.to}
-                                    href={s.to}
-                                    onClick={closeMobileMenu}
-                                    className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                                  >
-                                    {s.label}
-                                  </Link>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                              {s.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </MobileAccordionNavItem>
                     );
                   }
                   if (n.label === "Colleges") {
                     return (
-                      <div key={n.to}>
-                        <button
-                          type="button"
-                          onClick={() => setMobileCollegesOpen((o) => !o)}
-                          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                        >
-                          {collegesLabel}
-                          <motion.span
-                            animate={{ rotate: mobileCollegesOpen ? 180 : 0 }}
-                            transition={{ duration: 0.1, ease: "easeOut" }}
-                          >
-                            <ChevronDown className="h-4 w-4 text-navy/40" />
-                          </motion.span>
-                        </button>
-                        <AnimatePresence initial={false}>
-                          {mobileCollegesOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.12, ease: "easeOut" }}
-                              className="overflow-hidden"
+                      <MobileAccordionNavItem
+                        key={n.to}
+                        label={collegesLabel}
+                        isOpen={mobileCollegesOpen}
+                        onToggle={() => setMobileCollegesOpen((o) => !o)}
+                      >
+                        <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
+                          {displayColleges.map((c) => (
+                            <Link
+                              key={c.id}
+                              href={`/colleges/${c.id}`}
+                              onClick={closeMobileMenu}
+                              className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
                             >
-                              <div className="ml-3 mt-1 flex flex-col gap-0.5 border-l-2 border-navy/10 pl-3 pb-1">
-                                {displayColleges.map((c) => (
-                                  <Link
-                                    key={c.id}
-                                    href={`/colleges/${c.id}`}
-                                    onClick={closeMobileMenu}
-                                    className="rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-                                  >
-                                    {c.shortCode} — {c.name}
-                                  </Link>
-                                ))}
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                              {c.shortCode} — {c.name}
+                            </Link>
+                          ))}
+                        </div>
+                      </MobileAccordionNavItem>
                     );
                   }
 
                   if (n.label === "Campus Life") {
                     return (
-                      <div key={n.to}>
-                        <button
-                          type="button"
-                          onClick={() => setMobileCampusOpen((o) => !o)}
-                          className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
-                        >
-                          {n.label}
-                          <motion.span
-                            animate={{ rotate: mobileCampusOpen ? 180 : 0 }}
-                            transition={{ duration: 0.1, ease: "easeOut" }}
-                          >
-                            <ChevronDown className="h-4 w-4 text-navy/40" />
-                          </motion.span>
-                        </button>
-                        <AnimatePresence initial={false}>
-                          {mobileCampusOpen && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.12, ease: "easeOut" }}
-                              className="overflow-hidden"
-                            >
-                              <MobileCampusAccordion
-                                categories={campusCategories}
-                                onNavigate={closeMobileMenu}
-                              />
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-                      </div>
+                      <MobileAccordionNavItem
+                        key={n.to}
+                        label={n.label}
+                        isOpen={mobileCampusOpen}
+                        onToggle={() => setMobileCampusOpen((o) => !o)}
+                      >
+                        <MobileCampusAccordion categories={campusCategories} onNavigate={closeMobileMenu} />
+                      </MobileAccordionNavItem>
                     );
                   }
                   return (
@@ -685,6 +533,99 @@ export function Header({
         )}
       </AnimatePresence>
     </header>
+  );
+}
+
+function DesktopDropdownNavItem({
+  href,
+  label,
+  active,
+  triggerClassName,
+  panelClassName,
+  panelStyle,
+  isOpen,
+  onOpen,
+  onClose,
+  children,
+}: {
+  href: string;
+  label: string;
+  active: boolean;
+  triggerClassName: string;
+  panelClassName: string;
+  panelStyle?: CSSProperties;
+  isOpen: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <div className="relative" onMouseEnter={onOpen} onMouseLeave={onClose}>
+      <Link
+        href={href}
+        className={cn(
+          "link-underline flex items-center gap-1 py-2 text-sm font-semibold uppercase",
+          triggerClassName,
+          active ? "text-navy" : "text-ink/80 hover:text-navy",
+        )}
+      >
+        {label} <ChevronDown className="h-3 w-3" />
+      </Link>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 3, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 3, scale: 0.98 }}
+            transition={{ duration: 0.08, ease: "easeOut" }}
+            className={panelClassName}
+            style={panelStyle ?? { transformOrigin: "top center" }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+function MobileAccordionNavItem({
+  label,
+  isOpen,
+  onToggle,
+  children,
+}: {
+  label: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between rounded-md px-3 py-2.5 text-sm font-semibold text-ink/80 hover:bg-secondary hover:text-navy"
+      >
+        {label}
+        <motion.span animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.1, ease: "easeOut" }}>
+          <ChevronDown className="h-4 w-4 text-navy/40" />
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.12, ease: "easeOut" }}
+            className="overflow-hidden"
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
