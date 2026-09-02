@@ -2,7 +2,7 @@
 // admin's session so RLS enforces write access, same pattern as the rest of
 // the admin panel (savePlacementContent, AdminCrudManager, etc).
 import { createClient } from '@/app/lib/supabase/client';
-import type { Scholarship } from '@/lib/scholarships-public';
+import type { Scholarship } from '@/lib/scholarships.functions';
 
 export async function upsertScholarship(input: Partial<Scholarship> & { name: string; type: string }): Promise<Scholarship> {
   const supabase = createClient();

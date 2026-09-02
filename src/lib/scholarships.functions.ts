@@ -1,7 +1,8 @@
 import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
-// Next.js admin panel writes go through upsertScholarshipNext / deleteScholarshipNext
-// in src/lib/scholarships-next.ts instead.
+// Admin panel writes go through upsertScholarship / deleteScholarship in
+// src/lib/scholarships-next.ts instead — this file is reads only, shared by
+// the public scholarships page and the admin scholarships list.
 
 export interface Scholarship {
   id: string;

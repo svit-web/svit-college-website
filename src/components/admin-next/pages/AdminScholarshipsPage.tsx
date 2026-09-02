@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getAllScholarshipsAdmin, type Scholarship } from '@/lib/scholarships-public';
+import { getAllScholarshipsAdmin, type Scholarship } from '@/lib/scholarships.functions';
 import { upsertScholarship, deleteScholarship } from '@/lib/scholarships-next';
 import { toast } from 'sonner';
 import { Plus, Edit2, Trash2, Loader2, GraduationCap } from 'lucide-react';
