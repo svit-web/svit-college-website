@@ -5,7 +5,7 @@ import { createClient } from '@/app/lib/supabase/client';
 import { MediaUploader } from './MediaUploader';
 import { SeoEditor } from './SeoEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
-import { useUserScope } from '@/hooks/useUserScope';
+import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS } from '@/lib/admin-sections';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import {
@@ -136,6 +136,75 @@ const FK_LABEL_COLUMNS: Record<string, string> = {
 };
 const FK_NAME_SPLIT_TABLES = new Set(['user_profiles', 'staff_profiles']);
 
+interface TableFieldConfig {
+  // Boolean/enum fields only: locks the control to global admins and, for
+  // enums, narrows the option list to the acting admin's own scope level.
+  lockedForNonGlobal?: boolean;
+  // Boolean fields only: label shown unlocked / locked (falls back to the
+  // generic "Toggle Active State" when neither is set).
+  booleanLabel?: string;
+  lockedLabel?: string;
+  // New-record default: prefill with the acting admin's own scope level.
+  defaultsToScopeLevel?: boolean;
+  // Custom field renderer, dispatched by name in the edit form below.
+  render?: 'department-meta';
+}
+
+interface TableConfig {
+  scope?: {
+    // This table IS the scope entity itself — a college/department admin
+    // only ever sees their own row, matched by primary key rather than a
+    // foreign-key column.
+    selfScopeLevel?: 'college' | 'department';
+    // Extra equality filter applied on top of the generic college_id match
+    // (e.g. a college admin only sees events they own directly, not ones
+    // inherited from a parent scope).
+    collegeScopeExtra?: { column: string; value: string };
+  };
+  // Overrides the generic column-based write-permission rule. Return
+  // undefined for a given level to fall through to the generic rule.
+  writePermissions?: {
+    resolve: (level: ScopeLevel) => Partial<Record<'insert' | 'update' | 'delete', boolean>> | undefined;
+  };
+  rowActions?: { resetPassword?: boolean };
+  fields?: Record<string, TableFieldConfig>;
+}
+
+// Everything AdminCrudManager needs to know about a specific table's quirks,
+// in one place, instead of scattered tableId === '...' checks throughout the
+// component body.
+const TABLE_CONFIGS: Record<string, TableConfig> = {
+  colleges: {
+    scope: { selfScopeLevel: 'college' },
+    writePermissions: {
+      resolve: (level) => ({ insert: false, update: level === 'college', delete: false }),
+    },
+  },
+  departments: {
+    scope: { selfScopeLevel: 'department' },
+    writePermissions: {
+      resolve: (level) => (level === 'department' ? { insert: false, update: true, delete: false } : undefined),
+    },
+    fields: {
+      metadata: { render: 'department-meta' },
+    },
+  },
+  events: {
+    scope: { collegeScopeExtra: { column: 'scope_type', value: 'college' } },
+    fields: {
+      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      is_featured: {
+        lockedForNonGlobal: true,
+        booleanLabel: 'Feature on homepage (max 8 at once)',
+        lockedLabel: 'Feature on homepage (global admin only)',
+      },
+    },
+  },
+  user_profiles: {
+    rowActions: { resetPassword: true },
+  },
+};
+
 interface AdminCrudManagerProps {
   tableId: string;
   admin: AdminUser;
@@ -261,14 +330,17 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
         if (userScope.level === 'trust' && userScope.trustId && cols.includes('trust_id')) {
           query = query.eq('trust_id', userScope.trustId);
         } else if (userScope.level === 'college' && userScope.collegeId) {
-          if (tableId === 'colleges') {
+          const scope = TABLE_CONFIGS[tableId]?.scope;
+          if (scope?.selfScopeLevel === 'college') {
             query = query.eq('id', userScope.collegeId);
           } else if (cols.includes('college_id')) {
             query = query.eq('college_id', userScope.collegeId);
-            if (tableId === 'events') query = query.eq('scope_type', 'college');
+            if (scope?.collegeScopeExtra) {
+              query = query.eq(scope.collegeScopeExtra.column, scope.collegeScopeExtra.value);
+            }
           }
         } else if (userScope.level === 'department' && userScope.departmentId) {
-          if (tableId === 'departments') {
+          if (TABLE_CONFIGS[tableId]?.scope?.selfScopeLevel === 'department') {
             query = query.eq('id', userScope.departmentId);
           } else if (cols.includes('department_id')) {
             query = query.eq('department_id', userScope.departmentId);
@@ -348,7 +420,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
           initialValues[col.name] = userScope.departmentId;
         } else if (col.name === 'trust_id' && userScope.level === 'trust') {
           initialValues[col.name] = userScope.trustId;
-        } else if (tableId === 'events' && col.name === 'scope_type' && userScope.level !== 'global') {
+        } else if (TABLE_CONFIGS[tableId]?.fields?.[col.name]?.defaultsToScopeLevel && userScope.level !== 'global') {
           initialValues[col.name] = userScope.level;
         } else if (col.name === 'status') {
           initialValues[col.name] = 'published';
@@ -524,9 +596,8 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
 
     if (GLOBAL_ONLY_TABLE_IDS.has(tableId)) return none;
 
-    if (tableId === 'colleges') {
-      return { insert: false, update: userScope.level === 'college', delete: false };
-    }
+    const override = TABLE_CONFIGS[tableId]?.writePermissions?.resolve(userScope.level);
+    if (override) return { ...none, ...override };
 
     const cols = schema?.columns?.map((c: any) => c.name) || [];
 
@@ -536,9 +607,8 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     if (userScope.level === 'college' && cols.includes('college_id')) {
       return { insert: true, update: true, delete: true };
     }
-    if (userScope.level === 'department') {
-      if (tableId === 'departments') return { insert: false, update: true, delete: false };
-      if (cols.includes('department_id')) return { insert: true, update: true, delete: true };
+    if (userScope.level === 'department' && cols.includes('department_id')) {
+      return { insert: true, update: true, delete: true };
     }
 
     return none;
@@ -742,7 +812,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                     {canShowRowActions && (
                       <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex justify-end gap-1 opacity-60 hover:opacity-100 transition">
-                          {tableId === 'user_profiles' && writePermissions.update && (
+                          {TABLE_CONFIGS[tableId]?.rowActions?.resetPassword && writePermissions.update && (
                             <button onClick={() => handleResetPassword(row.original)} className="rounded p-1 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition" title="Reset password">
                               <KeyRound className="h-3.5 w-3.5" />
                             </button>
@@ -850,8 +920,8 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       <SeoEditor seoId={formValues.seo_id} onChange={(newSeoId) => handleFieldChange('seo_id', newSeoId)} />
                     ) : col.type === 'boolean' ? (
                       (() => {
-                        const isFeaturedField = tableId === 'events' && col.name === 'is_featured';
-                        const lockedForNonGlobal = isFeaturedField && userScope.level !== 'global';
+                        const fieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
+                        const lockedForNonGlobal = !!fieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
                         return (
                           <div className="flex items-center">
                             <input
@@ -863,7 +933,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                               className="h-4 w-4 rounded border-slate-200 bg-white text-crimson focus:ring-crimson focus:ring-offset-white disabled:opacity-50"
                             />
                             <label htmlFor={col.name} className="ml-2 text-sm text-slate-600">
-                              {isFeaturedField ? (lockedForNonGlobal ? 'Feature on homepage (global admin only)' : 'Feature on homepage (max 8 at once)') : 'Toggle Active State'}
+                              {lockedForNonGlobal ? fieldConfig?.lockedLabel : (fieldConfig?.booleanLabel ?? 'Toggle Active State')}
                             </label>
                           </div>
                         );
@@ -891,8 +961,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       </select>
                     ) : col.type === 'USER-DEFINED' && col.enum_values ? (
                       (() => {
-                        const isEventScopeField = tableId === 'events' && col.name === 'scope_type';
-                        const lockedScope = isEventScopeField && userScope.level !== 'global';
+                        const lockedScope = !!TABLE_CONFIGS[tableId]?.fields?.[col.name]?.lockedForNonGlobal && userScope.level !== 'global';
                         const options = lockedScope ? [userScope.level] : col.enum_values;
                         return (
                           <select
@@ -925,7 +994,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                         required={!col.is_nullable}
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                       />
-                    ) : col.name === 'metadata' && tableId === 'departments' ? (
+                    ) : TABLE_CONFIGS[tableId]?.fields?.[col.name]?.render === 'department-meta' ? (
                       <DepartmentMetaEditor value={formValues[col.name]} onChange={(val) => handleFieldChange(col.name, val)} />
                     ) : col.name === 'metadata' || col.type === 'jsonb' ? (
                       <textarea
