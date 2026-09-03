@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "search:index": "bun run scripts/build-search-index.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -47,12 +48,14 @@
     "@supabase/supabase-js": "^2.110.7",
     "@tanstack/react-query": "^5.101.1",
     "@tanstack/react-table": "^8.21.3",
+    "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
     "embla-carousel-react": "^8.6.0",
     "framer-motion": "^12.42.2",
+    "fuse.js": "^7.5.0",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.575.0",
     "next": "^16.3.0",

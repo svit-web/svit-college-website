@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { CollegeLogo } from "./CollegeLogo";
+import { SiteSearch } from "./SiteSearch";
 import { FontSizeControl } from "@/components/a11y/FontSizeControl";
 import { cn } from "@/lib/utils";
 import { ABOUT_SECTIONS } from "@/lib/about-sections";
@@ -428,7 +429,8 @@ export function Header({
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+          <SiteSearch />
           <button
             onClick={() => setOpen((o) => !o)}
             className="rounded-md border border-border p-2 lg:hidden"
