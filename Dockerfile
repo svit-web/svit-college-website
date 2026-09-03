@@ -28,6 +28,19 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bun run build
 
+# Search index (docs/design/SEARCH_PLAN.md): this project has no SSG, so
+# there's no build output to read tags out of — the crawl script needs an
+# actual running instance. Start one against this stage's freshly built
+# .next (next start, not the trimmed standalone output — that's assembled
+# below), crawl it into public/search-index.json, then stop it. A failed
+# crawl fails the image build rather than silently shipping without search.
+RUN bun run start & \
+    SERVER_PID=$! && \
+    bun run search:index; \
+    STATUS=$?; \
+    kill $SERVER_PID 2>/dev/null; \
+    exit $STATUS
+
 # ---- Stage 3: Production ----
 # Next's `output: "standalone"` (next.config.ts) produces a self-contained
 # server at .next/standalone/server.js with only the traced dependencies —

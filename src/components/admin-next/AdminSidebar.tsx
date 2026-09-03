@@ -51,6 +51,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Courses', to: '/admin/tables/courses' },
       { label: 'Facilities', to: '/admin/tables/facilities' },
       { label: 'Labs', to: '/admin/labs' },
+      { label: 'Library', to: '/admin/library' },
       { label: 'Dept Activities', to: '/admin/tables/department_activities' },
       { label: 'Societies', to: '/admin/tables/centers' },
       { label: 'Scholarships', to: '/admin/scholarships' },

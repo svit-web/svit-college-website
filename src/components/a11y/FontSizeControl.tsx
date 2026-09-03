@@ -9,9 +9,11 @@ import { cn } from "@/lib/utils";
 interface FontSizeControlProps {
   scope: FontScaleScope;
   variant?: "floating" | "inline";
+  className?: string;
+  iconClassName?: string;
 }
 
-export function FontSizeControl({ scope, variant = "inline" }: FontSizeControlProps) {
+export function FontSizeControl({ scope, variant = "inline", className, iconClassName }: FontSizeControlProps) {
   const { percent, canIncrease, canDecrease, increase, decrease, reset } = useFontScale(scope);
 
   return (
@@ -24,9 +26,10 @@ export function FontSizeControl({ scope, variant = "inline" }: FontSizeControlPr
             variant === "floating"
               ? "fixed bottom-6 right-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-navy text-white shadow-lg shadow-navy/30 transition hover:bg-navy-light"
               : "relative flex items-center justify-center rounded-full p-1.5 text-slate-500 hover:bg-slate-100 hover:text-navy transition",
+            className,
           )}
         >
-          <Type className={variant === "floating" ? "h-5 w-5" : "h-4 w-4"} />
+          <Type className={cn(variant === "floating" ? "h-5 w-5" : "h-4 w-4", iconClassName)} />
         </button>
       </PopoverTrigger>
       <PopoverContent align="end" className="w-56 p-4">

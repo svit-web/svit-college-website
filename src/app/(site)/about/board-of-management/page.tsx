@@ -51,7 +51,7 @@ export default async function BoardOfManagementPage() {
                   {trusteeInitials(b.name)}
                 </div>
               )}
-              <div className="mt-4 text-sm font-semibold text-navy">{b.name}</div>
+              <h3 className="mt-4 text-sm font-semibold text-navy">{b.name}</h3>
               <div className="mt-1 text-xs text-muted-foreground">{b.designation}</div>
             </div>
           </Reveal>

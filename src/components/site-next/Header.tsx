@@ -22,6 +22,8 @@ import {
 } from "lucide-react";
 import { Logo } from "./Logo";
 import { CollegeLogo } from "./CollegeLogo";
+import { SiteSearch } from "./SiteSearch";
+import { FontSizeControl } from "@/components/a11y/FontSizeControl";
 import { cn } from "@/lib/utils";
 import { ABOUT_SECTIONS } from "@/lib/about-sections";
 import type { Department } from "@/lib/departments.functions";
@@ -229,6 +231,13 @@ export function Header({
                   <LinkedinIcon className="h-3.5 w-3.5" />
                 </a>
               )}
+              <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
+              <FontSizeControl
+                scope="site"
+                variant="inline"
+                className="rounded-none p-0 text-white/85 hover:bg-transparent hover:text-gold"
+                iconClassName="h-3.5 w-3.5"
+              />
             </div>
           </nav>
         </div>
@@ -350,13 +359,8 @@ export function Header({
           })}
         </nav>
 
-        <div className="flex items-center gap-3">
-          <Link
-            href="/admissions/inquiry"
-            className="hidden rounded-md bg-gold px-5 py-2.5 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft active:scale-95 transition-[background-color,transform] duration-100 md:inline-flex"
-          >
-            Apply Now
-          </Link>
+        <div className="flex items-center gap-2">
+          <SiteSearch />
           <button
             onClick={() => setOpen((o) => !o)}
             className="rounded-md border border-border p-2 lg:hidden"
@@ -518,14 +522,14 @@ export function Header({
                       <LinkedinIcon className="h-4 w-4" />
                     </a>
                   )}
+                  <span className="h-4 w-px bg-border" aria-hidden="true" />
+                  <FontSizeControl
+                    scope="site"
+                    variant="inline"
+                    className="rounded-none p-0 text-muted-foreground hover:bg-transparent hover:text-navy"
+                    iconClassName="h-4 w-4"
+                  />
                 </div>
-                <Link
-                  href="/admissions/inquiry"
-                  onClick={closeMobileMenu}
-                  className="mt-3 rounded-md bg-gold px-5 py-3 text-center text-xs font-bold uppercase tracking-[0.08em] text-navy-deep active:scale-95 transition-transform duration-75"
-                >
-                  Apply Now
-                </Link>
               </div>
             </div>
           </motion.nav>

@@ -19,6 +19,16 @@ export interface Facility {
   category: string | null;
   metadata: {
     highlights?: Array<{ title: string; description: string }>;
+    institute_libraries?: Array<{ college_id: string; book_count: number }>;
+    gallery?: {
+      aspectRatio?: string;
+      images?: Array<{
+        id: string;
+        url: string;
+        focalX?: "left" | "center" | "right";
+        focalY?: "top" | "center" | "bottom";
+      }>;
+    };
     [key: string]: any;
   };
   created_at: string;
