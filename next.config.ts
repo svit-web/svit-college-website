@@ -24,8 +24,11 @@ function localNetworkOrigins(): string[] {
 }
 
 const nextConfig: NextConfig = {
-  // Self-hosted production target
-  output: "standalone",
+  // Self-hosted production target. Skipped on Vercel: Vercel's build step
+  // expects the normal .next output (per-page .nft.json trace files), not
+  // the bundled standalone server — setting this there breaks the build
+  // with ENOENT on .next/next-server.js.nft.json.
+  ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
 
   // Image optimization for self-hosted
   images: {
