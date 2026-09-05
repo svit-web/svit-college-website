@@ -129,9 +129,9 @@ export function SiteSearch({ className }: { className?: string }) {
                       {item.college && (
                         <span className="text-xs text-muted-foreground">{item.college}</span>
                       )}
-                      {item.headings && (
+                      {item.description && (
                         <span className="line-clamp-1 text-xs text-muted-foreground/80">
-                          {item.headings}
+                          {item.description}
                         </span>
                       )}
                     </CommandItem>

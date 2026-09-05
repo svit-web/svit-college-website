@@ -1,23 +1,32 @@
-#!/usr/bin/env bun
 /**
  * Build-time search index generator — see docs/design/SEARCH_PLAN.md.
  *
- * Crawls the site's own rendered HTML (title, h1-h4 headings scoped to
- * <main>, meta description) for every canonical content URL and writes
- * public/search-index.json. The client-side search UI does fuzzy matching
- * (Fuse.js) against that file — no database query happens per keystroke,
- * and this script never touches tsvector/pgvector.
+ * Builds entries directly from Supabase content (no live-server HTML crawl —
+ * that approach couldn't run inside Vercel's build step, since Vercel's build
+ * sandbox doesn't produce a self-hostable server to crawl; see the standalone
+ * output being disabled on Vercel in next.config.ts). Static informational
+ * pages get curated title/description below instead of scraped metadata.
  *
- * This project has no SSG (next.config.ts sets `output: "standalone"`, no
- * route uses generateStaticParams), so there's nothing to read out of the
- * build output — this must run against a LIVE instance of the app. Point it
- * at one with SEARCH_CRAWL_BASE_URL (defaults to http://localhost:3000).
+ * Runs automatically as part of `pnpm run build` (chained explicitly, not via
+ * an npm postbuild lifecycle hook, so it doesn't depend on pnpm's pre/post
+ * script support being enabled in Vercel's build image). Any error here
+ * propagates and fails the whole build on purpose — a broken index should
+ * block deploys, not degrade silently.
  *
- * Usage: bun run scripts/build-search-index.ts
+ * Usage: pnpm run search:index (local) — same command runs during `build`.
  */
-import * as cheerio from "cheerio";
 import { writeFile } from "node:fs/promises";
 import path from "node:path";
+
+// Loads local .env for `pnpm run search:index` outside `next build` (which
+// loads it internally). No-ops on Vercel, where env vars are already in
+// process.env and no .env file is deployed.
+try {
+  process.loadEnvFile(".env");
+} catch {
+  // missing file (e.g. on Vercel) — process.env is already populated there
+}
+
 import { publicSupabase } from "../src/lib/supabase-public";
 import { getAllColleges, type College } from "../src/lib/colleges.functions";
 import { getAllDepartments, type Department } from "../src/lib/departments.functions";
@@ -29,78 +38,233 @@ import { getAllCenters, type Center } from "../src/lib/centers.functions";
 import { getAllFacilities, type Facility } from "../src/lib/facilities.functions";
 import type { SearchEntry } from "../src/lib/search-index";
 
-/** Resolves to [] instead of rejecting — one broken content type shouldn't fail the whole crawl. */
-async function safeFetch<T>(promise: Promise<T[]>): Promise<T[]> {
-  try {
-    return await promise;
-  } catch (err) {
-    console.warn(`[search-index] a content query failed, skipping it: ${(err as Error).message}`);
-    return [];
-  }
-}
-
-const BASE_URL = (process.env.SEARCH_CRAWL_BASE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-const CONCURRENCY = 8;
 const OUTPUT_PATH = path.join(process.cwd(), "public", "search-index.json");
 
-type CrawlTarget = Pick<SearchEntry, "url" | "type" | "college">;
-
-// Static, DB-independent informational pages. Curated rather than walked
-// from src/app/(site) at runtime, so routes that aren't real "content" a
-// search result should land on — forms, auth, redirect-only pages like
-// /placement/[college] and /courses/engineering/[dept] (superseded by
-// /departments/[dept]) — are deliberately left out.
-const STATIC_ROUTES: CrawlTarget[] = [
-  { url: "/", type: "Page", college: null },
-  { url: "/about", type: "Page", college: null },
-  { url: "/about/accreditation", type: "Page", college: null },
-  { url: "/about/board-of-management", type: "Page", college: null },
-  { url: "/about/chairman-message", type: "Page", college: null },
-  { url: "/about/committees", type: "Page", college: null },
-  { url: "/about/facilities", type: "Page", college: null },
-  { url: "/about/history-vision-mission", type: "Page", college: null },
-  { url: "/about/media", type: "Page", college: null },
-  { url: "/admissions", type: "Page", college: null },
-  { url: "/admissions/intake-fees", type: "Page", college: null },
-  { url: "/admissions/scholarships", type: "Page", college: null },
-  { url: "/alumni", type: "Page", college: null },
-  { url: "/anti-ragging", type: "Page", college: null },
-  { url: "/campus", type: "Page", college: null },
-  { url: "/campus-life", type: "Page", college: null },
-  { url: "/campus-life/clubs", type: "Page", college: null },
-  { url: "/campus-life/events", type: "Page", college: null },
-  { url: "/campus-life/facilities", type: "Page", college: null },
-  { url: "/careers", type: "Page", college: null },
-  { url: "/colleges", type: "Page", college: null },
-  { url: "/courses", type: "Page", college: null },
-  { url: "/downloads", type: "Page", college: null },
-  { url: "/gallery", type: "Page", college: null },
-  { url: "/grievance", type: "Page", college: null },
-  { url: "/news", type: "Page", college: null },
-  { url: "/parents", type: "Page", college: null },
-  { url: "/placement", type: "Page", college: null },
-  { url: "/student-corner", type: "Page", college: null },
+// Static, DB-independent informational pages, curated by hand since there's
+// no live page to crawl for their title/description. Routes that aren't
+// real "content" a search result should land on — forms, auth,
+// redirect-only pages like /placement/[college] and
+// /courses/engineering/[dept] (superseded by /departments/[dept]) — are
+// deliberately left out, same as before.
+const STATIC_ENTRIES: SearchEntry[] = [
+  {
+    url: "/",
+    type: "Page",
+    college: null,
+    title: "Home",
+    description: "SVIT Vasad — Sardar Vallabhbhai Institute of Technology.",
+  },
+  {
+    url: "/about",
+    type: "Page",
+    college: null,
+    title: "About SVIT Vasad",
+    description: "Legacy, vision, leadership and campus overview.",
+  },
+  {
+    url: "/about/accreditation",
+    type: "Page",
+    college: null,
+    title: "Accreditation & Compliance",
+    description:
+      "Accreditations, approvals, academic regulations, mandatory disclosures and industry MOUs.",
+  },
+  {
+    url: "/about/board-of-management",
+    type: "Page",
+    college: null,
+    title: "Board of Management",
+    description: "SVIT Vasad's governing board and management committee.",
+  },
+  {
+    url: "/about/chairman-message",
+    type: "Page",
+    college: null,
+    title: "Chairman's Message",
+    description: "A message from the chairman of SVIT Vasad.",
+  },
+  {
+    url: "/about/committees",
+    type: "Page",
+    college: null,
+    title: "Committees",
+    description: "Institutional committees at SVIT Vasad.",
+  },
+  {
+    url: "/about/facilities",
+    type: "Page",
+    college: null,
+    title: "Facilities",
+    description: "Campus facilities and infrastructure at SVIT Vasad.",
+  },
+  {
+    url: "/about/history-vision-mission",
+    type: "Page",
+    college: null,
+    title: "History, Vision & Mission",
+    description: "SVIT Vasad's history, vision and mission since 1997.",
+  },
+  {
+    url: "/about/media",
+    type: "Page",
+    college: null,
+    title: "Media",
+    description: "News coverage and media mentions of SVIT Vasad.",
+  },
+  {
+    url: "/admissions",
+    type: "Page",
+    college: null,
+    title: "Admissions",
+    description: "Admission process, eligibility and intake information.",
+  },
+  {
+    url: "/admissions/intake-fees",
+    type: "Page",
+    college: null,
+    title: "Intake & Fees",
+    description: "Programme intake capacity and fee structure.",
+  },
+  {
+    url: "/admissions/scholarships",
+    type: "Page",
+    college: null,
+    title: "Scholarships",
+    description: "Scholarship schemes available to students.",
+  },
+  {
+    url: "/alumni",
+    type: "Page",
+    college: null,
+    title: "Alumni",
+    description: "SVIT Vasad's alumni network.",
+  },
+  {
+    url: "/anti-ragging",
+    type: "Page",
+    college: null,
+    title: "Anti-Ragging",
+    description: "Anti-ragging policy and helpline information.",
+  },
+  {
+    url: "/campus",
+    type: "Page",
+    college: null,
+    title: "Campus",
+    description: "SVIT Vasad's 15-acre campus.",
+  },
+  {
+    url: "/campus-life",
+    type: "Page",
+    college: null,
+    title: "Campus Life",
+    description: "Student life, clubs, events and facilities.",
+  },
+  {
+    url: "/campus-life/clubs",
+    type: "Page",
+    college: null,
+    title: "Student Clubs",
+    description: "Student clubs and societies at SVIT Vasad.",
+  },
+  {
+    url: "/campus-life/events",
+    type: "Page",
+    college: null,
+    title: "Events",
+    description: "Campus events and activities.",
+  },
+  {
+    url: "/campus-life/facilities",
+    type: "Page",
+    college: null,
+    title: "Campus Facilities",
+    description: "Facilities available to students on campus.",
+  },
+  {
+    url: "/careers",
+    type: "Page",
+    college: null,
+    title: "Careers",
+    description: "Career opportunities at SVIT Vasad.",
+  },
+  {
+    url: "/colleges",
+    type: "Page",
+    college: null,
+    title: "Colleges",
+    description: "Institutes under SVIT Vasad.",
+  },
+  {
+    url: "/courses",
+    type: "Page",
+    college: null,
+    title: "Courses",
+    description: "Programmes offered at SVIT Vasad.",
+  },
+  {
+    url: "/downloads",
+    type: "Page",
+    college: null,
+    title: "Downloads",
+    description: "Downloadable forms, circulars and documents.",
+  },
+  {
+    url: "/gallery",
+    type: "Page",
+    college: null,
+    title: "Gallery",
+    description: "Photo and video gallery.",
+  },
+  {
+    url: "/grievance",
+    type: "Page",
+    college: null,
+    title: "Grievance",
+    description: "Student grievance redressal.",
+  },
+  {
+    url: "/news",
+    type: "Page",
+    college: null,
+    title: "News",
+    description: "Latest news and announcements.",
+  },
+  {
+    url: "/parents",
+    type: "Page",
+    college: null,
+    title: "Parents",
+    description: "Information for parents.",
+  },
+  {
+    url: "/placement",
+    type: "Page",
+    college: null,
+    title: "Placement",
+    description: "Placement cell and recruitment activities.",
+  },
+  {
+    url: "/student-corner",
+    type: "Page",
+    college: null,
+    title: "Student Corner",
+    description: "Centers and resources for students.",
+  },
 ];
 
-/**
- * Committees are already individually crawlable — about/committees/page.tsx
- * renders each one as a real <h3>. Board members get the same treatment via
- * a one-line markup fix (see about/board-of-management/page.tsx). But
- * accreditations, MOUs, and individual downloads render inside <table>
- * cells / <span>s, not headings, and have no dedicated detail URL — a
- * tag-only crawl can only index their shared listing page as a whole.
- * Accepted trade-off (small counts: single digits each) rather than fixed —
- * see docs/design/SEARCH_PLAN.md.
- */
-
-async function getStaffTargets(
+async function getStaffEntries(
   collegeNameByDeptId: Map<string, string | null>,
-): Promise<CrawlTarget[]> {
+): Promise<SearchEntry[]> {
   const supabase = publicSupabase();
 
   interface StaffRow {
     id: string;
     employee_code: string | null;
+    title: string | null;
+    first_name: string;
+    last_name: string;
+    designation: string | null;
   }
   interface AssignmentRow {
     staff_id: string;
@@ -109,12 +273,11 @@ async function getStaffTargets(
 
   const staffResult = await supabase
     .from("staff_profiles")
-    .select("id, employee_code")
+    .select("id, employee_code, title, first_name, last_name, designation")
     .eq("status", "published")
     .not("employee_code", "is", null);
   if (staffResult.error || !staffResult.data) {
-    console.warn("[search-index] staff query failed, skipping staff:", staffResult.error?.message);
-    return [];
+    throw new Error(`[search-index] staff query failed: ${staffResult.error?.message}`);
   }
   const staff = staffResult.data as StaffRow[];
 
@@ -124,9 +287,8 @@ async function getStaffTargets(
     .eq("is_primary", true)
     .eq("status", "published");
   if (assignmentResult.error) {
-    console.warn(
-      "[search-index] staff department assignment query failed:",
-      assignmentResult.error.message,
+    throw new Error(
+      `[search-index] staff department assignment query failed: ${assignmentResult.error.message}`,
     );
   }
   const assignments = (assignmentResult.data ?? []) as AssignmentRow[];
@@ -141,12 +303,14 @@ async function getStaffTargets(
     .filter((s): s is StaffRow & { employee_code: string } => !!s.employee_code)
     .map((s) => ({
       url: `/staff/${s.employee_code}`,
-      type: "Staff",
+      type: "Staff" as const,
       college: collegeNameByDeptId.get(deptIdByStaffId.get(s.id) ?? "") ?? null,
+      title: [s.title, s.first_name, s.last_name].filter(Boolean).join(" "),
+      description: s.designation ?? "",
     }));
 }
 
-async function buildCrawlTargets(): Promise<CrawlTarget[]> {
+async function buildContentEntries(): Promise<SearchEntry[]> {
   const [colleges, departments, programmes, albums, clubs, events, centers, facilities]: [
     College[],
     Department[],
@@ -157,14 +321,14 @@ async function buildCrawlTargets(): Promise<CrawlTarget[]> {
     Center[],
     Facility[],
   ] = await Promise.all([
-    safeFetch<College>(getAllColleges()),
-    safeFetch<Department>(getAllDepartments()),
-    safeFetch<Programme>(getAllProgrammes()),
-    safeFetch<GalleryAlbum>(getAllGalleryAlbums()),
-    safeFetch<StudentClub>(getAllStudentClubs()),
-    safeFetch<CampusEvent>(getAllEvents()),
-    safeFetch<Center>(getAllCenters()),
-    safeFetch<Facility>(getAllFacilities()),
+    getAllColleges(),
+    getAllDepartments(),
+    getAllProgrammes(),
+    getAllGalleryAlbums(),
+    getAllStudentClubs(),
+    getAllEvents(),
+    getAllCenters(),
+    getAllFacilities(),
   ]);
 
   const collegeNameBySlug = new Map(colleges.map((c) => [c.slug, c.name] as const));
@@ -172,142 +336,103 @@ async function buildCrawlTargets(): Promise<CrawlTarget[]> {
     departments.map((d) => [d.id, collegeNameBySlug.get(d.college_slug) ?? null] as const),
   );
 
-  const targets: CrawlTarget[] = [...STATIC_ROUTES];
+  const entries: SearchEntry[] = [];
 
   for (const c of colleges) {
     // college: null, not c.name — for every other type, `college` names a
     // *different* owning entity (a department's college, a staff member's
     // college), which is useful context. For a College entry itself it would
     // just repeat the title as a redundant second line.
-    targets.push({ url: `/colleges/${c.slug}`, type: "College", college: null });
+    entries.push({
+      url: `/colleges/${c.slug}`,
+      type: "College",
+      college: null,
+      title: c.name,
+      description: c.tagline ?? "",
+    });
   }
   for (const d of departments) {
-    targets.push({
+    entries.push({
       url: `/departments/${d.code}`,
       type: "Department",
       college: collegeNameBySlug.get(d.college_slug) ?? null,
+      title: d.name,
+      description: d.overview ?? "",
     });
   }
   for (const p of programmes) {
-    targets.push({ url: `/courses/${p.code}`, type: "Course", college: null });
+    entries.push({
+      url: `/courses/${p.code}`,
+      type: "Course",
+      college: null,
+      title: p.name,
+      description: p.description ?? "",
+    });
   }
   for (const a of albums) {
-    targets.push({ url: `/gallery/${a.id}`, type: "Gallery", college: null });
+    entries.push({
+      url: `/gallery/${a.id}`,
+      type: "Gallery",
+      college: null,
+      title: a.title,
+      description: a.description ?? "",
+    });
   }
   for (const c of clubs) {
-    targets.push({ url: `/campus-life/clubs/${c.slug}`, type: "Club", college: null });
+    entries.push({
+      url: `/campus-life/clubs/${c.slug}`,
+      type: "Club",
+      college: null,
+      title: c.name,
+      description: c.description ?? "",
+    });
   }
   for (const e of events) {
-    targets.push({ url: `/campus-life/events/${e.slug}`, type: "Event", college: null });
+    entries.push({
+      url: `/campus-life/events/${e.slug}`,
+      type: "Event",
+      college: null,
+      title: e.title,
+      description: e.description ?? "",
+    });
   }
   for (const c of centers) {
-    targets.push({ url: `/student-corner/${c.slug}`, type: "Centre", college: null });
+    entries.push({
+      url: `/student-corner/${c.slug}`,
+      type: "Centre",
+      college: null,
+      title: c.name,
+      description: c.description ?? "",
+    });
   }
   for (const f of facilities) {
-    targets.push({
+    entries.push({
       url: `/campus-life/facilities/${f.category ?? "academic"}/${f.slug}`,
       type: "Facility",
       college: null,
+      title: f.name,
+      description: f.description ?? "",
     });
   }
 
-  targets.push(...(await getStaffTargets(collegeNameByDeptId)));
+  entries.push(...(await getStaffEntries(collegeNameByDeptId)));
+
+  return entries;
+}
+
+async function main() {
+  console.log("[search-index] fetching content from Supabase...");
+  const contentEntries = await buildContentEntries();
 
   // De-dupe: a handful of entities can legitimately resolve to the same URL
   // (e.g. two draft rows sharing a slug during content editing).
   const seen = new Set<string>();
-  return targets.filter((t) => (seen.has(t.url) ? false : (seen.add(t.url), true)));
-}
-
-async function waitForServer(url: string, timeoutMs = 60_000): Promise<void> {
-  const start = Date.now();
-  while (Date.now() - start < timeoutMs) {
-    try {
-      // Per-attempt timeout so one hung request can't eat the whole budget
-      // in a single try — it needs to actually retry, not just wait once.
-      const res = await fetch(url, { signal: AbortSignal.timeout(5_000) });
-      if (res.status < 500) return; // server is up and routing, even a 404 is fine here
-    } catch {
-      // not up yet
-    }
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  }
-  throw new Error(`[search-index] server at ${url} did not become ready within ${timeoutMs}ms`);
-}
-
-async function fetchPageMeta(
-  url: string,
-): Promise<{ title: string; description: string; headings: string } | null> {
-  let res: Response;
-  try {
-    // Without a timeout, one hung Server Component (e.g. a slow Supabase
-    // query on that page) stalls a concurrency worker indefinitely instead
-    // of just failing that one URL.
-    res = await fetch(`${BASE_URL}${url}`, {
-      headers: { "user-agent": "svit-search-indexer" },
-      signal: AbortSignal.timeout(15_000),
-    });
-  } catch (err) {
-    console.warn(`[search-index] skip ${url} — fetch failed: ${(err as Error).message}`);
-    return null;
-  }
-  if (!res.ok) {
-    console.warn(`[search-index] skip ${url} — HTTP ${res.status}`);
-    return null;
-  }
-
-  const html = await res.text();
-  const $ = cheerio.load(html);
-  const title = $("title").first().text().trim();
-  const description = $('meta[name="description"]').attr("content")?.trim() ?? "";
-  // Scoped to <main> — every page shares the same Header/Footer chrome
-  // ("Quick Links", "Courses", "Important", …), which would otherwise
-  // pollute every single entry's headings with identical noise.
-  const headings = $("main h1, main h2, main h3, main h4")
-    .map((_, el) => $(el).text().trim())
-    .get()
-    .filter(Boolean)
-    .join(" · ");
-
-  return { title, description, headings };
-}
-
-async function mapWithConcurrency<T, R>(
-  items: T[],
-  limit: number,
-  fn: (item: T, index: number) => Promise<R>,
-): Promise<R[]> {
-  const results: R[] = new Array(items.length);
-  let cursor = 0;
-  async function worker() {
-    while (cursor < items.length) {
-      const current = cursor++;
-      results[current] = await fn(items[current], current);
-    }
-  }
-  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => worker()));
-  return results;
-}
-
-async function main() {
-  console.log(`[search-index] waiting for ${BASE_URL} ...`);
-  await waitForServer(BASE_URL);
-
-  console.log("[search-index] resolving crawl targets from Supabase...");
-  const targets = await buildCrawlTargets();
-  console.log(`[search-index] crawling ${targets.length} URLs (concurrency ${CONCURRENCY})...`);
-
-  const entries = (
-    await mapWithConcurrency(targets, CONCURRENCY, async (target) => {
-      const meta = await fetchPageMeta(target.url);
-      if (!meta || !meta.title) return null;
-      const entry: SearchEntry = { ...target, ...meta };
-      return entry;
-    })
-  ).filter((e): e is SearchEntry => e !== null);
+  const entries = [...STATIC_ENTRIES, ...contentEntries]
+    .filter((e) => !!e.title)
+    .filter((e) => (seen.has(e.url) ? false : (seen.add(e.url), true)));
 
   await writeFile(OUTPUT_PATH, JSON.stringify(entries), "utf-8");
-  console.log(`[search-index] wrote ${entries.length}/${targets.length} entries to ${OUTPUT_PATH}`);
+  console.log(`[search-index] wrote ${entries.length} entries to ${OUTPUT_PATH}`);
 }
 
 main().catch((err) => {

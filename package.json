@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --webpack",
-    "build": "next build",
+    "build": "next build && tsx scripts/build-search-index.ts",
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "search:index": "bun run scripts/build-search-index.ts"
+    "search:index": "tsx scripts/build-search-index.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -47,7 +47,6 @@
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.110.7",
     "@tanstack/react-table": "^8.21.3",
-    "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
@@ -88,6 +87,7 @@
     "globals": "^15.15.0",
     "playwright": "^1.62.1",
     "prettier": "^3.7.3",
+    "tsx": "^4.23.13",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.56.1"
   }

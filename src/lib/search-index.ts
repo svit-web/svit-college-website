@@ -24,17 +24,15 @@ export const TYPE_ORDER = [
 export type SearchEntryType = (typeof TYPE_ORDER)[number];
 
 // Populated by scripts/build-search-index.ts, served as a static asset from
-// public/search-index.json. See docs/design/SEARCH_PLAN.md — the entries
-// here come from crawling this site's own rendered <title>/<h1-h4>/meta
-// description, not a database query, so this type is the shared contract
-// between the crawl script and the client search UI.
+// public/search-index.json — generated during `pnpm run build` directly from
+// Supabase content (see that script for field-mapping details). This type is
+// the shared contract between the generator script and the client search UI.
 export interface SearchEntry {
   url: string;
   type: SearchEntryType;
   college: string | null;
   title: string;
   description: string;
-  headings: string;
 }
 
 // Per-group cap in the dropdown, the only surface results are shown on
@@ -63,9 +61,8 @@ export function loadSearchIndex(): Promise<SearchEntry[]> {
 export function createSearchFuse(entries: SearchEntry[]): Fuse<SearchEntry> {
   return new Fuse(entries, {
     keys: [
-      { name: "title", weight: 0.5 },
-      { name: "headings", weight: 0.3 },
-      { name: "description", weight: 0.15 },
+      { name: "title", weight: 0.65 },
+      { name: "description", weight: 0.3 },
       { name: "college", weight: 0.05 },
     ],
     threshold: 0.35,
