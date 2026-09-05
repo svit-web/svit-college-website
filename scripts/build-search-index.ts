@@ -112,6 +112,13 @@ const STATIC_ENTRIES: SearchEntry[] = [
     description: "News coverage and media mentions of SVIT Vasad.",
   },
   {
+    url: "/about/principal-message",
+    type: "Page",
+    college: null,
+    title: "Principal's Message",
+    description: "A message from the principal of SVIT Vasad.",
+  },
+  {
     url: "/admissions",
     type: "Page",
     college: null,
