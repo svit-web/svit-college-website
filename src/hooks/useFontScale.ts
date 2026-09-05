@@ -10,6 +10,7 @@ import {
   clampFontScalePercent,
   fontScalePercentToValue,
   fontScaleStorageKey,
+  isValidFontScalePercent,
   type FontScaleScope,
 } from "@/lib/font-scale";
 
@@ -26,12 +27,13 @@ export function useFontScale(scope: FontScaleScope) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(storageKey);
-    const parsed = stored !== null ? parseInt(stored, 10) : DEFAULT_FONT_SCALE_PERCENT;
-    const initial = Number.isNaN(parsed)
-      ? DEFAULT_FONT_SCALE_PERCENT
-      : clampFontScalePercent(parsed);
+    const parsed = stored !== null ? parseInt(stored, 10) : NaN;
+    const initial = isValidFontScalePercent(parsed) ? parsed : DEFAULT_FONT_SCALE_PERCENT;
     setPercent(initial);
     applyFontScale(initial);
+    if (stored !== null && initial !== parsed) {
+      window.localStorage.setItem(storageKey, String(initial));
+    }
   }, [storageKey]);
 
   const setLevel = useCallback(
