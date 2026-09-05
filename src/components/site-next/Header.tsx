@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useLayoutEffect } from "react";
 import type { ReactNode, CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -313,7 +313,7 @@ export function Header({
                   label={collegesLabel}
                   active={active}
                   triggerClassName="px-2.5 tracking-wide whitespace-nowrap"
-                  panelClassName="absolute left-1/2 top-full z-50 max-w-[92vw] -translate-x-1/2 pt-1"
+                  panelClassName="absolute left-1/2 top-full z-50 w-[380px] max-w-[92vw] -translate-x-1/2 pt-1"
                   isOpen={coursesOpen}
                   onOpen={() => setCoursesOpen(true)}
                   onClose={() => setCoursesOpen(false)}
@@ -721,6 +721,9 @@ function useCampusCategories({
 
 type NavCollege = { id: string; shortCode: string; name: string; tagline: string; logo?: string };
 
+const DEPARTMENTS_PANEL_WIDTH = 260;
+const DEPARTMENTS_PANEL_GUTTER = 16;
+
 function CollegesMega({
   colleges,
   departmentsByCollege,
@@ -731,7 +734,11 @@ function CollegesMega({
   onNavigate: () => void;
 }) {
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [flip, setFlip] = useState(false);
+  const [listHeight, setListHeight] = useState<number | undefined>(undefined);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLUListElement>(null);
 
   function activate(id: string) {
     if (hoverTimer.current) clearTimeout(hoverTimer.current);
@@ -742,18 +749,38 @@ function CollegesMega({
     hoverTimer.current = setTimeout(() => setActiveId(null), 120);
   }
 
+  useLayoutEffect(() => {
+    function recalc() {
+      const wrapperEl = wrapperRef.current;
+      const listEl = listRef.current;
+      if (!wrapperEl || !listEl) return;
+      setListHeight(listEl.offsetHeight);
+      const wrapperRect = wrapperEl.getBoundingClientRect();
+      const spaceRight = window.innerWidth - wrapperRect.right;
+      setFlip(spaceRight < DEPARTMENTS_PANEL_WIDTH + DEPARTMENTS_PANEL_GUTTER);
+    }
+    recalc();
+    window.addEventListener("resize", recalc);
+    return () => window.removeEventListener("resize", recalc);
+  }, []);
+
   const active = colleges.find((c) => c.id === activeId) ?? null;
   const depts = active ? (departmentsByCollege[active.id] ?? []) : [];
 
   return (
-    <div
-      className="flex items-start rounded-xl border border-border bg-white overflow-hidden"
-      onMouseLeave={deactivate}
-    >
+    <div ref={wrapperRef} className="relative w-[380px] bg-white" onMouseLeave={deactivate}>
       {/* College list */}
       <ul
-        className="w-[380px] shrink-0 max-h-[440px] overflow-y-auto bg-secondary/30 py-3"
+        ref={listRef}
         role="menu"
+        className={cn(
+          "max-h-[440px] w-full overflow-y-auto bg-secondary/30 py-3",
+          active
+            ? flip
+              ? "rounded-r-xl border-y border-r border-border"
+              : "rounded-l-xl border-y border-l border-border"
+            : "rounded-xl border border-border",
+        )}
       >
         {colleges.map((c) => {
           const isActive = c.id === active?.id;
@@ -797,7 +824,13 @@ function CollegesMega({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.06 }}
-            className="w-[260px] shrink-0 border-l border-border bg-white py-3"
+            style={{ width: DEPARTMENTS_PANEL_WIDTH, height: listHeight }}
+            className={cn(
+              "absolute top-0 overflow-y-auto bg-white py-3",
+              flip
+                ? "right-full rounded-l-xl border-y border-l border-border"
+                : "left-full rounded-r-xl border-y border-r border-border",
+            )}
           >
             <div className="px-4 pb-1.5 text-xs font-bold uppercase tracking-widest text-crimson">
               {active.shortCode} Departments
