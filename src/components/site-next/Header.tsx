@@ -232,12 +232,7 @@ export function Header({
                 </a>
               )}
               <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
-              <FontSizeControl
-                scope="site"
-                variant="inline"
-                className="rounded-none p-0 text-white/85 hover:bg-transparent hover:text-gold"
-                iconClassName="h-3.5 w-3.5"
-              />
+              <FontSizeControl scope="site" className="text-white/85" />
             </div>
           </nav>
         </div>
@@ -523,12 +518,7 @@ export function Header({
                     </a>
                   )}
                   <span className="h-4 w-px bg-border" aria-hidden="true" />
-                  <FontSizeControl
-                    scope="site"
-                    variant="inline"
-                    className="rounded-none p-0 text-muted-foreground hover:bg-transparent hover:text-navy"
-                    iconClassName="h-4 w-4"
-                  />
+                  <FontSizeControl scope="site" className="text-muted-foreground" />
                 </div>
               </div>
             </div>

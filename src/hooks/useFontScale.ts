@@ -2,53 +2,56 @@
 
 import { useCallback, useEffect, useState } from "react";
 import {
-  FONT_SCALE_LEVELS,
   FONT_SCALE_CSS_VAR,
-  DEFAULT_FONT_SCALE_INDEX,
-  clampFontScaleIndex,
-  fontScaleIndexToValue,
+  FONT_SCALE_MAX,
+  FONT_SCALE_MIN,
+  FONT_SCALE_STEP,
+  DEFAULT_FONT_SCALE_PERCENT,
+  clampFontScalePercent,
+  fontScalePercentToValue,
   fontScaleStorageKey,
   type FontScaleScope,
 } from "@/lib/font-scale";
 
-function applyFontScale(index: number) {
+function applyFontScale(percent: number) {
   document.documentElement.style.setProperty(
     FONT_SCALE_CSS_VAR,
-    String(fontScaleIndexToValue(index)),
+    String(fontScalePercentToValue(percent)),
   );
 }
 
 export function useFontScale(scope: FontScaleScope) {
   const storageKey = fontScaleStorageKey(scope);
-  const [index, setIndex] = useState(DEFAULT_FONT_SCALE_INDEX);
+  const [percent, setPercent] = useState(DEFAULT_FONT_SCALE_PERCENT);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(storageKey);
-    const parsed = stored !== null ? parseInt(stored, 10) : DEFAULT_FONT_SCALE_INDEX;
-    const initial = Number.isNaN(parsed) ? DEFAULT_FONT_SCALE_INDEX : clampFontScaleIndex(parsed);
-    setIndex(initial);
+    const parsed = stored !== null ? parseInt(stored, 10) : DEFAULT_FONT_SCALE_PERCENT;
+    const initial = Number.isNaN(parsed)
+      ? DEFAULT_FONT_SCALE_PERCENT
+      : clampFontScalePercent(parsed);
+    setPercent(initial);
     applyFontScale(initial);
   }, [storageKey]);
 
   const setLevel = useCallback(
     (next: number) => {
-      const clamped = clampFontScaleIndex(next);
-      setIndex(clamped);
+      const clamped = clampFontScalePercent(next);
+      setPercent(clamped);
       applyFontScale(clamped);
       window.localStorage.setItem(storageKey, String(clamped));
     },
     [storageKey],
   );
 
-  const increase = useCallback(() => setLevel(index + 1), [index, setLevel]);
-  const decrease = useCallback(() => setLevel(index - 1), [index, setLevel]);
-  const reset = useCallback(() => setLevel(DEFAULT_FONT_SCALE_INDEX), [setLevel]);
+  const increase = useCallback(() => setLevel(percent + FONT_SCALE_STEP), [percent, setLevel]);
+  const decrease = useCallback(() => setLevel(percent - FONT_SCALE_STEP), [percent, setLevel]);
+  const reset = useCallback(() => setLevel(DEFAULT_FONT_SCALE_PERCENT), [setLevel]);
 
   return {
-    index,
-    percent: FONT_SCALE_LEVELS[index],
-    canIncrease: index < FONT_SCALE_LEVELS.length - 1,
-    canDecrease: index > 0,
+    percent,
+    canIncrease: percent < FONT_SCALE_MAX,
+    canDecrease: percent > FONT_SCALE_MIN,
     increase,
     decrease,
     reset,
