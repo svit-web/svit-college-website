@@ -459,10 +459,10 @@ export function DeptLabsView({ labs = [] }: Props) {
         {labs.map((lab, i) => (
           <Reveal key={lab.id} delay={i * 0.04}>
             <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden">
-              {lab.metadata?.imageUrl && (
+              {(lab.metadata?.imageUrl || lab.metadata?.images?.[0]) && (
                 <div className="relative h-40 w-full">
                   <NextImage
-                    src={lab.metadata.imageUrl}
+                    src={lab.metadata?.imageUrl || lab.metadata?.images?.[0]}
                     alt={lab.name}
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
@@ -480,9 +480,9 @@ export function DeptLabsView({ labs = [] }: Props) {
                 {lab.metadata?.subtitle && (
                   <p className="mt-1 text-xs font-semibold text-crimson">{lab.metadata.subtitle}</p>
                 )}
-                {lab.metadata?.description && (
-                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                    {lab.metadata.description}
+                {(lab.description || lab.metadata?.description) && (
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                    {lab.description || lab.metadata?.description}
                   </p>
                 )}
                 {lab.metadata?.highlights && lab.metadata.highlights.length > 0 && (
