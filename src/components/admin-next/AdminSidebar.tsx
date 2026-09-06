@@ -76,6 +76,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Recruiters', to: '/admin/recruiters' },
       { label: 'Testimonials', to: '/admin/tables/testimonials' },
       { label: 'Board of Management', to: '/admin/tables/board_members' },
+      { label: 'Committees', to: '/admin/tables/committees' },
       { label: 'Accreditations', to: '/admin/tables/accreditations' },
       { label: 'Downloads / Forms', to: '/admin/tables/downloads' },
       { label: 'Media Library', to: '/admin/media' },

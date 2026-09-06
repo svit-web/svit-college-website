@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
+import { CommitteeMembers } from "@/components/site-next/CommitteeMembers";
 import { getAllCommittees } from "@/lib/committees.functions";
 
 export const metadata: Metadata = {
@@ -15,10 +16,10 @@ export default async function CommitteesPage() {
   return (
     <section className="container-page py-16 md:py-20">
       <SectionHeading eyebrow="Governance" title="SVIT Committees" variant="eyebrow" />
-      <div className="mt-10 grid gap-6 md:grid-cols-2">
+      <div className="mt-10 space-y-6">
         {committees.map((cm, i) => (
           <Reveal key={cm.id} delay={i * 0.05}>
-            <div className="h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold transition-colors">
+            <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold transition-colors">
               <h3 className="font-display text-lg font-bold text-navy">{cm.name}</h3>
               <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                 {cm.metadata?.description}
@@ -49,6 +50,9 @@ export default async function CommitteesPage() {
                     ))}
                   </ul>
                 </div>
+              )}
+              {cm.metadata.members && cm.metadata.members.length > 0 && (
+                <CommitteeMembers members={cm.metadata.members} />
               )}
             </div>
           </Reveal>

@@ -12,6 +12,13 @@ export interface Committee {
     vision?: string;
     mission?: string;
     keyActivities?: string[];
+    members?: {
+      name: string;
+      role?: string;
+      designation?: string;
+      email?: string;
+      phone?: string;
+    }[];
   };
   created_at: string;
   updated_at: string;
