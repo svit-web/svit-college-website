@@ -6,8 +6,19 @@ export function Logo({ light = false, logoUrl }: { light?: boolean; logoUrl?: st
   return (
     <Link href="/" className="flex items-center gap-3 group">
       {logoUrl && (
-        <div className="relative h-12 w-12">
-          <Image src={logoUrl} alt="SVIT Vasad logo" fill sizes="48px" className="object-contain" />
+        <div
+          className={cn(
+            "relative h-12 w-12 shrink-0",
+            light && "rounded-full bg-white ring-1 ring-black/5",
+          )}
+        >
+          <Image
+            src={logoUrl}
+            alt="SVIT Vasad logo"
+            fill
+            sizes="48px"
+            className={cn("object-contain", light && "p-1.5")}
+          />
         </div>
       )}
       <div className="leading-tight">
