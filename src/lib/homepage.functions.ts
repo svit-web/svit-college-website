@@ -21,12 +21,36 @@ export async function getCollegesGrid() {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("colleges")
-    .select("slug, code, name, logo_url, sort_order, metadata, show_in_navigation, tagline")
+    .select("id, slug, code, name, logo_url, sort_order, metadata, show_in_navigation, tagline")
     .eq("status", "published")
     .is("deleted_at", null)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return data ?? [];
+}
+
+/**
+ * Maps college_id -> uploaded hero photo, for colleges that have one set via
+ * Admin -> Website CMS -> that college's homepage items. Colleges without a
+ * photo are simply absent from the map (banner falls back to a color panel).
+ */
+export async function getCollegeHeroPhotos() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from("homepage_items")
+    .select("college_id, image_url")
+    .eq("item_type", "hero")
+    .eq("scope_type", "college")
+    .eq("is_active", true)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .not("image_url", "is", null);
+  if (error) throw new Error(error.message);
+  const map: Record<string, string> = {};
+  for (const row of data ?? []) {
+    if (row.college_id && row.image_url) map[row.college_id] = row.image_url;
+  }
+  return map;
 }
 
 export async function getRecruiterLogos() {

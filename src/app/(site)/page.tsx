@@ -30,6 +30,7 @@ import {
 import {
   getGlobalHomepageItems,
   getCollegesGrid,
+  getCollegeHeroPhotos,
   getRecruiterLogos,
   getLatestEvents,
 } from "@/lib/homepage.functions";
@@ -41,9 +42,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default async function Home() {
-  const [items, colleges, recruiters, events, appearance, misc] = await Promise.all([
+  const [items, colleges, collegePhotos, recruiters, events, appearance, misc] = await Promise.all([
     getGlobalHomepageItems().catch(() => []),
     getCollegesGrid().catch(() => []),
+    getCollegeHeroPhotos().catch(() => ({})),
     getRecruiterLogos().catch(() => []),
     getLatestEvents().catch(() => []),
     getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
@@ -53,7 +55,7 @@ export default async function Home() {
   return (
     <>
       <Hero items={items} appearance={appearance} misc={misc} />
-      <CollegesSection colleges={colleges} misc={misc} />
+      <CollegesBanner colleges={colleges} collegePhotos={collegePhotos} misc={misc} />
       <HomeCarouselSection items={items} />
       <StatsStrip items={items} />
       <WhySection items={items} />
@@ -190,7 +192,22 @@ function StatsStrip({ items }: { items: HomepageItem[] }) {
   );
 }
 
-function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: MiscSettings | null }) {
+const COLLEGE_PANEL_ACCENTS = [
+  { background: "linear-gradient(160deg, var(--navy), var(--navy-deep))", buttonText: "var(--navy)" },
+  { background: "linear-gradient(160deg, color-mix(in oklab, var(--gold) 55%, var(--navy-deep)), var(--navy-deep))", buttonText: "color-mix(in oklab, var(--gold) 65%, var(--navy-deep))" },
+  { background: "linear-gradient(160deg, var(--navy-light), var(--navy))", buttonText: "var(--navy-light)" },
+  { background: "linear-gradient(160deg, var(--crimson), var(--navy-deep))", buttonText: "var(--crimson)" },
+];
+
+function CollegesBanner({
+  colleges,
+  collegePhotos,
+  misc,
+}: {
+  colleges: CollegeRow[];
+  collegePhotos: Record<string, string>;
+  misc: MiscSettings | null;
+}) {
   const collegesLabel = misc?.colleges_label || "Colleges";
   const rows =
     colleges && colleges.length > 0
@@ -198,42 +215,60 @@ function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: Mis
           id: c.slug,
           shortCode: c.code,
           name: c.name,
-          tagline: (c as any).tagline ?? "",
+          tagline: c.tagline ?? "",
           logo: c.logo_url ?? undefined,
+          photo: collegePhotos[c.id],
         }))
       : [];
 
   return (
-    <section className="container-page py-20">
-      <SectionHeading
-        center
-        eyebrow="SVIT Group"
-        title={`Our ${collegesLabel}`}
-        subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
-      />
-      <div className="mx-auto mt-12 grid max-w-3xl gap-5">
-        {rows.map((c, i) => (
-          <Reveal key={c.id} delay={i * 0.05}>
-            <Link
-              href={`/colleges/${c.id}`}
-              className="card-lift group flex h-full flex-col items-center gap-5 rounded-2xl border border-border bg-white p-6 text-center sm:flex-row sm:items-start sm:text-left"
-            >
-              <CollegeLogo
-                shortCode={c.shortCode}
-                src={c.logo}
-                className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
-              />
-              <div className="w-full min-w-0 sm:flex-1">
-                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.shortCode}</div>
-                <h3 className="mt-1 font-display text-lg font-bold text-navy leading-tight">{c.name}</h3>
-                <p className="mt-2 text-sm text-muted-foreground italic">{c.tagline}</p>
-                <div className="mt-4 flex items-center justify-center gap-1 text-xs font-semibold text-navy group-hover:text-gold sm:justify-start">
-                  Explore {c.shortCode} <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+    <section className="py-20">
+      <div className="container-page">
+        <SectionHeading
+          center
+          eyebrow="SVIT Group"
+          title={`Our ${collegesLabel}`}
+          subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
+        />
+      </div>
+      <div className="mt-12 flex flex-col gap-1 md:flex-row md:gap-0">
+        {rows.map((c, i) => {
+          const accent = COLLEGE_PANEL_ACCENTS[i % COLLEGE_PANEL_ACCENTS.length];
+          return (
+            <Reveal key={c.id} delay={i * 0.05} className="md:flex-1">
+              <Link
+                href={`/colleges/${c.id}`}
+                className="group relative flex min-h-[22rem] flex-col items-center justify-center overflow-hidden px-8 py-12 text-center md:min-h-[26rem] md:-ml-6 md:first:ml-0 md:[clip-path:polygon(24px_0,100%_0,calc(100%-24px)_100%,0_100%)] md:px-12"
+                style={{ zIndex: i + 1 }}
+              >
+                {c.photo && (
+                  <img
+                    src={c.photo}
+                    alt=""
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
+                <div className="absolute inset-0" style={{ backgroundImage: accent.background, opacity: c.photo ? 0.82 : 1 }} />
+                <div className="relative flex flex-col items-center gap-4 text-white">
+                  <CollegeLogo
+                    shortCode={c.shortCode}
+                    src={c.logo}
+                    className="h-16 w-16 shrink-0 rounded-full bg-white p-2 shadow-sm"
+                  />
+                  <h3 className="font-display text-lg font-bold uppercase tracking-wider leading-tight">{c.shortCode}</h3>
+                  <div className="h-px w-16 bg-white/40" />
+                  <p className="text-sm text-white/85 leading-relaxed">{c.tagline || c.name}</p>
+                  <span
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider shadow-sm transition-transform group-hover:scale-105"
+                    style={{ color: accent.buttonText }}
+                  >
+                    Explore {c.shortCode} <ArrowRight className="h-3.5 w-3.5" />
+                  </span>
                 </div>
-              </div>
-            </Link>
-          </Reveal>
-        ))}
+              </Link>
+            </Reveal>
+          );
+        })}
       </div>
     </section>
   );
