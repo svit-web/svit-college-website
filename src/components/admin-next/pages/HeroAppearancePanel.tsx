@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles, MAX_HOMEPAGE_PHOTOS, HOMEPAGE_ROTATE_MS, type HeroAppearance } from '@/lib/theme';
+import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, MAX_HOMEPAGE_PHOTOS, HOMEPAGE_ROTATE_MS, type HeroAppearance } from '@/lib/theme';
 import { setHeroAppearance } from '@/lib/theme-next';
-import { Image, Images, Layers, Loader2, Save, Sparkles, SlidersHorizontal } from 'lucide-react';
+import { Image, Images, Layers, Loader2, Save, Sparkles, SlidersHorizontal, Type } from 'lucide-react';
 import { toast } from 'sonner';
 import campusHero from '@/assets/campus-hero.jpg';
 
@@ -113,6 +113,32 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
             </div>
             <p className="mt-1 text-xs text-slate-500">Color of the tint over hero photos. Defaults to the site's navy.</p>
           </div>
+          <div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm font-semibold text-navy">
+                <Type className="h-4 w-4 text-crimson" />
+                Text Color
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={settings.heroTextColor ?? '#ffffff'}
+                  onChange={(e) => setSettings((s) => ({ ...s, heroTextColor: e.target.value }))}
+                  className="h-7 w-10 cursor-pointer rounded border border-slate-200 p-0"
+                />
+                {settings.heroTextColor && (
+                  <button
+                    type="button"
+                    onClick={() => setSettings((s) => ({ ...s, heroTextColor: null }))}
+                    className="text-xs font-semibold text-slate-400 hover:text-crimson"
+                  >
+                    Reset to white
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">Color of the title and subtitle text in the hero. Defaults to white.</p>
+          </div>
           <SliderField
             icon={Sparkles}
             label="Background Blur"
@@ -148,7 +174,10 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
           <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm">
             <img src={campusHero.src} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
             <div className="absolute inset-0" style={overlayStyle} />
-            <div className="relative flex h-full flex-col justify-center gap-3 p-8 text-white">
+            <div
+              className="relative flex h-full flex-col justify-center gap-3 p-8"
+              style={{ ...heroTextVars(settings), color: 'var(--hero-text)' }}
+            >
               <div className="w-fit rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">Est. 2005 · Vasad, Gujarat</div>
               <h2 className="font-display text-2xl font-bold leading-tight md:text-3xl">
                 Build Your Future.

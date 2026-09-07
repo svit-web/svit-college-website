@@ -11,7 +11,7 @@ import {
   Trees,
   Users,
 } from "lucide-react";
-import { heroOverlayStyles, DEFAULT_HERO_APPEARANCE, type HeroAppearance } from "@/lib/theme";
+import { heroOverlayStyles, heroTextVars, DEFAULT_HERO_APPEARANCE, type HeroAppearance } from "@/lib/theme";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
@@ -86,7 +86,10 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
   const { imageStyle, overlayStyle } = heroOverlayStyles(appearance);
 
   return (
-    <section className="relative overflow-hidden bg-navy-deep text-white">
+    <section
+      className="relative overflow-hidden bg-navy-deep text-[var(--hero-text)]"
+      style={heroTextVars(appearance)}
+    >
       {college.hero.imageUrl && (
         <Image
           src={college.hero.imageUrl}
@@ -109,7 +112,7 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
             <span className="text-gold">({college.shortCode})</span>
           </h1>
           <p className="mt-5 font-display text-2xl text-gold/90 italic">{college.tagline}</p>
-          <p className="mt-4 text-lg text-white/85 max-w-2xl">{college.hero.subhead}</p>
+          <p className="mt-4 text-lg text-[color-mix(in_oklab,var(--hero-text)_85%,transparent)] max-w-2xl">{college.hero.subhead}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/admissions/inquiry"

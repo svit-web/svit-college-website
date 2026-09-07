@@ -33,7 +33,7 @@ import {
   getRecruiterLogos,
   getLatestEvents,
 } from "@/lib/homepage.functions";
-import { getHeroAppearance, DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS, type HeroAppearance } from "@/lib/theme.functions";
+import { getHeroAppearance, DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -108,13 +108,16 @@ function Hero({
     }));
 
   return (
-    <section className="relative overflow-hidden bg-navy-deep text-white">
+    <section
+      className="relative overflow-hidden bg-navy-deep text-[var(--hero-text)]"
+      style={heroTextVars(resolvedAppearance)}
+    >
       <HeroPhotoLayer photos={photos} appearance={resolvedAppearance} rotateMs={HOMEPAGE_ROTATE_MS} />
       <div className="container-page relative py-20 md:py-28">
         <div className={`grid items-center gap-12 ${resolvedAppearance.heroSliderEnabled ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
           <div>
             {pretitle && (
-              <p className="mb-3 font-display text-3xl md:text-5xl font-bold leading-[1.05] text-white">
+              <p className="mb-3 font-display text-3xl md:text-5xl font-bold leading-[1.05] text-[var(--hero-text)]">
                 {pretitle.includes(" of Technology") ? (
                   <>
                     {pretitle.replace(" of Technology", "")}
@@ -143,7 +146,7 @@ function Hero({
               </h1>
             )}
             {subtitle && (
-              <p className="mt-6 text-lg text-white/85 max-w-2xl">{subtitle}</p>
+              <p className="mt-6 text-lg text-[color-mix(in_oklab,var(--hero-text)_85%,transparent)] max-w-2xl">{subtitle}</p>
             )}
             <div className="mt-8 flex flex-wrap gap-3">
               <Link

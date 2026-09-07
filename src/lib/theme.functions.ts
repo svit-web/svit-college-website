@@ -4,7 +4,7 @@
 import { publicSupabase } from '@/lib/supabase-public';
 import { DEFAULT_HERO_APPEARANCE, MAX_HOMEPAGE_PHOTOS, type HeroAppearance } from '@/lib/theme';
 
-export { MAX_HOMEPAGE_PHOTOS, HOMEPAGE_ROTATE_MS, DEFAULT_HERO_APPEARANCE, heroOverlayStyles, type HeroAppearance } from '@/lib/theme';
+export { MAX_HOMEPAGE_PHOTOS, HOMEPAGE_ROTATE_MS, DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, type HeroAppearance } from '@/lib/theme';
 
 const HERO_APPEARANCE_KEY = 'hero_appearance';
 
@@ -14,6 +14,7 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
     heroImageOpacity: v.heroImageOpacity ?? DEFAULT_HERO_APPEARANCE.heroImageOpacity,
     heroOverlayOpacity: v.heroOverlayOpacity ?? DEFAULT_HERO_APPEARANCE.heroOverlayOpacity,
     heroOverlayColor: typeof v.heroOverlayColor === 'string' && v.heroOverlayColor ? v.heroOverlayColor : null,
+    heroTextColor: typeof v.heroTextColor === 'string' && v.heroTextColor ? v.heroTextColor : null,
     heroBlurPx: v.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
     homepagePhotos: Array.isArray(v.homepagePhotos)
       ? v.homepagePhotos.filter((p): p is string => typeof p === 'string' && p.length > 0).slice(0, MAX_HOMEPAGE_PHOTOS)

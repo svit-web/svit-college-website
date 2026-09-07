@@ -18,6 +18,7 @@ export async function setHeroAppearance(appearance: HeroAppearance): Promise<Her
     heroImageOpacity: clamp(appearance.heroImageOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroImageOpacity),
     heroOverlayOpacity: clamp(appearance.heroOverlayOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroOverlayOpacity),
     heroOverlayColor: isHexColor(appearance.heroOverlayColor) ? appearance.heroOverlayColor : null,
+    heroTextColor: isHexColor(appearance.heroTextColor) ? appearance.heroTextColor : null,
     heroBlurPx: clamp(appearance.heroBlurPx, 0, 20, DEFAULT_HERO_APPEARANCE.heroBlurPx),
   };
 

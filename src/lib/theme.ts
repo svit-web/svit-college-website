@@ -10,6 +10,7 @@ export interface HeroAppearance {
   heroImageOpacity: number;
   heroOverlayOpacity: number;
   heroOverlayColor: string | null;
+  heroTextColor: string | null;
   heroBlurPx: number;
   homepagePhotos: string[];
   aboutPhoto: string | null;
@@ -21,6 +22,7 @@ export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
   heroImageOpacity: 80,
   heroOverlayOpacity: 55,
   heroOverlayColor: null,
+  heroTextColor: null,
   heroBlurPx: 4,
   homepagePhotos: [],
   aboutPhoto: null,
@@ -50,4 +52,15 @@ export function heroOverlayStyles(a: HeroAppearance): { imageStyle: CSSPropertie
       WebkitBackdropFilter: `blur(${a.heroBlurPx}px)`,
     },
   };
+}
+
+/**
+ * CSS custom property carrying the hero text color, scoped onto the hero
+ * section's root element. Hero text classes reference it via
+ * `text-[var(--hero-text)]` so a single admin setting recolors every hero's
+ * title/subtitle/breadcrumbs at once. Defaults to white, matching the
+ * pre-existing hardcoded `text-white` look.
+ */
+export function heroTextVars(a: HeroAppearance): CSSProperties {
+  return { ['--hero-text' as never]: a.heroTextColor || '#ffffff' };
 }
