@@ -106,7 +106,7 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
             <CollegeLogo
               shortCode={college.shortCode}
               src={college.logo}
-              className="h-16 w-16 rounded-md bg-white/5 p-2"
+              className="h-16 w-16 rounded-full bg-white p-2 shadow-sm"
             />
             <div className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
               {college.hero.kicker}
