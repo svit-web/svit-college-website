@@ -16,7 +16,6 @@ import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { CollegeLogo } from "@/components/site-next/CollegeLogo";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
-import { EnquiryForm } from "@/components/site-next/EnquiryForm";
 
 export interface CollegeDept {
   id: string;
@@ -78,7 +77,7 @@ export function CollegeLandingPage({
       <ProgramsSection college={college} />
       <WhySection college={college} data={displayWhy} />
       <TrustBand items={college.trustBadges} />
-      <EventsAndEnquiry college={college} />
+      <Events />
       <RecruitersStrip data={displayRecruiters} />
     </>
   );
@@ -245,42 +244,21 @@ function TrustBand({ items }: { items: { label: string; icon: string }[] }) {
   );
 }
 
-function EventsAndEnquiry({ college }: { college: College }) {
+function Events() {
   return (
     <section className="container-page py-20">
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <SectionHeading eyebrow="Latest" title="Events & News" variant="eyebrow" />
-          <ul className="mt-6 space-y-4">
-            {events.map((e) => (
-              <li key={e.title} className="card-lift rounded-2xl border border-border bg-white p-5">
-                <div className="text-xs font-bold uppercase tracking-widest text-crimson">
-                  {e.tag}
-                </div>
-                <div className="mt-1 font-display text-base font-bold text-navy">{e.title}</div>
-                <div className="mt-1 text-xs text-muted-foreground">{e.date}</div>
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="lg:col-span-1 rounded-2xl bg-gradient-to-br from-navy to-navy-light p-8 text-white">
-          <div className="mb-2 text-xs font-semibold uppercase tracking-widest text-gold">
-            Admissions Open
-          </div>
-          <h3 className="font-display text-2xl font-bold">Join {college.shortCode}</h3>
-          <p className="mt-3 text-sm text-white/80">
-            Merit-based scholarships, hostel accommodation, and dedicated placement support — start
-            your journey with {college.shortCode} today.
-          </p>
-          <Link
-            href="/admissions"
-            className="mt-6 inline-flex items-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft"
-          >
-            View Admissions <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-        <EnquiryForm shortCode={college.shortCode} departments={college.departments} />
-      </div>
+      <SectionHeading eyebrow="Latest" title="Events & News" variant="eyebrow" />
+      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {events.map((e) => (
+          <li key={e.title} className="card-lift rounded-2xl border border-border bg-white p-5">
+            <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+              {e.tag}
+            </div>
+            <div className="mt-1 font-display text-base font-bold text-navy">{e.title}</div>
+            <div className="mt-1 text-xs text-muted-foreground">{e.date}</div>
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
