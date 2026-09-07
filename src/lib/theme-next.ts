@@ -11,10 +11,13 @@ export async function setHeroAppearance(appearance: HeroAppearance): Promise<Her
   const clamp = (n: unknown, min: number, max: number, fallback: number) =>
     typeof n === 'number' && Number.isFinite(n) ? Math.min(max, Math.max(min, Math.round(n))) : fallback;
 
+  const isHexColor = (v: unknown): v is string => typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
+
   const payload: HeroAppearance = {
     ...appearance,
     heroImageOpacity: clamp(appearance.heroImageOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroImageOpacity),
     heroOverlayOpacity: clamp(appearance.heroOverlayOpacity, 0, 100, DEFAULT_HERO_APPEARANCE.heroOverlayOpacity),
+    heroOverlayColor: isHexColor(appearance.heroOverlayColor) ? appearance.heroOverlayColor : null,
     heroBlurPx: clamp(appearance.heroBlurPx, 0, 20, DEFAULT_HERO_APPEARANCE.heroBlurPx),
   };
 

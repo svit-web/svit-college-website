@@ -80,13 +80,39 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
           <SliderField
             icon={Layers}
             label="Overlay Intensity"
-            hint="Strength of the navy tint. Higher = darker, better contrast for text."
+            hint="Strength of the tint. Higher = darker, better contrast for text."
             value={settings.heroOverlayOpacity}
             min={0}
             max={100}
             suffix="%"
             onChange={(v) => setSettings((s) => ({ ...s, heroOverlayOpacity: v }))}
           />
+          <div>
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm font-semibold text-navy">
+                <Layers className="h-4 w-4 text-crimson" />
+                Overlay Color
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="color"
+                  value={settings.heroOverlayColor ?? '#1b2559'}
+                  onChange={(e) => setSettings((s) => ({ ...s, heroOverlayColor: e.target.value }))}
+                  className="h-7 w-10 cursor-pointer rounded border border-slate-200 p-0"
+                />
+                {settings.heroOverlayColor && (
+                  <button
+                    type="button"
+                    onClick={() => setSettings((s) => ({ ...s, heroOverlayColor: null }))}
+                    className="text-xs font-semibold text-slate-400 hover:text-crimson"
+                  >
+                    Reset to navy
+                  </button>
+                )}
+              </div>
+            </div>
+            <p className="mt-1 text-xs text-slate-500">Color of the tint over hero photos. Defaults to the site's navy.</p>
+          </div>
           <SliderField
             icon={Sparkles}
             label="Background Blur"

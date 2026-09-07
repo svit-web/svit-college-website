@@ -13,6 +13,7 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
   return {
     heroImageOpacity: v.heroImageOpacity ?? DEFAULT_HERO_APPEARANCE.heroImageOpacity,
     heroOverlayOpacity: v.heroOverlayOpacity ?? DEFAULT_HERO_APPEARANCE.heroOverlayOpacity,
+    heroOverlayColor: typeof v.heroOverlayColor === 'string' && v.heroOverlayColor ? v.heroOverlayColor : null,
     heroBlurPx: v.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
     homepagePhotos: Array.isArray(v.homepagePhotos)
       ? v.homepagePhotos.filter((p): p is string => typeof p === 'string' && p.length > 0).slice(0, MAX_HOMEPAGE_PHOTOS)
