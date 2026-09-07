@@ -14,7 +14,6 @@ import {
 import { heroOverlayStyles, DEFAULT_HERO_APPEARANCE, type HeroAppearance } from "@/lib/theme";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
-import { CollegeLogo } from "@/components/site-next/CollegeLogo";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
 
 export interface CollegeDept {
@@ -102,15 +101,8 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
       <div className="absolute inset-0" style={overlayStyle} />
       <div className="container-page relative py-24 md:py-32">
         <div className="max-w-3xl">
-          <div className="mb-6 flex items-center gap-4">
-            <CollegeLogo
-              shortCode={college.shortCode}
-              src={college.logo}
-              className="h-16 w-16 rounded-full bg-white p-2 shadow-sm"
-            />
-            <div className="inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-              {college.hero.kicker}
-            </div>
+          <div className="mb-6 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
+            {college.hero.kicker}
           </div>
           <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.02]">
             {college.name} <br />
