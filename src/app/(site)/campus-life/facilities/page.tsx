@@ -11,8 +11,9 @@ export const metadata: Metadata = {
   description: "Academic and sports facilities across the SVIT Vasad campus.",
 };
 
-function pathFor(category: "academic" | "sports", slug: string) {
+function pathFor(category: "academic" | "sports" | "amenities", slug: string) {
   if (category === "academic") return `/campus-life/facilities/academic/${slug}`;
+  if (category === "amenities") return `/campus-life/facilities/amenities/${slug}`;
   return `/campus-life/facilities/co-curriculum/${slug}`;
 }
 
@@ -45,6 +46,7 @@ export default async function FacilitiesIndex() {
   const facilities = await getAllFacilities().catch(() => []);
   const academic = facilities.filter((f) => f.category === 'academic');
   const sports = facilities.filter((f) => f.category === 'sports');
+  const amenities = facilities.filter((f) => f.category === 'amenities');
 
   return (
     <div className="space-y-12">
@@ -65,6 +67,17 @@ export default async function FacilitiesIndex() {
           ))}
         </div>
       </section>
+
+      {amenities.length > 0 && (
+        <section>
+          <SectionHeading eyebrow="Amenities" title="Campus Amenities" />
+          <div className="mt-6 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+            {amenities.map((f, i) => (
+              <Card key={f.slug} item={f} href={pathFor("amenities", f.slug)} i={i} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   );
 }
