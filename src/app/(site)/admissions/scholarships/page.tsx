@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageHero } from "@/components/site-next/PageHero";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
@@ -105,12 +106,12 @@ export default async function ScholarshipsPage() {
         <div className="container-page text-center max-w-2xl">
           <h2 className="font-display text-2xl font-bold">Need Help Applying for a Scholarship?</h2>
           <p className="mt-3 text-white/70 text-sm">Our admissions team can guide you through the application and documentation process.</p>
-          <a
-            href="/contact"
+          <Link
+            href="/admissions/inquiry"
             className="mt-6 inline-flex rounded-md bg-gold px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
           >
             Contact Admissions Office
-          </a>
+          </Link>
         </div>
       </section>
     </>

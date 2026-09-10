@@ -42,10 +42,6 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.supabase.co",
       },
-      {
-        protocol: "https",
-        hostname: "media.konfhub.com",
-      },
     ],
   },
 
@@ -59,12 +55,15 @@ const nextConfig: NextConfig = {
   // another PC) can reach it too — see localNetworkOrigins() above.
   allowedDevOrigins: ["localhost", "127.0.0.1", ...localNetworkOrigins()],
 
-  // Clubs and Societies were combined into one Campus Life section.
+  // Pages that moved or were merged away — keep the old URLs reachable.
   async redirects() {
     return [
+      // Clubs and Societies were combined into one Campus Life section.
       { source: "/campus-life/clubs", destination: "/campus-life/student-groups", permanent: true },
       { source: "/student-corner", destination: "/campus-life/student-groups", permanent: true },
       { source: "/student-corner/coe", destination: "/coe", permanent: true },
+      // Central Facilities moved out of About into Campus Life.
+      { source: "/about/facilities", destination: "/campus-life/facilities", permanent: true },
     ];
   },
 };

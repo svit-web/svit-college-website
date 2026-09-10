@@ -91,13 +91,6 @@ const STATIC_ENTRIES: SearchEntry[] = [
     description: "Institutional committees at SVIT Vasad.",
   },
   {
-    url: "/about/facilities",
-    type: "Page",
-    college: null,
-    title: "Facilities",
-    description: "Campus facilities and infrastructure at SVIT Vasad.",
-  },
-  {
     url: "/about/history-vision-mission",
     type: "Page",
     college: null,
@@ -168,13 +161,6 @@ const STATIC_ENTRIES: SearchEntry[] = [
     description: "Student life, clubs, events and facilities.",
   },
   {
-    url: "/campus-life/clubs",
-    type: "Page",
-    college: null,
-    title: "Student Clubs",
-    description: "Student clubs and societies at SVIT Vasad.",
-  },
-  {
     url: "/campus-life/events",
     type: "Page",
     college: null,
@@ -187,6 +173,20 @@ const STATIC_ENTRIES: SearchEntry[] = [
     college: null,
     title: "Campus Facilities",
     description: "Facilities available to students on campus.",
+  },
+  {
+    url: "/campus-life/sports-and-athletics",
+    type: "Page",
+    college: null,
+    title: "Sports & Athletics",
+    description: "Sports facilities, teams and athletic achievements at SVIT Vasad.",
+  },
+  {
+    url: "/campus-life/student-groups",
+    type: "Page",
+    college: null,
+    title: "Student Groups",
+    description: "Student clubs, societies and centres at SVIT Vasad.",
   },
   {
     url: "/careers",
@@ -250,13 +250,6 @@ const STATIC_ENTRIES: SearchEntry[] = [
     college: null,
     title: "Placement",
     description: "Placement cell and recruitment activities.",
-  },
-  {
-    url: "/student-corner",
-    type: "Page",
-    college: null,
-    title: "Student Corner",
-    description: "Centers and resources for students.",
   },
 ];
 
