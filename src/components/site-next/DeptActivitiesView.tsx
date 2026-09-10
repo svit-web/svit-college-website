@@ -24,11 +24,11 @@ function formatDate(iso: string) {
 }
 
 const ACTIVITY_TABS: { id: DeptActivityType; label: string; icon: typeof Mic }[] = [
-  { id: "sttp_fdp", label: "STTP / FDP / Conference", icon: Presentation },
   { id: "expert_lecture", label: "Expert Lectures", icon: Mic },
-  { id: "seminar_workshop", label: "Seminars & Workshops", icon: Users },
-  { id: "mou", label: "MOUs", icon: Handshake },
   { id: "industry_visit", label: "Industry Visits", icon: Building2 },
+  { id: "mou", label: "MOUs", icon: Handshake },
+  { id: "seminar_workshop", label: "Seminars & Workshops", icon: Users },
+  { id: "sttp_fdp", label: "STTP / FDP / Conference", icon: Presentation },
 ];
 
 function ActivityList({ items }: { items: DeptActivity[] }) {
@@ -59,7 +59,7 @@ function ActivityList({ items }: { items: DeptActivity[] }) {
 }
 
 export function DeptActivitiesView({ activities = [] }: { activities?: DeptActivity[] }) {
-  const [tab, setTab] = useState<DeptActivityType>("sttp_fdp");
+  const [tab, setTab] = useState<DeptActivityType>("expert_lecture");
   const items = activities
     .filter((a) => a.type === tab)
     .sort((a, b) => (a.startDate < b.startDate ? 1 : -1));

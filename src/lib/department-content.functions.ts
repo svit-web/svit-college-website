@@ -117,7 +117,7 @@ export async function getClubsByDepartmentId(departmentId: string) {
   }));
 }
 
-export type DeptActivityType = 'sttp_fdp' | 'expert_lecture' | 'seminar_workshop' | 'mou' | 'industry_visit';
+export type DeptActivityType = 'expert_lecture' | 'industry_visit' | 'mou' | 'seminar_workshop' | 'sttp_fdp';
 
 export interface DeptActivity {
   id: string;
