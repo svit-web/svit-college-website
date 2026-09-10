@@ -96,15 +96,6 @@ export function LibraryPage({
                     {inst.tagline && <p className="mt-1 text-xs italic text-muted-foreground">{inst.tagline}</p>}
                   </div>
                 </div>
-                <dl className="mt-4 flex items-baseline gap-1.5 border-t border-navy/10 pt-4">
-                  <dt className="order-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    books available
-                  </dt>
-                  <dd className="order-1 font-display text-2xl font-bold text-navy">
-                    {formatCount(inst.bookCount)}
-                    <span aria-hidden="true">+</span>
-                  </dd>
-                </dl>
               </div>
             </Reveal>
           ))}
