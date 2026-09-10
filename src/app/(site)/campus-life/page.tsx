@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
-import { Building2, Users, CalendarDays, GraduationCap, ArrowRight } from "lucide-react";
+import { Building2, Users, CalendarDays, ArrowRight } from "lucide-react";
 import { getAllStudentClubs } from "@/lib/clubs.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllEvents } from "@/lib/events.functions";
@@ -23,9 +23,8 @@ export default async function CampusLifeOverview() {
 
   const SUMMARY = [
     { icon: Building2, label: "Facilities", count: facilities.length, to: "/campus-life/facilities" },
-    { icon: Users, label: "Student Clubs", count: clubs.length, to: "/campus-life/clubs" },
+    { icon: Users, label: "Student Groups", count: clubs.length + centers.length, to: "/campus-life/student-groups" },
     { icon: CalendarDays, label: "Flagship Events", count: events.length, to: "/campus-life/events" },
-    { icon: GraduationCap, label: "Societies", count: centers.length, to: "/student-corner" },
   ] as const;
 
   return (

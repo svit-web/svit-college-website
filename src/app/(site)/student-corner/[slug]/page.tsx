@@ -51,7 +51,7 @@ export default async function CentreLeaf({ params }: { params: Promise<{ slug: s
         subtitle="Centres, cells and chapters where students grow beyond the syllabus."
         crumbs={[
           { label: "Home", to: "/" },
-          { label: "Societies", to: "/student-corner" },
+          { label: "Societies", to: "/campus-life/student-groups" },
           { label: item.title },
         ]}
       />

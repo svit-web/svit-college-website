@@ -11,7 +11,6 @@ import {
   ChevronDown,
   ChevronRight,
   Facebook,
-  GraduationCap,
   Instagram,
   Mail,
   Menu,
@@ -672,15 +671,21 @@ function useCampusCategories({
         })),
       },
       {
-        key: "clubs",
-        title: "Clubs",
+        key: "student-groups",
+        title: "Student Groups",
         icon: Users,
-        allLabel: "All clubs",
-        allTo: "/campus-life/clubs",
-        items: (featuredClubs ?? []).map((c) => ({
-          label: c.name,
-          to: `/campus-life/clubs/${c.slug}`,
-        })),
+        allLabel: "All student groups",
+        allTo: "/campus-life/student-groups",
+        items: [
+          ...(featuredClubs ?? []).map((c) => ({
+            label: c.name,
+            to: `/campus-life/clubs/${c.slug}`,
+          })),
+          ...(centers ?? []).map((c) => ({
+            label: c.name.split("(")[0].trim(),
+            to: `/student-corner/${c.slug}`,
+          })),
+        ],
       },
       {
         key: "events",
@@ -691,17 +696,6 @@ function useCampusCategories({
         items: (events ?? []).map((c) => ({
           label: c.title.split("—")[0].trim(),
           to: `/campus-life/events/${c.slug}`,
-        })),
-      },
-      {
-        key: "student-corner",
-        title: "Societies",
-        icon: GraduationCap,
-        allLabel: "All centres",
-        allTo: "/student-corner",
-        items: (centers ?? []).map((c) => ({
-          label: c.name.split("(")[0].trim(),
-          to: `/student-corner/${c.slug}`,
         })),
       },
     ],

@@ -2,15 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Building2, Users, CalendarDays, GraduationCap } from "lucide-react";
+import { Home, Building2, Users, CalendarDays } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
   { to: "/campus-life", label: "Overview", icon: Home, exact: true },
   { to: "/campus-life/facilities", label: "Facilities", icon: Building2 },
-  { to: "/campus-life/clubs", label: "Clubs", icon: Users },
+  { to: "/campus-life/student-groups", label: "Student Groups", icon: Users },
   { to: "/campus-life/events", label: "Events", icon: CalendarDays },
-  { to: "/student-corner", label: "Societies", icon: GraduationCap },
 ];
 
 export function CampusLifeNav() {

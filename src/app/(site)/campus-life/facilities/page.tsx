@@ -11,8 +11,9 @@ export const metadata: Metadata = {
   description: "Academic and sports facilities across the SVIT Vasad campus.",
 };
 
-function pathFor(category: "academic" | "sports" | "amenities", slug: string) {
+function pathFor(category: "academic" | "sports" | "transport" | "amenities", slug: string) {
   if (category === "academic") return `/campus-life/facilities/academic/${slug}`;
+  if (category === "transport") return `/campus-life/facilities/transport/${slug}`;
   if (category === "amenities") return `/campus-life/facilities/amenities/${slug}`;
   return `/campus-life/facilities/co-curriculum/${slug}`;
 }
@@ -44,12 +45,22 @@ function Card({ item, href, i }: { item: Facility; href: string; i: number }) {
 
 export default async function FacilitiesIndex() {
   const facilities = await getAllFacilities().catch(() => []);
+  const transport = facilities.filter((f) => f.category === 'transport');
   const academic = facilities.filter((f) => f.category === 'academic');
   const sports = facilities.filter((f) => f.category === 'sports');
   const amenities = facilities.filter((f) => f.category === 'amenities');
 
   return (
     <div className="space-y-12">
+      <section>
+        <SectionHeading eyebrow="Transport" title="Transport Facilities" />
+        <div className="mt-6 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
+          {transport.map((f, i) => (
+            <Card key={f.slug} item={f} href={pathFor("transport", f.slug)} i={i} />
+          ))}
+        </div>
+      </section>
+
       <section>
         <SectionHeading eyebrow="Academic" title="Academic Facilities" />
         <div className="mt-6 grid gap-5 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">

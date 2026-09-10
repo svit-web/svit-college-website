@@ -32,6 +32,11 @@ const nextConfig: NextConfig = {
 
   // Image optimization for self-hosted
   images: {
+    // Some networks resolve *.supabase.co over DNS64 to a NAT64 (64:ff9b::/96)
+    // address, which Next's SSRF guard misreads as a private IP and blocks.
+    // Safe to bypass here since remotePatterns below already locks fetches
+    // to trusted hostnames only.
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       {
         protocol: "https",
@@ -53,6 +58,14 @@ const nextConfig: NextConfig = {
   // machine currently has, so other devices on the same network (a phone,
   // another PC) can reach it too — see localNetworkOrigins() above.
   allowedDevOrigins: ["localhost", "127.0.0.1", ...localNetworkOrigins()],
+
+  // Clubs and Societies were combined into one Campus Life section.
+  async redirects() {
+    return [
+      { source: "/campus-life/clubs", destination: "/campus-life/student-groups", permanent: true },
+      { source: "/student-corner", destination: "/campus-life/student-groups", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;
