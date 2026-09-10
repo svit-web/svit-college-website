@@ -106,7 +106,11 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       try {
         const { data } = await supabase.from('staff_profiles').select('id, title, first_name, last_name, email, status, expertise, metadata').is('deleted_at', null).order('first_name');
         setStaffList(data || []);
-      } catch {}
+      } catch (err) {
+        // Both the full and the reduced query failed — leave the list as-is,
+        // but report why it did not load.
+        console.error('Failed to load staff list', err);
+      }
     } finally {
       setListLoading(false);
     }

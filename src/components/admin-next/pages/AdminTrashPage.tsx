@@ -118,7 +118,11 @@ export function AdminTrashPage({ admin }: { admin: AdminUser }) {
           old_values: { deleted_at: 'IS NOT NULL' },
           new_values: { deleted_at: null, status: 'restored' },
         } as any);
-      } catch {}
+      } catch (err) {
+        // Best-effort audit write: never block the restore/delete, but a silent
+        // failure would hide a broken audit trail.
+        console.error('Failed to write audit log', err);
+      }
 
       loadDeletedRecords();
     } catch (err: any) {
@@ -156,7 +160,11 @@ export function AdminTrashPage({ admin }: { admin: AdminUser }) {
           old_values: { deleted_at: 'IS NOT NULL' },
           new_values: null,
         } as any);
-      } catch {}
+      } catch (err) {
+        // Best-effort audit write: never block the restore/delete, but a silent
+        // failure would hide a broken audit trail.
+        console.error('Failed to write audit log', err);
+      }
 
       loadDeletedRecords();
     } catch (err: any) {

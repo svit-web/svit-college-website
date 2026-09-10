@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { ShieldAlert, Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2, Eye, EyeOff } from 'lucide-react';
 import {
   listPortalUsers,
   listScopeOptions,
@@ -128,7 +128,6 @@ export function AdminUserManagementPage() {
 
   useEffect(() => {
     refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

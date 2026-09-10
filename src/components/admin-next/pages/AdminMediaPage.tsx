@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
-import { Folder, Plus, Trash2, ChevronRight, Upload, Image as ImageIcon, Loader2, FolderPlus, ExternalLink, Edit2, X, FileText } from 'lucide-react';
+import { Folder, Trash2, ChevronRight, Upload, Image as ImageIcon, Loader2, FolderPlus, ExternalLink, Edit2, X, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadMediaFile } from '@/lib/upload-media-next';
 import type { AdminUser } from '@/app/lib/auth/admin';

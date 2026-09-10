@@ -475,7 +475,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
           return;
         }
 
-        let val = formValues[col.name];
+        const val = formValues[col.name];
 
         if (col.type === 'boolean') {
           payload[col.name] = !!val;
@@ -1070,7 +1070,11 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       }));
                       try {
                         await supabase.from('audit_logs').insert(auditRows as any);
-                      } catch {}
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
                       setRowSelection({});
                       loadData();
                     } catch (err: any) {
@@ -1104,7 +1108,11 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       }));
                       try {
                         await supabase.from('audit_logs').insert(auditRows as any);
-                      } catch {}
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
                       setRowSelection({});
                       loadData();
                     } catch (err: any) {
@@ -1157,7 +1165,11 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       }));
                       try {
                         await supabase.from('audit_logs').insert(auditRows as any);
-                      } catch {}
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
                     } else {
                       const { error } = await supabaseAdmin.from(tableId).delete().in(schema.primary_key, selectedIds);
                       if (error) throw error;
@@ -1172,7 +1184,11 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       }));
                       try {
                         await supabase.from('audit_logs').insert(auditRows as any);
-                      } catch {}
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
                     }
                     setRowSelection({});
                     loadData();
