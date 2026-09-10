@@ -4,6 +4,8 @@ import { PageHero } from "@/components/site-next/PageHero";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getAllFacilities } from "@/lib/facilities.functions";
+import { getSports, getSportsAchievements } from "@/lib/sports.functions";
+import { SportsSection } from "@/components/site-next/SportsSection";
 import campusHero from "@/assets/campus-hero.jpg";
 import campusAerial from "@/assets/campus-aerial.jpg";
 
@@ -12,12 +14,17 @@ export const metadata: Metadata = {
 };
 
 export default async function Campus() {
-  const facilities = await getAllFacilities().catch(() => []);
+  const [facilities, sports, achievements] = await Promise.all([
+    getAllFacilities().catch(() => []),
+    getSports().catch(() => []),
+    getSportsAchievements().catch(() => []),
+  ]);
 
   const academicFacilities = facilities.filter((f) => f.category === "academic");
   const wellnessFacilities = facilities.filter((f) => f.category === "wellness");
   const amenityFacilities = facilities.filter((f) => f.category === "amenity");
   const hostelFacilities = facilities.filter((f) => f.category === "hostel");
+  const sportsFacilities = facilities.filter((f) => f.category === "sports");
 
   return (
     <>
@@ -152,6 +159,13 @@ export default async function Campus() {
               ))}
         </div>
       </section>
+
+      {/* Sports Section */}
+      <SportsSection
+        sports={sports}
+        achievements={achievements}
+        sportsFacilities={sportsFacilities}
+      />
     </>
   );
 }

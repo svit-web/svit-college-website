@@ -22,6 +22,7 @@ export default async function SportsAndAthleticsPage() {
       sports={sports}
       achievements={achievements}
       sportsFacilities={sportsFacilities}
+      variant="embedded"
     />
   );
 }

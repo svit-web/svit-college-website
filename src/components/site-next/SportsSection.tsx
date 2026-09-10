@@ -197,77 +197,146 @@ function AchievementsGrid({ achievements }: { achievements: SportAchievement[] }
 }
 
 /**
- * "Sports & Athletics" content for /campus-life/sports-and-athletics, sourced
- * from the sports/sports_achievements tables. Renders as plain stacked
- * sections since the Campus Life sidebar layout already provides its own
- * container and padding.
+ * Shared "Sports & Athletics" content, sourced from the sports/sports_achievements
+ * tables. `variant="standalone"` (default) renders full-bleed colored bands, for
+ * use on a bare page like /campus. `variant="embedded"` renders the same data as
+ * plain stacked sections, for use inside a constrained layout like the Campus
+ * Life sidebar page, which already provides its own container and padding.
  */
 export function SportsSection({
   sports,
   achievements,
   sportsFacilities,
+  variant = "standalone",
 }: {
   sports: Sport[];
   achievements: SportAchievement[];
   sportsFacilities: Facility[];
+  variant?: "standalone" | "embedded";
 }) {
   const totalTrophies = achievements.length;
   const outdoorCount = sports.filter((s) => s.category === "outdoor").length;
   const indoorCount = sports.filter((s) => s.category === "indoor").length;
 
+  if (variant === "embedded") {
+    return (
+      <div className="space-y-12">
+        <section className="rounded-2xl bg-navy p-8 text-white md:p-10">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+            Sports & Athletics
+          </div>
+          <h2 className="font-display text-2xl md:text-3xl font-bold text-white">
+            Champions On and Off the Field
+          </h2>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/70 md:text-base">
+            SVIT believes sports build character as much as academics. Our state-of-the-art
+            grounds and courts have produced university, state, and national-level athletes.
+          </p>
+          <div className="mt-10">
+            <SportsStats
+              sports={sports}
+              totalTrophies={totalTrophies}
+              outdoorCount={outdoorCount}
+              indoorCount={indoorCount}
+            />
+          </div>
+        </section>
+
+        {sports.length > 0 && (
+          <section>
+            <SectionHeading eyebrow="Our Sports" title="Disciplines We Offer" />
+            <div className="mt-6">
+              <SportsGrid sports={sports} />
+            </div>
+          </section>
+        )}
+
+        {sportsFacilities.length > 0 && (
+          <section>
+            <SectionHeading eyebrow="Courts & Facilities" title="Where Champions Train" />
+            <div className="mt-6">
+              <SportsFacilitiesGrid sportsFacilities={sportsFacilities} />
+            </div>
+          </section>
+        )}
+
+        {achievements.length > 0 && (
+          <section>
+            <SectionHeading
+              eyebrow="Hall of Fame"
+              title="Our Achievements"
+              subtitle="Notable wins and medals from university, state, and national competitions."
+            />
+            <div className="mt-6">
+              <AchievementsGrid achievements={achievements} />
+            </div>
+          </section>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-12">
-      <section className="rounded-2xl bg-navy p-8 text-white md:p-10">
-        <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-          Sports & Athletics
-        </div>
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-white">
-          Champions On and Off the Field
-        </h2>
-        <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/70 md:text-base">
-          SVIT believes sports build character as much as academics. Our state-of-the-art
-          grounds and courts have produced university, state, and national-level athletes.
-        </p>
-        <div className="mt-10">
-          <SportsStats
-            sports={sports}
-            totalTrophies={totalTrophies}
-            outdoorCount={outdoorCount}
-            indoorCount={indoorCount}
-          />
+    <>
+      <section className="bg-navy text-white py-20">
+        <div className="container-page">
+          <div>
+            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
+              Sports & Athletics
+            </div>
+            <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
+              Champions On and Off the Field
+            </h2>
+            <p className="mt-4 text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
+              SVIT believes sports build character as much as academics. Our state-of-the-art
+              grounds and courts have produced university, state, and national-level athletes.
+            </p>
+          </div>
+
+          <div className="mt-12">
+            <SportsStats
+              sports={sports}
+              totalTrophies={totalTrophies}
+              outdoorCount={outdoorCount}
+              indoorCount={indoorCount}
+            />
+          </div>
         </div>
       </section>
 
       {sports.length > 0 && (
-        <section>
-          <SectionHeading eyebrow="Our Sports" title="Disciplines We Offer" />
-          <div className="mt-6">
+        <section className="container-page py-20">
+          <SectionHeading center eyebrow="Our Sports" title="Disciplines We Offer" />
+          <div className="mt-12">
             <SportsGrid sports={sports} />
           </div>
         </section>
       )}
 
       {sportsFacilities.length > 0 && (
-        <section>
-          <SectionHeading eyebrow="Courts & Facilities" title="Where Champions Train" />
-          <div className="mt-6">
+        <section className="container-page py-16">
+          <SectionHeading center eyebrow="Courts & Facilities" title="Where Champions Train" />
+          <div className="mt-10">
             <SportsFacilitiesGrid sportsFacilities={sportsFacilities} />
           </div>
         </section>
       )}
 
       {achievements.length > 0 && (
-        <section>
-          <SectionHeading
-            eyebrow="Hall of Fame"
-            title="Our Achievements"
-            subtitle="Notable wins and medals from university, state, and national competitions."
-          />
-          <div className="mt-6">
-            <AchievementsGrid achievements={achievements} />
+        <section className="bg-secondary/50 py-20">
+          <div className="container-page">
+            <SectionHeading
+              center
+              eyebrow="Hall of Fame"
+              title="Our Achievements"
+              subtitle="Notable wins and medals from university, state, and national competitions."
+            />
+            <div className="mt-12">
+              <AchievementsGrid achievements={achievements} />
+            </div>
           </div>
         </section>
       )}
-    </div>
+    </>
   );
 }
