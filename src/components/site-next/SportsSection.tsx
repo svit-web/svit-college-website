@@ -69,7 +69,10 @@ function SportsGrid({ sports }: { sports: Sport[] }) {
     <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
       {sports.map((sport, i) => (
         <Reveal key={sport.id} delay={i * 0.04}>
-          <div className="card-lift group h-full overflow-hidden rounded-2xl border border-border bg-white">
+          <div
+            id={sport.slug ?? sport.name.toLowerCase().replace(/\s+/g, "-")}
+            className="card-lift group h-full scroll-mt-24 overflow-hidden rounded-2xl border border-border bg-white"
+          >
             <div className="relative h-44 w-full overflow-hidden bg-navy/5">
               {sport.cover_image_url ? (
                 <Image

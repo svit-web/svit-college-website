@@ -664,10 +664,10 @@ function useCampusCategories({
         title: "Sports",
         icon: Trophy,
         allLabel: "Sports & Athletics",
-        allTo: "/campus",
+        allTo: "/campus-life/sports-and-athletics",
         items: (sports ?? []).map((s) => ({
           label: s.name,
-          to: `/campus#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
+          to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
         })),
       },
       {
