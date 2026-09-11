@@ -251,7 +251,7 @@ export function Header({
                   href={n.to}
                   label={n.label}
                   active={active}
-                  triggerClassName="px-3 tracking-wider"
+                  triggerClassName="px-2.5 tracking-wide whitespace-nowrap"
                   panelClassName="absolute left-1/2 top-full z-50 w-64 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
                   isOpen={aboutOpen}
                   onOpen={() => setAboutOpen(true)}
@@ -279,7 +279,7 @@ export function Header({
                   href={n.to}
                   label={n.label}
                   active={active}
-                  triggerClassName="px-3 tracking-wider"
+                  triggerClassName="px-2.5 tracking-wide whitespace-nowrap"
                   panelClassName="absolute left-1/2 top-full z-50 w-52 -translate-x-1/2 rounded-2xl border border-border bg-white p-2 shadow-xl"
                   isOpen={admissionsOpen}
                   onOpen={() => setAdmissionsOpen(true)}
