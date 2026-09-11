@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Award,
   Building2,
   CalendarDays,
   ChevronDown,
@@ -49,7 +50,6 @@ const primaryNav = [
   { label: "Colleges", to: "/colleges" },
   { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
-  { label: "Centre of Excellence", to: "/coe" },
   { label: "Placement", to: "/placement" },
 ] as const;
 
@@ -699,6 +699,14 @@ function useCampusCategories({
           label: c.title.split("—")[0].trim(),
           to: `/campus-life/events/${c.slug}`,
         })),
+      },
+      {
+        key: "coe",
+        title: "Centre of Excellence",
+        icon: Award,
+        allLabel: "Centre of Excellence",
+        allTo: "/coe",
+        items: [],
       },
       {
         key: "nss-ncc",
