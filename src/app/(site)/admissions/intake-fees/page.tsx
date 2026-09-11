@@ -24,6 +24,14 @@ const DEGREE_LABEL: Record<string, string> = {
   certificate: "Certificate / Diploma",
 };
 
+// Display order for the intake page only — independent of colleges.sort_order.
+const COLLEGE_DISPLAY_ORDER: Record<string, number> = {
+  "svit-degree": 1,
+  "svica": 2,
+  "svion": 3,
+  "svit-coa": 4,
+};
+
 function groupByCollege(courses: CourseWithCollegeInfo[]) {
   const map = new Map<string, { name: string; slug: string; courses: CourseWithCollegeInfo[] }>();
   for (const c of courses) {
@@ -32,7 +40,11 @@ function groupByCollege(courses: CourseWithCollegeInfo[]) {
     }
     map.get(c.college_slug)!.courses.push(c);
   }
-  return Array.from(map.values());
+  return Array.from(map.values()).sort(
+    (a, b) =>
+      (COLLEGE_DISPLAY_ORDER[a.slug] ?? Number.MAX_SAFE_INTEGER) -
+      (COLLEGE_DISPLAY_ORDER[b.slug] ?? Number.MAX_SAFE_INTEGER)
+  );
 }
 
 export default async function IntakeFeesPage() {
