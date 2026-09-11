@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-export interface LibraryPhoto {
+export interface SliderPhoto {
   id: string;
   url: string;
   focalX?: "left" | "center" | "right";
@@ -14,10 +14,12 @@ export interface LibraryPhoto {
 const PHOTO_ASPECT_RATIO = "4/3";
 
 interface Props {
-  photos: LibraryPhoto[];
+  photos: SliderPhoto[];
+  ariaLabel?: string;
+  photoAlt?: string;
 }
 
-export function LibraryPhotoSlider({ photos }: Props) {
+export function PhotoSlider({ photos, ariaLabel = "Photos", photoAlt = "Photo" }: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = photos.length;
@@ -37,7 +39,7 @@ export function LibraryPhotoSlider({ photos }: Props) {
       onMouseLeave={() => setPaused(false)}
       role="region"
       aria-roledescription="carousel"
-      aria-label="Institute library photos"
+      aria-label={ariaLabel}
     >
       <div
         className="relative w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-secondary/60"
@@ -58,7 +60,7 @@ export function LibraryPhotoSlider({ photos }: Props) {
                 some networks' resolved hostnames for this bucket, so we bypass it like CollegeLogo does. */}
             <img
               src={photo.url}
-              alt="Library photo"
+              alt={photoAlt}
               loading={i === 0 ? "eager" : "lazy"}
               className="absolute inset-0 h-full w-full object-cover"
               style={{

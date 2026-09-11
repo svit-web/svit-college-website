@@ -2,7 +2,7 @@ import { BookOpen } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import { CollegeLogo } from "./CollegeLogo";
-import { LibraryPhotoSlider, type LibraryPhoto } from "./LibraryPhotoSlider";
+import { PhotoSlider, type SliderPhoto } from "./PhotoSlider";
 
 interface InstituteLibrary {
   id: string;
@@ -21,7 +21,7 @@ interface LibraryPageProps {
   description: string;
   highlights: { title: string; description: string }[];
   institutes: InstituteLibrary[];
-  photos: LibraryPhoto[];
+  photos: SliderPhoto[];
 }
 
 function formatCount(n: number) {
@@ -51,7 +51,7 @@ export function LibraryPage({
 
       {photos.length > 0 && (
         <Reveal>
-          <LibraryPhotoSlider photos={photos} />
+          <PhotoSlider photos={photos} ariaLabel="Institute library photos" photoAlt="Library photo" />
         </Reveal>
       )}
 

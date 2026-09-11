@@ -38,6 +38,7 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/trash",
   "/admin/settings",
   "/admin/library",
+  "/admin/nss-ncc",
   "/admin/scholarships",
   "/admin/tables/placed_students",
 ] as const;

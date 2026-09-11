@@ -87,6 +87,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Events', to: '/admin/events' },
       { label: 'Sports & Athletics', to: '/admin/sports' },
+      { label: 'NSS / NCC', to: '/admin/nss-ncc' },
       { label: 'Achievements', to: '/admin/tables/achievements' },
       { label: 'Gallery Albums', to: '/admin/tables/gallery_albums' },
       { label: 'Gallery Media', to: '/admin/tables/gallery_media' },
