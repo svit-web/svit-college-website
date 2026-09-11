@@ -5,7 +5,7 @@ import { PillTabs } from "@/components/site-next/PillTabs";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getAllStudentClubs } from "@/lib/clubs.functions";
-import { getAllCenters } from "@/lib/centers.functions";
+import { getVisibleCenters } from "@/lib/centers.functions";
 
 export const metadata: Metadata = {
   title: "Student Groups — Campus Life — SVIT Vasad",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function StudentGroupsIndex() {
   const [clubs, centers] = await Promise.all([
     getAllStudentClubs().catch(() => []),
-    getAllCenters().catch(() => []),
+    getVisibleCenters().catch(() => []),
   ]);
 
   return (

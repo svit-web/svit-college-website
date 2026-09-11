@@ -3,10 +3,10 @@ import { notFound } from "next/navigation";
 import { CampusLeafPage } from "@/components/site-next/CampusLeafPage";
 import { PageHero } from "@/components/site-next/PageHero";
 import { PillTabs } from "@/components/site-next/PillTabs";
-import { getAllCenters, getCenterBySlug } from "@/lib/centers.functions";
+import { getVisibleCenters, getCenterBySlug } from "@/lib/centers.functions";
 
 async function loadCentre(slug: string) {
-  const [item, allCenters] = await Promise.all([getCenterBySlug(slug), getAllCenters()]);
+  const [item, allCenters] = await Promise.all([getCenterBySlug(slug), getVisibleCenters()]);
   if (!item) return null;
 
   const transformedItem = {

@@ -64,6 +64,7 @@ const nextConfig: NextConfig = {
     return [
       { source: "/campus-life/clubs", destination: "/campus-life/student-groups", permanent: true },
       { source: "/student-corner", destination: "/campus-life/student-groups", permanent: true },
+      { source: "/student-corner/coe", destination: "/coe", permanent: true },
     ];
   },
 };

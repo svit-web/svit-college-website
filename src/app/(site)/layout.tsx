@@ -7,7 +7,7 @@ import { getAllFacilities } from "@/lib/facilities.functions";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { getSports } from "@/lib/sports.functions";
-import { getAllCenters } from "@/lib/centers.functions";
+import { getVisibleCenters } from "@/lib/centers.functions";
 import { getAllProgrammes } from "@/lib/programmes.functions";
 
 export default async function SiteLayout({
@@ -25,7 +25,7 @@ export default async function SiteLayout({
       getFeaturedStudentClubs().catch(() => []),
       getAllEvents().catch(() => []),
       getSports().catch(() => []),
-      getAllCenters().catch(() => []),
+      getVisibleCenters().catch(() => []),
       getAllProgrammes().catch(() => []),
     ]);
 

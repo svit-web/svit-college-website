@@ -33,6 +33,20 @@ export async function getAllCenters() {
   return unwrap<Center[]>(result as any, "centers");
 }
 
+// Centers with their own top-level nav entry/page are excluded from the
+// generic Student Groups listings so they aren't shown in two places.
+const CENTERS_WITH_OWN_PAGE = new Set(["coe"]);
+
+/**
+ * Fetch published centers meant for the generic Student Groups listings
+ * (mega-menu, /campus-life, /campus-life/student-groups) — excludes centers
+ * that have their own dedicated top-level page/nav entry.
+ */
+export async function getVisibleCenters() {
+  const centers = await getAllCenters();
+  return centers.filter((c) => !CENTERS_WITH_OWN_PAGE.has(c.slug));
+}
+
 /**
  * Fetch a single center by slug
  */

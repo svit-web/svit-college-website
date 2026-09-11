@@ -48,6 +48,7 @@ const primaryNav = [
   { label: "Colleges", to: "/colleges" },
   { label: "Admissions", to: "/admissions" },
   { label: "Campus Life", to: "/campus-life" },
+  { label: "Centre of Excellence", to: "/coe" },
   { label: "Placement", to: "/placement" },
 ] as const;
 

@@ -6,7 +6,7 @@ import { Building2, Users, CalendarDays, ArrowRight } from "lucide-react";
 import { getAllStudentClubs } from "@/lib/clubs.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getAllEvents } from "@/lib/events.functions";
-import { getAllCenters } from "@/lib/centers.functions";
+import { getVisibleCenters } from "@/lib/centers.functions";
 
 export const metadata: Metadata = {
   title: "Campus Life Overview — SVIT Vasad",
@@ -18,7 +18,7 @@ export default async function CampusLifeOverview() {
     getAllStudentClubs().catch(() => []),
     getAllFacilities().catch(() => []),
     getAllEvents().catch(() => []),
-    getAllCenters().catch(() => []),
+    getVisibleCenters().catch(() => []),
   ]);
 
   const SUMMARY = [
