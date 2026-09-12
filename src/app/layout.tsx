@@ -31,7 +31,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }} />
+        <Script
+          id="font-scale-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }}
+        />
       </head>
       <body className="antialiased">
         <ScrollEngineProvider />
