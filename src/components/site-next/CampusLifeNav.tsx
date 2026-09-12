@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Building2, Users, CalendarDays, Trophy, Award, Shield } from "lucide-react";
+import { Home, Building2, Users, CalendarDays, Trophy, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
@@ -11,7 +11,6 @@ const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] =
   { to: "/campus-life/student-groups", label: "Student Groups", icon: Users },
   { to: "/campus-life/events", label: "Events", icon: CalendarDays },
   { to: "/campus-life/sports-and-athletics", label: "Sports & Athletics", icon: Trophy },
-  { to: "/campus-life/coe", label: "Centre of Excellence", icon: Award },
   { to: "/campus-life/nss-ncc", label: "NSS / NCC", icon: Shield },
 ];
 

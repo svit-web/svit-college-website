@@ -708,7 +708,7 @@ function useCampusCategories({
         title: "Centre of Excellence",
         icon: Award,
         allLabel: "Centre of Excellence",
-        allTo: "/campus-life/coe",
+        allTo: "/coe",
         items: [],
       },
       {
@@ -895,55 +895,31 @@ function CampusMega({
         {categories.map((c) => {
           const isActive = c.key === activeKey;
           const Icon = c.icon;
-          const hasItems = c.items.length > 0;
-          const itemClassName = cn(
-            "flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold transition-colors",
-            isActive
-              ? "bg-white text-navy border-l-4 border-crimson"
-              : "border-l-4 border-transparent text-ink/70 hover:bg-white/60 hover:text-navy",
-          );
-          const itemContent = (
-            <>
-              <Icon className="h-4 w-4 shrink-0" />
-              <span className="flex-1 truncate">{c.title}</span>
-              <ChevronRight
-                className={cn(
-                  "h-3.5 w-3.5 transition-opacity",
-                  isActive ? "opacity-100 text-crimson" : "opacity-0",
-                )}
-              />
-            </>
-          );
           return (
             <li key={c.key}>
-              {hasItems ? (
-                <button
-                  type="button"
-                  onMouseEnter={() => scheduleActivate(c.key)}
-                  onMouseLeave={cancelSchedule}
-                  onFocus={() => setActiveKey(c.key)}
-                  onClick={() => setActiveKey(c.key)}
-                  aria-current={isActive ? "true" : undefined}
-                  className={itemClassName}
-                >
-                  {itemContent}
-                </button>
-              ) : (
-                // No sub-items to browse — go straight to the category's page
-                // instead of making people click twice (select, then follow
-                // the panel's link) for nothing extra to see.
-                <Link
-                  href={c.allTo}
-                  onMouseEnter={() => scheduleActivate(c.key)}
-                  onMouseLeave={cancelSchedule}
-                  onFocus={() => setActiveKey(c.key)}
-                  onClick={onNavigate}
-                  aria-current={isActive ? "true" : undefined}
-                  className={itemClassName}
-                >
-                  {itemContent}
-                </Link>
-              )}
+              <button
+                type="button"
+                onMouseEnter={() => scheduleActivate(c.key)}
+                onMouseLeave={cancelSchedule}
+                onFocus={() => setActiveKey(c.key)}
+                onClick={() => setActiveKey(c.key)}
+                aria-current={isActive ? "true" : undefined}
+                className={cn(
+                  "flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-semibold transition-colors",
+                  isActive
+                    ? "bg-white text-navy border-l-4 border-crimson"
+                    : "border-l-4 border-transparent text-ink/70 hover:bg-white/60 hover:text-navy",
+                )}
+              >
+                <Icon className="h-4 w-4 shrink-0" />
+                <span className="flex-1 truncate">{c.title}</span>
+                <ChevronRight
+                  className={cn(
+                    "h-3.5 w-3.5 transition-opacity",
+                    isActive ? "opacity-100 text-crimson" : "opacity-0",
+                  )}
+                />
+              </button>
             </li>
           );
         })}
@@ -997,21 +973,6 @@ function MobileCampusAccordion({
       {categories.map((c) => {
         const isOpen = openKey === c.key;
         const Icon = c.icon;
-        if (c.items.length === 0) {
-          // No sub-items to expand into — link straight to the category's
-          // page instead of an accordion that only ever reveals one link.
-          return (
-            <Link
-              key={c.key}
-              href={c.allTo}
-              onClick={onNavigate}
-              className="flex w-full items-center gap-2 rounded-md px-3 py-2 text-xs font-semibold text-navy/80 hover:bg-secondary hover:text-navy"
-            >
-              <Icon className="h-3.5 w-3.5" />
-              <span className="flex-1 text-left">{c.title}</span>
-            </Link>
-          );
-        }
         return (
           <div key={c.key}>
             <button
