@@ -25,6 +25,7 @@ import { Logo } from "./Logo";
 import { CollegeLogo } from "./CollegeLogo";
 import { SiteSearch } from "./SiteSearch";
 import { FontSizeControl } from "@/components/a11y/FontSizeControl";
+import { SmoothScrollToggle } from "./SmoothScrollToggle";
 import { cn } from "@/lib/utils";
 import { ABOUT_SECTIONS } from "@/lib/about-sections";
 import type { Department } from "@/lib/departments.functions";
@@ -234,6 +235,7 @@ export function Header({
               )}
               <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
               <FontSizeControl scope="site" className="text-white/85" />
+              <SmoothScrollToggle className="text-white/85" />
             </div>
           </nav>
         </div>
@@ -520,6 +522,7 @@ export function Header({
                   )}
                   <span className="h-4 w-px bg-border" aria-hidden="true" />
                   <FontSizeControl scope="site" className="text-muted-foreground" />
+                  <SmoothScrollToggle className="text-muted-foreground" />
                 </div>
               </div>
             </div>

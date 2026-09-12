@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import { getFontScaleInitScript } from "@/lib/font-scale";
+import { ScrollEngineProvider } from "@/components/site-next/ScrollEngineProvider";
 import "./globals.css";
 
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
@@ -33,6 +34,7 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }} />
       </head>
       <body className="antialiased">
+        <ScrollEngineProvider />
         {children}
         <Toaster position="top-right" richColors />
         {GA4_ID && (

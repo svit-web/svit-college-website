@@ -87,7 +87,7 @@ export async function getLatestEvents() {
   const { data, error } = await supabase
     .from("events")
     .select(
-      "id, slug, title, tag, start_date, description, featured_image_url, registration_link, sort_order",
+      "id, slug, title, tag, start_date, end_date, description, featured_image_url, registration_link, sort_order",
     )
     .eq("status", "published")
     .eq("is_featured", true)

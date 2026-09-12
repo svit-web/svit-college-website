@@ -17,7 +17,8 @@ import { CTABanner } from "@/components/site-next/CTABanner";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { CollegeLogo } from "@/components/site-next/CollegeLogo";
-import { EventsNewsSlider, type EventSlide } from "@/components/site-next/EventsNewsSlider";
+import { NewsEventsSection } from "@/components/site-next/NewsEventsSection";
+import { RecruitersMarquee } from "@/components/site-next/RecruitersMarquee";
 import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
 import {
   byType,
@@ -326,33 +327,17 @@ function CTABannerSection({ items, misc }: { items: HomepageItem[]; misc: MiscSe
 }
 
 function EventsAndEnquiry({ events, recruiters }: { events: EventRow[]; recruiters: RecruiterRow[] }) {
-  const slides: EventSlide[] = (events ?? []).map((e) => ({
-    id: e.id,
-    slug: e.slug ?? null,
-    title: e.title,
-    tag: e.tag ?? "News",
-    date: e.start_date
-      ? new Date(e.start_date).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })
-      : "",
-    imageUrl: e.featured_image_url ?? null,
-  }));
-
-  const recruiterNames = (recruiters ?? []).map((r) => r.company_name);
-
   return (
-    <section className="container-page py-20">
-      <SectionHeading center eyebrow="Latest" title="Events & News" variant="eyebrow" />
-      <div className="mt-10">
-        <EventsNewsSlider items={slides} />
-      </div>
-      <Reveal className="mt-14">
-        <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">Our Recruiters</div>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {recruiterNames.map((r) => (
-            <span key={r} className="font-display text-lg font-bold text-navy/50 hover:text-navy transition-colors">{r}</span>
-          ))}
-        </div>
-      </Reveal>
-    </section>
+    <>
+      <NewsEventsSection events={events} />
+      <section className="container-page pb-20">
+        <Reveal>
+          <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Our Recruiters
+          </div>
+          <RecruitersMarquee recruiters={recruiters} />
+        </Reveal>
+      </section>
+    </>
   );
 }
