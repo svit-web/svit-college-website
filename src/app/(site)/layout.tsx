@@ -9,40 +9,60 @@ import { getAllEvents } from "@/lib/events.functions";
 import { getSports } from "@/lib/sports.functions";
 import { getVisibleCenters } from "@/lib/centers.functions";
 import { getAllProgrammes } from "@/lib/programmes.functions";
+import { getMainNavigation, getTopUtilityNavigation } from "@/lib/menus.functions";
+import { getLiveStats } from "@/lib/stats.functions";
 
 export default async function SiteLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [colleges, contactInfo, misc, departments, facilities, featuredClubs, events, sports, centers, programmes] =
-    await Promise.all([
-      getCollegesGrid().catch(() => []),
-      getContactInfo().catch(() => null),
-      getMiscSettings().catch(() => null),
-      getAllDepartments().catch(() => []),
-      getAllFacilities().catch(() => []),
-      getFeaturedStudentClubs().catch(() => []),
-      getAllEvents().catch(() => []),
-      getSports().catch(() => []),
-      getVisibleCenters().catch(() => []),
-      getAllProgrammes().catch(() => []),
-    ]);
+  const [
+    colleges,
+    contactInfo,
+    misc,
+    departments,
+    facilities,
+    featuredClubs,
+    events,
+    sports,
+    centers,
+    programmes,
+    mainNav,
+    utilityNav,
+    liveStats,
+  ] = await Promise.all([
+    getCollegesGrid().catch(() => []),
+    getContactInfo().catch(() => null),
+    getMiscSettings().catch(() => null),
+    getAllDepartments().catch(() => []),
+    getAllFacilities().catch(() => []),
+    getFeaturedStudentClubs().catch(() => []),
+    getAllEvents().catch(() => []),
+    getSports().catch(() => []),
+    getVisibleCenters().catch(() => []),
+    getAllProgrammes().catch(() => []),
+    getMainNavigation().catch(() => []),
+    getTopUtilityNavigation().catch(() => []),
+    getLiveStats().catch(() => null),
+  ]);
 
   const logoUrl = colleges.find((c) => c.slug === "svit-degree")?.logo_url ?? null;
 
   return (
     <div className="flex min-h-screen flex-col">
       <Header
+        mainNav={mainNav}
+        utilityNav={utilityNav}
         colleges={colleges}
         contactInfo={contactInfo}
-        misc={misc}
         departments={departments}
         facilities={facilities}
         featuredClubs={featuredClubs}
         events={events}
         sports={sports}
         centers={centers}
+        liveStats={liveStats}
         logoUrl={logoUrl}
       />
       <main className="flex-1">{children}</main>

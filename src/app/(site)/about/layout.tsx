@@ -4,6 +4,7 @@ import { getAboutPage } from "@/lib/pages.functions";
 import { getHeroAppearance } from "@/lib/theme.functions";
 import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme";
 import { getMiscSettings } from "@/lib/site-settings.functions";
+import { getMainNavigation } from "@/lib/menus.functions";
 import { AboutNav } from "./AboutNav";
 
 export const metadata: Metadata = {
@@ -17,13 +18,17 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutLayout({ children }: { children: React.ReactNode }) {
-  const [aboutPage, appearance, misc] = await Promise.all([
+  const [aboutPage, appearance, misc, mainNav] = await Promise.all([
     getAboutPage().catch(() => null),
     getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
     getMiscSettings().catch(() => null),
+    getMainNavigation().catch(() => []),
   ]);
   const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
   const c = aboutPage;
+  const aboutLinks =
+    mainNav.find((item) => item.menu_type === "links_mega" && item.title === "About SVIT")
+      ?.children ?? [];
 
   return (
     <>
@@ -67,7 +72,7 @@ export default async function AboutLayout({ children }: { children: React.ReactN
         <div className="container-page py-10">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
             <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-              <AboutNav />
+              <AboutNav items={aboutLinks} />
             </aside>
 
             <div className="min-w-0">{children}</div>

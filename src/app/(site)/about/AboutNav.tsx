@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ABOUT_SECTIONS } from "@/lib/about-sections";
+import type { MenuLink } from "@/lib/menus.functions";
 import { cn } from "@/lib/utils";
 
-export function AboutNav() {
+export function AboutNav({ items }: { items: MenuLink[] }) {
   const pathname = usePathname();
 
   return (
@@ -17,20 +17,21 @@ export function AboutNav() {
         About SVIT
       </div>
       <ul className="flex gap-1 overflow-x-auto lg:flex-col lg:overflow-visible">
-        {ABOUT_SECTIONS.map((s) => {
-          const isActive = pathname === s.to || pathname?.startsWith(s.to + "/");
+        {items.map((s) => {
+          const to = s.url ?? "#";
+          const isActive = pathname === to || pathname?.startsWith(to + "/");
           return (
-            <li key={s.to} className="shrink-0 lg:shrink">
+            <li key={s.id} className="shrink-0 lg:shrink">
               <Link
-                href={s.to}
+                href={to}
                 className={cn(
                   "flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all",
                   isActive
                     ? "border-gold bg-navy text-white shadow-sm"
-                    : "border-transparent text-navy hover:border-navy/15 hover:bg-secondary/60"
+                    : "border-transparent text-navy hover:border-navy/15 hover:bg-secondary/60",
                 )}
               >
-                <span className="whitespace-nowrap lg:whitespace-normal">{s.label}</span>
+                <span className="whitespace-nowrap lg:whitespace-normal">{s.title}</span>
               </Link>
             </li>
           );

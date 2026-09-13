@@ -36,19 +36,21 @@ import {
 } from "@/lib/homepage.functions";
 import { getHeroAppearance, DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
+import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BadgeCheck, GraduationCap, Briefcase, Building2, Users, Lightbulb, Award, Trees, ShieldCheck,
 };
 
 export default async function Home() {
-  const [items, colleges, recruiters, events, appearance, misc] = await Promise.all([
+  const [items, colleges, recruiters, events, appearance, misc, liveStats] = await Promise.all([
     getGlobalHomepageItems().catch(() => []),
     getCollegesGrid().catch(() => []),
     getRecruiterLogos().catch(() => []),
     getLatestEvents().catch(() => []),
     getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
     getMiscSettings().catch(() => null),
+    getLiveStats().catch(() => null),
   ]);
 
   return (
@@ -56,7 +58,7 @@ export default async function Home() {
       <Hero items={items} appearance={appearance} misc={misc} />
       <CollegesSection colleges={colleges} misc={misc} />
       <HomeCarouselSection items={items} />
-      <StatsStrip items={items} />
+      <StatsStrip items={items} liveStats={liveStats} />
       <WhySection items={items} />
       <TrustBand items={items} />
       <EventsAndEnquiry events={events} recruiters={recruiters} />
@@ -175,11 +177,25 @@ function Hero({
   );
 }
 
-function StatsStrip({ items }: { items: HomepageItem[] }) {
-  const stats = byType(items, "stat");
+function StatsStrip({ items, liveStats }: { items: HomepageItem[]; liveStats: LiveStats | null }) {
+  const curated = byType(items, "stat");
+  const find = (subtitle: string) => curated.find((s) => s.subtitle === subtitle);
+
+  const stats = [
+    liveStats && { id: "live-years", title: `${liveStats.yearsOfExcellence}`, subtitle: "Years of Excellence" },
+    find("Students"),
+    find("Acre Green Campus"),
+    find("Placement Record"),
+    liveStats && { id: "live-recruiters", title: `${liveStats.recruitersCount}+`, subtitle: "Recruiting Partners" },
+    liveStats && { id: "live-placed", title: `${liveStats.placedStudentsCount}+`, subtitle: "Students Placed" },
+    find("Alumni"),
+    liveStats && { id: "live-faculty", title: `${liveStats.facultyCount}+`, subtitle: "Faculty" },
+    liveStats && { id: "live-programmes", title: `${liveStats.programmesCount}`, subtitle: "Programmes" },
+  ].filter((s): s is { id: string; title: string; subtitle: string } => Boolean(s));
+
   return (
     <section className="bg-navy text-white">
-      <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-5">
         {stats.map((s) => (
           <div key={s.id} className="text-center">
             <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.title}</div>
