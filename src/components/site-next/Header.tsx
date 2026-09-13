@@ -104,29 +104,33 @@ export function Header({
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 lg:absolute">
-      <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
-
-      {/* Desktop main bar — floats over the hero, scrolls away with it (not sticky) */}
+      {/* Desktop navbar — single card with utility bar integrated at top, floats over hero */}
       <div className="hidden lg:block">
         <div className="container-page py-3">
-          <div className="relative flex h-[76px] items-center gap-2 border border-border bg-cream px-5 shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
-            <Logo logoUrl={logoUrl} />
-            <ul className="ml-auto flex items-center gap-1">
-              {mainNav.map((item) => {
-                const mega = megaFor(item);
-                return (
-                  <DesktopNavItem
-                    key={item.id}
-                    item={item}
-                    isOpen={openKey === item.id}
-                    onOpen={() => setOpenKey(item.id)}
-                    onClose={() => setOpenKey(null)}
-                  >
-                    {mega}
-                  </DesktopNavItem>
-                );
-              })}
-            </ul>
+          <div className="relative border border-border bg-cream shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
+            {/* Integrated utility bar */}
+            <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
+
+            {/* Main nav bar */}
+            <div className="flex h-[76px] items-center gap-2 border-t border-border px-5">
+              <Logo logoUrl={logoUrl} />
+              <ul className="ml-auto flex items-center gap-1">
+                {mainNav.map((item) => {
+                  const mega = megaFor(item);
+                  return (
+                    <DesktopNavItem
+                      key={item.id}
+                      item={item}
+                      isOpen={openKey === item.id}
+                      onOpen={() => setOpenKey(item.id)}
+                      onClose={() => setOpenKey(null)}
+                    >
+                      {mega}
+                    </DesktopNavItem>
+                  );
+                })}
+              </ul>
+            </div>
           </div>
         </div>
       </div>
