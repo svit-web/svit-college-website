@@ -22,7 +22,7 @@ import {
 } from "@/lib/search-index";
 import { cn } from "@/lib/utils";
 
-export function SiteSearch({ className }: { className?: string }) {
+export function SiteSearch({ className, iconClassName }: { className?: string; iconClassName?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -84,12 +84,9 @@ export function SiteSearch({ className }: { className?: string }) {
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Search the site"
-        className={cn(
-          "flex items-center gap-2 rounded-md border border-border p-2 text-ink/70 hover:border-navy/30 hover:text-navy",
-          className,
-        )}
+        className={cn("flex items-center", className)}
       >
-        <Search className="h-5 w-5" />
+        <Search className={cn("h-5 w-5", iconClassName)} />
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>

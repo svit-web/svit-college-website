@@ -28,13 +28,13 @@ export function DesktopUtilityBar({
   };
 
   return (
-    <div className="hidden bg-navy-deep text-xs text-white/85 lg:block">
-      <div className="container-page flex h-9 items-center justify-between">
+    <div className="hidden bg-navy-deep text-white/[0.78] lg:block">
+      <div className="container-page flex min-h-[38px] items-center justify-between py-2">
         <div className="flex items-center gap-4">
           {contactInfo?.email && (
             <a
               href={`mailto:${contactInfo.email}`}
-              className="inline-flex items-center gap-1.5 hover:text-gold"
+              className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-gold"
             >
               <Mail className="h-3 w-3" /> {contactInfo.email}
             </a>
@@ -42,7 +42,7 @@ export function DesktopUtilityBar({
           {contactInfo?.phone && (
             <a
               href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
-              className="inline-flex items-center gap-1.5 hover:text-gold"
+              className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-gold"
             >
               <Phone className="h-3 w-3" /> {contactInfo.phone}
             </a>
@@ -53,7 +53,7 @@ export function DesktopUtilityBar({
             <Link
               key={item.id}
               href={item.url ?? "#"}
-              className="transition-colors hover:text-gold"
+              className="px-3 py-2 text-xs tracking-[0.06em] transition-colors hover:text-gold"
             >
               {item.title}
             </Link>
@@ -65,7 +65,7 @@ export function DesktopUtilityBar({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="hover:text-gold"
+                className="transition-colors hover:text-gold"
               >
                 <Facebook className="h-3.5 w-3.5" />
               </a>
@@ -76,7 +76,7 @@ export function DesktopUtilityBar({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="hover:text-gold"
+                className="transition-colors hover:text-gold"
               >
                 <Instagram className="h-3.5 w-3.5" />
               </a>
@@ -87,15 +87,15 @@ export function DesktopUtilityBar({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="hover:text-gold"
+                className="transition-colors hover:text-gold"
               >
                 <LinkedinIcon className="h-3.5 w-3.5" />
               </a>
             )}
             <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
-            <FontSizeControl scope="site" className="text-white/85" />
-            <SmoothScrollToggle className="text-white/85" />
-            <SiteSearch className="text-white/85 hover:text-gold" />
+            <FontSizeControl scope="site" className="text-white/[0.78]" />
+            <SmoothScrollToggle className="text-white/[0.78]" />
+            <SiteSearch className="text-white/[0.78] hover:text-gold" iconClassName="h-[14px] w-[14px]" />
           </div>
         </div>
       </div>

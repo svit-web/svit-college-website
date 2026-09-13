@@ -29,14 +29,12 @@ export function DesktopNavItem({
       <Link
         href={item.url ?? "#"}
         className={cn(
-          "link-underline inline-flex items-center gap-1 px-3 py-2 text-sm font-medium text-ink",
-          isOpen && "text-crimson",
+          "inline-block whitespace-nowrap px-[15px] py-3 text-sm font-medium tracking-[0.01em] text-ink transition-all",
+          "bg-gradient-to-b from-crimson to-crimson bg-[length:0%_2px] bg-left-bottom bg-no-repeat hover:bg-[length:100%_2px] hover:text-crimson",
+          isOpen && "bg-[length:100%_2px] text-crimson",
         )}
       >
         {item.title}
-        {hasMega && (
-          <ChevronDown className={cn("h-3 w-3 transition-transform", isOpen && "rotate-180")} />
-        )}
       </Link>
       {hasMega && (
         <div

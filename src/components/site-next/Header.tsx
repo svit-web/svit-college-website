@@ -107,14 +107,14 @@ export function Header({
       {/* Desktop navbar — single card with utility bar integrated at top, floats over hero */}
       <div className="hidden lg:block">
         <div className="container-page py-3">
-          <div className="relative border border-border bg-cream shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
+          <div className="relative bg-cream shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
             {/* Integrated utility bar */}
             <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
 
             {/* Main nav bar */}
-            <div className="flex h-[76px] items-center gap-2 border-t border-border px-5">
+            <div className="flex h-[76px] items-center gap-2 px-[clamp(12px,2vw,26px)]">
               <Logo logoUrl={logoUrl} />
-              <ul className="ml-auto flex items-center gap-1">
+              <ul className="ml-auto flex items-center">
                 {mainNav.map((item) => {
                   const mega = megaFor(item);
                   return (
