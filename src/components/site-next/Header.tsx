@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { Logo } from "./Logo";
 import { DesktopUtilityBar } from "./nav/DesktopUtilityBar";
+import { SiteSearch } from "./SiteSearch";
 import { MobileUtilityBar } from "./nav/MobileUtilityBar";
 import { MobileNavPanel } from "./nav/MobileNavPanel";
 import { DesktopNavItem } from "./nav/DesktopNavItem";
@@ -103,33 +104,36 @@ export function Header({
   }
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 lg:absolute">
-      {/* Desktop navbar — single card with utility bar integrated at top, floats over hero */}
+    <header className="fixed inset-x-0 top-0 z-[60] lg:absolute">
+      {/* Desktop navbar — single hovering card, floats over hero */}
       <div className="hidden lg:block">
-        <div className="container-page py-3">
-          <div className="relative bg-cream shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
-            {/* Integrated utility bar */}
-            <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
-
-            {/* Main nav bar */}
-            <div className="flex h-[76px] items-center gap-2 px-[clamp(12px,2vw,26px)]">
-              <Logo logoUrl={logoUrl} />
-              <ul className="ml-auto flex items-center">
-                {mainNav.map((item) => {
-                  const mega = megaFor(item);
-                  return (
-                    <DesktopNavItem
-                      key={item.id}
-                      item={item}
-                      isOpen={openKey === item.id}
-                      onOpen={() => setOpenKey(item.id)}
-                      onClose={() => setOpenKey(null)}
-                    >
-                      {mega}
-                    </DesktopNavItem>
-                  );
-                })}
-              </ul>
+        <div className="relative px-[clamp(32px,6vw,96px)] pt-3">
+          <div className="mx-auto w-full max-w-[1240px]">
+            <div className="relative bg-cream shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
+              <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
+              <div className="relative flex h-[76px] items-center gap-2 px-[clamp(12px,2vw,26px)]">
+                <Logo logoUrl={logoUrl} />
+                <ul className="ml-auto flex items-center">
+                  {mainNav.map((item) => {
+                    const mega = megaFor(item);
+                    return (
+                      <DesktopNavItem
+                        key={item.id}
+                        item={item}
+                        isOpen={openKey === item.id}
+                        onOpen={() => setOpenKey(item.id)}
+                        onClose={() => setOpenKey(null)}
+                      >
+                        {mega}
+                      </DesktopNavItem>
+                    );
+                  })}
+                </ul>
+                <SiteSearch
+                  className="ml-2 pl-2 text-ink-soft transition-colors hover:text-crimson"
+                  iconClassName="h-[18px] w-[18px]"
+                />
+              </div>
             </div>
           </div>
         </div>

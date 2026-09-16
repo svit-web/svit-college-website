@@ -2,7 +2,6 @@ import Link from "next/link";
 import { Facebook, Instagram, LayoutDashboard, Mail, Phone } from "lucide-react";
 import { FontSizeControl } from "@/components/a11y/FontSizeControl";
 import { SmoothScrollToggle } from "../SmoothScrollToggle";
-import { SiteSearch } from "../SiteSearch";
 import type { MenuTopItem } from "@/lib/menus.functions";
 import type { ContactInfo } from "@/lib/site-settings.functions";
 
@@ -28,13 +27,13 @@ export function DesktopUtilityBar({
   };
 
   return (
-    <div className="hidden bg-navy-deep text-white/[0.78] lg:block">
-      <div className="container-page flex min-h-[38px] items-center justify-between py-2">
+    <div className="hidden border-b border-line text-ink-soft lg:block">
+      <div className="flex min-h-[38px] items-center justify-between px-[clamp(12px,2vw,26px)]">
         <div className="flex items-center gap-4">
           {contactInfo?.email && (
             <a
               href={`mailto:${contactInfo.email}`}
-              className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-gold"
+              className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-crimson"
             >
               <Mail className="h-3 w-3" /> {contactInfo.email}
             </a>
@@ -42,7 +41,7 @@ export function DesktopUtilityBar({
           {contactInfo?.phone && (
             <a
               href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
-              className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-gold"
+              className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-crimson"
             >
               <Phone className="h-3 w-3" /> {contactInfo.phone}
             </a>
@@ -53,19 +52,19 @@ export function DesktopUtilityBar({
             <Link
               key={item.id}
               href={item.url ?? "#"}
-              className="px-3 py-2 text-xs tracking-[0.06em] transition-colors hover:text-gold"
+              className="px-3 py-2 text-xs tracking-[0.06em] transition-colors hover:text-crimson"
             >
               {item.title}
             </Link>
           ))}
-          <div className="flex items-center gap-3 border-l border-white/20 pl-4">
+          <div className="flex items-center gap-3 border-l border-line pl-4">
             {socials.facebook && (
               <a
                 href={socials.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Facebook"
-                className="transition-colors hover:text-gold"
+                className="transition-colors hover:text-crimson"
               >
                 <Facebook className="h-3.5 w-3.5" />
               </a>
@@ -76,7 +75,7 @@ export function DesktopUtilityBar({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="Instagram"
-                className="transition-colors hover:text-gold"
+                className="transition-colors hover:text-crimson"
               >
                 <Instagram className="h-3.5 w-3.5" />
               </a>
@@ -87,20 +86,19 @@ export function DesktopUtilityBar({
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label="LinkedIn"
-                className="transition-colors hover:text-gold"
+                className="transition-colors hover:text-crimson"
               >
                 <LinkedinIcon className="h-3.5 w-3.5" />
               </a>
             )}
-            <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
-            <FontSizeControl scope="site" className="text-white/[0.78]" />
-            <SmoothScrollToggle className="text-white/[0.78]" />
-            <SiteSearch className="text-white/[0.78] hover:text-gold" iconClassName="h-[14px] w-[14px]" />
+            <span className="h-3.5 w-px bg-line" aria-hidden="true" />
+            <FontSizeControl scope="site" className="text-ink-soft" />
+            <SmoothScrollToggle className="text-ink-soft" />
             <Link
               href="/admin"
               aria-label="Admin"
               title="Admin"
-              className="inline-flex items-center justify-center rounded-full p-1 leading-none opacity-70 transition hover:text-gold hover:opacity-100"
+              className="inline-flex items-center justify-center rounded-full p-1 leading-none opacity-70 transition hover:text-crimson hover:opacity-100"
             >
               <LayoutDashboard className="h-3.5 w-3.5" />
             </Link>
