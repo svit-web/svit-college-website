@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Facebook, Instagram, Mail, Phone } from "lucide-react";
+import { Facebook, Instagram, LayoutDashboard, Mail, Phone } from "lucide-react";
 import { FontSizeControl } from "@/components/a11y/FontSizeControl";
 import { SmoothScrollToggle } from "../SmoothScrollToggle";
 import { SiteSearch } from "../SiteSearch";
@@ -96,6 +96,14 @@ export function DesktopUtilityBar({
             <FontSizeControl scope="site" className="text-white/[0.78]" />
             <SmoothScrollToggle className="text-white/[0.78]" />
             <SiteSearch className="text-white/[0.78] hover:text-gold" iconClassName="h-[14px] w-[14px]" />
+            <Link
+              href="/admin"
+              aria-label="Admin"
+              title="Admin"
+              className="inline-flex items-center justify-center rounded-full p-1 leading-none opacity-70 transition hover:text-gold hover:opacity-100"
+            >
+              <LayoutDashboard className="h-3.5 w-3.5" />
+            </Link>
           </div>
         </div>
       </div>

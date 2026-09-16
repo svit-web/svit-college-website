@@ -2,7 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ChevronDown, Facebook, Instagram } from "lucide-react";
+import { ChevronDown, Facebook, Instagram, LayoutDashboard } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FontSizeControl } from "@/components/a11y/FontSizeControl";
 import { SmoothScrollToggle } from "../SmoothScrollToggle";
@@ -213,6 +213,15 @@ export function MobileNavPanel({
         <div className="flex items-center gap-4 px-3 py-2">
           <FontSizeControl scope="site" className="text-white/85" />
           <SmoothScrollToggle className="text-white/85" />
+          <Link
+            href="/admin"
+            onClick={onNavigate}
+            aria-label="Admin"
+            title="Admin"
+            className="text-white/85 hover:text-gold"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+          </Link>
         </div>
 
         <div className="my-2 border-t border-white/15" />
