@@ -1,4 +1,3 @@
-import { BookOpen } from "lucide-react";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import { CollegeLogo } from "./CollegeLogo";
@@ -24,10 +23,6 @@ interface LibraryPageProps {
   photos: SliderPhoto[];
 }
 
-function formatCount(n: number) {
-  return n.toLocaleString("en-IN");
-}
-
 export function LibraryPage({
   title,
   subtitle,
@@ -37,8 +32,6 @@ export function LibraryPage({
   institutes,
   photos,
 }: LibraryPageProps) {
-  const totalBooks = institutes.reduce((sum, inst) => sum + inst.bookCount, 0);
-
   return (
     <div className="space-y-10">
       <div>
@@ -54,28 +47,6 @@ export function LibraryPage({
           <PhotoSlider photos={photos} ariaLabel="Institute library photos" photoAlt="Library photo" />
         </Reveal>
       )}
-
-      {/* Collective total counter */}
-      <Reveal>
-        <dl className="card-lift flex flex-col items-center gap-2 rounded-2xl border-2 border-navy/15 bg-navy p-8 text-center text-white sm:flex-row sm:justify-center sm:gap-5">
-          <div
-            aria-hidden="true"
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gold/20 text-gold"
-          >
-            <BookOpen className="h-7 w-7" />
-          </div>
-          <div className="flex flex-col">
-            <dt className="order-2 mt-1 text-sm font-semibold uppercase tracking-widest text-white/70">
-              Total books across all 4 institute libraries
-            </dt>
-            <dd className="order-1 font-display text-4xl font-bold text-gold">
-              {formatCount(totalBooks)}
-              <span aria-hidden="true">+</span>
-              <span className="sr-only"> or more</span>
-            </dd>
-          </div>
-        </dl>
-      </Reveal>
 
       {/* Per-institute subsections */}
       <div>
