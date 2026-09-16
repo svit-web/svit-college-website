@@ -39,7 +39,7 @@ export function PageHero({
       )}
       <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-gold/20 blur-3xl" />
       <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-crimson/20 blur-3xl" />
-      <div className="container-page relative py-20 md:py-28">
+      <div className="container-page relative pb-20 pt-[clamp(150px,18vh,200px)] md:pb-28">
         {crumbs && crumbs.length > 0 && (
           <nav className="mb-6 flex items-center gap-1.5 text-xs text-[color-mix(in_oklab,var(--hero-text)_70%,transparent)]">
             {crumbs.map((c, i) => (

@@ -38,7 +38,7 @@ export default async function AboutLayout({ children }: { children: React.ReactN
           photos={resolvedAppearance.aboutPhoto ? [resolvedAppearance.aboutPhoto] : []}
           appearance={resolvedAppearance}
         />
-        <div className="container-page relative py-14 md:py-20">
+        <div className="container-page relative pb-14 pt-[clamp(150px,18vh,200px)] md:pb-20">
           <div className="max-w-3xl">
             <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
               {c?.hero?.accent}

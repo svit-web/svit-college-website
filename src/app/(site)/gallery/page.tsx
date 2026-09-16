@@ -18,7 +18,7 @@ export default async function GalleryIndex() {
   return (
     <div>
       {/* Hero */}
-      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep py-16 text-white">
+      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep pb-16 pt-[clamp(150px,18vh,200px)] text-white">
         <div className="container-page text-center">
           <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
             SVIT Vasad

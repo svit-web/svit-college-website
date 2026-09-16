@@ -20,6 +20,7 @@ import { CollegeLogo } from "@/components/site-next/CollegeLogo";
 import { NewsEventsSection } from "@/components/site-next/NewsEventsSection";
 import { RecruitersMarquee } from "@/components/site-next/RecruitersMarquee";
 import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
+import { HeroNew } from "@/components/site-next/HeroNew";
 import {
   byType,
   promoBySlot,
@@ -55,7 +56,7 @@ export default async function Home() {
 
   return (
     <>
-      <Hero items={items} appearance={appearance} misc={misc} />
+      <HeroNew items={items} misc={misc} />
       <CollegesSection colleges={colleges} misc={misc} />
       <HomeCarouselSection items={items} />
       <StatsStrip items={items} liveStats={liveStats} />
