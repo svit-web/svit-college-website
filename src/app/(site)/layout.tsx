@@ -8,7 +8,6 @@ import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { getSports } from "@/lib/sports.functions";
 import { getVisibleCenters } from "@/lib/centers.functions";
-import { getAllProgrammes } from "@/lib/programmes.functions";
 import { getMainNavigation, getTopUtilityNavigation } from "@/lib/menus.functions";
 import { getLiveStats } from "@/lib/stats.functions";
 
@@ -27,7 +26,6 @@ export default async function SiteLayout({
     events,
     sports,
     centers,
-    programmes,
     mainNav,
     utilityNav,
     liveStats,
@@ -41,7 +39,6 @@ export default async function SiteLayout({
     getAllEvents().catch(() => []),
     getSports().catch(() => []),
     getVisibleCenters().catch(() => []),
-    getAllProgrammes().catch(() => []),
     getMainNavigation().catch(() => []),
     getTopUtilityNavigation().catch(() => []),
     getLiveStats().catch(() => null),
@@ -66,12 +63,7 @@ export default async function SiteLayout({
         logoUrl={logoUrl}
       />
       <main className="flex-1">{children}</main>
-      <Footer
-        programmes={programmes}
-        contactInfo={contactInfo}
-        misc={misc}
-        logoUrl={logoUrl}
-      />
+      <Footer contactInfo={contactInfo} misc={misc} logoUrl={logoUrl} />
     </div>
   );
 }

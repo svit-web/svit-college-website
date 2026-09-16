@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { Logo } from "./Logo";
 import type { MiscSettings, ContactInfo } from "@/lib/site-settings.functions";
-import type { Programme } from "@/lib/programmes.functions";
 
 const socialIconMap: Record<string, typeof Facebook> = {
   Facebook,
@@ -26,13 +25,12 @@ const socialIconMap: Record<string, typeof Facebook> = {
 };
 
 export interface FooterProps {
-  programmes: Programme[];
   contactInfo: ContactInfo | null;
   misc: MiscSettings | null;
   logoUrl: string | null;
 }
 
-export function Footer({ programmes, contactInfo, misc, logoUrl }: FooterProps) {
+export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
   const site = {
     fullName: contactInfo?.full_name,
     email: contactInfo?.email,
@@ -60,7 +58,7 @@ export function Footer({ programmes, contactInfo, misc, logoUrl }: FooterProps) 
   return (
     <footer className="bg-navy-deep text-white/80">
       <div className="container-page py-8 md:py-14">
-        <div className="grid gap-0 md:gap-10 md:grid-cols-2 lg:grid-cols-5">
+        <div className="grid gap-0 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2 mb-2 md:mb-0">
             <Logo light logoUrl={logoUrl} />
             <p className="mt-4 text-sm text-white/70 max-w-sm">
@@ -112,10 +110,6 @@ export function Footer({ programmes, contactInfo, misc, logoUrl }: FooterProps) 
           </div>
 
           <FooterCol title="Quick Links" links={quick} />
-          <FooterCol
-            title="Courses"
-            links={(programmes ?? []).map((c) => ({ label: c.name, to: `/courses/${c.code}` }))}
-          />
           <FooterCol title="Important" links={important} />
         </div>
       </div>
