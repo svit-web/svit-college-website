@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Facebook,
   Instagram,
+  LayoutDashboard,
   Mail,
   Menu,
   Phone,
@@ -236,6 +237,14 @@ export function Header({
               <span className="h-3.5 w-px bg-white/20" aria-hidden="true" />
               <FontSizeControl scope="site" className="text-white/85" />
               <SmoothScrollToggle className="text-white/85" />
+              <Link
+                href="/admin"
+                aria-label="Admin"
+                title="Admin"
+                className="inline-flex items-center justify-center rounded-full p-1 leading-none opacity-70 transition hover:text-gold hover:opacity-100"
+              >
+                <LayoutDashboard className="h-3.5 w-3.5" />
+              </Link>
             </div>
           </nav>
         </div>
@@ -523,6 +532,15 @@ export function Header({
                   <span className="h-4 w-px bg-border" aria-hidden="true" />
                   <FontSizeControl scope="site" className="text-muted-foreground" />
                   <SmoothScrollToggle className="text-muted-foreground" />
+                  <Link
+                    href="/admin"
+                    onClick={closeMobileMenu}
+                    aria-label="Admin"
+                    title="Admin"
+                    className="text-muted-foreground hover:text-navy"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                  </Link>
                 </div>
               </div>
             </div>
