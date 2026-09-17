@@ -13,8 +13,8 @@ export async function generateMetadata({
   const department = await getDepartmentByCode(dept.toUpperCase()).catch(() => null);
   if (!department) return { title: "Department" };
   return {
-    title: `Industry Interaction & Activities — Department of ${department.name} — SVIT Vasad`,
-    description: `Industry interaction and departmental activities from the Department of ${department.name} at SVIT Vasad.`,
+    title: `Departmental Events — Department of ${department.name} — SVIT Vasad`,
+    description: `Departmental events from the Department of ${department.name} at SVIT Vasad.`,
   };
 }
 

@@ -23,7 +23,7 @@ const NAV = [
   { href: "/achievements", label: "Achievements & Clubs", icon: Award, exact: false },
   {
     href: "/activities",
-    label: "Industry Interaction & Activities",
+    label: "Departmental Events",
     icon: Briefcase,
     exact: false,
   },
