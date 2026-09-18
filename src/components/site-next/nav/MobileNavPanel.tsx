@@ -10,8 +10,64 @@ import { LinkedinIcon } from "./DesktopUtilityBar";
 import { groupMenuChildren, type MenuTopItem } from "@/lib/menus.functions";
 import type { CampusMegaCategory } from "./CampusMegaPanel";
 import type { ContactInfo } from "@/lib/site-settings.functions";
+import type { Department } from "@/lib/departments.functions";
 
 type NavCollege = { id: string; shortCode: string; name: string };
+
+function CollegeAccordionRow({
+  college,
+  departments,
+  isOpen,
+  onToggle,
+  onNavigate,
+}: {
+  college: NavCollege;
+  departments: Department[];
+  isOpen: boolean;
+  onToggle: () => void;
+  onNavigate: () => void;
+}) {
+  const hasDepartments = departments.length > 0;
+
+  return (
+    <div>
+      <div className="flex items-stretch">
+        <Link
+          href={`/colleges/${college.id}`}
+          onClick={onNavigate}
+          className="block flex-1 px-3 py-2 text-sm text-ink-soft"
+        >
+          {college.name}
+        </Link>
+        {hasDepartments && (
+          <button
+            type="button"
+            onClick={onToggle}
+            aria-expanded={isOpen}
+            aria-label={`${college.name} departments`}
+            className="px-3 py-2 text-crimson"
+          >
+            <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
+          </button>
+        )}
+      </div>
+      {isOpen && hasDepartments && (
+        <div className="pb-2 pl-6">
+          {departments.map((d) => (
+            <Link
+              key={d.id}
+              href={`/departments/${d.code}`}
+              onClick={onNavigate}
+              className="block px-3 py-1.5 text-[13px] text-ink-mute"
+            >
+              {d.name}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function AccordionItem({
   label,
@@ -47,6 +103,7 @@ export function MobileNavPanel({
   mainNav,
   utilityNav,
   colleges,
+  departmentsByCollege,
   campusCategories,
   contactInfo,
   onNavigate,
@@ -55,12 +112,15 @@ export function MobileNavPanel({
   mainNav: MenuTopItem[];
   utilityNav: MenuTopItem[];
   colleges: NavCollege[];
+  departmentsByCollege: Record<string, Department[]>;
   campusCategories: CampusMegaCategory[];
   contactInfo: ContactInfo | null;
   onNavigate: () => void;
 }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
+  const [openCollegeId, setOpenCollegeId] = useState<string | null>(null);
   const toggle = (key: string) => setOpenKey((k) => (k === key ? null : key));
+  const toggleCollege = (id: string) => setOpenCollegeId((k) => (k === id ? null : id));
 
   if (!open) return null;
 
@@ -129,14 +189,14 @@ export function MobileNavPanel({
             onToggle={() => toggle("colleges")}
           >
             {colleges.map((c) => (
-              <Link
+              <CollegeAccordionRow
                 key={c.id}
-                href={`/colleges/${c.id}`}
-                onClick={onNavigate}
-                className="block px-3 py-2 text-sm text-ink-soft"
-              >
-                {c.name}
-              </Link>
+                college={c}
+                departments={departmentsByCollege[c.id] ?? []}
+                isOpen={openCollegeId === c.id}
+                onToggle={() => toggleCollege(c.id)}
+                onNavigate={onNavigate}
+              />
             ))}
           </AccordionItem>
         )}

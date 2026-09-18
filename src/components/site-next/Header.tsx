@@ -143,6 +143,7 @@ export function Header({
         mainNav={mainNav}
         utilityNav={utilityNav}
         colleges={displayColleges}
+        departmentsByCollege={departmentsByCollege}
         campusCategories={campusCategories}
         contactInfo={contactInfo}
         onNavigate={() => setMobileOpen(false)}
