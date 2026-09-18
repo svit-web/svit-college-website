@@ -69,8 +69,9 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
 
   return (
     <>
-      {photos.map((src, i) =>
-        mounted.has(i) ? (
+      {photos.map((src, i) => {
+        const isActive = i === index;
+        return mounted.has(i) ? (
           <Image
             key={src + i + ":" + (retryCount[i] ?? 0)}
             src={src}
@@ -78,8 +79,11 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
             fill
             sizes="100vw"
             priority={i === 0}
-            className="object-cover transition-opacity duration-500 ease-in-out"
-            style={{ opacity: i === index ? activeOpacity : 0 }}
+            className="object-cover transition-[opacity,transform] duration-[1400ms] ease-out motion-reduce:transition-none motion-reduce:!scale-100"
+            style={{
+              opacity: isActive ? activeOpacity : 0,
+              transform: isActive ? "scale(1)" : "scale(1.06)",
+            }}
             onLoad={onLoad}
             onError={() => {
               const attempt = retryCount[i] ?? 0;
@@ -90,8 +94,8 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
               );
             }}
           />
-        ) : null,
-      )}
+        ) : null;
+      })}
       {overlay && <div className="absolute inset-0" style={overlayStyle} />}
     </>
   );
