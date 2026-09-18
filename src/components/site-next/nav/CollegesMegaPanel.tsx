@@ -22,21 +22,21 @@ export function CollegesMegaPanel({
 
   const CollegeSection = ({ college }: { college: NavCollege }) => {
     const depts = departmentsByCollege[college.id] ?? [];
-    // Split into 2 columns if >10 departments
-    const deptColumnsClass = depts.length > 10 ? "grid-cols-2 gap-x-5" : "";
+    // Split into 2 columns if >10 departments (only SVIT/DIP hit this)
+    const deptColumnsClass = depts.length > 10 ? "grid-cols-2 gap-x-6" : "";
 
     return (
       <div>
         <Link
           href={`/colleges/${college.id}`}
-          className="group mb-3 inline-flex items-center gap-2.5 border-b border-border pb-2"
+          className="group mb-3 inline-flex items-center gap-2.5 border-b border-border pb-2.5"
         >
           <CollegeLogo
             shortCode={college.shortCode}
             src={college.logo}
-            className="h-6 w-6 shrink-0 rounded border border-border bg-white p-0.5 text-navy"
+            className="h-7 w-7 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
           />
-          <span className="text-[11px] font-bold uppercase tracking-[0.12em] text-navy group-hover:text-crimson">
+          <span className="text-xs font-bold uppercase tracking-[0.14em] text-navy group-hover:text-crimson">
             {college.shortCode}
           </span>
           <ArrowRight className="h-3 w-3 shrink-0 text-crimson opacity-0 transition-opacity group-hover:opacity-100" />
@@ -48,7 +48,7 @@ export function CollegesMegaPanel({
               <li key={d.id}>
                 <Link
                   href={`/departments/${d.code}`}
-                  className="block py-1 text-[13.5px] leading-relaxed text-ink/80 transition-colors hover:text-crimson"
+                  className="block py-1.5 text-[14.5px] text-ink/80 transition-colors hover:text-crimson"
                 >
                   {d.name}
                 </Link>
@@ -56,7 +56,7 @@ export function CollegesMegaPanel({
             ))}
           </ul>
         ) : (
-          <p className="text-xs text-muted-foreground">No departments</p>
+          <p className="text-sm text-muted-foreground">No departments</p>
         )}
       </div>
     );
@@ -64,7 +64,7 @@ export function CollegesMegaPanel({
 
   return (
     <div className="py-8">
-      <div className="grid grid-cols-3 gap-x-10 gap-y-6">
+      <div className="grid grid-cols-3 gap-x-12 gap-y-8">
         {/* Column 1: SVIT */}
         {svit && <CollegeSection college={svit} />}
 
@@ -72,7 +72,7 @@ export function CollegesMegaPanel({
         {dip && <CollegeSection college={dip} />}
 
         {/* Column 3: Other colleges stacked */}
-        <div className="space-y-6">
+        <div className="space-y-8">
           {others.map((c) => (
             <CollegeSection key={c.id} college={c} />
           ))}
