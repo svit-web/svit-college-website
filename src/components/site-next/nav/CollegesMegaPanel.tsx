@@ -15,39 +15,38 @@ export function CollegesMegaPanel({
   colleges: NavCollege[];
   departmentsByCollege: Record<string, Department[]>;
 }) {
-  // Determine column layout based on college count
-  const columnsClass =
-    colleges.length >= 3 ? "sm:grid-cols-3" : colleges.length > 1 ? "sm:grid-cols-2" : "";
-
   return (
-    <div className="py-10">
-      <div className={cn("grid gap-x-8 gap-y-8", columnsClass)}>
+    <div className="py-6">
+      <div className="grid grid-cols-3 gap-x-6 gap-y-4">
         {colleges.map((c) => {
           const depts = departmentsByCollege[c.id] ?? [];
+          // If this college has >6 departments, split into 2 columns within its grid cell
+          const deptColumnsClass = depts.length > 6 ? "grid-cols-2 gap-x-4" : "";
+
           return (
-            <div key={c.id}>
+            <div key={c.id} className="min-w-0">
               <Link
                 href={`/colleges/${c.id}`}
-                className="group mb-3 inline-flex items-center gap-2.5 border-b border-border pb-3"
+                className="group mb-2 inline-flex items-center gap-2 border-b border-border pb-1.5"
               >
                 <CollegeLogo
                   shortCode={c.shortCode}
                   src={c.logo}
-                  className="h-7 w-7 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
+                  className="h-5 w-5 shrink-0 rounded border border-border bg-white p-0.5 text-navy"
                 />
-                <span className="text-xs font-bold uppercase tracking-[0.14em] text-navy group-hover:text-crimson">
+                <span className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-navy group-hover:text-crimson">
                   {c.shortCode}
                 </span>
-                <ArrowRight className="h-3 w-3 shrink-0 text-crimson opacity-0 transition-opacity group-hover:opacity-100" />
+                <ArrowRight className="h-2.5 w-2.5 shrink-0 text-crimson opacity-0 transition-opacity group-hover:opacity-100" />
               </Link>
 
               {depts.length > 0 ? (
-                <ul>
+                <ul className={cn("grid gap-x-3", deptColumnsClass)}>
                   {depts.map((d) => (
                     <li key={d.id}>
                       <Link
                         href={`/departments/${d.code}`}
-                        className="block py-1.5 text-[14.5px] text-ink/80 transition-colors hover:text-crimson"
+                        className="block py-0.5 text-[13px] leading-snug text-ink/80 transition-colors hover:text-crimson"
                       >
                         {d.name}
                       </Link>
@@ -55,7 +54,7 @@ export function CollegesMegaPanel({
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted-foreground">No departments listed yet.</p>
+                <p className="text-xs text-muted-foreground">No departments</p>
               )}
             </div>
           );
