@@ -79,7 +79,7 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
             fill
             sizes="100vw"
             priority={i === 0}
-            className="object-cover transition-[opacity,transform] duration-[1400ms] ease-out motion-reduce:transition-none motion-reduce:!scale-100"
+            className="object-cover transition-[opacity,transform] duration-500 ease-in-out motion-reduce:transition-none motion-reduce:!scale-100"
             style={{
               opacity: isActive ? activeOpacity : 0,
               transform: isActive ? "scale(1)" : "scale(1.06)",
