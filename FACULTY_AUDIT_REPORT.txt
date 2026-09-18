@@ -1,0 +1,568 @@
+================================================================================
+FACULTY DATABASE AUDIT REPORT
+Generated: 2024-09-17
+================================================================================
+
+SUMMARY BY COLLEGE
+--------------------------------------------------------------------------------
+College                                     Working   Resigned      Total
+--------------------------------------------------------------------------------
+SVICA (Computer Applications)                    11          1         12
+SVION (Nursing)                                  29         13         42
+SVIT (Engineering)                              227         26        253
+--------------------------------------------------------------------------------
+TOTAL                                           267         40        307
+
+
+DETAIL BY DEPARTMENT
+================================================================================
+
+Department: AERONAUTICAL ENGINEERING
+Slug: dept-svit-be-aeronautical
+Working Staff: 13
+Resigned Staff: 0
+
+  Working Staff:
+    103-NMS      MRS. NIYATI MAULIN SHAH                       ASSISTANT PROFESSOR
+    106-JRV      MR. JIGNESH R VALA                            ASSISTANT PROFESSOR
+    112-VRG      MR. VIRAL R GAMI                              SENIOR LAB TECHNICIAN
+    1140-VBP     MR. VIKAS BHUPENDRA PATEL                     LAB ATTENDANT
+    115-PRP      MR. PANKAJ R PATEL                            JUNIOR LAB TECHNICIAN
+    1182-MSP     MR. MITESH SHASHIKANT PATEL                   ASSISTANT PROFESSOR
+    119-MKR      MR. MEHUL K RANA                              ASSISTANT PROFESSOR
+    125-TCP      MR. TILAK CHANDRAKANT PATEL                   LAB ATTENDANT
+    126-JBS      DR. JIGARKUMAR BHARATKUMAR SURA               ASSISTANT PROFESSOR
+    127-KBS      MR. KARNAILSINGH BALWANTSINGH SAINI           ASSISTANT PROFESSOR
+    128-HRV      MR. HARDIK ROHITKUMAR VALA                    ASSISTANT PROFESSOR
+    129-DMP      MR. DEV MAHENDRABHAI PATEL                    LAB ATTENDANT
+    369-RRS      MR. RISHI RAJESHKUMAR SAXENA                  ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: APPLIED SCIENCES AND HUMANITIES
+Slug: dept-svit-be-ash
+Working Staff: 20
+Resigned Staff: 2
+
+  Working Staff:
+    1141-RAP     MR. RONAK ASHOKBHAI PATEL                     JUNIOR CLERK
+    3033-SIP     MS. SHABA I PATHAN                            ASSISTANT PROFESSOR
+    631-PRS      MR. PARAS RAJENDRABHAI SHAH                   SENIOR LAB TECHNICIAN
+    919-RVV      DR. RAJIV VASHRAMBHAI VIRADIA                 ASSISTANT PROFESSOR
+    921-VBA      DR. VIKASH BHAGWATSWARUP AGARWAL              DIRECTOR OF PHYSICAL EDUCATION
+    922-RPM      DR. RAHUL PINAKIN MEHTA                       ASSISTANT PROFESSOR
+    923-BMP      DR. BHATT BHAVINI                             ASSISTANT PROFESSOR
+    924-KPM      DR. K P MREDULA                               ASSISTANT PROFESSOR
+    931-MVU      MS. MANISHA VITHALRAO UMATHE                  ASSISTANT PROFESSOR
+    932-DHP      DR. DISHA HARDIK PATEL                        ASSISTANT PROFESSOR
+    934-AMV      DR. ASIF MAHAMADBHAI VAHORA                   ASSISTANT PROFESSOR
+    935-DKM      DR. DHRUVESH KHUSPATRAI MATHUR                ASSISTANT PROFESSOR
+    936-DMT      MS. DIPTI M TAPIAWALA                         ASSISTANT PROFESSOR
+    958-BVS      MR. BHAVESH VIJAYBHAI SUTHAR                  ASSISTANT PROFESSOR
+    969-MSP      MS. MOOLAN SMRITI PHILIP                      ASSISTANT PROFESSOR
+    971-JRJ      MS. JEEL RAJESHKUMAR JOSHI                    ASSISTANT PROFESSOR
+    972-MRT      MR. MIHIRKUMAR RASIKKUMAR THAKKAR             ASSISTANT PROFESSOR
+    973-KVS      MS. KRUSHNALBEN VIJAYSINH SODHAPARMAR         ASSISTANT PROFESSOR
+    975-LGS      MR. LALJIBHAI GHUSABHAI SHIYAL                ASSISTANT PROFESSOR
+    976-PVS      MR. PARTH VIPULKUMAR SHAH                     ASSISTANT PROFESSOR
+
+  Resigned Staff (DO NOT ADD):
+    970-SDP      MR. SAGARKUMAR DINESHBHAI PARMAR              ASSISTANT PROFESSOR
+    974-HRB      MR. HITESHKUMAR RAMESHBHAI BHOI               ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: BACHELOR OF ARCHITECTURE
+Slug: dept-coa-arch
+Working Staff: 26
+Resigned Staff: 5
+
+  Working Staff:
+    1007-SHP     MR. SANDIPKUMAR HIRABHAI PATEL                ACCOUNTANT
+    10-RRK       MRS. ROHINI R KACHROO                         ASSOCIATE PROFESSOR
+    1302-DDP     MS. DEVANSHI  DHARMESHBHAI  PATEL             TEACHING ASSISTANT
+    1304-HJC     HITEN CHAVDA                                  ASSOCIATE PROFESSOR
+    1305-HNT     MR. HARDIK N TAMBOLI                          ASSISTANT PROFESSOR
+    13-RVP       MR. RONAK VINODBHAI PATEL                     ASSOCIATE PROFESSOR
+    1-PNS        MR. PRAGNESHKUMAR NAVNITLAL SHAH              PROFESSOR
+    29-NSP       MR. NARENDRABHAI SHANTILAL PRAJAPATI          POTTER
+    33-SJP       MR. SHAILESH JIVRAMBHAI PATEL                 ASSISTANT PROFESSOR
+    40-RMP       MR. RAJENDRAKUMAR MULJIBHAI PATEL             LIBRARIAN
+    42-AAP       MR. ANKITKUMAR ASHOKBHAI PATEL                SENIOR LAB TECHNICIAN
+    43-MBP       MR. MUKESH BHIKHABHAI PAREKH                  HAMAL
+    56-MDB       MS. MITALI DIPAKKUMAR BHATT                   ASSISTANT PROFESSOR
+    59-THP       MR. TAHA HATIMBHAI PADRAWALA                  ASSISTANT PROFESSOR
+    5-DLS        MR. DINESHKUMAR LOKCHAND SHAH                 ASSOCIATE PROFESSOR
+    64-EVD       MS. ESHA VINAY DALAL                          ASSISTANT PROFESSOR
+    6-PMM        MRS. PALLAVI MADANSINH MAHIDA                 PROFESSOR
+    78-DVB       MS. DHWANI V BHAVSAR                          ASSISTANT PROFESSOR
+    7-PTA        MRS. PALLAVI TUSHAR ABHALE                    ASSOCIATE PROFESSOR
+    82-DMJ       MRS. DARSHINI M JAIN                          ASSISTANT PROFESSOR
+    86-PRS       MRS. PREETY SHAH                              DESIGN CHAIR
+    95-NBV       MS. NAMRATA BINDUBHAI VYAS                    ASSISTANT PROFESSOR
+    97-PDD       MS. PALAV DHANANJAY DESAI                     ASSISTANT PROFESSOR
+    98-DPP       MR. DARSHANKUMAR PRAKASHBHAI PATEL            LAB ATTENDANT
+    999-MMP      MR. MEHULKUMAR MANUBHAI PATEL                 OFFICE SUPERINTENDENT
+    9-ABS        MR. AMITKUMAR BIHARILAL SHAH                  ASSOCIATE PROFESSOR
+
+  Resigned Staff (DO NOT ADD):
+    1185-SGV     MS. SUSHMA GODHU VANJANI                      ASSISTANT PROFESSOR
+    1303-SHS     SUGURESH SULTANPUR                            ASSISTANT PROFESSOR
+    31-KRS       MR. KETAN RATILAL SHAH                        ASSISTANT PROFESSOR
+    93-NSC       MR. NAVIN SHANKAR CHAHANDE                    ASSISTANT PROFESSOR
+    96-TNP       MS. TANIYA NARANBHAI PATEL                    ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: BACHELOR OF COMPUTER APPLICA...
+Slug: dept-svica-ca
+Working Staff: 11
+Resigned Staff: 1
+
+  Working Staff:
+    4002-RSP     MR. RASHMIN SHANTILAL PARMAR                  ASSISTANT PROFESSOR
+    4004-SVS     MR. SANDIPKUMAR VINUBHAI SUTHAR               LAB TECHNICIAN
+    4005-KND     MR. KANUBHAI NAGINBHAI DHOBI                  LAB ATTENDANT
+    4006-AKP     MR. AMIT KANTIBHAI PATEL                      ASSISTANT PROFESSOR
+    4007-GVT     MR. GHANSHYAMBHAI VIRENDRAKUMAR THAKAR        ASSISTANT PROFESSOR
+    4010-JBM     MS. JANISH BHUPENDRABHAI MACWAN               ASSISTANT PROFESSOR
+    4011-HSP     MR. HIREN SUBHASHBHAI PATEL                   LAB ATTENDANT
+    4012-NPD     MS. NEHAL PANKAJBHAI DAULATJADA               ASSISTANT PROFESSOR
+    4013-RBP     MR. RACHIT BABUBHAI PRAJAPATI                 ASSISTANT PROFESSOR
+    4015-FYV     MS. FIZA YUNUSBHAI VHORA                      ASSISTANT PROFESSOR
+    91-HJP       MR. HEMANGKUMAR JAYESHBHAI PATEL              LAB ATTENDANT
+
+  Resigned Staff (DO NOT ADD):
+    4016-NPG     MS. NEHABEN PRAKASHBHAI GADHI                 ASSOCIATES PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: BACHELOR OF SCIENCE IN NURSING
+Slug: dept-svion-gn
+Working Staff: 29
+Resigned Staff: 13
+
+  Working Staff:
+    1001-CPP     MR. CHETANKUMAR PUSHPAKANTBHAI PATEL          OFFICER ON SPECIAL DUTY
+    100-PAP      MR. PRITESHKUMAR ARUNBHAI PATEL               LIBRARY ATTENDANT
+    1033-MPH     MR. MOHAN PARSOTTAMBHAI HARIJAN               SWEEPER
+    1068-AJP     MR. AMITKUMAR JAGDISHBHAI PARMAR              HAMAL
+    1070-PRB     MR. PRITESHKUMAR RAMESHBHAI BHOI              HAMAL
+    1074-BBG     MR. BHAVESHBHAI BUDHABHAI GOHEL               HAMAL
+    3007-DNP     MRS. DIPALI NITINBHAI PATEL                   JUNIOR CLERK
+    3013-TMM     MR. TAKSHAKBHAI MAHENDRABHAI MAKWANA          TUTOR
+    3021-STV     MS. SUJANBEN  TRFANBHAI VAHORA                TUTOR
+    3022-PDM     MS. PARIN DILIPBHAI MAHIDA                    TUTOR
+    3025-SMB     MRS. SWETABEN M BARIYA                        TUTOR
+    3034-PEM     MS. PATEL EKTA MAYANKKUMAR                    ASSISTANT PROFESSOR
+    3035-ASS     MR. AATIFALI SAJIDALI SAIYAD                  TUTOR
+    3036-JPS     MR. JAYKUMAR PRAVINBHAI SOLANKI               TUTOR
+    3037-AFP     MR. ABHAYKUMAR FRANCISBHAI PARMAR             TUTOR
+    3038-HKP     MR. HARISH KANUBHAI PURBIYA                   TUTOR
+    3040-RBP     MS. RIDDHI BHARATBHAI PATEL                   ASSISTANT PROFESSOR
+    3041-NNV     MRS. NIKETABEN NOEL VAGHELA                   ASSISTANT PROFESSOR
+    3042-PRG     MRS. PRIYANKABEN RAJESHBHAI GURAV             ASSISTANT PROFESSOR
+    3044-HRP     MR. HARSHUL PARMAR                            TUTOR
+    3045-VBJ     MS. VAISHNAVIBEN BHAGWANSINH JADAV            TUTOR
+    3046-NDP     MRS. NIKISHA DIPAKBHAI PATEL                  ASSISTANT PROFESSOR
+    3047-RSJ     MS. RUPALIBEN SATISHKUMAR JOSHI               TUTOR
+    3048-SVP     MS. SHIRLEY VIJAYKUMAR PARMAR                 TUTOR
+    3049-DHP     MS. DHARABEN HARSHADBHAI PATEL                TUTOR
+    3050-KMR     MS. KINJAL MAHESHBHAI RATHWA                  TUTOR
+    3051-GVM     MS. GRACY VIJAYBHAI MACWAN                    TUTOR
+    3052-MGP     Ms. MAITRI GIRISHKUMAR PRAJAPATI              TUTOR
+    3053-RRS     Mr. RAHUL RAJUBHAI SAGAR                      ASSISTANT PROFESSOR
+
+  Resigned Staff (DO NOT ADD):
+    3002-KDP     MR. KAMESH DHANANJAYBHAI PATEL                JUNIOR ACCOUNTANT
+    3015-APP     MS. AYUSHIBEN PARESHBHAI PATEL                TUTOR
+    3020-NAM     MS. NIDHI ARVINDBHAI MAKWANA                  TUTOR
+    3023-LHG     MR. LAXMAN H  GARASIYA                        ASSISTANT PROFESSOR
+    3024-SVG     MRS. SEJALBEN V GOSWAMI                       TUTOR
+    3026-SRR     MS. SHREYA R RAJPUT                           TUTOR
+    3027-BRM     MS. BHARGAVI RATILAL MAKWANA                  TUTOR
+    3028-RCP     MS. RAHI  C PATEL                             TUTOR
+    3030-DRV     MS. DHARMISHTHABEN R  VASAVA                  TUTOR
+    3031-VDV     MS. VIDITA DHIRENDRABHAI VASAVA               TUTOR
+    3032-HMS     MS. HETVIBEN MAHENDRASINH SOLANKI             TUTOR
+    3039-KDP     MR. KARANBHAI DIPAKBHAI PARMAR                TUTOR
+    3043-PBV     MS. PAYAL BHUPENDRABHAI VADI                  TUTOR
+
+--------------------------------------------------------------------------------
+
+Department: CIVIL ENGINEERING
+Slug: dept-svit-be-civil
+Working Staff: 14
+Resigned Staff: 1
+
+  Working Staff:
+    501-NMT      DR. NIRANJAN MARKANDRAY TRIVEDI               ASSOCIATE PROFESSOR
+    505-SSH      MR. SAHIL SAYEEDBHAI HUSENI                   ASSISTANT PROFESSOR
+    506-CGP      MR. CHITRANJAN GUNVANTBHAI PATEL              ASSISTANT PROFESSOR
+    507-SMS      DR. SHEFALI MANISH SHAH                       ASSISTANT PROFESSOR
+    509-SPS      DR. SAMTA PARAG SHAH                          ASSOCIATE PROFESSOR
+    510-RVG      DR. ROOPALI VIKAS GOYAL                       ASSISTANT PROFESSOR
+    511-SPD      DR. SEJAL PURVANG DALAL                       ASSOCIATE PROFESSOR
+    514-DCP      MR. DIPEN CHANDUBHAI PATEL                    ASSISTANT PROFESSOR
+    515-DMP      MS. DHRUTI MIHIR PANDYA                       ASSISTANT PROFESSOR
+    521-HBP      MR. HITESHKUMAR BABUBHAI PANDYA               SENIOR LAB TECHNICIAN
+    522-AVP      MR. ALKESH VITTHALBHAI PATEL                  SENIOR LAB TECHNICIAN
+    525-PAB      MR. PIYUSHKUMAR ADITRAM BHATT                 JUNIOR LAB TECHNICIAN
+    531-MYP      MRS. MANSI Y PATEL                            CHEMIST
+    532-MBP      MR. MITESHKUMAR PATEL                         CHEMICAL ENGINEER
+
+  Resigned Staff (DO NOT ADD):
+    529-DJP      MR. DASHANGKUMAR JAYANTIBHAI PARMAR           CHEMICAL ENGINEER
+
+--------------------------------------------------------------------------------
+
+Department: COMPUTER ENGINEERING
+Slug: dept-svit-be-computer
+Working Staff: 32
+Resigned Staff: 1
+
+  Working Staff:
+    1149-BDP     MR. BHUMIN DIPAKBHAI PATEL                    JUNIOR LAB TECHNICIAN
+    1172-RKP     MR. RITESH KAUSHIKBHAI PATEL                  JUNIOR CLERK
+    1198-MAS     MR. MOKSH ATULKUMAR SHAH                      LAB ATTENDANT
+    214-PGP      MR. PANKAJBHAI GHANSHYAMBHAI PATEL            SENIOR LAB TECHNICIAN
+    702-NRS      DR. NEHA RIPAL SONI                           ASSOCIATE PROFESSOR
+    704-JBS      MRS. JAYNA BIJAL SHAH                         ASSISTANT PROFESSOR
+    708-PVB      MS. PARUL VALLABH BHAI BAKARANIYA             ASSISTANT PROFESSOR
+    709-MMP      MR. MILIN MANUBHAI PATEL                      ASSISTANT PROFESSOR
+    710-BMJ      MRS. BARKHA MALAY JOSHI                       ASSISTANT PROFESSOR
+    711-RVG      MS. RIMI VINODKUMAR GUPTA                     ASSISTANT PROFESSOR
+    712-NBS      MS. NIDHI BHARATKUMAR SHAH                    ASSISTANT PROFESSOR
+    713-NSV      MRS. NISHA SAMIR VELANI                       ASSISTANT PROFESSOR
+    717-RBP      MR. RASHMIN BABUBHAI PRAJAPATI                ASSISTANT PROFESSOR
+    718-KSS      MR. KEYUR SURESHBHAI SUTHAR                   ASSISTANT PROFESSOR
+    719-KNU      MR. KEYUR NIRANJANKUMAR UPADHYAY              ASSISTANT PROFESSOR
+    722-SMP      MRS. SHRINA MANAN PATEL                       ASSISTANT PROFESSOR
+    727-RJR      MR. RONAK JASWIN ROY                          ASSISTANT PROFESSOR
+    728-GKP      MR. GAURANG KIRITBHAI PATEL                   COMPUTER OPERATOR
+    743-BYP      MR. BRIJESHKUMAR YOGESHBHAI PANCHAL           ASSISTANT PROFESSOR
+    747-DJP      MRS. DIVYA JAYESH PARMAR                      ASSISTANT PROFESSOR
+    748-SDB      MRS. SWATIBEN DIXITKUMAR BOPALIYA             ASSISTANT PROFESSOR
+    749-MCJ      MRS. MITTAL CHINTAN JOSHI                     ASSISTANT PROFESSOR
+    754-MHS      MR. MILIND HIMANSHU SHAH                      ASSISTANT PROFESSOR
+    755-PAP      MRS. PRIYANKA ASHISH PATEL                    ASSISTANT PROFESSOR
+    756-AMP      MR. ABHISHEK MAYURKUMAR PATEL                 ASSISTANT PROFESSOR
+    759-MPP      DR. MINAL PARIMALBHAI PATEL                   ASSOCIATE PROFESSOR
+    760-JKS      MR. JAYDEEPSINH KISHAKUMAR SOLANKI            ASSISTANT PROFESSOR
+    763-JMP      MRS. JEENAL M PATEL                           ASSISTANT PROFESSOR
+    764-HVC      Ms. HETAL VICKY CHOKSHI                       ASSISTANT PROFESSOR
+    765-HJB      Ms. HIMANI JIMIT BHATT                        ASSISTANT PROFESSOR
+    766-PJD      Ms. PREXA JAYENDRAKUMAR DESAI                 ASSISTANT PROFESSOR
+    767-SPP      Mr. SACHIN PRAVINBHAI PATEL                   CCTV OPERATOR
+
+  Resigned Staff (DO NOT ADD):
+    758-RSM      MR. RYTHMN S MAGNANI                          TEACHING ASSISTANT
+
+--------------------------------------------------------------------------------
+
+Department: COMPUTER SCIENCE AND DESIGN
+Slug: dept-svit-be-csd
+Working Staff: 8
+Resigned Staff: 0
+
+  Working Staff:
+    1401-VNP     MR. VIHANG NARENDRAKUMAR PATEL                ASSISTANT PROFESSOR
+    1402-AVM     MR. ARPIT VIJAY MEHTA                         ASSISTANT PROFESSOR
+    1403-UDK     MRS. URMILA DHAVALKUMAR KHUNT                 ASSISTANT PROFESSOR
+    745-ADR      DR. AJAYSINH DEVENDRASINH RATHOD              ASSOCIATE PROFESSOR
+    752-PSP      MRS. PRIYA SHREYAS PATEL                      ASSISTANT PROFESSOR
+    753-RAD      MRS. RAJVEE AARJAV DESAI                      ASSISTANT PROFESSOR
+    761-MHS      MS. MAHESHWARI HITESHBHAI SAGAR               ASSISTANT PROFESSOR
+    762-NVP      MR. NIRAV VASHRAMBHAI PATEL                   ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: DIPLOMA APPLIED SCIENCE &amp...
+Slug: dept-svit-dip-ash
+Working Staff: 6
+Resigned Staff: 0
+
+  Working Staff:
+    1191-UMV     MS. UZMA MAHEBUBHUSAAIN VAHORA                LECTURER
+    2001-SRV     MR. SHARDUL RAM VADALKAR                      LECTURER
+    2002-SMR     MS. SABA MAHESHBHAI RAJ                       LECTURER
+    2003-NNP     MR. NISH NARENDRABHAI PATEL                   LAB ATTENDANT
+    2004-PPS     MS. PARTE PRACHI SHANKAR                      LECTURER
+    2005-SJM     MS. SADEKABANU JAWADHUSEN MUNSHI              LECTURER
+
+--------------------------------------------------------------------------------
+
+Department: DIPLOMA IN CIVIL
+Slug: dept-svit-dip-civil
+Working Staff: 2
+Resigned Staff: 0
+
+  Working Staff:
+    1512-DSC     MS. DRASTI SANMUKHBHAI CHAUDHARI              LECTURER
+    1701-KMP     MS. KRUTI MRUNAL PARIKH                       LECTURER
+
+--------------------------------------------------------------------------------
+
+Department: DIPLOMA IN COMPUTER
+Slug: dept-svit-dip-computer
+Working Staff: 4
+Resigned Staff: 1
+
+  Working Staff:
+    1502-DSP     MR. DEEP SATISHBHAI PATEL                     LAB ATTENDANT
+    1504-HMN     MS. HEMALIBEN MANSUKHBHAI NIMAVAT             LECTURER
+    1506-DAP     MR. DHRUV ANILKUMAR PATEL                     LECTURER
+    1508-PNM     MR. PRAJAPATI NIKULKUMAR MAHESHBHAI           LECTURER
+
+  Resigned Staff (DO NOT ADD):
+    1501-MKP     MS. MARGI KETANBHAI PATEL                     LECTURER
+
+--------------------------------------------------------------------------------
+
+Department: DIPLOMA IN ELECTRICAL
+Slug: dept-svit-dip-electrical
+Working Staff: 3
+Resigned Staff: 0
+
+  Working Staff:
+    1505-KMP     MR. KRUNALKUMAR MUKESHBHAI PANDYA             LECTURER
+    1510-HST     MR. HIMANSHU SHANKARBHAI THAKOR               LECTURER
+    1902-SRM     MS. SHIVANGINI RAJAT MAKWANA                  LECTURER
+
+--------------------------------------------------------------------------------
+
+Department: DIPLOMA IN INFORMATION TECHN...
+Slug: dept-svit-dip-it
+Working Staff: 3
+Resigned Staff: 0
+
+  Working Staff:
+    1507-MPL     MRS. MONIKA PARTH LIMBACHIYA                  LECTURER
+    1509-NPP     MRS. NIRIKSHABEN PARTH PATEL                  LECTURER
+    1601-JNB     MS. JAHNAVI NAVINCHANDRA BRAHMBHATT           LECTURER
+
+--------------------------------------------------------------------------------
+
+Department: DIPLOMA IN MECHANICAL
+Slug: dept-svit-dip-mechanical
+Working Staff: 5
+Resigned Staff: 0
+
+  Working Staff:
+    1511-JNP     MR. JAIMITKUMAR NAGINBHAI PAREKH              LAB ATTENDANT
+    1513-RNS     Mr. RONAKSINH NATVARSINH SOLANKI              LECTURER
+    1801-PMP     MR. PRATIK MAHENDRABHAI PATEL                 LAB ATTENDANT
+    375-SGA      DR. SHAILEE GHANSHYAMBHAI ACHARYA             LECTURER
+    377-AHM      MR. ARPIT HARIVADAN MODI                      LECTURER
+
+--------------------------------------------------------------------------------
+
+Department: ELECTRICAL ENGINEERING
+Slug: dept-svit-be-electrical
+Working Staff: 17
+Resigned Staff: 1
+
+  Working Staff:
+    1142-JJP     MR. JAYKUMAR JITENDRABHAI PATEL               JUNIOR CLERK
+    1143-KSP     MR. KEVIN SIRISHBHAI PATEL                    LAB ATTENDANT
+    1193-MSP     MR. MEET SANJAYBHAI PATEL                     ASSISTANT PROFESSOR
+    251-CDK      DR. CHETAN DATTATRAY KOTWAL                   PROFESSOR
+    252-PRG      DR. PIMAL RAMESHBHAI GANDHI                   ASSOCIATE PROFESSOR
+    253-NNS      DR. NILAY NARENDRAKUMAR SHAH                  ASSISTANT PROFESSOR
+    254-NAR      DR. NIRALI AJAY RATHOD                        ASSISTANT PROFESSOR
+    258-RCG      MR. RAKESHKUMAR CHANDUBHAI GAJJAR             ASSISTANT PROFESSOR
+    261-SMP      DR. SHITAL MANISHBHAI PUJARA                  ASSISTANT PROFESSOR
+    265-SNP      MR. SANJAYKUMAR NATVARLAL PATEL               ASSISTANT PROFESSOR
+    272-JKV      MR. JIGNESH KANAIYALAL VYAS                   SENIOR LAB TECHNICIAN
+    277-HSP      MR. HITESH SURESHBHAI PATEL                   SENIOR LAB TECHNICIAN
+    278-BHP      MR. BHARAT HARMANBHAI PATEL                   SENIOR LAB TECHNICIAN
+    279-NAC      MR. NIRAVKUMAR ASHOKKUMAR CHAUHAN             ASSISTANT PROFESSOR
+    302-JMP      MR. JAINESH MUKESHBHAI PATEL                  ASSISTANT PROFESSOR
+    308-MDS      MR. MIHIRKUMAR D SHAH                         ASSISTANT PROFESSOR
+    309-ANM      Mr. AAKASH NAVINKUMAR MEHTA                   ASSISTANT PROFESSOR
+
+  Resigned Staff (DO NOT ADD):
+    264-KKA      MRS. KRITI KAPILDEV ARORA                     ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: ELECTRONIC AND COMMUNICATION
+Slug: dept-svit-be-ec
+Working Staff: 7
+Resigned Staff: 2
+
+  Working Staff:
+    804-JNP      MR. JIGNESHKUMAR NARENDRAKUMAR PATEL          ASSISTANT PROFESSOR
+    810-SMP      DR. SAURABH MANILAL PATEL                     ASSISTANT PROFESSOR
+    811-TKK      MR. TUSHAR KAMALKAR KULKARNI                  ASSISTANT PROFESSOR
+    826-TSP      MR. TEJASKUMAR SURYAKANT PATEL                SENIOR LAB TECHNICIAN
+    827-NHP      MR. NIRAVKUMAR HARIHAR PANDYA                 SENIOR LAB TECHNICIAN
+    837-VMV      Mr. VIRAL MAHESHKUMAR VYAS                    ASSISTANT PROFESSOR
+    838-RMJ      Mr. ROHITKUMAR MANSUGBHAI JOSHI               ASSISTANT PROFESSOR
+
+  Resigned Staff (DO NOT ADD):
+    835-SVD      MRS. SHREENI VARUNKUMAR DAVE                  ASSISTANT PROFESSOR
+    836-CKJ      MR. CHANDNI KUMARI JHA                        ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: INFORMATION TECHNOLOGY
+Slug: dept-svit-be-it
+Working Staff: 25
+Resigned Staff: 1
+
+  Working Staff:
+    1199-PJP     MR. PARTH JITENDRABHAI PATEL                  LAB ATTENDANT
+    601-NVS      MS. NISHA VIPUL SHAH                          ASSISTANT PROFESSOR
+    605-MHM      DR. MALA HASMUKHBHAI MEHTA                    ASSISTANT PROFESSOR
+    606-PFM      DR. PATEL FALGUNIBEN MANESHKUMAR              ASSISTANT PROFESSOR
+    607-GKC      MS. GARGI KANTILAL CHAUHAN                    ASSISTANT PROFESSOR
+    608-SAG      MS. SNEHA ASHWINBHAI GAYWALA                  ASSISTANT PROFESSOR
+    609-PMP      MR. PARESHKUMAR MOTIBHAI PATEL                ASSISTANT PROFESSOR
+    611-PPP      MS. PARIKH PARITA PANTHESHKUMAR               ASSISTANT PROFESSOR
+    613-AIC      MR. AMITKUMAR INDUBHAI CHAUDHARI              ASSISTANT PROFESSOR
+    614-PDD      MR. PRADISH DAMJIBHAI DADHANIA                ASSISTANT PROFESSOR
+    617-PPS      MS. PRIYANKA PALAK SHAH                       ASSISTANT PROFESSOR
+    626-VSP      MR. VIRALKUMAR SHAILESHBHAI PATEL             ASSISTANT PROFESSOR
+    629-PSR      MR. PRASHANT SAMANTSINH RAJ                   LAB ATTENDANT
+    630-NJP      MR. NIRAV JITENDRABHAI PATEL                  SENIOR LAB TECHNICIAN
+    633-BSP      MR. BRIJESH SANATKUMAR PANDYA                 COMPUTER OPERATOR
+    642-KCP      MR. KEVIN CHANDRAKANT PATEL                   CCTV OPERATOR
+    643-NSP      MS. NIKESHA SANJAYBHAI PATEL                  ASSISTANT PROFESSOR
+    644-MSD      MRS. MITIXA SUDHIR DALAL                      ASSISTANT PROFESSOR
+    645-SNR      MS. SHEFALI NIRAVKUMAR RANA                   ASSISTANT PROFESSOR
+    646-RKP      MRS. ROHINI KANDARPKUMAR PATEL                ASSISTANT PROFESSOR
+    648-NMM      MS. NIYATI MUKESHBHAI MEVADA                  ASSISTANT PROFESSOR
+    649-SKD      MRS. SAFEYA KAIF DHARMAJWALA                  ASSISTANT PROFESSOR
+    650-DKP      DHRUVI KALPESHBHAI PATEL                      TEACHING ASSISTANT
+    651-SSN      Mrs. SNEHA SANTOSH NAIR                       ASSISTANT PROFESSOR
+    828-ACP      MR. ALKESH CHANDUBHAI PATEL                   SENIOR LAB TECHNICIAN
+
+  Resigned Staff (DO NOT ADD):
+    647-PDM      MR. PRIYAM DHARMESHBHAI MEHTA                 ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: INSTRUMENTATION AND CONTROL
+Slug: dept-svit-be-ic
+Working Staff: 1
+Resigned Staff: 0
+
+  Working Staff:
+    215-CTT      MR. CHETAN THAKORLAL THAKKAR                  JUNIOR CLERK
+
+--------------------------------------------------------------------------------
+
+Department: MASTER OF BUSINESS ADMINISTR...
+Slug: dept-svit-mba
+Working Staff: 7
+Resigned Staff: 2
+
+  Working Staff:
+    2101-DDB     DR. DEEPA J NAYAK                             ASSISTANT PROFESSOR
+    2102-IBP     MS. ISHA BHUPESHBHAI PATEL                    JUNIOR CLERK
+    2105-HAS     MS. HARMI ANILBHAI SADARANI                   ASSISTANT PROFESSOR
+    2107-NPP     MRS. NIKETA PRATIK PATELMRS. NIKETA PRATIK PATEL ASSISTANT PROFESSOR
+    2108-DPR     Ms. DHRUTI PANKAJBHAI RATHWA                  ASSISTANT PROFESSOR
+    2109-SHP     Mr. SAMAR HARIKRUSHNABHAI PANJABI             ASSISTANT PROFESSOR
+    925-AKA      DR. ARUN K ADHIKARY                           ASSISTANT PROFESSOR
+
+  Resigned Staff (DO NOT ADD):
+    2104-JBP     MRS. JENITA BHAUTIK PATEL                     ASSISTANT PROFESSOR
+    2106-SNR     MS. SHRADDHA NITVIJAY RESHIVA                 ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: MASTER OF COMPUTER APPLICATION
+Slug: dept-svit-mca
+Working Staff: 9
+Resigned Staff: 0
+
+  Working Staff:
+    1148-BRP     MR. BIGAN RAJENDRABHAI PATEL                  JUNIOR CLERK
+    1200-KNP     MR. KALPESH NAVNITBHAI PATEL                  LAB ATTENDANT
+    152-RSG      DR. RUPAM SENGUPTA                            ASSISTANT PROFESSOR
+    155-JVR      DR. JONITA VATSAL ROMAN                       ASSISTANT PROFESSOR
+    161-NSG      MR. NIL SURESHGIR GOSAI                       ASSISTANT PROFESSOR
+    163-NKP      MR. NAGIN KANTIBHAI PARMAR                    HAMAL
+    166-PIC      MS. PAYAL ISAAC CHAUHAN                       ASSISTANT PROFESSOR
+    168-ZAB      MRS. ZANKHANABEN ASHISHKUMAR BHATT            ASSISTANT PROFESSOR
+    4003-KBP     MS. KHUSHBU BHAVIN PATEL                      ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+Department: MECHANICAL ENGINEERING
+Slug: dept-svit-be-mechanical
+Working Staff: 25
+Resigned Staff: 10
+
+  Working Staff:
+    1147-JMP     MR. JAY M PANDYA                              LAB ATTENDANT
+    114-DRP      MR. DIPAKKUMAR RAMESHBHAI PATEL               SENIOR CLERK
+    1160-TIP     MR. TEJ I PATEL                               JUNIOR DRAFTSMAN
+    1173-SVP     MR. SHARMIL VIRENDRABHAI PATEL                WORKSHOP ATTENDANT
+    1196-DKP     MR. DHRUV KAMLESHKUMAR PATEL                  LAB ATTENDANT
+    351-VRP      DR. VENKATA RAMANA RAMARAO PALADUGULA         PROFESSOR
+    354-PHS      DR. PRATIK HARSHADBHAI SHAH                   ASSOCIATE PROFESSOR
+    355-SKS      MRS. SEJAL KEYUR SHAH                         ASSISTANT PROFESSOR
+    356-DSS      DR. DIPENKUMAR SEVANTILAL SHAH                ASSOCIATE PROFESSOR
+    358-SPS      DR. SEKAR PRAKASH SALADI                      ASSOCIATE PROFESSOR
+    360-JMM      DR. JITENDRA MANUBHAI MISTRY                  ASSOCIATE PROFESSOR
+    362-DRJ      MR. DHAVAL RAJENDRABHAI JOSHI                 ASSISTANT PROFESSOR
+    364-SAB      MR. SAURABH ANILKUMAR BAN                     ASSISTANT PROFESSOR
+    365-TJG      MR. TEJAS JAYANT GHOTIKAR                     ASSISTANT PROFESSOR
+    373-COY      DR. CHETAN OMPRAKASH YADAV                    ASSISTANT PROFESSOR
+    376-DAP      MR. DEVANG ARVINDBHAI PATEL                   ASSISTANT PROFESSOR
+    378-AMS      MR. AJAYKUMAR MANANDBHAI SOLANKI              ASSISTANT PROFESSOR
+    381-HRC      MRS. HETAL RANJITSINGH CHAUHAN                ASSISTANT PROFESSOR
+    389-JST      MR. JIGNESH SURESHBHAI THAKKAR                ASSISTANT PROFESSOR
+    399-SKP      MR. SURESH KESHAVBHAI PARMAR                  WORKSHOP ATTENDANT
+    400-RFB      MR. RAMESH FULABHAI BHOI                      WORKSHOP ATTENDANT
+    402-JKC      MR. JITENDRA KANUBHAI CHAUHAN                 WORKSHOP ATTENDANT
+    406-PRP      MR. PRIYAL RAMANBHAI PATEL                    ASSISTANT PROFESSOR
+    407-DAP      MR. DARSHAN ASHOKBHAI PATEL                   ASSISTANT PROFESSOR
+    417-DMP      MR. DIPAK MAHENDRA PATEL                      LAB ATTENDANT
+
+  Resigned Staff (DO NOT ADD):
+    1082-KHS     MR. KIRANKUMAR HASMUKHBHAI SOLANKI            SWEEPER
+    361-NRP      MS. NITA RATILAL PATEL                        ASSISTANT PROFESSOR
+    363-CHS      MR. CHETAN HIRALAL SOLANKI                    ASSISTANT PROFESSOR
+    366-HRD      MR. HARDIK RASIKLAL DODIYA                    ASSISTANT PROFESSOR
+    372-VPP      MR. VIRALKUMAR PRAMODBHAI PAREKH              ASSISTANT PROFESSOR
+    380-KHN      MS. KIRTI HANAMANT NIRALGIKAR                 ASSISTANT PROFESSOR
+    391-MAP      MR. MAHESHBHAI AMBALAL PATEL                  MECHANIC
+    397-TJV      MR. THAKOR JETHABHAI VASAVA                   WORKSHOP ATTENDANT
+    401-NTP      MR. NARENDRA TRIKAMBHAI PATEL                 LAB ATTENDANT
+    405-PSP      MR. PRATIK SUBHASHBHAI PARMAR                 ASSISTANT PROFESSOR
+
+--------------------------------------------------------------------------------
+
+
+ACTION ITEMS
+================================================================================
+
+1. ADD 267 working faculty members to database
+   - Generated seed files: 09_faculty_*.sql
+
+2. ENSURE 40 resigned employees are NOT added
+   - Script already filters out Resigned status
+
+3. UPDATE department information
+   - Run: 10_diploma_details.sql for diploma departments
+
+4. VERIFY employee codes are stored in metadata
+   - All faculty have employee_code in metadata JSONB field
+
+
+SEED FILES TO EXECUTE (in order)
+================================================================================
+
+1. 03_departments.sql         (if not already run)
+2. 04_courses.sql             (if not already run)
+3. 09_faculty_svit.sql        (201 SVIT faculty)
+4. 09_faculty_svit-coa.sql    (26 Architecture faculty)
+5. 09_faculty_svica.sql       (11 SVICA faculty)
+6. 09_faculty_svion.sql       (29 Nursing faculty)
+7. 10_diploma_details.sql     (Diploma course & dept details)
+
+Total: 267 working faculty members across 21 departments

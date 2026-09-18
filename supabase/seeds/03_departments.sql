@@ -43,15 +43,16 @@ BEGIN
   (v_svit_id, 'Information Technology (Diploma)', 'dept-svit-dip-it', 'DIP-IT', 'Diploma', 12, '{"degree_type": "Diploma", "legacy_id": "dept-svit-dip-it"}'::jsonb, 'published'),
   (v_svit_id, 'Electrical Engineering (Diploma)', 'dept-svit-dip-electrical', 'DIP-EE', 'Diploma', 13, '{"degree_type": "Diploma", "legacy_id": "dept-svit-dip-electrical"}'::jsonb, 'published'),
   (v_svit_id, 'Mechanical Engineering (Diploma)', 'dept-svit-dip-mechanical', 'DIP-ME', 'Diploma', 14, '{"degree_type": "Diploma", "legacy_id": "dept-svit-dip-mechanical"}'::jsonb, 'published'),
-  (v_svit_id, 'Civil Engineering (Diploma)', 'dept-svit-dip-civil', 'DIP-CE', 'Diploma', 15, '{"degree_type": "Diploma", "legacy_id": "dept-svit-dip-civil"}'::jsonb, 'published');
+  (v_svit_id, 'Civil Engineering (Diploma)', 'dept-svit-dip-civil', 'DIP-CE', 'Diploma', 15, '{"degree_type": "Diploma", "legacy_id": "dept-svit-dip-civil"}'::jsonb, 'published'),
+  (v_svit_id, 'Applied Science & Humanities (Diploma)', 'dept-svit-dip-ash', 'DIP-ASH', 'Diploma', 16, '{"degree_type": "Diploma", "legacy_id": "dept-svit-dip-ash", "is_support_department": true}'::jsonb, 'published');
 
   -- SVIT · MBA
   INSERT INTO departments (college_id, name, slug, code, degree_level, sort_order, metadata, status) VALUES
-  (v_svit_id, 'Management Studies', 'dept-svit-mba', 'MBA', 'PG', 16, '{"degree_type": "MBA", "legacy_id": "dept-svit-mba"}'::jsonb, 'published');
+  (v_svit_id, 'Management Studies', 'dept-svit-mba', 'MBA', 'PG', 17, '{"degree_type": "MBA", "legacy_id": "dept-svit-mba"}'::jsonb, 'published');
 
   -- SVIT · MCA
   INSERT INTO departments (college_id, name, slug, code, degree_level, sort_order, metadata, status) VALUES
-  (v_svit_id, 'Computer Applications (PG)', 'dept-svit-mca', 'MCA', 'PG', 17, '{"degree_type": "MCA", "legacy_id": "dept-svit-mca"}'::jsonb, 'published');
+  (v_svit_id, 'Computer Applications (PG)', 'dept-svit-mca', 'MCA', 'PG', 18, '{"degree_type": "MCA", "legacy_id": "dept-svit-mca"}'::jsonb, 'published');
 
   -- SVION - Nursing (no degree-type grouping)
   INSERT INTO departments (college_id, name, slug, code, degree_level, sort_order, metadata, status) VALUES

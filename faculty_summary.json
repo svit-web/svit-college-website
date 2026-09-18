@@ -1,0 +1,12 @@
+{
+  "total_working": 267,
+  "total_resigned": 40,
+  "departments": 21,
+  "seed_files": [
+    "09_faculty_svit.sql",
+    "09_faculty_svit-coa.sql",
+    "09_faculty_svica.sql",
+    "09_faculty_svion.sql",
+    "10_diploma_details.sql"
+  ]
+}

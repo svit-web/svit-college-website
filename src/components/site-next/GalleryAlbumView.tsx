@@ -129,7 +129,7 @@ export function GalleryAlbumView({ album }: { album: GalleryAlbumWithMedia }) {
   return (
     <div>
       {/* Header */}
-      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep py-12 text-white">
+      <section className="bg-gradient-to-br from-navy via-navy to-navy-deep pb-12 pt-[clamp(150px,18vh,200px)] text-white">
         <div className="container-page">
           <Link
             href="/gallery"

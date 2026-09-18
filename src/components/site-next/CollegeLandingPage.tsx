@@ -102,7 +102,7 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
         />
       )}
       <div className="absolute inset-0" style={overlayStyle} />
-      <div className="container-page relative py-24 md:py-32">
+      <div className="container-page relative pb-24 pt-[clamp(150px,18vh,200px)] md:pb-32">
         <div className="max-w-3xl">
           <div className="mb-6 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
             {college.hero.kicker}

@@ -46,7 +46,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl">Hero Appearance</h1>
           <p className="text-sm text-slate-500">
-            One place to control every hero photo across the site — homepage slideshow, about, campus life and contact — plus the shared tint/blur overlay. No code changes needed.
+            One place to control every hero photo across the site. The tint/blur overlay below applies to the About, Campus Life and Contact heroes, where text sits on top of the photo — the homepage hero shows photos full-bleed with no overlay, so those settings don&apos;t affect it.
           </p>
         </div>
         <div className="flex gap-2">
@@ -170,7 +170,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
         </div>
 
         <div className="space-y-2">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Live Preview</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Live Preview — About / Campus Life / Contact</span>
           <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm">
             <img src={campusHero.src} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
             <div className="absolute inset-0" style={overlayStyle} />
@@ -186,7 +186,9 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
               </h2>
             </div>
           </div>
-          <p className="text-xs text-slate-500">This preview mirrors every hero below exactly — save to publish it live.</p>
+          <p className="text-xs text-slate-500">
+            This mirrors the heroes that show text on top of the photo — About, Campus Life and Contact. The homepage hero doesn&apos;t use this overlay; see its photos below.
+          </p>
         </div>
       </div>
 
@@ -197,8 +199,13 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
         </div>
         <p className="mt-1 text-xs text-slate-500">
           Up to {MAX_HOMEPAGE_PHOTOS} photos — the homepage hero automatically rotates between them every {HOMEPAGE_ROTATE_MS / 1000} seconds with a fade transition. Leave slots empty to use
-          fewer photos (a single photo just stays static).
+          fewer photos (a single photo just stays static). Shown full-bleed with no tint or overlay — the Overlay Settings above don&apos;t apply here.
         </p>
+        {homepageSlots[0] && (
+          <div className="mt-3 relative aspect-[21/9] w-full max-w-xs overflow-hidden rounded-lg border border-slate-200">
+            <img src={homepageSlots[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+          </div>
+        )}
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {homepageSlots.map((url, i) => (
             <div key={i}>
@@ -208,25 +215,6 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
               </div>
             </div>
           ))}
-        </div>
-      </div>
-
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-sm font-semibold text-navy">Page Background Photos</h2>
-        <p className="mt-1 text-xs text-slate-500">These pages have a plain navy hero until you add a photo here — once set, it uses the same overlay/blur settings above.</p>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <div>
-            <span className="text-[11px] font-semibold text-slate-500 uppercase">About Page</span>
-            <div className="mt-1">
-              <MediaUploader value={settings.aboutPhoto ?? ''} onChange={(url) => setSettings((s) => ({ ...s, aboutPhoto: url || null }))} />
-            </div>
-          </div>
-          <div>
-            <span className="text-[11px] font-semibold text-slate-500 uppercase">Campus Life Page</span>
-            <div className="mt-1">
-              <MediaUploader value={settings.campusLifePhoto ?? ''} onChange={(url) => setSettings((s) => ({ ...s, campusLifePhoto: url || null }))} />
-            </div>
-          </div>
         </div>
       </div>
     </div>

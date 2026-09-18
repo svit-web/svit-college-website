@@ -9,6 +9,12 @@ import type { ReactNode } from "react";
 // Deliberately not `position:relative` on the <li> — the mega panel below
 // needs to size against the whole nav bar (its nearest positioned ancestor),
 // not just this trigger's own width, so it can span edge-to-edge.
+//
+// The <li> stretches to the full row height (h-full) instead of shrinking to
+// the link's text height, so its hover hit-box reaches all the way down to
+// where the panel starts. Without that, there's a dead strip between the
+// shrunk link and the panel that belongs to the <ul>, not the <li> — crossing
+// it fires mouseleave and closes the panel before the cursor ever reaches it.
 export function DesktopNavItem({
   item,
   isOpen,
@@ -25,7 +31,7 @@ export function DesktopNavItem({
   const hasMega = Boolean(children);
 
   return (
-    <li onMouseEnter={onOpen} onMouseLeave={onClose}>
+    <li className="flex h-full items-center" onMouseEnter={onOpen} onMouseLeave={onClose}>
       <Link
         href={item.url ?? "#"}
         className={cn(

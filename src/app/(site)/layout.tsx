@@ -9,7 +9,6 @@ import { getAllEvents } from "@/lib/events.functions";
 import { getSports } from "@/lib/sports.functions";
 import { getVisibleCenters } from "@/lib/centers.functions";
 import { getMainNavigation, getTopUtilityNavigation } from "@/lib/menus.functions";
-import { getLiveStats } from "@/lib/stats.functions";
 
 export default async function SiteLayout({
   children,
@@ -28,7 +27,6 @@ export default async function SiteLayout({
     centers,
     mainNav,
     utilityNav,
-    liveStats,
   ] = await Promise.all([
     getCollegesGrid().catch(() => []),
     getContactInfo().catch(() => null),
@@ -41,7 +39,6 @@ export default async function SiteLayout({
     getVisibleCenters().catch(() => []),
     getMainNavigation().catch(() => []),
     getTopUtilityNavigation().catch(() => []),
-    getLiveStats().catch(() => null),
   ]);
 
   const logoUrl = colleges.find((c) => c.slug === "svit-degree")?.logo_url ?? null;
@@ -59,7 +56,6 @@ export default async function SiteLayout({
         events={events}
         sports={sports}
         centers={centers}
-        liveStats={liveStats}
         logoUrl={logoUrl}
       />
       <main className="flex-1">{children}</main>

@@ -1,15 +1,28 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import type { HomepageItem } from "@/lib/homepage";
 import type { MiscSettings } from "@/lib/site-settings.functions";
+import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
+import { HOMEPAGE_ROTATE_MS, type HeroAppearance } from "@/lib/theme.functions";
+
+const DEFAULT_IMAGE_URL =
+  "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1785967226472-1d6hzb.webp";
 
 interface HeroNewProps {
   items: HomepageItem[];
   misc: MiscSettings | null;
+  appearance: HeroAppearance;
 }
 
-export function HeroNew({ items, misc }: HeroNewProps) {
+/**
+ * Split hero: photo (or slideshow) fills its own column/band, text sits
+ * alongside it. Unlike the site's other heroes, no text is ever rendered on
+ * top of the photo, so it renders HeroPhotoLayer with overlay={false}.
+ */
+export function HeroNew({ items, misc, appearance }: HeroNewProps) {
   const hero = items.find((item) => item.item_type === "hero");
 
   const eyebrow = hero?.eyebrow ||
@@ -23,18 +36,55 @@ export function HeroNew({ items, misc }: HeroNewProps) {
   const secondaryLabel = "Explore Courses";
   const secondaryHref = "/colleges";
   const heroNote = `95%+ placement record · ${misc?.recruiter_count || "200+"}+ recruiting partners`;
-  const imageUrl = hero?.image_url ||
-    "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1785967226472-1d6hzb.webp";
   const imageAlt = (hero?.metadata as { image_alt?: string })?.image_alt || "The SVIT Vasad campus on the banks of the Mahi River";
+  const photos = appearance.homepagePhotos.length > 0 ? appearance.homepagePhotos : [hero?.image_url || DEFAULT_IMAGE_URL];
+  const [photoLoaded, setPhotoLoaded] = useState(false);
 
   return (
-    <section className="container-page pb-[clamp(2.6rem,6vw,5rem)] pt-[clamp(150px,18vh,200px)]">
-      <div className="grid grid-cols-1 gap-[clamp(2.5rem,5vw,4.5rem)] lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-end">
-        <div>
+    <section
+      className="relative min-h-[640px] w-full overflow-hidden lg:h-[100vh]"
+      style={{ ["--hero-offset" as never]: "clamp(150px,18vh,200px)" }}
+    >
+      {/* Full-bleed photo. Backed by cream (not navy) so an unloaded/broken photo reads as blank space, not a broken-looking dark panel; the gradient/blur chrome that assumes a photo underneath only mounts once one has actually loaded. */}
+      <div className="absolute inset-0 bg-cream">
+        <HeroPhotoLayer
+          photos={photos}
+          appearance={appearance}
+          rotateMs={HOMEPAGE_ROTATE_MS}
+          overlay={false}
+          alt={imageAlt}
+          onLoad={() => setPhotoLoaded(true)}
+        />
+        {photoLoaded && (
+          <>
+            {/* Left-to-right gradient, faded to nothing by the horizontal midpoint, so the right half of the photo stays clear while the text on the left stays readable. Backdrop-blur is masked with the same falloff so the photo softens under the gradient without blurring the clear right half. */}
+            <div
+              className="absolute inset-0 backdrop-blur-sm"
+              style={{
+                WebkitMaskImage: "linear-gradient(to right, black 0%, black 32%, transparent 50%)",
+                maskImage: "linear-gradient(to right, black 0%, black 32%, transparent 50%)",
+              }}
+            />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(251,248,241,0.55)_0%,rgba(251,248,241,0.48)_16%,rgba(251,248,241,0.28)_32%,transparent_50%)]" />
+            {/* Cream fade at the very top so the full-bleed photo blends into the floating navbar card */}
+            <div
+              className="absolute inset-x-0 top-0 h-32 backdrop-blur-sm lg:h-40"
+              style={{
+                WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+                maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
+              }}
+            />
+            <div className="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(to_bottom,rgba(251,248,241,0.45)_0%,transparent_100%)] lg:h-40" />
+          </>
+        )}
+      </div>
+
+      <div className="container-page relative flex h-full flex-col justify-between pb-[clamp(1.6rem,4vw,2.75rem)] pt-[88px] lg:pt-[var(--hero-offset)]">
+        <div className="mr-auto max-w-[36ch] pt-[1.5rem] text-left lg:pt-[2.5rem]">
           <p className="inline-block text-[0.7rem] font-bold uppercase tracking-[0.22em] text-crimson">
             {eyebrow}
           </p>
-          <h1 className="mt-[1.1rem] max-w-[16ch] text-[clamp(2.7rem,6.5vw,5.6rem)] font-bold leading-[0.98] tracking-[-0.038em]">
+          <h1 className="mt-[1.1rem] text-[clamp(1.9rem,3.6vw,3.3rem)] font-bold leading-[1.02] tracking-[-0.035em] text-ink">
             {title}{" "}
             <em className="font-serif font-medium italic tracking-[-0.01em]">
               {titleAccent}
@@ -42,11 +92,11 @@ export function HeroNew({ items, misc }: HeroNewProps) {
           </h1>
         </div>
 
-        <div className="grid justify-items-start gap-[1.4rem] border-ink/[0.14] pb-[0.4rem] lg:border-l lg:pl-[clamp(1.4rem,2.5vw,2.2rem)]">
-          <p className="max-w-[34ch] text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55]">
+        <div className="mr-auto grid max-w-[36ch] justify-items-start gap-[1.4rem] text-left">
+          <p className="text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-ink">
             {subtitle}
           </p>
-          <div className="flex flex-wrap gap-[0.7rem]">
+          <div className="flex flex-wrap justify-start gap-[0.7rem]">
             <Link
               href={primaryHref}
               className="group inline-flex items-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-all hover:bg-crimson hover:border-crimson"
@@ -56,7 +106,7 @@ export function HeroNew({ items, misc }: HeroNewProps) {
             </Link>
             <Link
               href={secondaryHref}
-              className="group inline-flex items-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold transition-all hover:border-ink hover:bg-ink hover:text-cream"
+              className="group inline-flex items-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-cream"
             >
               {secondaryLabel}
               <ArrowRight className="h-[14px] w-[14px] shrink-0 transition-transform group-hover:translate-x-[3px]" />
@@ -66,22 +116,11 @@ export function HeroNew({ items, misc }: HeroNewProps) {
             {heroNote}
           </p>
         </div>
-      </div>
 
-      <figure className="relative mt-[clamp(2.4rem,5vw,4rem)] aspect-[21/9] overflow-hidden rounded-[var(--radius)] bg-navy-deep">
-        <Image
-          src={imageUrl}
-          alt={imageAlt}
-          fill
-          priority
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 90vw, 80rem"
-        />
-      </figure>
-
-      <div className="flex justify-between gap-4 pt-[0.85rem] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute">
-        <span>Main Academic Block — 15+ acre green campus</span>
-        <span className="hidden sm:inline">Vasad · Anand District · Gujarat</span>
+        <div className="flex shrink-0 justify-between gap-4 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute">
+          <span>Main Academic Block — 15+ acre green campus</span>
+          <span className="hidden sm:inline">Vasad · Anand District · Gujarat</span>
+        </div>
       </div>
     </section>
   );

@@ -56,7 +56,7 @@ export default async function Home() {
 
   return (
     <>
-      <HeroNew items={items} misc={misc} />
+      <HeroNew items={items} misc={misc} appearance={appearance} />
       <CollegesSection colleges={colleges} misc={misc} />
       <HomeCarouselSection items={items} />
       <StatsStrip items={items} liveStats={liveStats} />

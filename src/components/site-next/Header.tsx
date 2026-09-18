@@ -10,7 +10,6 @@ import { DesktopNavItem } from "./nav/DesktopNavItem";
 import { LinksMegaPanel } from "./nav/LinksMegaPanel";
 import { CollegesMegaPanel } from "./nav/CollegesMegaPanel";
 import { CampusMegaPanel, useCampusCategories } from "./nav/CampusMegaPanel";
-import { PlacementMegaPanel } from "./nav/PlacementMegaPanel";
 import type { MenuTopItem } from "@/lib/menus.functions";
 import type { Department } from "@/lib/departments.functions";
 import type { CollegeRow } from "@/lib/homepage";
@@ -20,7 +19,6 @@ import type { Facility } from "@/lib/facilities.functions";
 import type { StudentClub } from "@/lib/clubs.functions";
 import type { Sport } from "@/lib/sports.functions";
 import type { Center } from "@/lib/centers.functions";
-import type { LiveStats } from "@/lib/stats.functions";
 
 export interface HeaderProps {
   mainNav: MenuTopItem[];
@@ -33,7 +31,6 @@ export interface HeaderProps {
   events: CampusEvent[];
   sports: Sport[];
   centers: Center[];
-  liveStats: LiveStats | null;
   logoUrl: string | null;
 }
 
@@ -48,7 +45,6 @@ export function Header({
   events,
   sports,
   centers,
-  liveStats,
   logoUrl,
 }: HeaderProps) {
   const [openKey, setOpenKey] = useState<string | null>(null);
@@ -96,8 +92,6 @@ export function Header({
         );
       case "campus_mega":
         return <CampusMegaPanel categories={campusCategories} />;
-      case "placement_mega":
-        return <PlacementMegaPanel liveStats={liveStats} />;
       default:
         return null;
     }
@@ -109,11 +103,11 @@ export function Header({
       <div className="hidden lg:block">
         <div className="relative px-[clamp(32px,6vw,96px)] pt-3">
           <div className="mx-auto w-full max-w-[1240px]">
-            <div className="relative bg-cream shadow-[0_26px_50px_-34px_rgba(16,16,58,.45)]">
+            <div className="relative bg-cream">
               <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
               <div className="relative flex h-[76px] items-center gap-2 px-[clamp(12px,2vw,26px)]">
                 <Logo logoUrl={logoUrl} />
-                <ul className="ml-auto flex items-center">
+                <ul className="ml-auto flex h-full items-stretch">
                   {mainNav.map((item) => {
                     const mega = megaFor(item);
                     return (

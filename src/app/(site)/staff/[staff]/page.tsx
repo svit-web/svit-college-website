@@ -94,7 +94,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
   return (
     <div className="bg-white">
       {/* Breadcrumb */}
-      <div className="container-page flex items-center gap-1.5 pt-6 pb-2 text-xs text-muted-foreground">
+      <div className="container-page flex items-center gap-1.5 pb-2 pt-[clamp(150px,18vh,200px)] text-xs text-muted-foreground">
         <Link href="/" className="hover:text-navy transition-colors">
           Home
         </Link>
