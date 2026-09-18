@@ -22,19 +22,19 @@ export function CollegesMegaPanel({
 
   const CollegeSection = ({ college }: { college: NavCollege }) => {
     const depts = departmentsByCollege[college.id] ?? [];
-    // Split into 2 columns if >10 departments (only SVIT/DIP hit this)
-    const deptColumnsClass = depts.length > 10 ? "grid-cols-2 gap-x-6" : "";
+    // Split into 2 columns if >10 departments (SVIT/DIP only)
+    const deptColumnsClass = depts.length > 10 ? "grid-cols-2 gap-x-5" : "";
 
     return (
       <div>
         <Link
           href={`/colleges/${college.id}`}
-          className="group mb-3 inline-flex items-center gap-2.5 border-b border-border pb-2.5"
+          className="group mb-2.5 inline-flex items-center gap-2.5 border-b border-border pb-2"
         >
           <CollegeLogo
             shortCode={college.shortCode}
             src={college.logo}
-            className="h-7 w-7 shrink-0 rounded-md border border-border bg-white p-1 text-navy"
+            className="h-6 w-6 shrink-0 rounded-md border border-border bg-white p-0.5 text-navy"
           />
           <span className="text-xs font-bold uppercase tracking-[0.14em] text-navy group-hover:text-crimson">
             {college.shortCode}
@@ -48,9 +48,16 @@ export function CollegesMegaPanel({
               <li key={d.id}>
                 <Link
                   href={`/departments/${d.code}`}
-                  className="block py-1.5 text-[14.5px] text-ink/80 transition-colors hover:text-crimson"
+                  className="flex items-center gap-2 py-0.5 text-[13.5px] text-ink/80 transition-colors hover:text-crimson"
                 >
-                  {d.name}
+                  {d.logo_url && (
+                    <img
+                      src={d.logo_url}
+                      alt=""
+                      className="h-4 w-4 shrink-0 rounded object-contain"
+                    />
+                  )}
+                  <span>{d.name}</span>
                 </Link>
               </li>
             ))}
@@ -63,8 +70,8 @@ export function CollegesMegaPanel({
   };
 
   return (
-    <div className="py-8">
-      <div className="grid grid-cols-3 gap-x-12 gap-y-8">
+    <div className="py-6">
+      <div className="grid grid-cols-3 gap-x-12 gap-y-6">
         {/* Column 1: SVIT */}
         {svit && <CollegeSection college={svit} />}
 
@@ -72,7 +79,7 @@ export function CollegesMegaPanel({
         {dip && <CollegeSection college={dip} />}
 
         {/* Column 3: Other colleges stacked */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           {others.map((c) => (
             <CollegeSection key={c.id} college={c} />
           ))}
