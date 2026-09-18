@@ -19,3 +19,14 @@ _Avoid_: hero settings, theme settings
 **Homepage photo slideshow**:
 The crossfade rotation of `HeroAppearance.homepagePhotos` (up to `MAX_HOMEPAGE_PHOTOS`) rendered by `HeroPhotoLayer`, cycling every `HOMEPAGE_ROTATE_MS`. Distinct from the "Homepage Card Slider" (`heroSliderEnabled`/`HeroCardSlider`), which rotates highlight cards, not photos.
 _Avoid_: hero carousel, image carousel
+
+**Colleges mega panel** (desktop nav):
+The full-width dropdown revealed when hovering "Colleges" in the desktop navbar. Shows all colleges and their departments at once in a flat, column-wrapped grid — each college is a vertical section listing its departments beneath a clickable college heading. No hover-to-reveal step within the panel. Matches the structure of `LinksMegaPanel` (used by "About SVIT").
+_Avoid_: college dropdown (ambiguous — could mean the trigger or the panel), colleges nav
+
+**College accordion row** (mobile nav):
+A mobile nav pattern where each college row has two tap targets: the college name (navigates to `/colleges/[id]`) and a right-side chevron arrow (expands an inline department list). Tapping the arrow toggles the nested department links without navigating away.
+
+**Navbar wordmark**:
+The single line of text next to the logo mark in `Logo.tsx`, sourced from `ContactInfo.full_name` (admin-editable via Admin → Settings → Contact Information → "Full Name"). Falls back to "Sardar Vallabhbhai Institute of Technology" if unset. Deliberately just one line — the old two-line "SVIT Vasad" / "Institute of Technology" treatment was dropped in favor of a single dynamic name.
+_Avoid_: logo text, header title

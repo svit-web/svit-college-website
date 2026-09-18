@@ -2,7 +2,17 @@ import Link from "next/link";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
-export function Logo({ light = false, logoUrl }: { light?: boolean; logoUrl?: string | null }) {
+export function Logo({
+  light = false,
+  logoUrl,
+  instituteName,
+}: {
+  light?: boolean;
+  logoUrl?: string | null;
+  instituteName?: string | null;
+}) {
+  const displayName = instituteName || "Sardar Vallabhbhai Institute of Technology";
+
   return (
     <Link href="/" className="flex items-center gap-3 group">
       {logoUrl && (
@@ -14,7 +24,7 @@ export function Logo({ light = false, logoUrl }: { light?: boolean; logoUrl?: st
         >
           <Image
             src={logoUrl}
-            alt="SVIT Vasad logo"
+            alt={`${displayName} logo`}
             fill
             sizes="48px"
             className={cn("object-contain", light && "p-1.5")}
@@ -23,15 +33,7 @@ export function Logo({ light = false, logoUrl }: { light?: boolean; logoUrl?: st
       )}
       <div className="leading-tight">
         <div className={cn("font-display font-bold text-base", light ? "text-white" : "text-navy")}>
-          SVIT Vasad
-        </div>
-        <div
-          className={cn(
-            "text-xs uppercase tracking-widest",
-            light ? "text-white/70" : "text-muted-foreground",
-          )}
-        >
-          Institute of Technology
+          {displayName}
         </div>
       </div>
     </Link>

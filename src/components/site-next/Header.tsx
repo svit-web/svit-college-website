@@ -106,7 +106,7 @@ export function Header({
             <div className="relative bg-cream">
               <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
               <div className="relative flex h-[76px] items-center gap-2 px-[clamp(12px,2vw,26px)]">
-                <Logo logoUrl={logoUrl} />
+                <Logo logoUrl={logoUrl} instituteName={contactInfo?.full_name} />
                 <ul className="ml-auto flex h-full items-stretch">
                   {mainNav.map((item) => {
                     const mega = megaFor(item);
@@ -137,6 +137,7 @@ export function Header({
         open={mobileOpen}
         onToggle={() => setMobileOpen((o) => !o)}
         logoUrl={logoUrl}
+        instituteName={contactInfo?.full_name}
       />
       <MobileNavPanel
         open={mobileOpen}

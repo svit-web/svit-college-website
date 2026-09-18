@@ -8,14 +8,16 @@ export function MobileUtilityBar({
   open,
   onToggle,
   logoUrl,
+  instituteName,
 }: {
   open: boolean;
   onToggle: () => void;
   logoUrl: string | null;
+  instituteName?: string | null;
 }) {
   return (
     <div className="flex h-16 items-center justify-between border-b border-line bg-cream px-4 lg:hidden">
-      <Logo logoUrl={logoUrl} />
+      <Logo logoUrl={logoUrl} instituteName={instituteName} />
       <div className="flex items-center gap-1">
         <SiteSearch
           className="rounded-md p-2 text-ink transition-colors hover:text-crimson"
