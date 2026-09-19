@@ -32,7 +32,12 @@ export function Logo({
         </div>
       )}
       <div className="leading-tight">
-        <div className={cn("font-display font-bold text-base", light ? "text-white" : "text-navy")}>
+        <div
+          className={cn(
+            "font-display font-bold text-base",
+            light ? "text-white" : "text-navy lg:text-lg",
+          )}
+        >
           {displayName}
         </div>
       </div>

@@ -4,6 +4,11 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { heroOverlayStyles, type HeroAppearance } from "@/lib/theme";
 
+/** Marquee mode: time for one photo's worth of travel. Larger = slower. */
+const MARQUEE_MS_PER_PHOTO = 20000;
+/** Marquee mode: width over which neighbouring photos dissolve into each other. */
+const MARQUEE_BLEND = "18vw";
+
 interface Props {
   photos: string[];
   appearance: HeroAppearance;
@@ -19,6 +24,12 @@ interface Props {
   alt?: string;
   /** Fires once the first photo has actually loaded, so callers can hold off on photo-dependent chrome (tints, blur) until there's something under it. */
   onLoad?: () => void;
+  /**
+   * How rotation moves between photos. "fade" (default) crossfades in place;
+   * "marquee" pans all photos continuously right-to-left as an endless,
+   * feathered-stitched loop (speed: MARQUEE_MS_PER_PHOTO; ignores `rotateMs`).
+   */
+  transition?: "fade" | "marquee";
 }
 
 /**
@@ -29,7 +40,7 @@ interface Props {
  * rather than a text backdrop. Renders nothing when there are no photos yet,
  * so callers can fall back to their existing plain background.
  */
-export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, alt = "", onLoad }: Props) {
+export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, alt = "", onLoad, transition = "fade" }: Props) {
   const [index, setIndex] = useState(0);
   // Only the current slide plus a one-ahead preload get an <Image> mounted.
   // Mounting every slide up front makes the browser fetch/optimize every
@@ -48,7 +59,7 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
     setIndex(0);
     setMounted(new Set([0, 1 % photos.length]));
     setRetryCount({});
-    if (!rotateMs || photos.length <= 1) return;
+    if (!rotateMs || photos.length <= 1 || transition === "marquee") return;
     const id = setInterval(() => {
       setIndex((i) => {
         const next = (i + 1) % photos.length;
@@ -60,12 +71,82 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
       });
     }, rotateMs);
     return () => clearInterval(id);
-  }, [photos, rotateMs]);
+  }, [photos, rotateMs, transition]);
 
   if (photos.length === 0) return null;
 
   const { imageStyle, overlayStyle } = heroOverlayStyles(appearance);
   const activeOpacity = overlay && typeof imageStyle.opacity === "number" ? imageStyle.opacity : 1;
+
+  if (transition === "marquee") {
+    // Continuous, stitched filmstrip. Cell m shows photo (m-1) mod n, so the
+    // strip is [last, p0, p1, …, last-1, last, p0]. It pans from cell 1 (p0) to
+    // cell n+1 (p0 again): identical frames at both ends, so the restart is
+    // invisible. Each cell is wider than its slot by MARQUEE_BLEND and fades in
+    // over the previous photo through a mask, so neighbours dissolve into each
+    // other instead of meeting at a hard edge.
+    const n = photos.length;
+    const cells = n + 2;
+    const slot = 100 / cells;
+    return (
+      <>
+        <div
+          className="absolute inset-y-0 left-0 will-change-transform motion-reduce:!animate-none"
+          style={
+            {
+              width: `${cells * 100}%`,
+              transform: `translateX(-${slot}%)`,
+              "--mq-from": `-${slot}%`,
+              "--mq-to": `-${slot * (n + 1)}%`,
+              animation:
+                n > 1
+                  ? `hero-marquee ${n * MARQUEE_MS_PER_PHOTO}ms linear infinite`
+                  : undefined,
+            } as React.CSSProperties
+          }
+        >
+          {Array.from({ length: cells }, (_, m) => {
+            const i = (m - 1 + n) % n;
+            const mask = `linear-gradient(to right, transparent 0, black ${MARQUEE_BLEND})`;
+            return (
+              <div
+                key={m}
+                className="absolute inset-y-0"
+                style={{
+                  left: `${m * slot}%`,
+                  width: `calc(${slot}% + ${MARQUEE_BLEND})`,
+                  WebkitMaskImage: mask,
+                  maskImage: mask,
+                }}
+              >
+                <Image
+                  key={retryCount[i] ?? 0}
+                  src={photos[i] as string}
+                  alt={m === 1 ? alt : ""}
+                  fill
+                  sizes="100vw"
+                  priority={m === 1}
+                  loading={m <= 2 ? "eager" : "lazy"}
+                  className="object-cover"
+                  style={{ opacity: activeOpacity }}
+                  onLoad={m === 1 ? onLoad : undefined}
+                  onError={() => {
+                    const attempt = retryCount[i] ?? 0;
+                    if (attempt >= 3) return;
+                    setTimeout(
+                      () => setRetryCount((prev) => ({ ...prev, [i]: attempt + 1 })),
+                      1000 * (attempt + 1),
+                    );
+                  }}
+                />
+              </div>
+            );
+          })}
+        </div>
+        {overlay && <div className="absolute inset-0" style={overlayStyle} />}
+      </>
+    );
+  }
 
   return (
     <>

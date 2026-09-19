@@ -212,3 +212,8 @@
 
 .field-input:focus { border-color: var(--crimson); }
 .field-input::placeholder { color: oklch(0.45 0.02 260); }
+
+@keyframes hero-marquee {
+  from { transform: translateX(var(--mq-from)); }
+  to { transform: translateX(var(--mq-to)); }
+}

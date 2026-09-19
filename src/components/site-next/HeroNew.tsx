@@ -52,6 +52,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
           appearance={appearance}
           rotateMs={HOMEPAGE_ROTATE_MS}
           overlay={false}
+          transition="marquee"
           alt={imageAlt}
           onLoad={() => setPhotoLoaded(true)}
         />
