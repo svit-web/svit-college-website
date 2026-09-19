@@ -208,6 +208,19 @@ function StatsStrip({ items, liveStats }: { items: HomepageItem[]; liveStats: Li
   );
 }
 
+// Column count follows the number of colleges so rows fill evenly (5 → 3+2,
+// 6 → 3+3, 7+ → 4 per row); partial last rows are centered by the flex wrap.
+// Full class strings, not interpolated, so Tailwind can see them.
+function collegeCardWidth(count: number): string {
+  const base = "w-full";
+  if (count <= 1) return base;
+  if (count === 2) return `${base} sm:w-[calc((100%-1.25rem)/2)]`;
+  if (count === 3) return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]`;
+  if (count === 4) return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-3.75rem)/4)]`;
+  if (count <= 6) return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]`;
+  return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-3.75rem)/4)]`;
+}
+
 function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: MiscSettings | null }) {
   const collegesLabel = misc?.colleges_label || "Colleges";
   const rows =
@@ -229,23 +242,23 @@ function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: Mis
         title={`Our ${collegesLabel}`}
         subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
       />
-      <div className="mx-auto mt-12 grid max-w-3xl gap-5">
+      <div className="mt-12 flex flex-wrap justify-center gap-5">
         {rows.map((c, i) => (
-          <Reveal key={c.id} delay={i * 0.05}>
+          <Reveal key={c.id} delay={i * 0.05} className={collegeCardWidth(rows.length)}>
             <Link
               href={`/colleges/${c.id}`}
-              className="card-lift group flex h-full flex-col items-center gap-5 rounded-2xl border border-border bg-white p-6 text-center sm:flex-row sm:items-start sm:text-left"
+              className="card-lift group flex h-full flex-col items-center gap-4 rounded-2xl border border-border bg-white p-6 text-center"
             >
               <CollegeLogo
                 shortCode={c.shortCode}
                 src={c.logo}
-                className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
+                className="h-24 w-24 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
               />
-              <div className="w-full min-w-0 sm:flex-1">
+              <div className="flex w-full min-w-0 flex-1 flex-col items-center">
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.shortCode}</div>
                 <h3 className="mt-1 font-display text-lg font-bold text-navy leading-tight">{c.name}</h3>
                 <p className="mt-2 text-sm text-muted-foreground italic">{c.tagline}</p>
-                <div className="mt-4 flex items-center justify-center gap-1 text-xs font-semibold text-navy group-hover:text-gold sm:justify-start">
+                <div className="mt-auto flex items-center justify-center gap-1 pt-4 text-xs font-semibold text-navy group-hover:text-gold">
                   Explore {c.shortCode} <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
