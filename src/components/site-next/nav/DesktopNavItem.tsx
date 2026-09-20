@@ -44,6 +44,12 @@ export function DesktopNavItem({
       </Link>
       {hasMega && (
         <div
+          // Own mouseenter/leave: the panel sits outside the <li>'s hit-box
+          // (positioned against the whole navbar card, not this <li>), so
+          // without these the cursor can "fall out" of hover while crossing
+          // the gap between the trigger and the panel and slam it shut.
+          onMouseEnter={onOpen}
+          onMouseLeave={onClose}
           className={cn(
             "absolute inset-x-0 top-full z-40 border-t border-border bg-cream shadow-2xl transition-all duration-200",
             isOpen

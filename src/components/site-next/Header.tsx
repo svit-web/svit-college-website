@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Logo } from "./Logo";
 import { DesktopUtilityBar } from "./nav/DesktopUtilityBar";
 import { SiteSearch } from "./SiteSearch";
@@ -49,6 +49,22 @@ export function Header({
 }: HeaderProps) {
   const [openKey, setOpenKey] = useState<string | null>(null);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Trigger and mega panel are separate hit-boxes with a gap between them,
+  // so closing must be delayed: it gives the cursor time to land on the
+  // panel (which cancels the close) instead of slamming shut mid-crossing.
+  const closeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function openNav(key: string) {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    closeTimeout.current = null;
+    setOpenKey(key);
+  }
+
+  function scheduleCloseNav() {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    closeTimeout.current = setTimeout(() => setOpenKey(null), 200);
+  }
 
   const displayColleges = useMemo(
     () =>
@@ -115,8 +131,8 @@ export function Header({
                         key={item.id}
                         item={item}
                         isOpen={openKey === item.id}
-                        onOpen={() => setOpenKey(item.id)}
-                        onClose={() => setOpenKey(null)}
+                        onOpen={() => openNav(item.id)}
+                        onClose={scheduleCloseNav}
                       >
                         {mega}
                       </DesktopNavItem>
