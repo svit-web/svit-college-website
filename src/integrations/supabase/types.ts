@@ -182,26 +182,78 @@ export type Database = {
           },
         ]
       }
+      admin_sections: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          name: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       app_settings: {
         Row: {
+          admin_section_id: string | null
           key: string
           updated_at: string
           updated_by: string | null
           value: Json
         }
         Insert: {
+          admin_section_id?: string | null
           key: string
           updated_at?: string
           updated_by?: string | null
           value: Json
         }
         Update: {
+          admin_section_id?: string | null
           key?: string
           updated_at?: string
           updated_by?: string | null
           value?: Json
         }
         Relationships: [
+          {
+            foreignKeyName: "app_settings_admin_section_id_fkey"
+            columns: ["admin_section_id"]
+            isOneToOne: false
+            referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "app_settings_updated_by_fkey"
             columns: ["updated_by"]
@@ -764,6 +816,7 @@ export type Database = {
       courses: {
         Row: {
           accent: string | null
+          brochure_file_url: string | null
           code: string
           color: string | null
           created_at: string
@@ -793,6 +846,7 @@ export type Database = {
         }
         Insert: {
           accent?: string | null
+          brochure_file_url?: string | null
           code: string
           color?: string | null
           created_at?: string
@@ -822,6 +876,7 @@ export type Database = {
         }
         Update: {
           accent?: string | null
+          brochure_file_url?: string | null
           code?: string
           color?: string | null
           created_at?: string
@@ -1358,6 +1413,7 @@ export type Database = {
         Row: {
           accent_color: string | null
           address: string | null
+          admin_section_id: string | null
           category: string | null
           code: string | null
           created_at: string
@@ -1382,6 +1438,7 @@ export type Database = {
         Insert: {
           accent_color?: string | null
           address?: string | null
+          admin_section_id?: string | null
           category?: string | null
           code?: string | null
           created_at?: string
@@ -1406,6 +1463,7 @@ export type Database = {
         Update: {
           accent_color?: string | null
           address?: string | null
+          admin_section_id?: string | null
           category?: string | null
           code?: string | null
           created_at?: string
@@ -1428,6 +1486,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "facilities_admin_section_id_fkey"
+            columns: ["admin_section_id"]
+            isOneToOne: false
+            referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "facilities_created_by_fkey"
             columns: ["created_by"]
@@ -3671,7 +3736,7 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           designation: string | null
-          email: string
+          email: string | null
           employee_code: string | null
           expertise: string[]
           first_name: string
@@ -3700,7 +3765,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           designation?: string | null
-          email: string
+          email?: string | null
           employee_code?: string | null
           expertise?: string[]
           first_name: string
@@ -3729,7 +3794,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           designation?: string | null
-          email?: string
+          email?: string | null
           employee_code?: string | null
           expertise?: string[]
           first_name?: string
@@ -4199,6 +4264,71 @@ export type Database = {
           },
         ]
       }
+      user_section_grants: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          id: string
+          institute_id: string | null
+          metadata: Json
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          section_id: string
+          status: Database["public"]["Enums"]["content_status"]
+          trust_id: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          section_id: string
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          section_id?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_section_grants_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -4221,17 +4351,21 @@ export type Database = {
         }
         Returns: boolean
       }
-      current_user_is_admin: { Args: never; Returns: boolean }
-      current_user_is_college_admin_for: {
-        Args: { target_college_id: string }
+      can_write_section: {
+        Args: {
+          p_college_id?: string
+          p_department_id?: string
+          p_institute_id?: string
+          p_section_code: string
+        }
         Returns: boolean
       }
       current_user_is_dept_admin_for: {
         Args: { target_dept_id: string }
         Returns: boolean
       }
-      current_user_is_editor: { Args: never; Returns: boolean }
       get_table_schema_info: { Args: { target_table: string }; Returns: Json }
+      is_global_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       content_status: "draft" | "published" | "archived"
@@ -4258,12 +4392,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4287,11 +4421,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4312,11 +4446,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4337,11 +4471,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -4354,11 +4488,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }

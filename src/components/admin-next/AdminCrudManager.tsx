@@ -6,7 +6,7 @@ import { MediaUploader } from './MediaUploader';
 import { SeoEditor } from './SeoEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
-import { GLOBAL_ONLY_TABLE_IDS } from '@/lib/admin-sections';
+import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import {
   useReactTable,
@@ -594,6 +594,14 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
 
     const none = { insert: false, update: false, delete: false };
 
+    // A section grant (e.g. `about_us` for /admin/tables/board_members) unlocks a
+    // table that would otherwise be global-only, mirroring the RLS carve-outs in
+    // supabase/migrations/*_admin_section_*.sql — this is UI convenience only,
+    // RLS is the real backstop either way.
+    const routeSection = getRouteSection(`/admin/tables/${tableId}`);
+    const hasSectionGrant = !!routeSection && admin.sections.some((s) => s.code === routeSection);
+    if (hasSectionGrant) return { insert: true, update: true, delete: true };
+
     if (GLOBAL_ONLY_TABLE_IDS.has(tableId)) return none;
 
     const override = TABLE_CONFIGS[tableId]?.writePermissions?.resolve(userScope.level);
@@ -612,7 +620,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     }
 
     return none;
-  }, [userScope, schema, tableId]);
+  }, [userScope, schema, tableId, admin]);
 
   const hasWritePermission = writePermissions.insert || writePermissions.update || writePermissions.delete;
   const canShowRowActions = writePermissions.update || writePermissions.delete;

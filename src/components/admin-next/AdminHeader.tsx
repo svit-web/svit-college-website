@@ -1,8 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bell, User, LogOut, ChevronRight, Menu } from 'lucide-react';
+import { Bell, User, LogOut, KeyRound, ChevronRight, Menu } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import { FontSizeControl } from '@/components/a11y/FontSizeControl';
+import { ChangePasswordModal } from './ChangePasswordModal';
 
 interface HeaderProps {
   admin: AdminUser;
@@ -22,6 +24,7 @@ interface HeaderProps {
 
 export function AdminHeader({ admin, logout, onMobileMenuToggle }: HeaderProps) {
   const pathname = usePathname();
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const getBreadcrumbs = () => {
     const paths = (pathname ?? '').split('/').filter(Boolean);
@@ -100,6 +103,13 @@ export function AdminHeader({ admin, logout, onMobileMenuToggle }: HeaderProps) 
               <User className="mr-2 h-3.5 w-3.5 text-slate-500" />
               <span>My Profile</span>
             </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => setChangePasswordOpen(true)}
+              className="focus:bg-slate-100 focus:text-navy cursor-pointer text-sm"
+            >
+              <KeyRound className="mr-2 h-3.5 w-3.5 text-slate-500" />
+              <span>Change Password</span>
+            </DropdownMenuItem>
             <DropdownMenuSeparator className="bg-slate-200" />
             <DropdownMenuItem
               onClick={() => logout()}
@@ -111,6 +121,8 @@ export function AdminHeader({ admin, logout, onMobileMenuToggle }: HeaderProps) 
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {changePasswordOpen && <ChangePasswordModal onClose={() => setChangePasswordOpen(false)} />}
     </header>
   );
 }

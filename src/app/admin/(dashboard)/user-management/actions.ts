@@ -18,6 +18,12 @@ export interface PortalUserRole {
   scopeLabel: string;
 }
 
+export interface PortalUserSectionGrant {
+  userSectionGrantId: string;
+  sectionCode: string;
+  sectionName: string;
+}
+
 export interface PortalUser {
   id: string;
   email: string | null;
@@ -26,10 +32,17 @@ export interface PortalUser {
   firstName: string;
   lastName: string;
   roles: PortalUserRole[];
+  sections: PortalUserSectionGrant[];
 }
 
 export interface ScopeOption {
   id: string;
+  name: string;
+}
+
+export interface SectionOption {
+  id: string;
+  code: string;
   name: string;
 }
 
@@ -51,10 +64,11 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
   await assertGlobalAdmin();
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
 
-  const [{ data: authList, error: authErr }, { data: profiles, error: profErr }, { data: roleRows, error: roleErr }, { data: trusts }, { data: colleges }, { data: departments }] = await Promise.all([
+  const [{ data: authList, error: authErr }, { data: profiles, error: profErr }, { data: roleRows, error: roleErr }, { data: sectionGrantRows, error: sectionGrantErr }, { data: trusts }, { data: colleges }, { data: departments }] = await Promise.all([
     supabaseAdmin.auth.admin.listUsers({ perPage: 1000 }),
     supabaseAdmin.from('user_profiles').select('id, first_name, last_name'),
     supabaseAdmin.from('user_roles').select('id, user_id, scope_type, trust_id, college_id, department_id, role:role_id(code, name)').eq('status', 'published'),
+    supabaseAdmin.from('user_section_grants').select('id, user_id, section:section_id(code, name)').eq('status', 'published'),
     supabaseAdmin.from('trusts').select('id, name'),
     supabaseAdmin.from('colleges').select('id, name'),
     supabaseAdmin.from('departments').select('id, name'),
@@ -62,6 +76,7 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
   if (authErr) throw new Error(authErr.message);
   if (profErr) throw new Error(profErr.message);
   if (roleErr) throw new Error(roleErr.message);
+  if (sectionGrantErr) throw new Error(sectionGrantErr.message);
 
   const trustNames = new Map((trusts ?? []).map((t: any) => [t.id, t.name]));
   const collegeNames = new Map((colleges ?? []).map((c: any) => [c.id, c.name]));
@@ -92,6 +107,17 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
     rolesByUser.set(r.user_id, list);
   }
 
+  const sectionsByUser = new Map<string, PortalUserSectionGrant[]>();
+  for (const sg of (sectionGrantRows ?? []) as any[]) {
+    const list = sectionsByUser.get(sg.user_id) ?? [];
+    list.push({
+      userSectionGrantId: sg.id,
+      sectionCode: sg.section?.code ?? '',
+      sectionName: sg.section?.name ?? '',
+    });
+    sectionsByUser.set(sg.user_id, list);
+  }
+
   return (authList?.users ?? []).map((u: any) => {
     const profile = profileById.get(u.id);
     return {
@@ -102,8 +128,67 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
       firstName: profile?.first_name ?? '',
       lastName: profile?.last_name ?? '',
       roles: rolesByUser.get(u.id) ?? [],
+      sections: sectionsByUser.get(u.id) ?? [],
     };
   });
+}
+
+export async function listSectionOptions(): Promise<SectionOption[]> {
+  await assertGlobalAdmin();
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
+  const { data, error } = await supabaseAdmin
+    .from('admin_sections')
+    .select('id, code, name')
+    .is('deleted_at', null)
+    .order('name');
+  if (error) throw new Error(error.message);
+
+  return (data ?? []) as SectionOption[];
+}
+
+interface AssignSectionInput {
+  userId: string;
+  sectionId: string;
+}
+
+export async function assignPortalUserSection(input: AssignSectionInput) {
+  const admin = await assertGlobalAdmin();
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
+  const { data: institute, error: instituteErr } = await supabaseAdmin
+    .from('institutes')
+    .select('id')
+    .is('deleted_at', null)
+    .limit(1)
+    .maybeSingle();
+  if (instituteErr) throw new Error(instituteErr.message);
+  if (!institute) throw new Error('No institute found to scope this grant to.');
+
+  const { error: assignErr } = await supabaseAdmin.from('user_section_grants').insert({
+    user_id: input.userId,
+    section_id: input.sectionId,
+    scope_type: 'institute',
+    institute_id: institute.id,
+    status: 'published',
+    created_by: admin.id,
+  });
+  if (assignErr) throw new Error(assignErr.message);
+
+  return { ok: true };
+}
+
+export async function removePortalUserSection(userSectionGrantId: string) {
+  const admin = await assertGlobalAdmin();
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
+  const { error } = await supabaseAdmin
+    .from('user_section_grants')
+    .update({ deleted_at: new Date().toISOString(), deleted_by: admin.id, status: 'archived' })
+    .eq('id', userSectionGrantId);
+  if (error) throw new Error(error.message);
+
+  return { ok: true };
 }
 
 export async function listScopeOptions() {

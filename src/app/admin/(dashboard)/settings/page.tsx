@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { requireAdmin, getScopeLevel } from "@/app/lib/auth/admin";
-import { isRouteAllowedForScope } from "@/lib/admin-sections";
+import { isRouteAllowedForUser } from "@/lib/admin-sections";
 import { getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
 import { AdminSettingsPage } from "@/components/admin-next/pages/AdminSettingsPage";
 import { DEFAULT_CONTACT, type ContactInfoSettings } from "@/lib/site-settings-types";
@@ -9,7 +9,7 @@ export default async function SettingsPage() {
   const admin = await requireAdmin();
   const level = getScopeLevel(admin);
 
-  if (!isRouteAllowedForScope("/admin/settings", level)) {
+  if (!isRouteAllowedForUser("/admin/settings", level, admin.sections.map((s) => s.code))) {
     redirect("/admin");
   }
 

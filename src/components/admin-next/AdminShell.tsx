@@ -53,7 +53,7 @@ export function AdminShell({
   children,
 }: {
   admin: AdminUser;
-  scopeLevel: 'global' | 'trust' | 'college' | 'department' | 'none';
+  scopeLevel: 'global' | 'trust' | 'institute' | 'college' | 'department' | 'none';
   children: React.ReactNode;
 }) {
   const pathname = usePathname();

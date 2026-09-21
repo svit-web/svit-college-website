@@ -9,6 +9,14 @@ export interface AdminRole {
   department_id?: string | null;
 }
 
+export interface AdminSectionGrant {
+  code: string;
+  scope_type: string;
+  institute_id?: string | null;
+  college_id?: string | null;
+  department_id?: string | null;
+}
+
 export interface AdminUser {
   id: string;
   email: string;
@@ -16,6 +24,7 @@ export interface AdminUser {
   last_name: string | null;
   avatar_url: string | null;
   roles: AdminRole[];
+  sections: AdminSectionGrant[];
 }
 
 // Allowed admin-level role codes — only these grant portal access
@@ -34,8 +43,8 @@ export async function getAdminUser(): Promise<AdminUser | null> {
 
   if (!user) return null;
 
-  // Fetch profile and roles in parallel
-  const [profileResult, rolesResult] = await Promise.all([
+  // Fetch profile, roles, and section grants in parallel
+  const [profileResult, rolesResult, sectionsResult] = await Promise.all([
     supabase
       .from('user_profiles')
       .select('id, first_name, last_name, avatar_url')
@@ -57,10 +66,26 @@ export async function getAdminUser(): Promise<AdminUser | null> {
       )
       .eq('user_id', user.id)
       .eq('status', 'published'),
+    supabase
+      .from('user_section_grants')
+      .select(
+        `
+        scope_type,
+        institute_id,
+        college_id,
+        department_id,
+        section:section_id (
+          code
+        )
+      `
+      )
+      .eq('user_id', user.id)
+      .eq('status', 'published'),
   ]);
 
   const profile = profileResult.data;
   const rolesData = (rolesResult.data as any[]) || [];
+  const sectionsData = (sectionsResult.data as any[]) || [];
 
   const roles: AdminRole[] = rolesData.map((ur) => ({
     code: ur.role?.code || '',
@@ -70,6 +95,16 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     college_id: ur.college_id,
     department_id: ur.department_id,
   }));
+
+  const sections: AdminSectionGrant[] = sectionsData
+    .filter((sg) => sg.section?.code)
+    .map((sg) => ({
+      code: sg.section.code,
+      scope_type: sg.scope_type,
+      institute_id: sg.institute_id,
+      college_id: sg.college_id,
+      department_id: sg.department_id,
+    }));
 
   // Only authorize users with explicitly permitted role codes
   const hasAuthorizedRole = roles.some((r) =>
@@ -85,6 +120,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     last_name: profile?.last_name || null,
     avatar_url: profile?.avatar_url || null,
     roles,
+    sections,
   };
 }
 
@@ -132,6 +168,16 @@ export function isEditor(admin: AdminUser): boolean {
 }
 
 /**
+ * Check if a user has been granted write access to a content section
+ * (Home Page, News & Events, Placement, etc.) — orthogonal to the
+ * college/department scope tree. Global admins always pass.
+ */
+export function hasSectionAccess(admin: AdminUser, sectionCode: string): boolean {
+  if (isAdmin(admin)) return true;
+  return admin.sections.some((s) => s.code === sectionCode);
+}
+
+/**
  * Get scope constraints for a user (for RLS-aware queries).
  * Derived from each role's own scope_type, not the role code — a role
  * code like "editor" can carry either a global or department-scoped grant.
@@ -165,6 +211,15 @@ export function getScopeConstraints(admin: AdminUser): {
     };
   }
 
+  // Institute-scoped role — narrower than global/trust, but has no college/department
+  // to filter on, so callers should treat this the same as "no constraint" for
+  // college/department-owned tables. Kept distinct from the `null` (unrestricted)
+  // return so a future caller can special-case it if a table gains an institute_id.
+  const instituteRole = admin.roles.find((r) => r.scope_type === 'institute');
+  if (instituteRole) {
+    return { scopeType: 'institute' };
+  }
+
   // Trust-scoped role
   const trustRole = admin.roles.find((r) => r.scope_type === 'trust');
   if (trustRole) {
@@ -177,7 +232,13 @@ export function getScopeConstraints(admin: AdminUser): {
   return null;
 }
 
-const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, department: 3 };
+const SCOPE_RANK: Record<string, number> = {
+  global: 0,
+  trust: 1,
+  institute: 1.5,
+  college: 2,
+  department: 3,
+};
 
 /**
  * Get the broadest scope level a user holds — used for route/nav visibility
@@ -185,7 +246,9 @@ const SCOPE_RANK: Record<string, number> = { global: 0, trust: 1, college: 2, de
  * A user holding multiple role grants is treated as operating at their
  * widest one. Mirrors the old client-side useUserScope() hook exactly.
  */
-export function getScopeLevel(admin: AdminUser): 'global' | 'trust' | 'college' | 'department' | 'none' {
+export function getScopeLevel(
+  admin: AdminUser
+): 'global' | 'trust' | 'institute' | 'college' | 'department' | 'none' {
   if (admin.roles.length === 0) return 'none';
 
   if (hasRole(admin, 'admin')) return 'global';
@@ -196,5 +259,5 @@ export function getScopeLevel(admin: AdminUser): 'global' | 'trust' | 'college' 
     return rank < bestRank ? r : acc;
   }, admin.roles[0]);
 
-  return (best.scope_type as 'global' | 'trust' | 'college' | 'department') || 'none';
+  return (best.scope_type as 'global' | 'trust' | 'institute' | 'college' | 'department') || 'none';
 }

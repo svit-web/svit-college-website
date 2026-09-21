@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import { requireAdmin, getScopeLevel } from '@/app/lib/auth/admin';
-import { isRouteAllowedForScope } from '@/lib/admin-sections';
+import { isRouteAllowedForUser } from '@/lib/admin-sections';
 import { AdminCrudManager } from '@/components/admin-next/AdminCrudManager';
 
 export default async function GenericTablePage({
@@ -12,7 +12,7 @@ export default async function GenericTablePage({
   const admin = await requireAdmin();
   const level = getScopeLevel(admin);
 
-  if (!isRouteAllowedForScope(`/admin/tables/${tableId}`, level)) {
+  if (!isRouteAllowedForUser(`/admin/tables/${tableId}`, level, admin.sections.map((s) => s.code))) {
     redirect('/admin');
   }
 

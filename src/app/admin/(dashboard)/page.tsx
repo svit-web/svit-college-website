@@ -13,7 +13,7 @@ import {
   GraduationCap,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { isRouteAllowedForScope } from "@/lib/admin-sections";
+import { isRouteAllowedForUser } from "@/lib/admin-sections";
 import { getAdminUser, getScopeLevel } from "@/app/lib/auth/admin";
 import { createClient } from "@/app/lib/supabase/server";
 
@@ -175,9 +175,10 @@ export default async function AdminDashboardHome() {
     auditLogs = data || [];
   }
 
-  const visiblePrimaryCards = PRIMARY_CARDS.filter((c) => isRouteAllowedForScope(c.link, level));
+  const sectionCodes = admin.sections.map((s) => s.code);
+  const visiblePrimaryCards = PRIMARY_CARDS.filter((c) => isRouteAllowedForUser(c.link, level, sectionCodes));
   const visibleSecondaryCards = SECONDARY_CARDS.filter((c) =>
-    isRouteAllowedForScope(c.link, level),
+    isRouteAllowedForUser(c.link, level, sectionCodes),
   );
   const visibleQuickLinks = [
     { label: "T&P Master Hub (All Placements)", link: "/admin/tnp-hub" },
@@ -186,7 +187,7 @@ export default async function AdminDashboardHome() {
     { label: "Homepage Layout", link: "/admin/homepage" },
     { label: "Trash & Recovery", link: "/admin/trash" },
     { label: "Media Library", link: "/admin/media" },
-  ].filter((l) => isRouteAllowedForScope(l.link, level));
+  ].filter((l) => isRouteAllowedForUser(l.link, level, sectionCodes));
 
   return (
     <div className="space-y-6 max-w-6xl">

@@ -17,12 +17,12 @@ import {
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { isRouteAllowedForScope } from '@/lib/admin-sections';
+import { isRouteAllowedForUser } from '@/lib/admin-sections';
 import type { AdminUser } from '@/app/lib/auth/admin';
 
 interface SidebarProps {
   admin: AdminUser;
-  scopeLevel: 'global' | 'trust' | 'college' | 'department' | 'none';
+  scopeLevel: 'global' | 'trust' | 'institute' | 'college' | 'department' | 'none';
   logout: () => void | Promise<void>;
   collapsed: boolean;
   onToggle: () => void;
@@ -139,14 +139,17 @@ export function AdminSidebar({
       ? 'Global Admin'
       : scopeLevel === 'trust'
       ? 'Trust Admin'
+      : scopeLevel === 'institute'
+      ? 'Section Editor'
       : scopeLevel === 'college'
       ? 'College Admin'
       : scopeLevel === 'department'
       ? 'Department Admin'
       : 'Editor';
+  const sectionCodes = admin.sections.map((s) => s.code);
   const visibleGroups = NAV_GROUPS.map((group) => ({
     ...group,
-    items: group.items.filter((item) => isRouteAllowedForScope(item.to, scopeLevel)),
+    items: group.items.filter((item) => isRouteAllowedForUser(item.to, scopeLevel, sectionCodes)),
   })).filter((group) => group.items.length > 0);
   const userInitial = (admin.first_name?.[0] || admin.last_name?.[0] || 'A').toUpperCase();
   const userFullName = `${admin.first_name || ''} ${admin.last_name || ''}`.trim() || 'Admin';

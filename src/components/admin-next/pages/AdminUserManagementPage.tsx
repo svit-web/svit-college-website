@@ -6,13 +6,17 @@ import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2,
 import {
   listPortalUsers,
   listScopeOptions,
+  listSectionOptions,
   createPortalUser,
   assignPortalUserRole,
   removePortalUserRole,
+  assignPortalUserSection,
+  removePortalUserSection,
   updatePortalUserProfile,
   adminSetUserPassword,
   type PortalUser,
   type ScopeOption,
+  type SectionOption,
 } from '@/app/admin/(dashboard)/user-management/actions';
 
 interface ScopeOptions {
@@ -105,6 +109,7 @@ function ScopeFields({
 export function AdminUserManagementPage() {
   const [users, setUsers] = useState<PortalUser[]>([]);
   const [scopeOptions, setScopeOptions] = useState<ScopeOptions | null>(null);
+  const [sectionOptions, setSectionOptions] = useState<SectionOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -116,9 +121,10 @@ export function AdminUserManagementPage() {
   const refresh = async () => {
     setLoading(true);
     try {
-      const [userList, options] = await Promise.all([listPortalUsers(), listScopeOptions()]);
+      const [userList, options, sections] = await Promise.all([listPortalUsers(), listScopeOptions(), listSectionOptions()]);
       setUsers(userList);
       setScopeOptions(options as ScopeOptions);
+      setSectionOptions(sections);
     } catch (err: any) {
       toast.error(`Failed to load users: ${err.message}`);
     } finally {
@@ -169,10 +175,15 @@ export function AdminUserManagementPage() {
                   <td className="px-4 py-3 text-slate-600">{u.email}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1.5">
-                      {u.roles.length === 0 && <span className="text-xs text-slate-400">No access assigned</span>}
+                      {u.roles.length === 0 && u.sections.length === 0 && <span className="text-xs text-slate-400">No access assigned</span>}
                       {u.roles.map((r) => (
                         <span key={r.userRoleId} className="inline-flex items-center rounded bg-slate-50 px-2 py-1 text-xs font-semibold text-crimson border border-slate-200">
                           {r.roleName} · {r.scopeLabel}
+                        </span>
+                      ))}
+                      {u.sections.map((s) => (
+                        <span key={s.userSectionGrantId} className="inline-flex items-center rounded bg-slate-50 px-2 py-1 text-xs font-semibold text-navy border border-slate-200">
+                          Section: {s.sectionName}
                         </span>
                       ))}
                     </div>
@@ -223,7 +234,17 @@ export function AdminUserManagementPage() {
         />
       )}
 
-      {rolesUser && scopeOptions && <ManageRolesModal user={rolesUser} options={scopeOptions} saving={saving} setSaving={setSaving} onClose={() => setRolesUser(null)} onChanged={refresh} />}
+      {rolesUser && scopeOptions && (
+        <ManageRolesModal
+          user={rolesUser}
+          options={scopeOptions}
+          sectionOptions={sectionOptions}
+          saving={saving}
+          setSaving={setSaving}
+          onClose={() => setRolesUser(null)}
+          onChanged={refresh}
+        />
+      )}
 
       {passwordUser && <ResetPasswordModal user={passwordUser} saving={saving} setSaving={setSaving} onClose={() => setPasswordUser(null)} />}
     </div>
@@ -405,6 +426,7 @@ function EditProfileModal({
 function ManageRolesModal({
   user,
   options,
+  sectionOptions,
   saving,
   setSaving,
   onClose,
@@ -412,6 +434,7 @@ function ManageRolesModal({
 }: {
   user: PortalUser;
   options: ScopeOptions;
+  sectionOptions: SectionOption[];
   saving: boolean;
   setSaving: (v: boolean) => void;
   onClose: () => void;
@@ -421,6 +444,46 @@ function ManageRolesModal({
   const [roleCode, setRoleCode] = useState('');
   const [scopeType, setScopeType] = useState('global');
   const [scopeId, setScopeId] = useState('');
+
+  const [currentSections, setCurrentSections] = useState(user.sections);
+  const [sectionId, setSectionId] = useState('');
+  const availableSections = sectionOptions.filter(
+    (s) => !currentSections.some((cs) => cs.sectionCode === s.code)
+  );
+
+  const handleAddSection = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!sectionId) {
+      toast.error('Select a section.');
+      return;
+    }
+    setSaving(true);
+    try {
+      await assignPortalUserSection({ userId: user.id, sectionId });
+      toast.success('Section access granted.');
+      await onChanged();
+      onClose();
+    } catch (err: any) {
+      toast.error(`Failed to grant section access: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRemoveSection = async (userSectionGrantId: string) => {
+    if (!window.confirm('Remove this section access from the user?')) return;
+    setSaving(true);
+    try {
+      await removePortalUserSection(userSectionGrantId);
+      setCurrentSections((prev) => prev.filter((s) => s.userSectionGrantId !== userSectionGrantId));
+      toast.success('Section access removed.');
+      await onChanged();
+    } catch (err: any) {
+      toast.error(`Failed to remove section access: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -491,6 +554,48 @@ function ManageRolesModal({
           Grant Access
         </button>
       </form>
+
+      <div className="mt-6 pt-6 border-t border-slate-200">
+        <p className="text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Section Access</p>
+        <p className="text-[11px] text-slate-500 mb-3">
+          Restricts write access to one content section (Home Page, News & Events, etc.) instead of the
+          full site — for editors who should only manage one area.
+        </p>
+        <div className="space-y-2 mb-4">
+          {currentSections.length === 0 && <p className="text-sm text-slate-400">No section access assigned.</p>}
+          {currentSections.map((s) => (
+            <div key={s.userSectionGrantId} className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 px-3 py-2">
+              <span className="text-sm font-semibold text-navy">{s.sectionName}</span>
+              <button onClick={() => handleRemoveSection(s.userSectionGrantId)} disabled={saving} className="text-slate-500 hover:text-crimson disabled:opacity-50">
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <form onSubmit={handleAddSection} className="space-y-3">
+          <select
+            value={sectionId}
+            onChange={(e) => setSectionId(e.target.value)}
+            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-crimson/30"
+          >
+            <option value="">Select a section…</option>
+            {availableSections.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name}
+              </option>
+            ))}
+          </select>
+          <button
+            type="submit"
+            disabled={saving || availableSections.length === 0}
+            className="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-navy px-4 py-2.5 text-sm font-semibold text-navy hover:bg-navy/5 transition disabled:opacity-50"
+          >
+            {saving && <Loader2 className="h-4 w-4 animate-spin" />}
+            Grant Section Access
+          </button>
+        </form>
+      </div>
     </ModalShell>
   );
 }

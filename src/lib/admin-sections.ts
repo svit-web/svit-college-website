@@ -102,3 +102,60 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "placed_students",
   "recruiters",
 ]);
+
+// Maps a route (still gated global-only by the checks above) to the
+// content-section code that can also unlock it, per
+// supabase/migrations/*_admin_section_*.sql. A user with a matching
+// user_section_grants row gets write access to that route even without
+// global/college/department scope. Keep in sync with the RLS policies —
+// each table listed in a migration's section bucket should have its owning
+// route(s) listed here under the same section code.
+export const ROUTE_SECTION_MAP: Record<string, string> = {
+  "/admin/homepage": "home_page",
+  "/admin/posts": "news_events",
+  "/admin/tables/content_categories": "news_events",
+  "/admin/events": "news_events",
+  "/admin/inquiries": "admissions",
+  "/admin/tnp-hub": "placement",
+  "/admin/recruiters": "placement",
+  "/admin/tables/placed_students": "placement",
+  "/admin/tables/board_members": "about_us",
+  "/admin/tables/committees": "about_us",
+  "/admin/tables/accreditations": "about_us",
+  "/admin/sports": "campus_life",
+  "/admin/tables/gallery_albums": "campus_life",
+  "/admin/tables/gallery_media": "campus_life",
+  "/admin/tables/student_clubs": "campus_life",
+  "/admin/tables/club_events": "campus_life",
+  "/admin/library": "library",
+};
+
+// Longest-prefix match so a route like "/admin/tables/board_members/new"
+// still resolves to the same section as its list page.
+export function getRouteSection(pathname: string): string | null {
+  let bestMatch: string | null = null;
+  for (const prefix of Object.keys(ROUTE_SECTION_MAP)) {
+    if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
+      if (!bestMatch || prefix.length > bestMatch.length) bestMatch = prefix;
+    }
+  }
+  return bestMatch ? ROUTE_SECTION_MAP[bestMatch] : null;
+}
+
+// Combined route guard: section grants are checked first (they can unlock a
+// route that would otherwise be global-only), then falls back to the
+// existing scope-tier logic unchanged. Takes primitive scope level + section
+// codes (not an AdminUser) so this stays importable from client components
+// without pulling in server-only auth code.
+export function isRouteAllowedForUser(
+  pathname: string,
+  level: string,
+  sectionCodes: string[]
+): boolean {
+  if (level === "global") return true;
+
+  const section = getRouteSection(pathname);
+  if (section) return sectionCodes.includes(section);
+
+  return isRouteAllowedForScope(pathname, level);
+}
