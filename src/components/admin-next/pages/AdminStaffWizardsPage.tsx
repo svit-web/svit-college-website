@@ -10,6 +10,8 @@ import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import { parseFacultyCsv, importFacultyCsv, buildFacultyTemplateCsv, type FacultyImportSummary } from '@/lib/faculty-import';
+import { compareByMuster } from '@/lib/staff-order';
+import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
 import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/achievements-import';
 
 type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience';
@@ -37,6 +39,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   const userScope = useUserScope(admin.roles as any);
 
   const [staffList, setStaffList] = useState<any[]>([]);
+  const [sortBy, setSortBy] = useState<'name' | 'muster'>('name');
   const [listLoading, setListLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -89,7 +92,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         .from('staff_profiles')
         .select(
           `
-          id, title, first_name, last_name, email, status, expertise, metadata,
+          id, title, first_name, last_name, email, status, expertise, metadata, muster_number,
           staff_department_assignments(
             is_primary,
             department_id,
@@ -104,7 +107,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       setStaffList(data || []);
     } catch {
       try {
-        const { data } = await supabase.from('staff_profiles').select('id, title, first_name, last_name, email, status, expertise, metadata').is('deleted_at', null).order('first_name');
+        const { data } = await supabase.from('staff_profiles').select('id, title, first_name, last_name, email, status, expertise, metadata, muster_number').is('deleted_at', null).order('first_name');
         setStaffList(data || []);
       } catch (err) {
         // Both the full and the reduced query failed — leave the list as-is,
@@ -196,6 +199,25 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     setGeneralSaving(true);
     try {
       const currentMeta = (generalForm.metadata as Record<string, any>) ?? {};
+      const musterNumber = parseMusterNumber(generalForm.muster_number);
+      if (musterNumber === undefined) {
+        toast.error('Muster number must be a whole number (0 or higher).');
+        return;
+      }
+      if (musterNumber !== null) {
+        const collegeIds = [
+          ...new Set(
+            assignments
+              .map((a) => departments.find((d) => d.id === a.department_id)?.college_id)
+              .filter((id): id is string => Boolean(id))
+          ),
+        ];
+        const clash = await findMusterConflict(supabase, musterNumber, collegeIds, selectedId);
+        if (clash) {
+          toast.error(`Muster number ${musterNumber} is already assigned to ${clash} in the same college.`);
+          return;
+        }
+      }
       const { error } = await supabase
         .from('staff_profiles')
         .update({
@@ -207,6 +229,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           bio: generalForm.bio,
           joining_year: generalForm.joining_year ? Number(generalForm.joining_year) : null,
           past_experience_years: generalForm.past_experience_years ? Number(generalForm.past_experience_years) : null,
+          muster_number: musterNumber,
           metadata: { ...currentMeta, photoUrl: generalForm._photoUrl ?? currentMeta.photoUrl ?? null },
           status: generalForm.status || 'published',
           updated_by: admin.id,
@@ -238,6 +261,15 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     e.preventDefault();
     if (!selectedId) return;
     try {
+      const { data: current } = await supabase.from('staff_profiles').select('muster_number').eq('id', selectedId).maybeSingle();
+      const collegeId = departments.find((d) => d.id === newAssignment.department_id)?.college_id;
+      if (current?.muster_number != null && collegeId) {
+        const clash = await findMusterConflict(supabase, current.muster_number, [collegeId], selectedId);
+        if (clash) {
+          toast.error(`Muster number ${current.muster_number} is already assigned to ${clash} in that college. Change it in General first.`);
+          return;
+        }
+      }
       const { error } = await supabase.from('staff_department_assignments').insert({
         staff_id: selectedId,
         department_id: newAssignment.department_id,
@@ -351,13 +383,21 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   }, [departments, userScope]);
 
   const filteredStaff = useMemo(() => {
-    if (!searchQuery) return visibleStaffList;
     const q = searchQuery.toLowerCase();
-    return visibleStaffList.filter((s) => {
-      const name = `${s.first_name || ''} ${s.last_name || ''}`.toLowerCase();
-      return name.includes(q) || (s.email || '').toLowerCase().includes(q);
-    });
-  }, [visibleStaffList, searchQuery]);
+    const matched = !searchQuery
+      ? visibleStaffList
+      : visibleStaffList.filter((s) => {
+          const name = `${s.first_name || ''} ${s.last_name || ''}`.toLowerCase();
+          return name.includes(q) || (s.email || '').toLowerCase().includes(q);
+        });
+    if (sortBy !== 'muster') return matched;
+    return [...matched].sort((a, b) =>
+      compareByMuster(
+        { name: `${a.first_name || ''} ${a.last_name || ''}`.trim(), musterNumber: a.muster_number },
+        { name: `${b.first_name || ''} ${b.last_name || ''}`.trim(), musterNumber: b.muster_number }
+      )
+    );
+  }, [visibleStaffList, searchQuery, sortBy]);
 
   const getPrimary = (staff: any) => {
     const assignments = staff.staff_department_assignments;
@@ -406,7 +446,8 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         </div>
       </div>
 
-      <div className="relative max-w-sm">
+      <div className="flex flex-wrap items-center gap-3">
+      <div className="relative w-full max-w-sm">
         <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
         <input
           type="text"
@@ -415,6 +456,16 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full rounded-lg border border-slate-200 bg-white pl-9 pr-4 py-2 text-sm text-slate-800 placeholder-slate-400 focus:border-crimson focus:outline-none"
         />
+      </div>
+      <select
+        value={sortBy}
+        onChange={(e) => setSortBy(e.target.value as 'name' | 'muster')}
+        aria-label="Sort staff"
+        className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+      >
+        <option value="name">Sort: Name</option>
+        <option value="muster">Sort: Muster number</option>
+      </select>
       </div>
 
       {listLoading ? (
@@ -677,6 +728,20 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                       <div className="space-y-1">
                         <label className="field-label">Bio</label>
                         <textarea rows={4} value={generalForm.bio || ''} onChange={(e) => setGeneralForm((p) => ({ ...p, bio: e.target.value }))} className="field-input resize-none" />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="field-label">Muster Number</label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          value={generalForm.muster_number ?? ''}
+                          onChange={(e) => setGeneralForm((p) => ({ ...p, muster_number: e.target.value }))}
+                          placeholder="e.g. 0"
+                          className="field-input"
+                        />
+                        <p className="text-xs text-muted-foreground">Used only to order staff on public pages (lowest first). Not shown publicly. Unique within a college.</p>
                       </div>
 
                       <div className="flex justify-end pt-2 border-t border-zinc-800">

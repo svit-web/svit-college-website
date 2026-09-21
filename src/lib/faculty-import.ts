@@ -3,6 +3,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import type { UserScope } from '@/hooks/useUserScope';
 import { canWriteDepartment } from '@/lib/import-scope';
+import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
 
 export const FACULTY_CSV_HEADERS = [
   'first_name',
@@ -12,6 +13,7 @@ export const FACULTY_CSV_HEADERS = [
   'designation',
   'phone',
   'employee_code',
+  'muster_number',
   'joining_year',
   'qualification',
   'rank_group',
@@ -46,6 +48,7 @@ export function buildFacultyTemplateCsv(sampleDepartmentCode?: string): string {
     designation: 'Assistant Professor',
     phone: '9876543210',
     employee_code: 'EMP1234',
+    muster_number: '0',
     joining_year: '2020',
     qualification: 'M.Tech',
     rank_group: '',
@@ -131,9 +134,24 @@ export async function importFacultyCsv(
       joiningYear = n;
     }
 
+    // Blank leaves an existing muster number untouched; 0 is a valid value.
+    const musterNumber = parseMusterNumber(raw.muster_number);
+    if (musterNumber === undefined) {
+      summary.errors.push({ row: rowNum, email, message: `Invalid muster_number "${raw.muster_number}" — must be a whole number (0 or higher).` });
+      continue;
+    }
+
     try {
       const { data: existing, error: findErr } = await supabase.from('staff_profiles').select('id').eq('email', email).is('deleted_at', null).maybeSingle();
       if (findErr) throw findErr;
+
+      if (musterNumber !== null) {
+        const clash = await findMusterConflict(supabase, musterNumber, [dept.college_id], existing?.id);
+        if (clash) {
+          summary.errors.push({ row: rowNum, email, message: `muster_number ${musterNumber} is already assigned to ${clash} in the same college.` });
+          continue;
+        }
+      }
 
       const isNewStaff = !existing;
       let staffId: string;
@@ -143,6 +161,7 @@ export async function importFacultyCsv(
         const updatePayload: Record<string, unknown> = { first_name: firstName, last_name: lastName, updated_by: ctx.adminId };
         if (raw.phone?.trim()) updatePayload.phone = raw.phone.trim();
         if (raw.employee_code?.trim()) updatePayload.employee_code = raw.employee_code.trim();
+        if (musterNumber !== null) updatePayload.muster_number = musterNumber;
         if (joiningYear !== null) updatePayload.joining_year = joiningYear;
         if (raw.qualification?.trim()) updatePayload.qualification = raw.qualification.trim();
         if (raw.rank_group?.trim()) updatePayload.rank_group = raw.rank_group.trim();
@@ -159,6 +178,7 @@ export async function importFacultyCsv(
             email,
             phone: raw.phone?.trim() || null,
             employee_code: raw.employee_code?.trim() || null,
+            muster_number: musterNumber,
             joining_year: joiningYear,
             qualification: raw.qualification?.trim() || null,
             rank_group: raw.rank_group?.trim() || null,

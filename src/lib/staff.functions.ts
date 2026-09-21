@@ -1,5 +1,6 @@
 // Server functions for staff data from Supabase
 import { publicSupabase } from "@/lib/supabase-public";
+import { compareByMuster } from "@/lib/staff-order";
 
 export interface StaffAchievement {
   id: string;
@@ -22,6 +23,7 @@ export interface StaffMember {
   officeHours?: { day: string; time: string }[] | null;
   socialLinks?: { linkedin?: string; googleScholar?: string; orcid?: string } | null;
   isHod?: boolean;
+  musterNumber?: number | null;
   joiningYear?: number | null;
   pastExperienceYears?: number | null;
   department?: { id: string; name: string; code: string } | null;
@@ -133,7 +135,7 @@ export async function getStaffByDepartmentId(departmentId: string): Promise<Staf
     supabase
       .from("staff_profiles")
       .select(
-        "id, title, first_name, last_name, email, metadata, expertise, employee_code, photo_url, rank_group, designation",
+        "id, title, first_name, last_name, email, metadata, expertise, employee_code, muster_number, photo_url, rank_group, designation",
       )
       .in("id", staffIds),
     supabase.from("designations").select("id, title").in("id", designationIds),
@@ -142,7 +144,7 @@ export async function getStaffByDepartmentId(departmentId: string): Promise<Staf
   const profileMap = new Map((profiles ?? []).map((p) => [p.id, p]));
   const designMap = new Map((designations ?? []).map((d) => [d.id, d.title]));
 
-  return assignments.map((a): StaffMember => {
+  const members = assignments.map((a): StaffMember => {
     const sp = profileMap.get(a.staff_id);
     const designationId = a.designation_id;
     const designTitle = designationId ? (designMap.get(designationId) ?? "") : "";
@@ -159,7 +161,12 @@ export async function getStaffByDepartmentId(departmentId: string): Promise<Staf
       email: sp?.email ?? null,
       photoUrl: sp?.photo_url ?? null,
       isHod: Boolean(a.is_primary) && (a.rank_group === "HOD" || sp?.rank_group === "HOD"),
+      musterNumber: sp?.muster_number ?? null,
       achievements: [],
     };
   });
+
+  return members.sort(
+    (a, b) => Number(Boolean(b.isHod)) - Number(Boolean(a.isHod)) || compareByMuster(a, b),
+  );
 }

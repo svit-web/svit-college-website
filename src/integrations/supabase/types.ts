@@ -3745,6 +3745,7 @@ export type Database = {
           joining_year: number | null
           last_name: string
           metadata: Json
+          muster_number: number | null
           office_hours: Json
           past_experience_years: number | null
           phone: string | null
@@ -3774,6 +3775,7 @@ export type Database = {
           joining_year?: number | null
           last_name: string
           metadata?: Json
+          muster_number?: number | null
           office_hours?: Json
           past_experience_years?: number | null
           phone?: string | null
@@ -3803,6 +3805,7 @@ export type Database = {
           joining_year?: number | null
           last_name?: string
           metadata?: Json
+          muster_number?: number | null
           office_hours?: Json
           past_experience_years?: number | null
           phone?: string | null

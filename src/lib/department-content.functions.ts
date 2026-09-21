@@ -3,6 +3,7 @@
 // different tables (staff_department_assignments, achievements,
 // department_activities) keyed off a department's real id.
 import { publicSupabase } from '@/lib/supabase-public';
+import { compareByMuster } from '@/lib/staff-order';
 
 export interface DeptStaffMember {
   id: string;
@@ -14,6 +15,7 @@ export interface DeptStaffMember {
   employeeCode: string | null;
   joiningYear: number | null;
   pastExperienceYears: number | null;
+  musterNumber: number | null;
 }
 
 export async function getStaffByDepartmentId(departmentId: string) {
@@ -23,7 +25,7 @@ export async function getStaffByDepartmentId(departmentId: string) {
     .select(`
       is_primary,
       designations ( title ),
-      staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, employee_code, photo_url )
+      staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, employee_code, muster_number, photo_url )
     `)
     .eq('department_id', departmentId)
     .eq('status', 'published');
@@ -33,7 +35,7 @@ export async function getStaffByDepartmentId(departmentId: string) {
     throw error;
   }
 
-  return (data ?? [])
+  const members = (data ?? [])
     .filter((a: any) => a.staff_profiles?.status === 'published')
     .map((a: any): DeptStaffMember => {
       const s = a.staff_profiles;
@@ -53,8 +55,11 @@ export async function getStaffByDepartmentId(departmentId: string) {
         employeeCode: s.employee_code ?? null,
         joiningYear: s.joining_year ?? null,
         pastExperienceYears: s.past_experience_years ?? null,
+        musterNumber: s.muster_number ?? null,
       };
     });
+
+  return members.sort(compareByMuster);
 }
 
 export interface DeptAchievement {
