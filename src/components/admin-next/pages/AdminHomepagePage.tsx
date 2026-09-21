@@ -53,6 +53,7 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
   promo_card: 'Promo / CTA Card',
   stat: 'Stats Strip',
   why_choose: 'Why Choose Us',
+  campus_life_tile: 'Campus Life Tiles',
   trust_badge: 'Trust Badges',
   highlight_card: 'Highlight Cards',
   quick_link: 'Quick Links (no longer shown on site)',
@@ -320,9 +321,11 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {['hero', 'carousel_slide', 'promo_card', 'hero_slide'].includes(form.item_type) && (
+              {['hero', 'carousel_slide', 'promo_card', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">Eyebrow / Kicker</label>
+                  <label className="text-xs font-semibold uppercase text-slate-600">
+                    {form.item_type === 'campus_life_tile' ? 'Category Label (e.g. "Facilities")' : 'Eyebrow / Kicker'}
+                  </label>
                   <input
                     value={form.eyebrow}
                     onChange={(e) => f('eyebrow', e.target.value)}
@@ -389,17 +392,17 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {['hero', 'carousel_slide', 'promo_card', 'highlight_card', 'hero_slide'].includes(form.item_type) && (
+              {['hero', 'carousel_slide', 'promo_card', 'highlight_card', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Image</label>
                   <MediaUploader value={form.image_url} onChange={(url) => f('image_url', url)} bucketName="media" />
                 </div>
               )}
 
-              {['hero', 'carousel_slide', 'promo_card', 'highlight_card', 'quick_link', 'hero_slide'].includes(form.item_type) && (
+              {['hero', 'carousel_slide', 'promo_card', 'highlight_card', 'quick_link', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase text-slate-600">CTA Link</label>
+                    <label className="text-xs font-semibold uppercase text-slate-600">{form.item_type === 'campus_life_tile' ? 'Link' : 'CTA Link'}</label>
                     <input
                       value={form.link_href}
                       onChange={(e) => f('link_href', e.target.value)}

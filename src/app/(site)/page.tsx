@@ -60,6 +60,7 @@ export default async function Home() {
       <CollegesSection colleges={colleges} misc={misc} />
       <HomeCarouselSection items={items} />
       <StatsStrip items={items} liveStats={liveStats} />
+      <CampusLifeSection items={items} />
       <WhySection items={items} />
       <TrustBand items={items} />
       <EventsAndEnquiry events={events} recruiters={recruiters} />
@@ -283,6 +284,100 @@ function HomeCarouselSection({ items }: { items: HomepageItem[] }) {
         }))
       : undefined;
   return <HomeCarousel slides={mapped} />;
+}
+
+// Hand-placed span/pattern pairing ported verbatim from the reference mosaic
+// (1.html #campus), position-indexed since the tile count is fixed at 11 with
+// no add/delete in the admin panel.
+const TILE_LAYOUT: { span: string; pattern: keyof typeof TILE_PATTERNS }[] = [
+  { span: "lg:col-span-3", pattern: "lines" },
+  { span: "lg:col-span-3", pattern: "dots" },
+  { span: "lg:col-span-3", pattern: "grid" },
+  { span: "lg:col-span-3", pattern: "arc" },
+  { span: "lg:col-span-4", pattern: "diag" },
+  { span: "lg:col-span-4", pattern: "dots" },
+  { span: "lg:col-span-4", pattern: "lines" },
+  { span: "lg:col-span-3", pattern: "arc" },
+  { span: "lg:col-span-3", pattern: "grid" },
+  { span: "lg:col-span-3", pattern: "diag" },
+  { span: "lg:col-span-3", pattern: "dots" },
+];
+
+// rgba(43,47,94,*) = the site's --navy at the reference's exact color-mix opacities.
+const TILE_PATTERNS: Record<string, React.CSSProperties> = {
+  lines: {
+    backgroundImage:
+      "repeating-linear-gradient(45deg, rgba(43,47,94,0.13) 0px, rgba(43,47,94,0.13) 1px, transparent 1px, transparent 11px)",
+  },
+  dots: {
+    backgroundImage: "radial-gradient(rgba(43,47,94,0.22) 1.1px, transparent 1.6px)",
+    backgroundSize: "15px 15px",
+  },
+  grid: {
+    backgroundImage:
+      "linear-gradient(rgba(43,47,94,0.10) 1px, transparent 1px), linear-gradient(90deg, rgba(43,47,94,0.10) 1px, transparent 1px)",
+    backgroundSize: "26px 26px",
+  },
+  arc: {
+    backgroundImage:
+      "radial-gradient(circle at 50% 120%, transparent 54%, rgba(43,47,94,0.16) 55%, transparent 56.5%)",
+    backgroundSize: "120px 120px",
+  },
+  diag: {
+    backgroundImage:
+      "repeating-linear-gradient(-45deg, rgba(43,47,94,0.13) 0px, rgba(43,47,94,0.13) 1px, transparent 1px, transparent 11px)",
+  },
+};
+
+function CampusLifeSection({ items }: { items: HomepageItem[] }) {
+  const tiles = byType(items, "campus_life_tile");
+  if (tiles.length === 0) return null;
+
+  return (
+    <section className="bg-white py-[clamp(84px,11vw,144px)]">
+      <div className="container-page">
+        <Reveal>
+          <h2 className="mb-[clamp(40px,5vw,64px)] max-w-[16em] font-display text-[clamp(2rem,4.2vw,3.3rem)] font-medium leading-[1.12] tracking-[-0.01em] text-navy">
+            Life beyond the classroom<span className="text-crimson">.</span>
+          </h2>
+        </Reveal>
+        <div className="grid grid-cols-1 gap-[14px] sm:grid-cols-2 lg:grid-cols-12">
+          {tiles.map((tile, i) => {
+            const layout = TILE_LAYOUT[i % TILE_LAYOUT.length];
+            const pattern = TILE_PATTERNS[layout.pattern];
+            const card = (
+              <div className="group relative flex min-h-[172px] flex-col overflow-hidden border border-border bg-white p-[20px_22px] transition-[background-color,border-color] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-navy">
+                <div
+                  className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-0"
+                  style={pattern}
+                />
+                <span className="relative text-[9.5px] font-bold uppercase tracking-[0.2em] text-muted-foreground transition-colors duration-300 group-hover:text-gold">
+                  {tile.eyebrow}
+                </span>
+                <span className="relative mt-auto pt-5 font-display text-[clamp(1.15rem,1.6vw,1.45rem)] font-medium leading-[1.2] text-navy transition-colors duration-300 group-hover:text-[#fbf8f1]">
+                  {tile.title}
+                </span>
+                <span className="pointer-events-none absolute bottom-[16px] right-[18px] -translate-x-2 translate-y-2 text-base text-gold opacity-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
+                  →
+                </span>
+              </div>
+            );
+            return (
+              <Reveal key={tile.id} delay={i * 0.03} className={layout.span}>
+                {tile.link_href ? (
+                  <Link href={tile.link_href} className="block h-full">
+                    {card}
+                  </Link>
+                ) : (
+                  card
+                )}
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
 }
 
 function WhySection({ items }: { items: HomepageItem[] }) {
