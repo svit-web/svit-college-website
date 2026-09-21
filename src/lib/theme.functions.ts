@@ -19,9 +19,9 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
     homepagePhotos: Array.isArray(v.homepagePhotos)
       ? v.homepagePhotos.filter((p): p is string => typeof p === 'string' && p.length > 0).slice(0, MAX_HOMEPAGE_PHOTOS)
       : [],
-    aboutPhoto: typeof v.aboutPhoto === 'string' && v.aboutPhoto ? v.aboutPhoto : null,
-    campusLifePhoto: typeof v.campusLifePhoto === 'string' && v.campusLifePhoto ? v.campusLifePhoto : null,
     heroSliderEnabled: typeof v.heroSliderEnabled === 'boolean' ? v.heroSliderEnabled : DEFAULT_HERO_APPEARANCE.heroSliderEnabled,
+    homepageBlurPx: v.homepageBlurPx ?? DEFAULT_HERO_APPEARANCE.homepageBlurPx,
+    homepageGradientOpacity: v.homepageGradientOpacity ?? DEFAULT_HERO_APPEARANCE.homepageGradientOpacity,
   };
 }
 

@@ -13,9 +13,9 @@ export interface HeroAppearance {
   heroTextColor: string | null;
   heroBlurPx: number;
   homepagePhotos: string[];
-  aboutPhoto: string | null;
-  campusLifePhoto: string | null;
   heroSliderEnabled: boolean;
+  homepageBlurPx: number;
+  homepageGradientOpacity: number;
 }
 
 export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
@@ -25,9 +25,9 @@ export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
   heroTextColor: null,
   heroBlurPx: 4,
   homepagePhotos: [],
-  aboutPhoto: null,
-  campusLifePhoto: null,
   heroSliderEnabled: true,
+  homepageBlurPx: 2,
+  homepageGradientOpacity: 55,
 };
 
 /**

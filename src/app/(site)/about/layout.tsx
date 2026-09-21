@@ -35,7 +35,7 @@ export default async function AboutLayout({ children }: { children: React.ReactN
       {/* Hero */}
       <section className="relative overflow-hidden bg-gradient-to-br from-navy via-navy to-navy-deep text-white">
         <HeroPhotoLayer
-          photos={resolvedAppearance.aboutPhoto ? [resolvedAppearance.aboutPhoto] : []}
+          photos={[]}
           appearance={resolvedAppearance}
         />
         <div className="container-page relative pb-14 pt-[clamp(150px,18vh,200px)] md:pb-20">

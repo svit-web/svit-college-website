@@ -19,7 +19,7 @@ export default async function CampusLifeLayout({ children }: { children: React.R
         accent="Beyond the Classroom"
         subtitle="Facilities, clubs and events that make SVIT more than a college."
         crumbs={[{ label: "Home", to: "/" }, { label: "Campus Life" }]}
-        backgroundImage={appearance.campusLifePhoto}
+        backgroundImage={undefined}
         appearance={appearance}
       />
 

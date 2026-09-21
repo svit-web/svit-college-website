@@ -60,22 +60,36 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
           <>
             {/* Left-to-right gradient, faded to nothing by the horizontal midpoint, so the right half of the photo stays clear while the text on the left stays readable. Backdrop-blur is masked with the same falloff so the photo softens under the gradient without blurring the clear right half. */}
             <div
-              className="absolute inset-0 backdrop-blur-sm"
+              className="absolute inset-0"
               style={{
+                backdropFilter: `blur(${appearance.homepageBlurPx}px)`,
+                WebkitBackdropFilter: `blur(${appearance.homepageBlurPx}px)`,
                 WebkitMaskImage: "linear-gradient(to right, black 0%, black 32%, transparent 50%)",
                 maskImage: "linear-gradient(to right, black 0%, black 32%, transparent 50%)",
               }}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(251,248,241,0.55)_0%,rgba(251,248,241,0.48)_16%,rgba(251,248,241,0.28)_32%,transparent_50%)]" />
+            <div 
+              className="absolute inset-0" 
+              style={{
+                background: `linear-gradient(to right, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100}) 0%, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100 * 0.87}) 16%, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100 * 0.51}) 32%, transparent 50%)`
+              }}
+            />
             {/* Cream fade at the very top so the full-bleed photo blends into the floating navbar card */}
             <div
-              className="absolute inset-x-0 top-0 h-32 backdrop-blur-sm lg:h-40"
+              className="absolute inset-x-0 top-0 h-32 lg:h-40"
               style={{
+                backdropFilter: `blur(${appearance.homepageBlurPx}px)`,
+                WebkitBackdropFilter: `blur(${appearance.homepageBlurPx}px)`,
                 WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
                 maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
               }}
             />
-            <div className="absolute inset-x-0 top-0 h-32 bg-[linear-gradient(to_bottom,rgba(251,248,241,0.45)_0%,transparent_100%)] lg:h-40" />
+            <div 
+              className="absolute inset-x-0 top-0 h-32 lg:h-40" 
+              style={{
+                background: `linear-gradient(to bottom, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100 * 0.82}) 0%, transparent 100%)`
+              }}
+            />
           </>
         )}
       </div>

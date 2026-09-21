@@ -195,17 +195,46 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2">
           <Images className="h-4 w-4 text-crimson" />
-          <h2 className="text-sm font-semibold text-navy">Homepage Slideshow Photos</h2>
+          <h2 className="text-sm font-semibold text-navy">Homepage Hero</h2>
         </div>
         <p className="mt-1 text-xs text-slate-500">
-          Up to {MAX_HOMEPAGE_PHOTOS} photos — the homepage hero automatically rotates between them every {HOMEPAGE_ROTATE_MS / 1000} seconds with a fade transition. Leave slots empty to use
-          fewer photos (a single photo just stays static). Shown full-bleed with no tint or overlay — the Overlay Settings above don&apos;t apply here.
+          The homepage has its own blur and gradient settings (separate from the overlay settings above).
         </p>
-        {homepageSlots[0] && (
-          <div className="mt-3 relative aspect-[21/9] w-full max-w-xs overflow-hidden rounded-lg border border-slate-200">
-            <img src={homepageSlots[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        <div className="mt-4 grid gap-6 lg:grid-cols-2">
+          <div className="space-y-4">
+            <SliderField
+              icon={Sparkles}
+              label="Homepage Blur"
+              hint="Blur amount on the homepage hero background."
+              value={settings.homepageBlurPx}
+              min={0}
+              max={20}
+              suffix="px"
+              onChange={(v) => setSettings((s) => ({ ...s, homepageBlurPx: v }))}
+            />
+            <SliderField
+              icon={Layers}
+              label="Homepage Gradient Opacity"
+              hint="Strength of the cream gradient overlay on homepage."
+              value={settings.homepageGradientOpacity}
+              min={0}
+              max={100}
+              suffix="%"
+              onChange={(v) => setSettings((s) => ({ ...s, homepageGradientOpacity: v }))}
+            />
           </div>
-        )}
+          <div>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Slideshow Photos</span>
+            <p className="mt-1 text-xs text-slate-500">
+              Up to {MAX_HOMEPAGE_PHOTOS} photos — automatically rotates every {HOMEPAGE_ROTATE_MS / 1000} seconds with a fade transition.
+            </p>
+            {homepageSlots[0] && (
+              <div className="mt-3 relative aspect-[21/9] w-full max-w-xs overflow-hidden rounded-lg border border-slate-200">
+                <img src={homepageSlots[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              </div>
+            )}
+          </div>
+        </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {homepageSlots.map((url, i) => (
             <div key={i}>
