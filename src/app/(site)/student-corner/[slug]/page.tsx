@@ -1,25 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { CampusLeafPage } from "@/components/site-next/CampusLeafPage";
+import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { PageHero } from "@/components/site-next/PageHero";
 import { PillTabs } from "@/components/site-next/PillTabs";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
+import { Reveal } from "@/components/site-next/Reveal";
 import { getVisibleCenters, getCenterBySlug } from "@/lib/centers.functions";
+import { getEntryAlbum } from "@/lib/gallery.functions";
 
 async function loadCentre(slug: string) {
   const [item, allCenters] = await Promise.all([getCenterBySlug(slug), getVisibleCenters()]);
-  if (!item) return null;
-
-  const transformedItem = {
-    slug: item.slug,
-    title: item.name,
-    subtitle: item.subtitle || "",
-    accent: item.accent_color || "Centre",
-    description: item.description || "",
-    highlights: item.metadata?.highlights ?? [],
-    image: null,
-  };
-
-  return { item: transformedItem, allCenters };
+  if (!item || !item.has_detail_page) return null;
+  const album = await getEntryAlbum(item.album_id);
+  return { item, allCenters, album };
 }
 
 export async function generateMetadata({
@@ -31,7 +24,7 @@ export async function generateMetadata({
   const result = await loadCentre(slug);
   if (!result) return { title: "Societies — SVIT Vasad", robots: { index: false } };
   return {
-    title: `${result.item.title} — Societies — SVIT Vasad`,
+    title: `${result.item.name} — Societies — SVIT Vasad`,
     description: (result.item.description || "").slice(0, 155),
   };
 }
@@ -41,7 +34,8 @@ export default async function CentreLeaf({ params }: { params: Promise<{ slug: s
   const result = await loadCentre(slug);
   if (!result) notFound();
 
-  const { item, allCenters } = result;
+  const { item, allCenters, album } = result;
+  const highlights = item.metadata?.highlights ?? [];
 
   return (
     <>
@@ -52,7 +46,7 @@ export default async function CentreLeaf({ params }: { params: Promise<{ slug: s
         crumbs={[
           { label: "Home", to: "/" },
           { label: "Societies", to: "/campus-life/student-groups" },
-          { label: item.title },
+          { label: item.name },
         ]}
       />
 
@@ -64,7 +58,39 @@ export default async function CentreLeaf({ params }: { params: Promise<{ slug: s
             to: `/student-corner/${c.slug}`,
           }))}
         />
-        <CampusLeafPage item={item} />
+        <DetailPageLayout
+          entry={{
+            title: item.name,
+            subtitle: item.subtitle,
+            accent: item.accent_color || "Centre",
+            description: item.description,
+            cardPhotoUrl: item.card_photo_url,
+            album,
+          }}
+        >
+          {highlights.length > 0 && (
+            <div>
+              <SectionHeading eyebrow="Highlights" title="What makes it special" variant="eyebrow" />
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                {highlights.map((h, i) => (
+                  <Reveal key={h.title} delay={i * 0.04}>
+                    <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
+                      <div className="flex items-start gap-3">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy/10 text-xs font-bold text-navy">
+                          {i + 1}
+                        </div>
+                        <div>
+                          <div className="font-display font-bold text-navy">{h.title}</div>
+                          <p className="mt-1 text-sm text-muted-foreground">{h.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Reveal>
+                ))}
+              </div>
+            </div>
+          )}
+        </DetailPageLayout>
       </section>
     </>
   );

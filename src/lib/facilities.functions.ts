@@ -17,6 +17,9 @@ export interface Facility {
   accent_color: string | null;
   description: string | null;
   category: string | null;
+  card_photo_url: string | null;
+  has_detail_page: boolean;
+  album_id: string | null;
   metadata: {
     highlights?: Array<{ title: string; description: string }>;
     institute_libraries?: Array<{ college_id: string; book_count: number }>;
@@ -45,6 +48,7 @@ export async function getAllFacilities() {
     .select("*")
     .eq("status", "published")
     .is("department_id", null)
+    .is("deleted_at", null)
     .order("name", { ascending: true });
 
   return unwrap<Facility[]>(result as any, "facilities");
@@ -66,7 +70,11 @@ export async function getFacilitiesByType(type: "campus" | "building" | "laborat
 }
 
 /**
- * Fetch a single facility by slug
+ * Fetch a single facility by slug. Excludes lab rows (`department_id IS NOT
+ * NULL`) — labs have their own resolver (`getLabBySlug`) and their own URL
+ * (`/departments/[dept]/labs/[slug]`); the campus/building facility slug
+ * namespace must not accidentally resolve them (see
+ * docs/audits/2026-09-23-entry-model-drift.md).
  */
 export async function getFacilityBySlug(slug: string) {
   const supabase = publicSupabase();
@@ -75,6 +83,8 @@ export async function getFacilityBySlug(slug: string) {
     .select("*")
     .eq("slug", slug)
     .eq("status", "published")
+    .is("department_id", null)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (error) throw error;
@@ -93,6 +103,7 @@ export async function getLabsByDepartmentId(departmentId: string) {
     .eq("status", "published")
     .eq("facility_type", "laboratory")
     .eq("department_id", departmentId)
+    .is("deleted_at", null)
     .order("name", { ascending: true });
 
   if (error) {
@@ -101,4 +112,26 @@ export async function getLabsByDepartmentId(departmentId: string) {
   }
 
   return (data ?? []) as Facility[];
+}
+
+/**
+ * Fetch a single lab by department + slug — the counterpart to
+ * `getFacilityBySlug` that only ever resolves laboratory rows, scoped to one
+ * department so two departments can't collide on the same slug.
+ */
+export async function getLabBySlug(departmentId: string, slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from("facilities")
+    .select("*")
+    .eq("slug", slug)
+    .eq("facility_type", "laboratory")
+    .eq("department_id", departmentId)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return data as Facility | null;
 }

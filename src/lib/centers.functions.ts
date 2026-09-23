@@ -11,6 +11,9 @@ export interface Center {
   subtitle: string | null;
   accent_color: string | null;
   description: string | null;
+  card_photo_url: string | null;
+  has_detail_page: boolean;
+  album_id: string | null;
   metadata: {
     highlights?: Array<{ title: string; description: string }>;
     gallery?: {
@@ -37,6 +40,7 @@ export async function getAllCenters() {
     .from("centers")
     .select("*")
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("name", { ascending: true });
 
   return unwrap<Center[]>(result as any, "centers");
@@ -66,6 +70,7 @@ export async function getCenterBySlug(slug: string) {
     .select("*")
     .eq("slug", slug)
     .eq("status", "published")
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (error) throw error;

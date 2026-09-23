@@ -2,9 +2,9 @@
 // Reads are public (matches app_settings' RLS policy); writes live in
 // theme-next.ts, gated by the app_settings global-admin-only RLS policy.
 import { publicSupabase } from '@/lib/supabase-public';
-import { DEFAULT_HERO_APPEARANCE, MAX_HOMEPAGE_PHOTOS, type HeroAppearance } from '@/lib/theme';
+import { DEFAULT_HERO_APPEARANCE, type HeroAppearance } from '@/lib/theme';
 
-export { MAX_HOMEPAGE_PHOTOS, HOMEPAGE_ROTATE_MS, DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, type HeroAppearance } from '@/lib/theme';
+export { HOMEPAGE_ROTATE_MS, DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, type HeroAppearance } from '@/lib/theme';
 
 const HERO_APPEARANCE_KEY = 'hero_appearance';
 
@@ -17,7 +17,7 @@ function parseHeroAppearance(value: unknown): HeroAppearance {
     heroTextColor: typeof v.heroTextColor === 'string' && v.heroTextColor ? v.heroTextColor : null,
     heroBlurPx: v.heroBlurPx ?? DEFAULT_HERO_APPEARANCE.heroBlurPx,
     homepagePhotos: Array.isArray(v.homepagePhotos)
-      ? v.homepagePhotos.filter((p): p is string => typeof p === 'string' && p.length > 0).slice(0, MAX_HOMEPAGE_PHOTOS)
+      ? v.homepagePhotos.filter((p): p is string => typeof p === 'string' && p.length > 0)
       : [],
     heroSliderEnabled: typeof v.heroSliderEnabled === 'boolean' ? v.heroSliderEnabled : DEFAULT_HERO_APPEARANCE.heroSliderEnabled,
     homepageBlurPx: v.homepageBlurPx ?? DEFAULT_HERO_APPEARANCE.homepageBlurPx,

@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { DeptLabsView } from "@/components/site-next/DepartmentSections";
 import { getDepartmentByCode } from "@/lib/departments.functions";
 import { getLabsByDepartmentId } from "@/lib/facilities.functions";
+import { getEntryAlbums } from "@/lib/gallery.functions";
 
 export async function generateMetadata({
   params,
@@ -24,6 +25,7 @@ export default async function DeptLabsPage({ params }: { params: Promise<{ dept:
   if (!department) notFound();
 
   const labs = await getLabsByDepartmentId(department.id).catch(() => []);
+  const labAlbums = await getEntryAlbums(labs.map((l) => l.album_id));
 
-  return <DeptLabsView department={department} labs={labs} />;
+  return <DeptLabsView department={department} labs={labs} labAlbums={labAlbums} />;
 }

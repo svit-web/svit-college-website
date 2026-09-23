@@ -55,7 +55,6 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
   why_choose: 'Why Choose Us',
   campus_life_tile: 'Campus Life Tiles',
   trust_badge: 'Trust Badges',
-  highlight_card: 'Highlight Cards',
   quick_link: 'Quick Links (no longer shown on site)',
   hero_slide: 'Hero Slides (legacy)',
   job: 'Job Listings',
@@ -357,7 +356,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {['stat', 'why_choose', 'carousel_slide', 'highlight_card', 'hero', 'promo_card'].includes(form.item_type) && (
+              {['stat', 'why_choose', 'carousel_slide', 'hero', 'promo_card'].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">{form.item_type === 'stat' ? 'Label (e.g. "Students")' : 'Subtitle'}</label>
                   <input
@@ -380,7 +379,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {['why_choose', 'trust_badge', 'highlight_card', 'quick_link'].includes(form.item_type) && (
+              {['why_choose', 'trust_badge', 'quick_link'].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Icon Name (Lucide)</label>
                   <input
@@ -392,14 +391,14 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {['hero', 'carousel_slide', 'promo_card', 'highlight_card', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
+              {['hero', 'carousel_slide', 'promo_card', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Image</label>
                   <MediaUploader value={form.image_url} onChange={(url) => f('image_url', url)} bucketName="media" />
                 </div>
               )}
 
-              {['hero', 'carousel_slide', 'promo_card', 'highlight_card', 'quick_link', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
+              {['hero', 'carousel_slide', 'promo_card', 'quick_link', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold uppercase text-slate-600">{form.item_type === 'campus_life_tile' ? 'Link' : 'CTA Link'}</label>

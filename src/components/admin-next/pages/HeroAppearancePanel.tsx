@@ -2,9 +2,9 @@
 
 import { useState } from 'react';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, MAX_HOMEPAGE_PHOTOS, HOMEPAGE_ROTATE_MS, type HeroAppearance } from '@/lib/theme';
+import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, HOMEPAGE_ROTATE_MS, type HeroAppearance } from '@/lib/theme';
 import { setHeroAppearance } from '@/lib/theme-next';
-import { Image, Images, Layers, Loader2, Save, Sparkles, SlidersHorizontal, Type } from 'lucide-react';
+import { Image, Images, Layers, Loader2, Save, Sparkles, Type, X } from 'lucide-react';
 import { toast } from 'sonner';
 import campusHero from '@/assets/campus-hero.jpg';
 
@@ -29,16 +29,26 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
     setSettings(DEFAULT_HERO_APPEARANCE);
   }
 
-  function setHomepagePhoto(index: number, url: string) {
+  function addHomepagePhoto(url: string) {
+    if (!url) return;
+    setSettings((s) => ({ ...s, homepagePhotos: [...s.homepagePhotos, url] }));
+  }
+
+  function removeHomepagePhoto(index: number) {
+    setSettings((s) => ({ ...s, homepagePhotos: s.homepagePhotos.filter((_, i) => i !== index) }));
+  }
+
+  function moveHomepagePhoto(from: number, to: number) {
     setSettings((s) => {
-      const slots = Array.from({ length: MAX_HOMEPAGE_PHOTOS }, (_, i) => s.homepagePhotos[i] ?? '');
-      slots[index] = url;
-      return { ...s, homepagePhotos: slots.filter(Boolean) };
+      if (to < 0 || to >= s.homepagePhotos.length) return s;
+      const next = [...s.homepagePhotos];
+      const [item] = next.splice(from, 1);
+      next.splice(to, 0, item);
+      return { ...s, homepagePhotos: next };
     });
   }
 
   const { imageStyle, overlayStyle } = heroOverlayStyles(settings);
-  const homepageSlots = Array.from({ length: MAX_HOMEPAGE_PHOTOS }, (_, i) => settings.homepagePhotos[i] ?? '');
 
   return (
     <div className="space-y-6">
@@ -149,24 +159,6 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
             suffix="px"
             onChange={(v) => setSettings((s) => ({ ...s, heroBlurPx: v }))}
           />
-          <div>
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm font-semibold text-navy">
-                <SlidersHorizontal className="h-4 w-4 text-crimson" />
-                Homepage Card Slider
-              </label>
-              <button
-                type="button"
-                role="switch"
-                aria-checked={settings.heroSliderEnabled}
-                onClick={() => setSettings((s) => ({ ...s, heroSliderEnabled: !s.heroSliderEnabled }))}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${settings.heroSliderEnabled ? 'bg-crimson' : 'bg-slate-300'}`}
-              >
-                <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${settings.heroSliderEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
-              </button>
-            </div>
-            <p className="mt-1 text-xs text-slate-500">Show or hide the highlight card slider on the right side of the homepage hero.</p>
-          </div>
         </div>
 
         <div className="space-y-2">
@@ -226,24 +218,42 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
           <div>
             <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Slideshow Photos</span>
             <p className="mt-1 text-xs text-slate-500">
-              Up to {MAX_HOMEPAGE_PHOTOS} photos — automatically rotates every {HOMEPAGE_ROTATE_MS / 1000} seconds with a fade transition.
+              As many as you like — automatically rotates every {HOMEPAGE_ROTATE_MS / 1000} seconds with a fade transition. Drag to reorder.
             </p>
-            {homepageSlots[0] && (
-              <div className="mt-3 relative aspect-[21/9] w-full max-w-xs overflow-hidden rounded-lg border border-slate-200">
-                <img src={homepageSlots[0]} alt="" className="absolute inset-0 h-full w-full object-cover" />
-              </div>
-            )}
           </div>
         </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          {homepageSlots.map((url, i) => (
-            <div key={i}>
-              <span className="text-[11px] font-semibold text-slate-500 uppercase">Photo {i + 1}</span>
-              <div className="mt-1">
-                <MediaUploader value={url} onChange={(newUrl) => setHomepagePhoto(i, newUrl)} />
+        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {settings.homepagePhotos.map((url, i) => (
+            <div
+              key={url + i}
+              draggable
+              onDragStart={(e) => e.dataTransfer.setData('text/plain', String(i))}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                moveHomepagePhoto(Number(e.dataTransfer.getData('text/plain')), i);
+              }}
+              className="group relative cursor-grab overflow-hidden rounded-lg border border-slate-200 active:cursor-grabbing"
+            >
+              <div className="relative aspect-video w-full">
+                <img src={url} alt="" className="absolute inset-0 h-full w-full object-cover" />
               </div>
+              <button
+                type="button"
+                onClick={() => removeHomepagePhoto(i)}
+                title="Remove photo"
+                className="absolute right-1.5 top-1.5 rounded-full bg-white/90 p-1 text-slate-600 shadow hover:bg-red-50 hover:text-red-500"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+              <span className="absolute bottom-1.5 left-1.5 rounded bg-black/50 px-1.5 py-0.5 text-[10px] font-semibold text-white">
+                {i + 1}
+              </span>
             </div>
           ))}
+          <div>
+            <MediaUploader value="" onChange={addHomepagePhoto} />
+          </div>
         </div>
       </div>
     </div>

@@ -27,7 +27,6 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/gallery_albums",
   "/admin/tables/gallery_media",
   "/admin/tables/student_clubs",
-  "/admin/tables/club_events",
   "/admin/tables/mous",
   "/admin/inquiries",
   "/admin/user-management",
@@ -36,8 +35,6 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/audit_logs",
   "/admin/trash",
   "/admin/settings",
-  "/admin/library",
-  "/admin/nss-ncc",
   "/admin/scholarships",
   "/admin/tables/placed_students",
 ] as const;
@@ -92,7 +89,6 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "gallery_albums",
   "gallery_media",
   "student_clubs",
-  "club_events",
   "mous",
   "user_profiles",
   "user_roles",
@@ -124,8 +120,6 @@ export const ROUTE_SECTION_MAP: Record<string, string> = {
   "/admin/tables/gallery_albums": "campus_life",
   "/admin/tables/gallery_media": "campus_life",
   "/admin/tables/student_clubs": "campus_life",
-  "/admin/tables/club_events": "campus_life",
-  "/admin/library": "library",
 };
 
 // Longest-prefix match so a route like "/admin/tables/board_members/new"

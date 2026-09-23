@@ -97,3 +97,4 @@ export async function getLatestEvents() {
   if (error) throw new Error(error.message);
   return data ?? [];
 }
+

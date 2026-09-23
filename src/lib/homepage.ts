@@ -4,11 +4,13 @@ import {
   getLatestEvents,
   getRecruiterLogos,
 } from "./homepage.functions";
+import { getFeaturedPosts } from "./posts.functions";
 
 export type HomepageItem = Awaited<ReturnType<typeof getGlobalHomepageItems>>[number];
 export type CollegeRow = Awaited<ReturnType<typeof getCollegesGrid>>[number];
 export type RecruiterRow = Awaited<ReturnType<typeof getRecruiterLogos>>[number];
 export type EventRow = Awaited<ReturnType<typeof getLatestEvents>>[number];
+export type PostRow = Awaited<ReturnType<typeof getFeaturedPosts>>[number];
 
 export function byType(items: HomepageItem[], type: string): HomepageItem[] {
   return items.filter((i) => i.item_type === type);

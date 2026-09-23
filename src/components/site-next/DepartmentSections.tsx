@@ -12,6 +12,8 @@ import type { Facility } from "@/lib/facilities.functions";
 import type { EntryCardData } from "@/lib/entry";
 import { achievementCategoryLabel, achievementDetailHref } from "@/lib/achievements.functions";
 import { AchievementsGrid } from "./AchievementsGrid";
+import { EntryEventsGrid } from "./EntryEventsGrid";
+import type { EntryAlbum } from "@/lib/entry";
 import { GraduationCap, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -22,6 +24,7 @@ interface Props {
   achievements?: DeptAchievement[];
   clubs?: DeptClub[];
   labs?: Facility[];
+  labAlbums?: Map<string, EntryAlbum>;
 }
 
 export function initials(name: string): string {
@@ -427,7 +430,21 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
 }
 
 // -------- Labs & Facilities --------
-export function DeptLabsView({ labs = [] }: Props) {
+function toLabCard(lab: Facility, deptCode: string, album: EntryAlbum | null): EntryCardData {
+  return {
+    id: lab.id,
+    slug: lab.slug,
+    title: lab.name,
+    subtitle: lab.accent_color,
+    description: lab.description,
+    cardPhotoUrl: lab.card_photo_url,
+    hasDetailPage: lab.has_detail_page,
+    detailHref: lab.has_detail_page ? `/departments/${deptCode}/labs/${lab.slug}` : null,
+    album,
+  };
+}
+
+export function DeptLabsView({ department, labs = [], labAlbums }: Props) {
   if (labs.length === 0) {
     return (
       <div>
@@ -439,57 +456,14 @@ export function DeptLabsView({ labs = [] }: Props) {
     );
   }
 
+  const entries = labs.map((lab) =>
+    toLabCard(lab, department.code, lab.album_id ? (labAlbums?.get(lab.album_id) ?? null) : null),
+  );
+
   return (
     <div>
       <SectionHeading eyebrow="Labs & Facilities" title="Our Laboratories" />
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {labs.map((lab, i) => (
-          <Reveal key={lab.id} delay={i * 0.04}>
-            <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden">
-              {(lab.metadata?.imageUrl || lab.metadata?.images?.[0]) && (
-                <div className="relative h-40 w-full">
-                  <NextImage
-                    src={lab.metadata?.imageUrl || lab.metadata?.images?.[0]}
-                    alt={lab.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              <div className="p-6">
-                {lab.metadata?.accent && (
-                  <div className="mb-2 inline-block rounded-full bg-navy/5 px-3 py-1 text-xs font-bold text-navy">
-                    {lab.metadata.accent}
-                  </div>
-                )}
-                <h3 className="font-display text-base font-bold text-navy">{lab.name}</h3>
-                {lab.metadata?.subtitle && (
-                  <p className="mt-1 text-xs font-semibold text-crimson">{lab.metadata.subtitle}</p>
-                )}
-                {(lab.description || lab.metadata?.description) && (
-                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
-                    {lab.description || lab.metadata?.description}
-                  </p>
-                )}
-                {lab.metadata?.highlights && lab.metadata.highlights.length > 0 && (
-                  <ul className="mt-3 space-y-1.5">
-                    {lab.metadata.highlights.map((h, j) => (
-                      <li key={j} className="flex items-start gap-2 text-xs text-muted-foreground">
-                        <span className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                        <span>
-                          <span className="font-semibold text-navy">{h.title}:</span>{" "}
-                          {h.description}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
+      <EntryEventsGrid entries={entries} />
     </div>
   );
 }

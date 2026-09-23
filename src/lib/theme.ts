@@ -3,7 +3,6 @@
 // theme-next.ts.
 import type { CSSProperties } from 'react';
 
-export const MAX_HOMEPAGE_PHOTOS = 5;
 export const HOMEPAGE_ROTATE_MS = 5000;
 
 export interface HeroAppearance {

@@ -12,7 +12,6 @@ import {
   Users,
 } from "lucide-react";
 import { HomeCarousel, type CarouselSlide } from "@/components/site-next/Carousel";
-import { HeroCardSlider } from "@/components/site-next/HeroCardSlider";
 import { CTABanner } from "@/components/site-next/CTABanner";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
@@ -28,6 +27,7 @@ import {
   type CollegeRow,
   type RecruiterRow,
   type EventRow,
+  type PostRow,
 } from "@/lib/homepage";
 import {
   getGlobalHomepageItems,
@@ -35,6 +35,7 @@ import {
   getRecruiterLogos,
   getLatestEvents,
 } from "@/lib/homepage.functions";
+import { getFeaturedPosts } from "@/lib/posts.functions";
 import { getHeroAppearance, DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
 import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
@@ -44,11 +45,12 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 };
 
 export default async function Home() {
-  const [items, colleges, recruiters, events, appearance, misc, liveStats] = await Promise.all([
+  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats] = await Promise.all([
     getGlobalHomepageItems().catch(() => []),
     getCollegesGrid().catch(() => []),
     getRecruiterLogos().catch(() => []),
     getLatestEvents().catch(() => []),
+    getFeaturedPosts().catch(() => []),
     getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
     getMiscSettings().catch(() => null),
     getLiveStats().catch(() => null),
@@ -63,119 +65,9 @@ export default async function Home() {
       <CampusLifeSection items={items} />
       <WhySection items={items} />
       <TrustBand items={items} />
-      <EventsAndEnquiry events={events} recruiters={recruiters} />
+      <EventsAndEnquiry events={events} posts={posts} recruiters={recruiters} />
       <CTABannerSection items={items} misc={misc} />
     </>
-  );
-}
-
-function Hero({
-  items,
-  appearance,
-  misc,
-}: {
-  items: HomepageItem[];
-  appearance: HeroAppearance;
-  misc: MiscSettings | null;
-}) {
-  const hero = byType(items, "hero")[0];
-  const highlightCards = byType(items, "highlight_card");
-  const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
-  const photos =
-    resolvedAppearance.homepagePhotos.length > 0
-      ? resolvedAppearance.homepagePhotos
-      : hero?.image_url ? [hero.image_url] : [];
-
-  const textOrEmpty = (v: string | null | undefined) => (typeof v === "string" ? v.trim() : "");
-  const pretitle = textOrEmpty(hero?.pretitle);
-  const eyebrow = hero
-    ? textOrEmpty(hero.eyebrow)
-    : (misc?.year_established ? `Est. ${misc.year_established} · Vasad, Gujarat` : "Vasad, Gujarat");
-  const title = hero ? textOrEmpty(hero.title) : "Build Your Future.";
-  const titleAccent = hero ? textOrEmpty(hero.title_accent) : "Shape The World.";
-  const subtitle = hero
-    ? textOrEmpty(hero.subtitle)
-    : "SVIT Vasad is a premier institute offering AICTE-approved programmes in engineering, management and applied sciences."
-      + (misc?.placement_percentage ? ` ${misc.placement_percentage}%+ placement` : "")
-      + (misc?.recruiter_count ? ` across ${misc.recruiter_count}+ recruiting partners.` : "");
-  const primaryLabel = hero?.link_label ?? "Apply Now";
-  const primaryHref = hero?.link_href ?? "/admissions/inquiry";
-  const secondaryLabel = hero?.secondary_link_label ?? "Explore Courses";
-  const secondaryHref = hero?.secondary_link_href ?? "/courses";
-
-  const highlights =
-    highlightCards.map((h) => ({
-      id: h.id,
-      image: h.image_url ?? "",
-      eyebrow: h.eyebrow ?? undefined,
-      title: h.title,
-      subtitle: h.subtitle ?? undefined,
-    }));
-
-  return (
-    <section
-      className="relative overflow-hidden bg-navy-deep text-[var(--hero-text)]"
-      style={heroTextVars(resolvedAppearance)}
-    >
-      <HeroPhotoLayer photos={photos} appearance={resolvedAppearance} rotateMs={HOMEPAGE_ROTATE_MS} />
-      <div className="container-page relative py-20 md:py-28">
-        <div className={`grid items-center gap-12 ${resolvedAppearance.heroSliderEnabled ? "lg:grid-cols-[1.15fr_1fr]" : ""}`}>
-          <div>
-            {pretitle && (
-              <p className="mb-3 font-display text-3xl md:text-5xl font-bold leading-[1.05] text-[var(--hero-text)]">
-                {pretitle.includes(" of Technology") ? (
-                  <>
-                    {pretitle.replace(" of Technology", "")}
-                    <br />
-                    of Technology
-                  </>
-                ) : (
-                  pretitle
-                )}
-              </p>
-            )}
-            {eyebrow && (
-              <div className="mb-4 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-                {eyebrow}
-              </div>
-            )}
-            {(title || titleAccent) && (
-              <h1 className="font-display text-2xl md:text-4xl font-bold leading-[1.05]">
-                {title && (
-                  <>
-                    {title}
-                    {titleAccent && <br />}
-                  </>
-                )}
-                {titleAccent && <span className="text-gold">{titleAccent}</span>}
-              </h1>
-            )}
-            {subtitle && (
-              <p className="mt-6 text-lg text-[color-mix(in_oklab,var(--hero-text)_85%,transparent)] max-w-2xl">{subtitle}</p>
-            )}
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link
-                href={primaryHref}
-                className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
-              >
-                {primaryLabel} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href={secondaryHref}
-                className="inline-flex items-center gap-2 rounded-md border border-white/25 px-6 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
-              >
-                {secondaryLabel}
-              </Link>
-            </div>
-          </div>
-          {resolvedAppearance.heroSliderEnabled && (
-            <div className="w-full">
-              <HeroCardSlider items={highlights} />
-            </div>
-          )}
-        </div>
-      </div>
-    </section>
   );
 }
 
@@ -451,10 +343,10 @@ function CTABannerSection({ items, misc }: { items: HomepageItem[]; misc: MiscSe
   );
 }
 
-function EventsAndEnquiry({ events, recruiters }: { events: EventRow[]; recruiters: RecruiterRow[] }) {
+function EventsAndEnquiry({ events, posts, recruiters }: { events: EventRow[]; posts: PostRow[]; recruiters: RecruiterRow[] }) {
   return (
     <>
-      <NewsEventsSection events={events} />
+      <NewsEventsSection events={events} posts={posts} />
       <section className="container-page pb-20">
         <Reveal>
           <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">

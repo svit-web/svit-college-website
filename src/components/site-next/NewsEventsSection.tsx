@@ -6,9 +6,7 @@ import { motion } from "framer-motion";
 import { Reveal } from "./Reveal";
 import { CurtainImage } from "./CurtainImage";
 import { SplitHeading } from "./SplitHeading";
-import type { EventRow } from "@/lib/homepage";
-
-const EVENT_TAGS = new Set(["Event", "Culture"]);
+import type { EventRow, PostRow } from "@/lib/homepage";
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -29,15 +27,6 @@ function formatDateRange(start: string, end: string | null): string {
   return `${formatDate(start)} – ${formatDate(end)}`;
 }
 
-function splitEvents(events: EventRow[]) {
-  const newsItems = events.filter((e) => !EVENT_TAGS.has(e.tag ?? ""));
-  const eventItems = [...events]
-    .filter((e) => EVENT_TAGS.has(e.tag ?? ""))
-    .sort((a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime());
-  const [featured, ...restEvents] = eventItems;
-  return { newsItems, featured: featured ?? null, restEvents };
-}
-
 function PillLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <Link
@@ -54,8 +43,12 @@ function eventHref(slug: string | null) {
   return slug ? `/campus-life/events/${slug}` : "/campus-life/events";
 }
 
-export function NewsEventsSection({ events }: { events: EventRow[] }) {
-  const { newsItems, featured, restEvents } = splitEvents(events ?? []);
+export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts: PostRow[] }) {
+  const newsItems = posts ?? [];
+  const eventItems = [...(events ?? [])].sort(
+    (a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime(),
+  );
+  const [featured, ...restEvents] = eventItems;
 
   if (newsItems.length === 0 && !featured) return null;
 
@@ -95,14 +88,16 @@ export function NewsEventsSection({ events }: { events: EventRow[] }) {
                   <h3 className="max-w-[28ch] font-display text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold leading-[1.16] tracking-[-0.02em] text-navy">
                     {item.title}
                   </h3>
-                  <time className="whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                    {formatDate(item.start_date)}
-                  </time>
+                  {item.published_at && (
+                    <time className="whitespace-nowrap text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                      {formatDate(item.published_at)}
+                    </time>
+                  )}
                 </div>
                 <div className="grid grid-cols-1 items-start gap-[clamp(1.2rem,2.5vw,2.2rem)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
                   <div className="grid content-start justify-items-start gap-5 text-[0.95rem] text-muted-foreground">
-                    {item.description && <p>{item.description}</p>}
-                    <PillLink href={eventHref(item.slug)}>Read more</PillLink>
+                    {item.summary && <p>{item.summary}</p>}
+                    <PillLink href={`/news/${item.slug}`}>Read more</PillLink>
                   </div>
                   {item.card_photo_url && (
                     <CurtainImage

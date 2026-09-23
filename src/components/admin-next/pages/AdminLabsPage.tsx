@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
-import { MediaUploader } from '@/components/admin-next/MediaUploader';
+import { EntryPhotosEditor } from '@/components/admin-next/EntryPhotosEditor';
 import { FlaskConical, Plus, Trash2, Save, Loader2, X, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
@@ -21,9 +21,12 @@ interface Lab {
   subtitle: string | null;
   accent_color: string | null;
   description: string | null;
+  card_photo_url: string | null;
+  has_detail_page: boolean;
+  album_id: string | null;
   metadata: {
     highlights?: Highlight[];
-    imageUrl?: string;
+    [key: string]: any;
   };
 }
 
@@ -58,7 +61,9 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     accent: string;
     description: string;
     highlights: Highlight[];
-    imageUrl: string;
+    card_photo_url: string;
+    album_id: string | null;
+    has_detail_page: boolean;
     status: string;
   }>({
     name: '',
@@ -68,7 +73,9 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     accent: '',
     description: '',
     highlights: [],
-    imageUrl: '',
+    card_photo_url: '',
+    album_id: null,
+    has_detail_page: false,
     status: 'published',
   });
 
@@ -100,7 +107,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     setListLoading(true);
     const { data, error } = await supabase
       .from('facilities')
-      .select('id, name, slug, department_id, status, subtitle, accent_color, description, metadata')
+      .select('id, name, slug, department_id, status, subtitle, accent_color, description, card_photo_url, has_detail_page, album_id, metadata')
       .eq('department_id', deptId)
       .eq('facility_type', 'laboratory')
       .is('deleted_at', null)
@@ -120,7 +127,9 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
       accent: '',
       description: '',
       highlights: [],
-      imageUrl: '',
+      card_photo_url: '',
+      album_id: null,
+      has_detail_page: false,
       status: 'published',
     });
     setPanelOpen(true);
@@ -136,7 +145,9 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
       accent: lab.accent_color ?? '',
       description: lab.description ?? '',
       highlights: lab.metadata.highlights ?? [],
-      imageUrl: lab.metadata.imageUrl ?? '',
+      card_photo_url: lab.card_photo_url ?? '',
+      album_id: lab.album_id ?? null,
+      has_detail_page: lab.has_detail_page ?? false,
       status: lab.status,
     });
     setPanelOpen(true);
@@ -175,6 +186,12 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     }
     setSaving(true);
     try {
+      // Merge onto the lab's existing metadata rather than replacing it
+      // wholesale — the old bug here silently dropped anything else stored
+      // there (see docs/audits/2026-09-23-entry-model-drift.md). `images`/
+      // `imageUrl` are dead now that lab photos live in card_photo_url.
+      const editingLab = editingId ? labs.find((l) => l.id === editingId) : null;
+      const { images: _images, imageUrl: _imageUrl, ...restMetadata } = editingLab?.metadata ?? {};
       const payload = {
         name: form.name.trim(),
         slug: form.slug.trim() || slugify(form.name),
@@ -184,9 +201,12 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
         subtitle: form.subtitle.trim() || null,
         accent_color: form.accent.trim() || null,
         description: form.description.trim() || null,
+        card_photo_url: form.card_photo_url || null,
+        album_id: form.album_id,
+        has_detail_page: form.has_detail_page,
         metadata: {
+          ...restMetadata,
           highlights: form.highlights.filter((h) => h.title.trim()),
-          imageUrl: form.imageUrl || null,
         },
         updated_by: admin.id,
       };
@@ -306,8 +326,8 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
               className="group relative rounded-xl border border-slate-200 bg-white p-4 cursor-pointer hover:border-slate-300 hover:shadow-sm transition"
               onClick={() => openEdit(lab)}
             >
-              {lab.metadata.imageUrl && (
-                <img src={lab.metadata.imageUrl} alt="" className="mb-3 h-28 w-full rounded-lg object-cover" />
+              {lab.card_photo_url && (
+                <img src={lab.card_photo_url} alt="" className="mb-3 h-28 w-full rounded-lg object-cover" />
               )}
               {lab.accent_color && (
                 <div className="mb-1 text-[10px] font-bold uppercase tracking-widest text-crimson">{lab.accent_color}</div>
@@ -440,10 +460,14 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="field-label">Photo</label>
-                <MediaUploader value={form.imageUrl} onChange={(url) => setField('imageUrl', url)} type="image" />
-              </div>
+              <EntryPhotosEditor
+                tableId="facilities"
+                recordId={editingId}
+                primaryKey="id"
+                values={form}
+                onChange={(name, value) => setForm((p) => ({ ...p, [name]: value }))}
+                hasDetailPageField
+              />
 
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
