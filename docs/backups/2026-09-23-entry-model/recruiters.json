@@ -1,0 +1,5752 @@
+[
+  {
+    "id": "5829bf03-c74d-4024-a1a5-4306f4dde585",
+    "company_name": "TCS",
+    "logo_url": "/__l5e/assets-v1/tcs.jpg",
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:35.534464+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit",
+        "svica"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "04ca7800-1a73-4437-9519-75046f61215e",
+    "company_name": "Infosys",
+    "logo_url": "/__l5e/assets-v1/infosys.jpg",
+    "website_url": null,
+    "sort_order": 1,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:35.878397+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit",
+        "svica"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "55957775-3f31-47f9-b5dd-4176b5b4dc60",
+    "company_name": "Wipro",
+    "logo_url": "/__l5e/assets-v1/wipro.jpg",
+    "website_url": null,
+    "sort_order": 2,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:36.174267+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit",
+        "svica"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4864fe56-0cae-4f79-a221-acbeb638741f",
+    "company_name": "L&T",
+    "logo_url": "/__l5e/assets-v1/lnt.jpg",
+    "website_url": null,
+    "sort_order": 3,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:36.508973+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "01d4d8e9-9002-4114-8943-8a2fdb92bf7f",
+    "company_name": "HCL Technologies",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 4,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:36.82426+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "194a6259-c5d9-4dda-b39f-c8c0d670c29d",
+    "company_name": "Torrent Power",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 5,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:37.13972+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a88f7156-3b39-4358-a7a3-dccdbf923aba",
+    "company_name": "Accenture",
+    "logo_url": "/__l5e/assets-v1/accenture.jpg",
+    "website_url": null,
+    "sort_order": 6,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:37.471152+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit",
+        "svica"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "15232105-70db-4d25-a432-3c5a95a2ebfc",
+    "company_name": "Reliance Industries",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 7,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:37.808189+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "32b85cfc-4464-4266-a302-09ecfd47cfda",
+    "company_name": "Adani Group",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 8,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:38.096821+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "76fe694d-1fe1-4630-b795-ad723558e181",
+    "company_name": "Tech Mahindra",
+    "logo_url": "/__l5e/assets-v1/techmahindra.jpg",
+    "website_url": null,
+    "sort_order": 9,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:38.404254+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "31fe9075-6fda-45d4-8ef1-98f2a60b4074",
+    "company_name": "GA Ecosystem",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 10,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:38.714277+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "cc22283d-9e8d-45c3-86b8-c3d82af6abc4",
+    "company_name": "Urban Works",
+    "logo_url": "/__l5e/assets-v1/urbanworks.jpg",
+    "website_url": null,
+    "sort_order": 22,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:42.361196+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "coa"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c3fcec2e-5569-4a09-8584-f3da15c1bd2b",
+    "company_name": "Habitat Architects",
+    "logo_url": "/__l5e/assets-v1/habitat.jpg",
+    "website_url": null,
+    "sort_order": 23,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:42.681922+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "coa"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b0892ce1-9d10-492b-b8a4-4fc2a34dc634",
+    "company_name": "Shapoorji Pallonji",
+    "logo_url": "/__l5e/assets-v1/shapoorji.jpg",
+    "website_url": null,
+    "sort_order": 24,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:42.994576+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "coa"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "48ecdf8b-9c62-42f6-b911-b7d935991730",
+    "company_name": "L&T Realty",
+    "logo_url": "/__l5e/assets-v1/ltrealty.jpg",
+    "website_url": null,
+    "sort_order": 25,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:43.294189+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "coa"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "bb9fd66f-93e2-4600-af3b-f644775ca5a9",
+    "company_name": "Adani Realty",
+    "logo_url": "/__l5e/assets-v1/adanirealty.jpg",
+    "website_url": null,
+    "sort_order": 26,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:43.61973+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "coa"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3590c518-c561-4c8b-bbbd-5181473a3293",
+    "company_name": "Gada eletronics",
+    "logo_url": "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1785742262594-54dqbm.webp",
+    "website_url": null,
+    "sort_order": 1,
+    "created_at": "2026-08-03T07:31:12.599421+00:00",
+    "updated_at": "2026-08-07T08:18:43.916392+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": "2026-08-07T08:18:43.406+00:00",
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e2c3e947-a734-4993-afe2-4623531d72a2",
+    "company_name": "Sodhi Garage",
+    "logo_url": "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1785744411259-etbsrh.webp",
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-08-03T08:06:52.509716+00:00",
+    "updated_at": "2026-08-07T08:18:43.916392+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": "2026-08-07T08:18:43.406+00:00",
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ba144c2b-79b6-4b63-a6d4-00e89b47dfe1",
+    "company_name": "Office Becon As Pvt LTD.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "1",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "48548ec7-4682-4dd8-b9d8-bfac4851e137",
+    "company_name": "Atos Global Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "2",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "6a208632-920b-4227-804d-9c51c7ab2023",
+    "company_name": "L & T Ranoli Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "3",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9b77ab16-f37d-4132-b201-873f91bfb222",
+    "company_name": "BMP Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "4",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "10dde1be-03da-4ca4-9d7f-5566fbac0dea",
+    "company_name": "Automation Anywhere",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "5",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a7fce61b-9224-4559-9635-1177552bc2d9",
+    "company_name": "Code Trade, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "7",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "016994f4-0e47-45e9-ab79-87e31aac5da7",
+    "company_name": "Promact Infotech, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "8",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b9945c73-246d-44f2-8ed3-59e418bf9d6b",
+    "company_name": "AtliQ Technologies, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "9",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "fdf070e5-487b-439d-9bab-51c25627667e",
+    "company_name": "Capgemini",
+    "logo_url": "/__l5e/assets-v1/capgemini.jpg",
+    "website_url": null,
+    "sort_order": 11,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:39.025026+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit",
+        "svica"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "73ec2cd5-a6dc-4a76-815d-fd19ced1f269",
+    "company_name": "Takalkar Power Engineers",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 12,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:39.346292+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1caa17c2-f8fd-4a36-9c1d-bd77a78e1fbf",
+    "company_name": "IBM",
+    "logo_url": "/__l5e/assets-v1/ibm.jpg",
+    "website_url": null,
+    "sort_order": 13,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:39.668641+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svit"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "5d7e8a96-651f-4991-ab90-d84595cd69bc",
+    "company_name": "Apollo Hospitals",
+    "logo_url": "/__l5e/assets-v1/apollo.jpg",
+    "website_url": null,
+    "sort_order": 14,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:39.94452+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svion"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9ede9a07-eb94-401c-afc5-10ec8a548d51",
+    "company_name": "MG Motors (MG Nurture)",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 15,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:40.241211+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "29bd2dc7-16c0-49de-9135-f52b0dbf8ea9",
+    "company_name": "Zydus",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 16,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:40.546841+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d322649d-97f7-460f-8116-bbf57e8eeb70",
+    "company_name": "Sterling Hospitals",
+    "logo_url": "/__l5e/assets-v1/sterling.jpg",
+    "website_url": null,
+    "sort_order": 17,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:40.851729+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svion"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8d82b66b-4541-49c9-bf82-903eb435554a",
+    "company_name": "GERMI",
+    "logo_url": "",
+    "website_url": null,
+    "sort_order": 18,
+    "created_at": "2026-07-24T18:02:14.981566+00:00",
+    "updated_at": "2026-08-07T08:18:41.182903+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {},
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "302a7d9e-efa1-48cf-bd90-d959b17c9927",
+    "company_name": "HCG Cancer Centre",
+    "logo_url": "/__l5e/assets-v1/hcg.jpg",
+    "website_url": null,
+    "sort_order": 19,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:41.474279+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svion"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7fef4e07-adb7-4713-aacc-1fa597b93014",
+    "company_name": "Narayana Health",
+    "logo_url": "/__l5e/assets-v1/narayana.jpg",
+    "website_url": null,
+    "sort_order": 20,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:41.763242+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svion"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "45cd4d6a-d1e6-41f9-a2ef-34399d728919",
+    "company_name": "KRUNAL SOFTWARE SERVICES, VADODARA",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "10",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "482ad6ac-48b3-4642-ba37-8a69caf1867a",
+    "company_name": "ORTHOHEAL PVT. LTD., VADODARA",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "11",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d2acb527-ea8d-45f4-b17e-ba46b3fcd1bc",
+    "company_name": "SLK Techlabs, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "12",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ecbad7d8-99a8-425c-83df-56894bbaa2be",
+    "company_name": "Megh Technology , Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "13",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "04fed8ac-9721-4dfb-a14c-b841ca4a673e",
+    "company_name": "Artee Flow Control, Ankleshwar",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "14",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "22107977-9de5-4897-a02a-ff0b45760948",
+    "company_name": "Bombay software",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "15",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ce1c72ca-9a58-4437-9af4-10e1088d9376",
+    "company_name": "Fortis Healthcare",
+    "logo_url": "/__l5e/assets-v1/fortis.jpg",
+    "website_url": null,
+    "sort_order": 21,
+    "created_at": "2026-07-24T10:31:53.52356+00:00",
+    "updated_at": "2026-08-07T08:18:42.058532+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "colleges": [
+        "svion"
+      ]
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "eb6b6764-aeca-4b15-9abb-04fddf6d9395",
+    "company_name": "Webmyne Systems Pvt Ltd., Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "16",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b280a283-85de-4499-a92c-9b0a16f771c2",
+    "company_name": "Gowrie Healthcare & Research, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "17",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "196ab0d9-14b2-40d0-8a5f-50de29a2beed",
+    "company_name": "Swapta IT- Ally Solutions, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "18",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8ba07d54-df2c-41c5-8d3a-ddaa49783f04",
+    "company_name": "Helios Solutions, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "19",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d18cf59b-aeb1-4dd4-ba28-d57301e80eec",
+    "company_name": "NDDB, Anand",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "20",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9f5678e6-3a3f-496a-a1f1-bac17d671bbb",
+    "company_name": "Zeus Learning",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "21",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "bce91fbb-e6d0-41aa-a9e0-1992984c26e3",
+    "company_name": "ThinkSense IT, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "22",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c49622b1-ad52-4d40-8cd1-5b75889812ea",
+    "company_name": "Matrix Telecom/security",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "23",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a6b92501-625e-4aa9-952c-c0a9b5d9f978",
+    "company_name": "Msquare Solutions, Surat",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "24",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3641f410-a1af-47fe-ae49-515f89d37cb1",
+    "company_name": "TechoKids, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "25",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "14e4e698-c400-4e83-beb4-2ab2195755b8",
+    "company_name": "PMC, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "26",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e9ad5b6a-3068-4686-8bf3-73fce5db1bdd",
+    "company_name": "ERDA, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "27",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2f61b2d1-7762-40df-8b97-e0a69ff4af12",
+    "company_name": "EZDI",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "28",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "09547aae-3a02-46d3-898f-abb46a98138c",
+    "company_name": "Jeavio Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "29",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "04e7d7b2-f896-4d29-a165-edd588ba0b56",
+    "company_name": "AIMDEK",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "30",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2d626a2e-40b1-4ae5-a1f4-d9fb9e0baad2",
+    "company_name": "M G Motor, Halol",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "31",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "de8de793-cf08-470a-a8d4-691d65a216fe",
+    "company_name": "TCS (Codevita) Gandhinagar",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "32",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ba2d436f-8b4a-4040-9ac5-d663c7ee8cc3",
+    "company_name": "Healthcare Informatics, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "33",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0679d3c0-968b-451f-a166-60dd33259a6d",
+    "company_name": "LaNet, Surat",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "34",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a07dbac6-446c-4324-8cb9-6d6ad9f9d1f7",
+    "company_name": "Radixweb, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "35",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "927278f6-0258-4ed7-bf19-f7fc55fabd0e",
+    "company_name": "KMK Computech, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "36",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "dccccbe1-e1b7-4a9c-98c9-efbb352a1f5d",
+    "company_name": "Volansys Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "37",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "10333682-a923-45da-8cbe-3c0509098d68",
+    "company_name": "SoftSages, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "38",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "dcf43fbe-7def-4272-a7ad-afd8d1e31d39",
+    "company_name": "Hexwireless, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "39",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "6d0903d3-593a-489b-ac44-cf09b1c04d5e",
+    "company_name": "Confidosoft, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "40",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "106dc6ed-e4a7-4572-b61b-552d3a1cddeb",
+    "company_name": "Lodestone",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "41",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7903de7f-1754-4d81-af4a-c0062c41bebe",
+    "company_name": "Exal Corporation",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "42",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7d4694d5-3f97-497a-8583-776883882fe0",
+    "company_name": "iFourTechnoLab Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "43",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "13cd80d9-fb25-4fc3-b947-9d0b23dd04fe",
+    "company_name": "HiTech iSolutions",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "44",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f6db79ab-3771-4f5f-9878-c252dc33ffb3",
+    "company_name": "NeoSoft",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "45",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "62d11802-dd37-4457-985d-07c094eb2583",
+    "company_name": "Kocher infotech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "46",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b37a0d80-359a-4db2-a765-d71f4aaae33b",
+    "company_name": "Collabera, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "47",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a10c5697-2495-493d-bf19-4dd2525151b2",
+    "company_name": "Worley, Mumbai",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "48",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c265ef01-6b40-4831-ae8d-02311d4b4422",
+    "company_name": "Proactive Engineers",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "49",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "84e127dd-c58d-441c-8f96-ecc10a70fb35",
+    "company_name": "Atlanta Transformers",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "50",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ffa6d3ae-89e7-40e3-b4ef-e567a9b75743",
+    "company_name": "Hi-Fab Engineers Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "51",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "92970e7b-21ad-47bf-b332-3041f9ddf5c4",
+    "company_name": "Amazing Solar",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "52",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "10551b87-b986-4a1b-9c6a-6a5c73ac8ad4",
+    "company_name": "Anchor Panasonic",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "53",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "69d144cd-8c0d-499a-95ed-af80c26fc157",
+    "company_name": "E-Launch Solution",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "54",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d71b634d-0ff7-4e9e-9835-a6dc35995b38",
+    "company_name": "Xcitech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "55",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8298931d-adda-48a3-892a-500f54579cb4",
+    "company_name": "Linde Engineering, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "56",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d1328609-1b29-4bc7-b529-92a02628cbd3",
+    "company_name": "Einfochips, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "57",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "5bc66306-1345-4cc1-a32e-dc83d12c7db7",
+    "company_name": "Phonon, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "58",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "78f726ee-dc29-467d-9224-8b81e1ceef87",
+    "company_name": "Infostretch, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "59",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1b7bdced-fb2c-4992-9c5a-2265a064ee8f",
+    "company_name": "Finblr Peaas, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "60",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7331ec12-4082-451f-98c6-6668807d562c",
+    "company_name": "TBEA, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "61",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7b7c8518-a520-4adc-b08c-ae3973cf758c",
+    "company_name": "Odysseus, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "62",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "abceb781-a38c-4a15-ae28-6cbd63c1da7d",
+    "company_name": "Lanxes, Zaghdia",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "63",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9bc95d51-63e5-4d80-a10a-d7f209c23209",
+    "company_name": "Tatv Soft, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "64",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8bc1e76d-d7dc-4650-980c-c2db9889189e",
+    "company_name": "Deepak Phenolics, Dahej",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "65",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "6d7aaccf-a322-4b79-877c-36208cc3daa5",
+    "company_name": "M L Veda, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "66",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e69dd2f7-9391-4240-b387-64bbc8b8ba4e",
+    "company_name": "Cosmo Films, Karjan",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "67",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "14bca4a9-429b-4372-8bb1-d65878179338",
+    "company_name": "Future Focus, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "68",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "47ed4b68-6966-4839-a9f7-9d500f81f149",
+    "company_name": "Lactose Pharmasuitical, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "69",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a636c3b4-6c24-404a-9ede-dfb957db348a",
+    "company_name": "Candidroot, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "70",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0bca27a2-0a62-4eef-99c7-de98f6bc7234",
+    "company_name": "Kaplan, Bengaluru",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "71",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2c1070fd-bfa7-4f86-b4e5-2fd6a098b8f5",
+    "company_name": "IRM Offshoe Marine, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "72",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e9a076c9-709a-42dd-a74d-248800123c0c",
+    "company_name": "Motadata, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "73",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "25d8c1bf-430c-4050-9975-f8e0bd15a9bc",
+    "company_name": "Wonderflex Cable, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "74",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e465e0bc-e1c8-42ce-a805-9d1448b72315",
+    "company_name": "ecubix, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "75",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "71512a94-5f46-49a8-99b2-78ba4b7985d5",
+    "company_name": "Windowmaker, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "76",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3c5edc0b-097a-45e8-b6f0-ea66ec1278ac",
+    "company_name": "Extramarks Education, Noida",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "77",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "90ad22bb-1aad-4c2a-bf9c-e1436108c7c5",
+    "company_name": "Techno Electromech, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "78",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "32fa54c5-b91a-48c9-ba93-53d02da74322",
+    "company_name": "Cryogas Equipment, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "79",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "37e26382-01f7-476e-856d-87c8e22875bc",
+    "company_name": "CELTIC, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "80",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c578b8eb-9e41-46e2-af39-670e883c12ec",
+    "company_name": "Fitterfly, Surat",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "81",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d29eccab-ec08-421c-9749-7de61a18a2e6",
+    "company_name": "Cognizant",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "82",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "de936166-b40c-4d2a-ac00-b9b5d4f24043",
+    "company_name": "Infobizzs Services Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "83",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f2ae39ec-6c1f-4530-aaa9-db14e5d9ebc9",
+    "company_name": "Gtek-India, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "84",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f99d2ff7-a142-45de-8248-ebecb65f3a30",
+    "company_name": "Shilchar Technology, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "85",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "bb68793f-6eac-4135-b802-f0ba49e3c8df",
+    "company_name": "Yazaki India, Sanand",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "86",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e3ee6d01-0a55-4305-bec8-8458bc22ad28",
+    "company_name": "L M Windpower, Halol",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "87",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f6f683d9-79ba-41a1-abf5-8e347f4e0f00",
+    "company_name": "Openxcell, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "88",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e93d5b2b-5e89-4896-8279-a1c1d5b31fae",
+    "company_name": "WebMob, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "89",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d714da6f-cff4-489b-9874-cf7ea3aac4d7",
+    "company_name": "Rishabh Software, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "90",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a900912a-32e1-4cf8-89bb-4b23a18e76d4",
+    "company_name": "ITT Corporation, Savli",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "91",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e2b90630-450a-4dfd-9c7e-18ea484f4fd8",
+    "company_name": "Navaera, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "92",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9836f96d-0537-4183-a37f-5043cdd70ef0",
+    "company_name": "Rangtech, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "93",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a3e186bd-7f80-480f-afc8-a77591084921",
+    "company_name": "TCE, Pune",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "94",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4d159e81-5525-470c-8c28-ac72c274d7ba",
+    "company_name": "Schaeffler, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "95",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3de35ffd-5dfc-44be-8345-04b0fe082568",
+    "company_name": "IntegrationPoint, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "96",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "51386064-2aa7-4183-99ef-f4d9c85df4b0",
+    "company_name": "Solu Lab, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "97",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f19ea6ea-84db-430d-bfee-655867ea863d",
+    "company_name": "Revokarmahub, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "98",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4ba9181b-bfed-4453-9386-b5779bb91a20",
+    "company_name": "Sunflower Solution, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "99",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0d56a3af-2450-400a-a2c6-a0cd8db25f93",
+    "company_name": "Wipro, Mumbai",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "100",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "723e8392-1bfa-48e3-9c15-f20318d59c7f",
+    "company_name": "Exsilio, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "101",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3546227d-258f-4868-96e1-b1c5d686250c",
+    "company_name": "TOTO, Halol",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "102",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "14880bf7-a4c3-4c08-9860-8f7064de53e5",
+    "company_name": "Voltamp Transformer, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "103",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "58106d64-5232-450a-be6f-b6ceb3aca5d7",
+    "company_name": "ABHS, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "104",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "47b8d7e1-5eac-4d9f-956c-c1e3256affb2",
+    "company_name": "SATEWEB, Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "105",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "5c6e9899-7cfd-4f02-b80c-aa5c280e22d8",
+    "company_name": "Jaro Topscholars, Mumbai",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "106",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b36e4048-a340-4b2f-b465-24f2865ca71e",
+    "company_name": "STAD Solution",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "107",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e3cd1871-03d6-4d82-848a-2a36391c501c",
+    "company_name": "HealthPlix Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "108",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4f169c4c-794a-45cd-9650-9b208abd94a2",
+    "company_name": "Luxsh Solutions Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "109",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d4bbfb48-8b51-42ce-806d-90de78231c19",
+    "company_name": "Kustomind",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "110",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "28a78dcf-76f9-4445-8a7d-d2b22044a512",
+    "company_name": "Lone Oak Solutions",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "111",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "86d7a4f5-c69c-42f9-970c-eae91ded8c83",
+    "company_name": "Banco",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "112",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "823e16df-74c3-4b94-a10e-0734b773d0c5",
+    "company_name": "Huaheng Automation",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "113",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "03d0ff1b-e7e5-48c0-b631-75633caaf453",
+    "company_name": "Geo Designs and Research Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "114",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "424e491e-7809-4e61-bcaf-15384b60b823",
+    "company_name": "InnovateMR",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "115",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "cca82d47-17d2-4c87-880a-b87738511688",
+    "company_name": "Maxlink IT Solutions",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "116",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "22e01d82-185a-4979-bc36-1caf89b1503c",
+    "company_name": "Noble Hygiene",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "117",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "64f56903-0b4d-419f-81b8-876ab128a29e",
+    "company_name": "Teksun Microsys",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "118",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "74202e1c-38bd-4a3d-b105-1e8b8e75e86b",
+    "company_name": "Tekman",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "119",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "bf89b285-8ee7-40ae-a1ca-140a17dfbaa9",
+    "company_name": "ADIT Microsys Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "120",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a5b11060-0a82-4d31-9f85-d42115cb1cfc",
+    "company_name": "Microtech Electronics",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "121",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d897d746-f98f-435f-b987-4a4cfb4d8d66",
+    "company_name": "Scrumbees Technology",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "122",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b88bd314-f6ff-414d-90f6-cdba4e89503e",
+    "company_name": "WiseDV",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "123",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "48f9b72c-efba-40e4-8c76-6b23ca6eceae",
+    "company_name": "SkyPearl Infotech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "124",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8fb85495-23d9-44e8-937d-f9f3822be848",
+    "company_name": "Horizontal Digital",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "125",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "729ef84b-1a22-412e-a523-e2cd3b7b3ae2",
+    "company_name": "eSparkBizz",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "126",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "40b5a839-e4ad-431e-8516-69b9c1778150",
+    "company_name": "Arth-i-soft",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "127",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "feccbbea-cfae-46a4-9d43-af96371e636f",
+    "company_name": "Si2 Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "128",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9654335c-e71a-4142-95ff-c84185b9b5ab",
+    "company_name": "Hyperlink Infosystems",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "129",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ef8ae78b-1540-4628-b87c-dfa623410bc7",
+    "company_name": "Niyantras",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "130",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ce87fcfd-9b52-47d0-be15-cc05187d14b2",
+    "company_name": "Ishitva Robotics",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "131",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3fb9743d-d7c9-4a42-8a92-2d209428d061",
+    "company_name": "Square Infosoft",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "132",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7ee38165-0290-455a-8da9-2d2d9a94a95a",
+    "company_name": "SBM Group",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "133",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3c800962-30a6-42e7-96e1-fb8253692b27",
+    "company_name": "Vardaam Web Solutions",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "134",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4db0724c-5e1c-48b7-8be3-9be423804b21",
+    "company_name": "Natweb",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "135",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4c0c1db8-c777-45ff-a4e2-cc1952a16959",
+    "company_name": "Scanpoint Geomatics",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "136",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ba9fa241-03fa-4c57-88ed-4cb315238c89",
+    "company_name": "Reliance",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "137",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "06a24b71-c7bb-4067-9068-e03c18148af4",
+    "company_name": "AGS Health",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "138",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8514da6e-8714-4e67-aaed-78c3f9258150",
+    "company_name": "Adani Enterprise",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "139",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "14e10d94-3d06-4a68-9dcf-41a6e59543f2",
+    "company_name": "Alphatech Software",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "140",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a1cf365d-644b-4e8e-96d9-060ff8e4b624",
+    "company_name": "SMV Engineers",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "141",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7b3c5514-e6e3-4618-9006-e95abfd6390a",
+    "company_name": "Intellipaat",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "142",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "9cf0929b-1f0b-4762-8a67-ff9cdf09eec9",
+    "company_name": "Phonon.io",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "143",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d353ce71-cb1f-4bf7-b6ad-ae26f11a4cb8",
+    "company_name": "BYJUS",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "144",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a9910f41-a8b3-4281-9233-9c262b2ee41a",
+    "company_name": "Matlab Infotech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "145",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "5b1395ac-1f9f-4509-97bb-ec6d438ad9a3",
+    "company_name": "Hi-Mak Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "147",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "32f93e9d-7b6f-4b5f-8586-3f3603c8db60",
+    "company_name": "Tech Graphics",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "148",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c3a9ecc3-80bf-4346-963b-8b4bd4555823",
+    "company_name": "TEGA Industries",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "149",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "955afefa-e006-4b27-b966-86ac51afe87e",
+    "company_name": "WebCodeGeneie",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "150",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "dc0caf46-433b-4a08-9905-cb23ca86918e",
+    "company_name": "Etymon Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "151",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "677c3b16-0644-4bf5-8a69-6c4013cbec0b",
+    "company_name": "IT Path Solutions",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "152",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f8da4f84-9367-4ede-bd1c-43c61a50b1be",
+    "company_name": "Astound Commerce",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "153",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "028b52da-cc13-456c-99bc-7d03fe978781",
+    "company_name": "MRI Software",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "154",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "96c71622-72f4-4f0e-a520-8eea400790f1",
+    "company_name": "ISP Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "155",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d69279cb-b556-4396-b9b6-27365957583a",
+    "company_name": "Adani",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "156",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "72f7669e-721c-4ceb-9cbd-ec7ce21b6bd5",
+    "company_name": "Simform",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "157",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0e532124-a287-4f05-8702-e74de7505f41",
+    "company_name": "Viitor Cloud",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "158",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "178520b6-7a6e-4ec2-b066-6f867b1618a0",
+    "company_name": "Explorra",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "159",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "cdfbb866-b550-4273-a014-203bfba34e72",
+    "company_name": "Brevitaz",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "160",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "371289a5-a630-4656-ba45-6c2aeeba15d2",
+    "company_name": "Squad Technologics",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "161",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "cf36b809-7b0b-4cef-985a-7e86a82637dd",
+    "company_name": "Odysseus Solution",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "162",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c78c2199-7c14-46cf-a40c-c9806dc829ce",
+    "company_name": "Anay Softwares",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "163",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2f7a7ec3-851a-44ca-9dc8-11a007fc5666",
+    "company_name": "Space-O",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "164",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "59d02adc-0ecf-4768-b26f-2ddd640fa335",
+    "company_name": "UCI",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "165",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "eb44759d-66ff-43ba-98da-d206f36951f7",
+    "company_name": "Infodesk",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "183",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c8699893-0990-4669-821d-123bb3b2b264",
+    "company_name": "Novumlogic",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "184",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "6676a1cb-ee76-4ba5-956d-326cf1c6e3c3",
+    "company_name": "shaligam",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "185",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "34b7a023-151a-45cd-89e9-1ef9b98af8ae",
+    "company_name": "o2h",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "186",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1e69a03a-7cca-453a-9e77-22567c70b287",
+    "company_name": "logwintech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "187",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "83bd8a7d-c90b-4edb-b94f-bd494863fd66",
+    "company_name": "Ridgeant",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "188",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "5173128a-d07e-4699-af65-7817d7d8cf80",
+    "company_name": "Alphe e barcode",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "189",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "043ae0e6-17dd-41d4-aab0-2860e9926cb8",
+    "company_name": "Gulbrandsen",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "190",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "5e050593-c106-42e9-9709-8a09ad7a9910",
+    "company_name": "civica",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "191",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "6a9ec98e-2e23-48e9-9e5d-ba06576673fa",
+    "company_name": "HKRP INNOVATIONS",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "192",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e3ccd47c-5c78-4db0-8050-32cc18ec3157",
+    "company_name": "ATLAS COPCO",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "193",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2ca739cf-5e1d-46c8-ada9-ac5df082e8c3",
+    "company_name": "Imriel",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "194",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8e5adbd0-2c07-4a09-8d43-57332a91b8ed",
+    "company_name": "Surekha Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "195",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "fc93a810-344a-4326-9748-24c870170d60",
+    "company_name": "Techovarya",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "196",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0595d4e8-dd93-4b7a-b33b-bf618736a33a",
+    "company_name": "infinnium info",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "197",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2199993e-b961-4cb6-9db5-8349851b2fe4",
+    "company_name": "tata advanced system ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "198",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "b753abb7-7dba-4b8a-9e5b-91362aa00098",
+    "company_name": "PGP Glass",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "199",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "170b0d39-9b64-4f11-9895-7e955584f613",
+    "company_name": "COGINITION IES",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "200",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8ee07886-866e-4430-b015-26a02d6f00e1",
+    "company_name": "GEAR INDIA",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "201",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "737eab03-0899-42ff-b49a-2a98654df539",
+    "company_name": "Beacon Insurance",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "202",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3f7aa61e-03a4-46f5-9edd-e23ea4b3a68b",
+    "company_name": "IDMC LIMITED",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "203",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "df8200f4-9582-4a8f-ba61-7a022eafcef9",
+    "company_name": "Taurus Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "204",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7cd873f7-501e-4bf7-a4d7-d7b333b8208a",
+    "company_name": "Yera Glass(Alembic)",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "205",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f6961b8a-bc3a-4aa3-a54b-52483d8fef94",
+    "company_name": "Alembic Pharma",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "206",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "108b93fb-1b9a-4757-ac3d-8ffd4ff66714",
+    "company_name": "Prism RMC",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "207",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "53c81d82-c31f-46ed-8362-3ae168c6a1b3",
+    "company_name": "Sunrise Polymers",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "208",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "203ada0b-8144-4f8f-81c6-82f239d5d473",
+    "company_name": "Radiant",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "209",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "89ce48b9-1c22-41ea-a53e-a307653031ef",
+    "company_name": "Voltamp",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "210",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d71a6bde-bf5d-4f24-a27e-e722a99e592d",
+    "company_name": "Plasser India",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "211",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "437f6992-6fda-4646-b495-a308410a9e20",
+    "company_name": "Geometric Engg.Services",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "213",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "88bfeb7a-1af6-4414-a472-e42c7632a3c2",
+    "company_name": "iACE",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "214",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "81c26bc2-3244-4d1a-a563-03913e2f36cc",
+    "company_name": "Shilchar Technologies ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "215",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c66abe69-233d-4822-9658-e0d9e1057f53",
+    "company_name": "Rev Drones",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "216",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3aa5a074-3762-415c-83af-c946c2513613",
+    "company_name": "Inox CVA",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "217",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7c23ce70-a0c4-4618-b9c0-15b9079c6d77",
+    "company_name": "Sicgil",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "218",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3813fd8f-b6a3-43f7-a2c3-eb8682595cf9",
+    "company_name": "CBM Engineers",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "219",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1862b38a-c04a-4564-bae5-7b5f68c4e1ba",
+    "company_name": "Dheeraj Engineering, Ahmedabad",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "220",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "dcd5f6ca-ec9c-49f6-8e6f-6235728307c4",
+    "company_name": "Yogi Engineering,Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "221",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c6652eca-ff0a-4b76-9a4b-2332bd4ae470",
+    "company_name": "MBH Power Pvt Ltd. , Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "222",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "8e6d36ac-530a-4f84-94fd-5e4b0a7a63a0",
+    "company_name": "Post Tension Services PTSG",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "225",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "c39c0c90-316e-462e-8f67-10430e969f1d",
+    "company_name": "Shah and Talati",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "226",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "bef77556-a0a3-4c5d-a936-c2db2e131841",
+    "company_name": "NETWEB TECHNOLOGIES",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "227",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4a3ae6f4-17d7-4e6a-ad37-474fcf7ecb73",
+    "company_name": "SRKAY CONSULTING",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "228",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e85738d2-a9f7-4d70-83d3-cb9c7ad4223e",
+    "company_name": "DHYEY CONSULTING",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "229",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a9be3b27-6fb5-4145-b6ad-392522a4ff95",
+    "company_name": "WAMA SOFTWARE",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "230",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d81a6279-5a29-4df0-9e51-3ca423f96840",
+    "company_name": "7SPAN",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "231",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "cbee0a1b-6e5d-476c-8569-1cb5515f85bf",
+    "company_name": "MARUT AIR",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "232",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "274f381c-62b1-49e2-94cf-19a20f9359d1",
+    "company_name": "BARODA INFORMATICS PVT LTD",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "233",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ee63f5f1-1b94-41df-a4a5-cb822def4487",
+    "company_name": "Stuctcore",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "234",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "3a3ce98d-6086-4ae1-a3fb-d93bc9f05f28",
+    "company_name": "Citrusbueg",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "235",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0646f04f-32b4-4e8b-af0e-4dee3d01fd15",
+    "company_name": "Svaapta",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "236",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "23e9b937-0388-4273-af7b-fd902f1141cf",
+    "company_name": "Jyoti Ltd",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "237",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1aaa64ed-c570-4fe8-ac1e-3967f18951fa",
+    "company_name": "HiTech Projects",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "238",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "bb4091b9-02c4-4a7f-a5af-20f9cd860c63",
+    "company_name": "EaseTeq",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "239",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f33d22f1-f6a7-4d3a-ab6e-6c9aece72e81",
+    "company_name": "ABM System",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "240",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "cd8ff9fc-7a1c-4485-b9b7-e431b77fdccb",
+    "company_name": "Rang Technologies",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "241",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7a11151d-34c0-4189-b4f3-5267ddc9be11",
+    "company_name": "Equitron Medica Pvt.Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "242",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e0814a1a-2920-4c5f-9471-57c2fa07ae8a",
+    "company_name": "Gujarat Plug-in Device Pvt. Ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "243",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "fce7d395-382f-48b9-b9ab-2d1c449acb73",
+    "company_name": "V-Tech Solution",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "245",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "41e03b86-e128-44fc-a93d-16ab66884b29",
+    "company_name": "SteelSmith Continental Manufacturing Private Limited­­­",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "246",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4c3f8aad-4fd7-4254-a4af-15d4b7a12dee",
+    "company_name": "EZ Engineers",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "247",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "97103326-3a51-4cd4-b78e-c7a57695d3c6",
+    "company_name": "KSR Designs Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "248",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "67532fe3-f433-40aa-b381-b3b83da823e4",
+    "company_name": "VIKRANT SPRING",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "249",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ff3160e4-0537-4654-bb29-1998f37c8e43",
+    "company_name": "FLYDOCS",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "250",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7fb92df2-82db-4297-bfae-da597bbf0674",
+    "company_name": "HERE-QUALITY",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "251",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "284673e2-3e6a-4630-9a73-46974d284c49",
+    "company_name": "MEDITAB",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "252",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "61a0cbd0-4b09-44da-819c-bdce11de294c",
+    "company_name": "BANKBENCHERS",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "253",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "f4a7d10a-5198-4e6f-9f69-08c27e8244cf",
+    "company_name": "Mbcon",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "166",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "eb375247-877b-4ec2-b393-582e276ee7c5",
+    "company_name": "Injala",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "167",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "4c45c2f1-5c61-41b7-9ac3-28adfdfb01c5",
+    "company_name": "BigScal",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "168",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "ab23f7ac-3b6a-49ab-a8a5-6b003a7fa9ed",
+    "company_name": "MG Motors",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "169",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "38114e02-9893-4f1c-a9ce-f9590790a37e",
+    "company_name": "Barodaweb",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "170",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "97c7395c-059e-40a4-9032-42bfe2062564",
+    "company_name": "SKH Algorithms",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "171",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "e0e1939c-80d7-45e3-b5a8-90a3cfab36e2",
+    "company_name": "Investis Digital",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "172",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "84b40b71-72e8-44d7-8070-d52af618dca5",
+    "company_name": "Outamation",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "173",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "310fc3f0-bbdc-4ef0-87ed-2ac2f22dc9f8",
+    "company_name": "Silver Touch",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "174",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "93c19be0-5f68-4bd8-b6cf-ede0a53013d5",
+    "company_name": "Ethics Infotech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "175",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a3d5cb06-f055-4fb9-a257-a2fd117f1560",
+    "company_name": "Maruti Techlabs",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "176",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a61193d6-bf57-451f-87ea-7415eb9d233a",
+    "company_name": "Engineering Technique",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "177",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7b5c498a-b961-45a2-8a3a-0ae67c43a86f",
+    "company_name": "Dronelab",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "178",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "7f5ce611-000f-4272-a29b-e5f4d05796e7",
+    "company_name": "Yokogawa",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "179",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1693fd84-8533-42cf-97ba-69d3d7d60a13",
+    "company_name": "Borosil",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "181",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1f9fed78-9f4a-4808-a08a-1fb6b0418be9",
+    "company_name": "Thirumalai Chemical ltd.",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "182",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "baa145d3-0362-49ab-aac1-f6ccf75c0bd4",
+    "company_name": "SK Structural Engineers, Surat",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "223",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "02268ffb-d702-407b-8918-942092cdbcdd",
+    "company_name": "NJ/FINLOGIC",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "255",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "1e125b88-452d-4193-8283-3122d016be16",
+    "company_name": "enlighten infosystems",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "256",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a520e49a-3508-4842-b33b-c9eed7083ba7",
+    "company_name": "hitech digital",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "257",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "51d84c27-4f66-41ae-8dc0-fc950c49ed89",
+    "company_name": "bilions",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "258",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "451528b3-239a-403e-982f-ae7681d53a9f",
+    "company_name": "dynatech",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "260",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "2246a615-b142-466f-8500-2f4795d1c56f",
+    "company_name": "fineline",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "261",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "0455fb0d-a340-4535-9b28-aa3462ed6342",
+    "company_name": "sanskarpro",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "262",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "79b1efec-5d1e-4edf-a653-271f32e7212e",
+    "company_name": "ath software",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "263",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "d7ee78ff-f9dc-41ae-87fe-e3bcb9760404",
+    "company_name": "rpa unicorn",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "264",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "6673534b-973b-4711-8a17-ad385fbfcd39",
+    "company_name": "RNR MACHINES",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "265",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "a7fe333e-1b37-4883-a374-a3f466f27893",
+    "company_name": "LYNTRATECH",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "266",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  },
+  {
+    "id": "187afe16-ba24-4ca5-9b35-6f0a6df6df1f",
+    "company_name": "Padariya Consultants Pvt Ltd.,Vadodara",
+    "logo_url": null,
+    "website_url": null,
+    "sort_order": 0,
+    "created_at": "2026-09-05T09:08:53.115631+00:00",
+    "updated_at": "2026-09-05T09:08:53.115631+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "legacy_id": "224",
+      "legacy_source": "RECRUITER_MASTER"
+    },
+    "department_id": null,
+    "college_codes": null
+  }
+]

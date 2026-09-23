@@ -95,7 +95,10 @@ export type Database = {
       }
       achievements: {
         Row: {
+          album_id: string | null
+          card_photo_url: string | null
           category: string
+          college_id: string | null
           created_at: string
           created_by: string | null
           date: string
@@ -103,7 +106,7 @@ export type Database = {
           deleted_by: string | null
           department_id: string | null
           description: string | null
-          featured_image_url: string | null
+          has_detail_page: boolean
           id: string
           metadata: Json
           scope_type: Database["public"]["Enums"]["scope_level"]
@@ -114,7 +117,10 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          album_id?: string | null
+          card_photo_url?: string | null
           category: string
+          college_id?: string | null
           created_at?: string
           created_by?: string | null
           date: string
@@ -122,7 +128,7 @@ export type Database = {
           deleted_by?: string | null
           department_id?: string | null
           description?: string | null
-          featured_image_url?: string | null
+          has_detail_page?: boolean
           id?: string
           metadata?: Json
           scope_type?: Database["public"]["Enums"]["scope_level"]
@@ -133,7 +139,10 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          album_id?: string | null
+          card_photo_url?: string | null
           category?: string
+          college_id?: string | null
           created_at?: string
           created_by?: string | null
           date?: string
@@ -141,7 +150,7 @@ export type Database = {
           deleted_by?: string | null
           department_id?: string | null
           description?: string | null
-          featured_image_url?: string | null
+          has_detail_page?: boolean
           id?: string
           metadata?: Json
           scope_type?: Database["public"]["Enums"]["scope_level"]
@@ -152,6 +161,20 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "achievements_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "achievements_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "achievements_created_by_fkey"
             columns: ["created_by"]
@@ -446,12 +469,15 @@ export type Database = {
       centers: {
         Row: {
           accent_color: string | null
+          album_id: string | null
+          card_photo_url: string | null
           college_id: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
+          has_detail_page: boolean
           id: string
           institute_id: string | null
           metadata: Json
@@ -464,12 +490,15 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          has_detail_page?: boolean
           id?: string
           institute_id?: string | null
           metadata?: Json
@@ -482,12 +511,15 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          has_detail_page?: boolean
           id?: string
           institute_id?: string | null
           metadata?: Json
@@ -500,6 +532,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "centers_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "centers_college_id_fkey"
             columns: ["college_id"]
             isOneToOne: false
@@ -511,86 +550,6 @@ export type Database = {
             columns: ["institute_id"]
             isOneToOne: false
             referencedRelation: "institutes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      club_events: {
-        Row: {
-          club_id: string
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          description: string | null
-          event_date: string
-          id: string
-          image_url: string | null
-          metadata: Json
-          status: Database["public"]["Enums"]["event_status"]
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          club_id: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          event_date: string
-          id?: string
-          image_url?: string | null
-          metadata?: Json
-          status?: Database["public"]["Enums"]["event_status"]
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          club_id?: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          event_date?: string
-          id?: string
-          image_url?: string | null
-          metadata?: Json
-          status?: Database["public"]["Enums"]["event_status"]
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "club_events_club_id_fkey"
-            columns: ["club_id"]
-            isOneToOne: false
-            referencedRelation: "student_clubs"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "club_events_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "club_events_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "club_events_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -917,95 +876,6 @@ export type Database = {
           },
         ]
       }
-      department_activities: {
-        Row: {
-          activity_type: string
-          company: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          department_id: string
-          document_url: string | null
-          end_date: string | null
-          id: string
-          metadata: Json
-          notes: string | null
-          start_date: string
-          status: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          activity_type: string
-          company?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          department_id: string
-          document_url?: string | null
-          end_date?: string | null
-          id?: string
-          metadata?: Json
-          notes?: string | null
-          start_date: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          activity_type?: string
-          company?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          department_id?: string
-          document_url?: string | null
-          end_date?: string | null
-          id?: string
-          metadata?: Json
-          notes?: string | null
-          start_date?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "department_activities_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "department_activities_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "department_activities_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "department_activities_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       departments: {
         Row: {
           about: string | null
@@ -1269,6 +1139,9 @@ export type Database = {
       events: {
         Row: {
           accent_color: string | null
+          album_id: string | null
+          card_photo_url: string | null
+          club_id: string | null
           college_id: string | null
           created_at: string
           created_by: string | null
@@ -1277,9 +1150,10 @@ export type Database = {
           department_id: string | null
           description: string | null
           end_date: string | null
+          event_type: Database["public"]["Enums"]["event_type_enum"] | null
           featured_at: string | null
           featured_by: string | null
-          featured_image_url: string | null
+          has_detail_page: boolean
           id: string
           is_featured: boolean
           location: string | null
@@ -1300,6 +1174,9 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          club_id?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -1308,9 +1185,10 @@ export type Database = {
           department_id?: string | null
           description?: string | null
           end_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type_enum"] | null
           featured_at?: string | null
           featured_by?: string | null
-          featured_image_url?: string | null
+          has_detail_page?: boolean
           id?: string
           is_featured?: boolean
           location?: string | null
@@ -1331,6 +1209,9 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          club_id?: string | null
           college_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -1339,9 +1220,10 @@ export type Database = {
           department_id?: string | null
           description?: string | null
           end_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type_enum"] | null
           featured_at?: string | null
           featured_by?: string | null
-          featured_image_url?: string | null
+          has_detail_page?: boolean
           id?: string
           is_featured?: boolean
           location?: string | null
@@ -1361,6 +1243,20 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "events_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "student_clubs"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "events_college_id_fkey"
             columns: ["college_id"]
@@ -1417,6 +1313,8 @@ export type Database = {
           accent_color: string | null
           address: string | null
           admin_section_id: string | null
+          album_id: string | null
+          card_photo_url: string | null
           category: string | null
           code: string | null
           created_at: string
@@ -1426,6 +1324,7 @@ export type Database = {
           department_id: string | null
           description: string | null
           facility_type: Database["public"]["Enums"]["facility_type"]
+          has_detail_page: boolean
           id: string
           institute_id: string | null
           metadata: Json
@@ -1442,6 +1341,8 @@ export type Database = {
           accent_color?: string | null
           address?: string | null
           admin_section_id?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
           category?: string | null
           code?: string | null
           created_at?: string
@@ -1451,6 +1352,7 @@ export type Database = {
           department_id?: string | null
           description?: string | null
           facility_type: Database["public"]["Enums"]["facility_type"]
+          has_detail_page?: boolean
           id?: string
           institute_id?: string | null
           metadata?: Json
@@ -1467,6 +1369,8 @@ export type Database = {
           accent_color?: string | null
           address?: string | null
           admin_section_id?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
           category?: string | null
           code?: string | null
           created_at?: string
@@ -1476,6 +1380,7 @@ export type Database = {
           department_id?: string | null
           description?: string | null
           facility_type?: Database["public"]["Enums"]["facility_type"]
+          has_detail_page?: boolean
           id?: string
           institute_id?: string | null
           metadata?: Json
@@ -1494,6 +1399,13 @@ export type Database = {
             columns: ["admin_section_id"]
             isOneToOne: false
             referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
             referencedColumns: ["id"]
           },
           {
@@ -1542,6 +1454,7 @@ export type Database = {
       }
       gallery_albums: {
         Row: {
+          college_id: string | null
           cover_image_url: string | null
           created_at: string
           created_by: string | null
@@ -1551,7 +1464,9 @@ export type Database = {
           description: string | null
           id: string
           metadata: Json
+          owner_table: string | null
           scope_type: Database["public"]["Enums"]["scope_level"]
+          show_in_public_gallery: boolean
           slug: string
           status: Database["public"]["Enums"]["content_status"]
           title: string
@@ -1559,6 +1474,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          college_id?: string | null
           cover_image_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -1568,7 +1484,9 @@ export type Database = {
           description?: string | null
           id?: string
           metadata?: Json
+          owner_table?: string | null
           scope_type?: Database["public"]["Enums"]["scope_level"]
+          show_in_public_gallery?: boolean
           slug: string
           status?: Database["public"]["Enums"]["content_status"]
           title: string
@@ -1576,6 +1494,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          college_id?: string | null
           cover_image_url?: string | null
           created_at?: string
           created_by?: string | null
@@ -1585,7 +1504,9 @@ export type Database = {
           description?: string | null
           id?: string
           metadata?: Json
+          owner_table?: string | null
           scope_type?: Database["public"]["Enums"]["scope_level"]
+          show_in_public_gallery?: boolean
           slug?: string
           status?: Database["public"]["Enums"]["content_status"]
           title?: string
@@ -1593,6 +1514,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "gallery_albums_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "gallery_albums_created_by_fkey"
             columns: ["created_by"]
@@ -2948,7 +2876,10 @@ export type Database = {
       }
       posts: {
         Row: {
+          album_id: string | null
+          card_photo_url: string | null
           category_id: string | null
+          college_id: string | null
           content: string | null
           created_at: string
           created_by: string | null
@@ -2956,7 +2887,6 @@ export type Database = {
           deleted_by: string | null
           department_id: string | null
           expires_at: string | null
-          featured_image_url: string | null
           id: string
           is_featured: boolean
           metadata: Json
@@ -2971,7 +2901,10 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          album_id?: string | null
+          card_photo_url?: string | null
           category_id?: string | null
+          college_id?: string | null
           content?: string | null
           created_at?: string
           created_by?: string | null
@@ -2979,7 +2912,6 @@ export type Database = {
           deleted_by?: string | null
           department_id?: string | null
           expires_at?: string | null
-          featured_image_url?: string | null
           id?: string
           is_featured?: boolean
           metadata?: Json
@@ -2994,7 +2926,10 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          album_id?: string | null
+          card_photo_url?: string | null
           category_id?: string | null
+          college_id?: string | null
           content?: string | null
           created_at?: string
           created_by?: string | null
@@ -3002,7 +2937,6 @@ export type Database = {
           deleted_by?: string | null
           department_id?: string | null
           expires_at?: string | null
-          featured_image_url?: string | null
           id?: string
           is_featured?: boolean
           metadata?: Json
@@ -3018,10 +2952,24 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "posts_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "posts_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
             referencedRelation: "content_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
             referencedColumns: ["id"]
           },
           {
@@ -3444,15 +3392,17 @@ export type Database = {
       sports: {
         Row: {
           achievements_count: number | null
+          album_id: string | null
+          card_photo_url: string | null
           category: string
           coach_image_url: string | null
           coach_name: string | null
-          cover_image_url: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
           description: string | null
+          has_detail_page: boolean
           id: string
           is_active: boolean
           metadata: Json
@@ -3460,21 +3410,23 @@ export type Database = {
           players_count: number | null
           slug: string
           sort_order: number
-          status: string
+          status: Database["public"]["Enums"]["content_status"]
           updated_at: string
           updated_by: string | null
         }
         Insert: {
           achievements_count?: number | null
+          album_id?: string | null
+          card_photo_url?: string | null
           category?: string
           coach_image_url?: string | null
           coach_name?: string | null
-          cover_image_url?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          has_detail_page?: boolean
           id?: string
           is_active?: boolean
           metadata?: Json
@@ -3482,21 +3434,23 @@ export type Database = {
           players_count?: number | null
           slug: string
           sort_order?: number
-          status?: string
+          status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
           achievements_count?: number | null
+          album_id?: string | null
+          card_photo_url?: string | null
           category?: string
           coach_image_url?: string | null
           coach_name?: string | null
-          cover_image_url?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           description?: string | null
+          has_detail_page?: boolean
           id?: string
           is_active?: boolean
           metadata?: Json
@@ -3504,79 +3458,37 @@ export type Database = {
           players_count?: number | null
           slug?: string
           sort_order?: number
-          status?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: []
-      }
-      sports_achievements: {
-        Row: {
-          achievement_date: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          description: string | null
-          id: string
-          image_url: string | null
-          is_active: boolean
-          level: string
-          metadata: Json
-          position: string | null
-          sort_order: number
-          sport_id: string | null
-          status: string
-          title: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          achievement_date?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          is_active?: boolean
-          level?: string
-          metadata?: Json
-          position?: string | null
-          sort_order?: number
-          sport_id?: string | null
-          status?: string
-          title: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          achievement_date?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          description?: string | null
-          id?: string
-          image_url?: string | null
-          is_active?: boolean
-          level?: string
-          metadata?: Json
-          position?: string | null
-          sort_order?: number
-          sport_id?: string | null
-          status?: string
-          title?: string
+          status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
           updated_by?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "sports_achievements_sport_id_fkey"
-            columns: ["sport_id"]
+            foreignKeyName: "sports_album_id_fkey"
+            columns: ["album_id"]
             isOneToOne: false
-            referencedRelation: "sports"
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sports_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sports_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3856,6 +3768,8 @@ export type Database = {
       student_clubs: {
         Row: {
           accent_color: string | null
+          album_id: string | null
+          card_photo_url: string | null
           coordinator_id: string | null
           created_at: string
           created_by: string | null
@@ -3864,6 +3778,7 @@ export type Database = {
           department_id: string | null
           description: string | null
           featured: boolean | null
+          has_detail_page: boolean
           id: string
           logo_url: string | null
           metadata: Json
@@ -3877,6 +3792,8 @@ export type Database = {
         }
         Insert: {
           accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
           coordinator_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -3885,6 +3802,7 @@ export type Database = {
           department_id?: string | null
           description?: string | null
           featured?: boolean | null
+          has_detail_page?: boolean
           id?: string
           logo_url?: string | null
           metadata?: Json
@@ -3898,6 +3816,8 @@ export type Database = {
         }
         Update: {
           accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
           coordinator_id?: string | null
           created_at?: string
           created_by?: string | null
@@ -3906,6 +3826,7 @@ export type Database = {
           department_id?: string | null
           description?: string | null
           featured?: boolean | null
+          has_detail_page?: boolean
           id?: string
           logo_url?: string | null
           metadata?: Json
@@ -3918,6 +3839,13 @@ export type Database = {
           updated_by?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "student_clubs_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "student_clubs_coordinator_id_fkey"
             columns: ["coordinator_id"]
@@ -3948,79 +3876,6 @@ export type Database = {
           },
           {
             foreignKeyName: "student_clubs_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      testimonials: {
-        Row: {
-          author_name: string
-          author_role: string
-          avatar_url: string | null
-          company_or_institution: string | null
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          metadata: Json
-          quote: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          author_name: string
-          author_role: string
-          avatar_url?: string | null
-          company_or_institution?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          quote: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          author_name?: string
-          author_role?: string
-          avatar_url?: string | null
-          company_or_institution?: string | null
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          quote?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "testimonials_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "testimonials_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "testimonials_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
@@ -4340,6 +4195,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_write_entry_album: {
+        Args: { target_album_id: string }
+        Returns: boolean
+      }
       can_write_event: {
         Args: {
           p_college_id: string
@@ -4371,12 +4230,26 @@ export type Database = {
         Returns: boolean
       }
       get_table_schema_info: { Args: { target_table: string }; Returns: Json }
+      is_any_admin: { Args: never; Returns: boolean }
       is_global_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       content_status: "draft" | "published" | "archived"
       degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
       event_status: "draft" | "published" | "cancelled" | "archived"
+      event_type_enum:
+        | "fest"
+        | "cultural"
+        | "technical"
+        | "sports"
+        | "workshop"
+        | "seminar"
+        | "expert_session"
+        | "sttp"
+        | "fdp"
+        | "industrial_visit"
+        | "competition"
+        | "other"
       facility_type: "campus" | "building" | "laboratory"
       link_type: "internal" | "external"
       scope_level: "global" | "trust" | "institute" | "college" | "department"
@@ -4513,6 +4386,20 @@ export const Constants = {
       content_status: ["draft", "published", "archived"],
       degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
       event_status: ["draft", "published", "cancelled", "archived"],
+      event_type_enum: [
+        "fest",
+        "cultural",
+        "technical",
+        "sports",
+        "workshop",
+        "seminar",
+        "expert_session",
+        "sttp",
+        "fdp",
+        "industrial_visit",
+        "competition",
+        "other",
+      ],
       facility_type: ["campus", "building", "laboratory"],
       link_type: ["internal", "external"],
       scope_level: ["global", "trust", "institute", "college", "department"],

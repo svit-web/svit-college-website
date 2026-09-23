@@ -1,0 +1,21 @@
+{
+  "key": "hero_appearance",
+  "value": {
+    "aboutPhoto": null,
+    "heroBlurPx": 5,
+    "heroTextColor": "#ffffff",
+    "homepagePhotos": [
+      "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1789713710836-mdhr6a.webp",
+      "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1789814057746-0ckaid.png",
+      "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1789814061841-d5o5pu.png"
+    ],
+    "campusLifePhoto": null,
+    "heroImageOpacity": 100,
+    "heroOverlayColor": null,
+    "heroSliderEnabled": false,
+    "heroOverlayOpacity": 5
+  },
+  "updated_at": "2026-09-19T10:34:33.796+00:00",
+  "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+  "admin_section_id": "212c443e-ed5d-48c2-ad40-ab2eb9ea41a0"
+}

@@ -1,0 +1,229 @@
+[
+  {
+    "id": "5423ca30-d9c3-4f4a-8569-7303d06d426e",
+    "college_code": "svit-degree",
+    "about_text": "The Training & Placement Cell at SVIT facilitates industry interaction, arranges campus recruitment drives, and supports students in building successful careers.",
+    "officer_name": "",
+    "officer_designation": "Training & Placement Officer",
+    "officer_phone": "",
+    "officer_email": "",
+    "officer_photo_url": null,
+    "status": "published",
+    "created_at": "2026-07-28T20:50:01.92524+00:00",
+    "updated_at": "2026-07-28T20:50:01.92524+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "metadata": {},
+    "default_student_placeholder_url": null,
+    "hero_title": null,
+    "hero_subtitle": null
+  },
+  {
+    "id": "0389e821-5540-4491-a5f2-f23bc8fd282b",
+    "college_code": "svica",
+    "about_text": "The SVICA placement cell connects applied science graduates with opportunities in analytics, research and industry.",
+    "officer_name": "",
+    "officer_designation": "Training & Placement Officer",
+    "officer_phone": "",
+    "officer_email": "",
+    "officer_photo_url": null,
+    "status": "published",
+    "created_at": "2026-07-28T20:50:01.92524+00:00",
+    "updated_at": "2026-07-28T20:50:01.92524+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "metadata": {},
+    "default_student_placeholder_url": null,
+    "hero_title": null,
+    "hero_subtitle": null
+  },
+  {
+    "id": "5699d451-f4b2-4aca-a45e-957d232ab37c",
+    "college_code": "svion",
+    "about_text": "SVION's placement cell coordinates with hospitals and healthcare organizations to ensure placement of nursing graduates.",
+    "officer_name": "",
+    "officer_designation": "Training & Placement Officer",
+    "officer_phone": "",
+    "officer_email": "",
+    "officer_photo_url": null,
+    "status": "published",
+    "created_at": "2026-07-28T20:50:01.92524+00:00",
+    "updated_at": "2026-07-28T20:50:01.92524+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "metadata": {},
+    "default_student_placeholder_url": null,
+    "hero_title": null,
+    "hero_subtitle": null
+  },
+  {
+    "id": "5f85ab84-9b8d-412c-a9c7-8eca8487f45a",
+    "college_code": "svit-coa",
+    "about_text": "The College of Architecture placement cell connects students with leading architectural firms and design studios.",
+    "officer_name": "",
+    "officer_designation": "Training & Placement Officer",
+    "officer_phone": "",
+    "officer_email": "",
+    "officer_photo_url": null,
+    "status": "published",
+    "created_at": "2026-07-28T20:50:01.92524+00:00",
+    "updated_at": "2026-07-28T20:50:01.92524+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "metadata": {},
+    "default_student_placeholder_url": null,
+    "hero_title": null,
+    "hero_subtitle": null
+  },
+  {
+    "id": "f2c0d7f4-5339-4511-847b-646811efcbe9",
+    "college_code": "overview",
+    "about_text": "The Training & Placement Cell at SVIT Group of Institutions acts as a bridge between academic excellence and corporate demand. We run year-round skill development, aptitude training, mock interviews, and industry interface sessions so our engineering, architecture, computer applications, and nursing graduates achieve strong career outcomes.",
+    "officer_name": "Name",
+    "officer_designation": "Head — Training & Placement Cell",
+    "officer_phone": "+91 2692 274760",
+    "officer_email": "placement@svitvasad.ac.in",
+    "officer_photo_url": null,
+    "status": "published",
+    "created_at": "2026-08-04T15:37:12.350742+00:00",
+    "updated_at": "2026-08-04T15:37:12.350742+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "metadata": {
+      "testimonials": [
+        {
+          "id": "t1",
+          "quote": "The T&P Cell at SVIT conducted rigorous mock interviews and competitive programming bootcamps. The structured placement drives gave me the confidence to crack the Google interview!",
+          "rating": 5,
+          "photoUrl": null,
+          "batchYear": "2024",
+          "companyName": "Google",
+          "designation": "Software Engineer",
+          "studentName": "Aarav Sharma",
+          "departmentName": "Computer Engineering"
+        },
+        {
+          "id": "t2",
+          "quote": "From resume building workshops to soft skills mentorship, the placement cell guided us at every step. I am immensely grateful for the continuous corporate exposure provided at SVIT Vasad.",
+          "rating": 5,
+          "photoUrl": null,
+          "batchYear": "2024",
+          "companyName": "TCS Ninja",
+          "designation": "Systems Engineer",
+          "studentName": "Priya Patel",
+          "departmentName": "Information Technology"
+        },
+        {
+          "id": "t3",
+          "quote": "SVIT COA helped connect our portfolio directly with top architectural consultancies. The campus recruitment drives were smooth, professional, and career-defining.",
+          "rating": 5,
+          "photoUrl": null,
+          "batchYear": "2024",
+          "companyName": "Sthapati Studio",
+          "designation": "Architectural Designer",
+          "studentName": "Kavya Soni",
+          "departmentName": "College of Architecture"
+        },
+        {
+          "id": "t4",
+          "quote": "The hands-on technical labs and dedicated placement training helped me secure an excellent package right in my final semester. SVIT's placement support is top-notch!",
+          "rating": 5,
+          "photoUrl": null,
+          "batchYear": "2024",
+          "companyName": "HCLTech",
+          "designation": "Associate Analyst",
+          "studentName": "Riddhi Shah",
+          "departmentName": "Computer Applications (SVICA)"
+        },
+        {
+          "id": "t5",
+          "quote": "Our clinical internships combined with on-campus healthcare recruitment allowed me to start my nursing career at Apollo Hospitals immediately upon graduation.",
+          "rating": 5,
+          "photoUrl": null,
+          "batchYear": "2024",
+          "companyName": "Apollo Hospitals",
+          "designation": "Staff Nurse",
+          "studentName": "Meera Patel",
+          "departmentName": "Institute of Nursing (SVION)"
+        },
+        {
+          "id": "t6",
+          "quote": "SVIT Vasad provides world-class infrastructure and industry partnerships. The T&P mentors helped me refine my technical problem solving and soft skills to land my dream job.",
+          "rating": 5,
+          "photoUrl": null,
+          "batchYear": "2024",
+          "companyName": "Microsoft",
+          "designation": "Cloud Consultant",
+          "studentName": "Ananya Desai",
+          "departmentName": "Electronics & Communication"
+        }
+      ],
+      "graphicalData": [],
+      "sectionConfig": {
+        "order": [
+          "about",
+          "trend",
+          "placedStudents",
+          "recruiters",
+          "officer",
+          "testimonials"
+        ],
+        "sections": {
+          "about": true,
+          "trend": true,
+          "officer": true,
+          "recruiters": true,
+          "testimonials": true,
+          "placedStudents": true
+        },
+        "highlights": [
+          {
+            "id": "h1",
+            "icon": "Target",
+            "label": "Industry-aligned Skill Bootcamps & Aptitude Training"
+          },
+          {
+            "id": "h2",
+            "icon": "MessagesSquare",
+            "label": "Mock Technical & HR Interview Practice"
+          },
+          {
+            "id": "h3",
+            "icon": "Briefcase",
+            "label": "Top Recruiting Partners Nationwide"
+          },
+          {
+            "id": "h4",
+            "icon": "Award",
+            "label": "Paid Internships & Pre-Placement Offers (PPOs)"
+          },
+          {
+            "id": "h5",
+            "icon": "CalendarCheck",
+            "label": "Structured Annual On-Campus Drive Schedule"
+          },
+          {
+            "id": "h6",
+            "icon": "UserCheck",
+            "label": "Dedicated Branch-Wise Student Mentorship"
+          }
+        ]
+      },
+      "averagePackage": "₹4.25 LPA",
+      "highestPackage": "₹10 LPA"
+    },
+    "default_student_placeholder_url": null,
+    "hero_title": "Training & Placement Cell",
+    "hero_subtitle": "Empowering SVIT graduates with world-class career opportunities, industry mentorship, and top campus recruitment."
+  }
+]

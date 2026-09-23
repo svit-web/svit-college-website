@@ -1,0 +1,42 @@
+[
+  {
+    "id": "a1000000-0000-0000-0000-000000000001",
+    "scope_type": "global",
+    "department_id": null,
+    "title": "SVIT Campus Gallery",
+    "slug": "svit-campus-gallery",
+    "description": "Photos from SVIT Engineering campus activities and events",
+    "cover_image_url": "http://admin.svitvasad.ac.in/DataImages/637913573080681431.jpg",
+    "created_at": "2026-07-25T05:33:45.667562+00:00",
+    "updated_at": "2026-07-25T05:33:45.667562+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "source": "engineering_gallery",
+      "college": "svit"
+    }
+  },
+  {
+    "id": "a2000000-0000-0000-0000-000000000002",
+    "scope_type": "global",
+    "department_id": null,
+    "title": "Architecture Student Work",
+    "slug": "architecture-student-work",
+    "description": "Student projects and work from College of Architecture",
+    "cover_image_url": "http://admin.svitvasad.ac.in/DataImages/637625029909445895.jpeg",
+    "created_at": "2026-07-25T05:33:45.667562+00:00",
+    "updated_at": "2026-07-25T05:33:45.667562+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "source": "architecture_students",
+      "college": "coa"
+    }
+  }
+]
