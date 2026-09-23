@@ -74,6 +74,12 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
   const [overIndex, setOverIndex] = useState<number | null>(null);
   const busy = uploadingCount > 0;
 
+  // Unchecked (hidden from the public gallery) by default, per the site's
+  // convention for optional admin toggles. Mirrored into a ref so a
+  // not-yet-created album picks up whatever was chosen before the first photo.
+  const [showInGallery, setShowInGallery] = useState(false);
+  const showInGalleryRef = useRef(false);
+
   useEffect(() => {
     if (!albumId) {
       setPhotos([]);
@@ -82,21 +88,40 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
     let cancelled = false;
     (async () => {
       setLoadingPhotos(true);
-      const { data, error } = await supabase
-        .from('gallery_media')
-        .select('id, url, sort_order')
-        .eq('album_id', albumId)
-        .is('deleted_at', null)
-        .order('sort_order', { ascending: true });
+      const [mediaResult, albumResult] = await Promise.all([
+        supabase
+          .from('gallery_media')
+          .select('id, url, sort_order')
+          .eq('album_id', albumId)
+          .is('deleted_at', null)
+          .order('sort_order', { ascending: true }),
+        supabase.from('gallery_albums').select('show_in_public_gallery').eq('id', albumId).single(),
+      ]);
       if (cancelled) return;
-      if (error) toast.error(`Could not load photos: ${error.message}`);
-      else setPhotos(data ?? []);
+      if (mediaResult.error) toast.error(`Could not load photos: ${mediaResult.error.message}`);
+      else setPhotos(mediaResult.data ?? []);
+      if (!albumResult.error && albumResult.data) {
+        showInGalleryRef.current = !!albumResult.data.show_in_public_gallery;
+        setShowInGallery(showInGalleryRef.current);
+      }
       setLoadingPhotos(false);
     })();
     return () => {
       cancelled = true;
     };
   }, [albumId, supabase]);
+
+  const toggleShowInGallery = async (checked: boolean) => {
+    setShowInGallery(checked);
+    showInGalleryRef.current = checked;
+    if (!albumId) return; // applied at album-creation time instead
+    const { error } = await supabase.from('gallery_albums').update({ show_in_public_gallery: checked }).eq('id', albumId);
+    if (error) {
+      toast.error(`Could not update gallery visibility: ${error.message}`);
+      setShowInGallery(!checked);
+      showInGalleryRef.current = !checked;
+    }
+  };
 
   // Steps 1 + 2 of the RLS flow. Returns the linked album id.
   const createAndLinkAlbum = async (): Promise<string> => {
@@ -106,7 +131,7 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
 
     const { data: album, error: albumError } = await supabase
       .from('gallery_albums')
-      .insert({ title, slug, owner_table: tableId, show_in_public_gallery: false, status: 'published' })
+      .insert({ title, slug, owner_table: tableId, show_in_public_gallery: showInGalleryRef.current, status: 'published' })
       .select('id')
       .single();
     if (albumError) throw new Error(`Could not create album: ${albumError.message}`);
@@ -236,6 +261,18 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
       {/* 2. Entry album */}
       <div className="space-y-1.5">
         <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider">More photos</label>
+        <div className="flex items-center">
+          <input
+            type="checkbox"
+            id={`${tableId}-show-in-gallery`}
+            checked={showInGallery}
+            onChange={(e) => toggleShowInGallery(e.target.checked)}
+            className="h-4 w-4 rounded border-slate-200 bg-white text-crimson focus:ring-crimson focus:ring-offset-white disabled:opacity-50"
+          />
+          <label htmlFor={`${tableId}-show-in-gallery`} className="ml-2 text-sm text-slate-600">
+            Also show in Gallery
+          </label>
+        </div>
         {!recordId ? (
           <div className="rounded-lg border-2 border-dashed border-slate-200 bg-white p-5 text-center text-sm text-slate-500">
             Save this first, then add photos.

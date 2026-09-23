@@ -367,12 +367,10 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
   const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
   return (
     <div>
-      <SectionHeading eyebrow="Achievements & Clubs" title="Milestones and Student Groups" />
-
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
-            Recent Achievements
+            Achievements
           </h3>
           {sorted.length === 0 ? (
             <p className="text-sm text-muted-foreground">No achievements published yet.</p>
@@ -383,7 +381,7 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
 
         <div>
           <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
-            Student Clubs
+            Clubs
           </h3>
           {clubs.length === 0 ? (
             <p className="text-sm text-muted-foreground">No clubs listed yet.</p>

@@ -29,6 +29,8 @@ const SOFT_DELETE_TABLES = [
   'posts',
   'events',
   'achievements',
+  'sports',
+  'centers',
   'gallery_albums',
   'gallery_media',
   'downloads',
