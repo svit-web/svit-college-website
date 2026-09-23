@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { CampusLeafPage } from "@/components/site-next/CampusLeafPage";
+import { notFound } from "next/navigation";
+import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { EventsNewsSlider, type EventSlide } from "@/components/site-next/EventsNewsSlider";
 import { getStudentClubBySlug, getClubEvents } from "@/lib/clubs.functions";
+import { getEntryAlbum } from "@/lib/gallery.functions";
 
 async function loadClub(slug: string) {
   const item = await getStudentClubBySlug(slug);
-  if (!item) return null;
-  const { events, total: eventsTotal } = await getClubEvents(item.id);
-  return { item, events, eventsTotal };
+  if (!item || !item.has_detail_page) return null;
+  const [{ events, total: eventsTotal }, album] = await Promise.all([
+    getClubEvents(item.id),
+    getEntryAlbum(item.album_id),
+  ]);
+  return { item, events, eventsTotal, album };
 }
 
 export async function generateMetadata({
@@ -29,19 +34,9 @@ export async function generateMetadata({
 export default async function ClubLeaf({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const result = await loadClub(slug);
-  if (!result) return null;
+  if (!result) notFound();
 
-  const { item, events, eventsTotal } = result;
-
-  const transformedItem = {
-    slug: item.slug,
-    title: item.name,
-    subtitle: item.subtitle || "",
-    accent: item.accent_color || "Club",
-    description: item.description || "",
-    highlights: item.metadata?.highlights ?? [],
-    image: item.logo_url || null,
-  };
+  const { item, events, eventsTotal, album } = result;
 
   const slides: EventSlide[] = events.map((e) => ({
     id: e.id,
@@ -58,11 +53,21 @@ export default async function ClubLeaf({ params }: { params: Promise<{ slug: str
 
   return (
     <div>
-      <CampusLeafPage item={transformedItem} />
+      <DetailPageLayout
+        entry={{
+          title: item.name,
+          subtitle: item.subtitle,
+          accent: item.accent_color || "Club",
+          description: item.description,
+          cardPhotoUrl: item.card_photo_url,
+          album,
+          fallbackLogoUrl: item.logo_url,
+        }}
+      />
 
       {slides.length > 0 && (
         <div className="mt-12">
-          <SectionHeading eyebrow={transformedItem.title} title="Recent Events" variant="eyebrow" />
+          <SectionHeading eyebrow={item.name} title="Recent Events" variant="eyebrow" />
           <div className="mt-8">
             <EventsNewsSlider items={slides} />
           </div>

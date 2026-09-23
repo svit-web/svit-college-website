@@ -9,7 +9,10 @@ import type {
   DeptClub,
 } from "@/lib/department-content.functions";
 import type { Facility } from "@/lib/facilities.functions";
-import { GraduationCap, Calendar, Image as ImageIcon, Mail } from "lucide-react";
+import type { EntryCardData } from "@/lib/entry";
+import { achievementCategoryLabel, achievementDetailHref } from "@/lib/achievements.functions";
+import { AchievementsGrid } from "./AchievementsGrid";
+import { GraduationCap, Mail } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface Props {
@@ -47,20 +50,7 @@ function AvatarPlaceholder({ name, size = "md" }: { name: string; size?: "sm" | 
   );
 }
 
-function ImagePlaceholder({ className }: { className?: string }) {
-  return (
-    <div
-      className={cn(
-        "flex items-center justify-center rounded-lg bg-secondary/70 text-muted-foreground",
-        className,
-      )}
-    >
-      <ImageIcon className="h-8 w-8" aria-hidden />
-    </div>
-  );
-}
-
-function formatDate(iso: string) {
+export function formatDate(iso: string) {
   try {
     return new Date(iso).toLocaleDateString("en-GB", {
       day: "2-digit",
@@ -356,6 +346,20 @@ export function DeptStaffView({ staff = [] }: Props) {
 }
 
 // -------- Achievements & Clubs --------
+function toAchievementCard(a: DeptAchievement): EntryCardData {
+  return {
+    id: a.id,
+    slug: a.slug,
+    title: a.title,
+    subtitle: `${achievementCategoryLabel(a.category)} · ${formatDate(a.date)}`,
+    description: a.description,
+    cardPhotoUrl: a.cardPhotoUrl,
+    hasDetailPage: a.hasDetailPage,
+    detailHref: a.hasDetailPage ? achievementDetailHref(a.slug) : null,
+    album: a.album,
+  };
+}
+
 export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
   const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
   return (
@@ -370,24 +374,7 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
           {sorted.length === 0 ? (
             <p className="text-sm text-muted-foreground">No achievements published yet.</p>
           ) : (
-            <ul className="space-y-4">
-              {sorted.map((a, i) => (
-                <Reveal key={a.id} delay={i * 0.04}>
-                  <article className="flex flex-col gap-4 rounded-2xl border-2 border-navy/15 bg-white p-5 sm:flex-row">
-                    <ImagePlaceholder className="h-28 w-full shrink-0 sm:h-24 sm:w-32" />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-crimson">
-                        <Calendar className="h-3.5 w-3.5" /> {formatDate(a.date)}
-                      </div>
-                      <h4 className="mt-1 font-display text-base font-bold text-navy">{a.title}</h4>
-                      <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
-                        {a.description}
-                      </p>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
-            </ul>
+            <AchievementsGrid entries={sorted.map(toAchievementCard)} />
           )}
         </div>
 

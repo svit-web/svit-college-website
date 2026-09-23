@@ -1,4 +1,5 @@
 import { publicSupabase } from '@/lib/supabase-public';
+import type { EntryAlbum } from '@/lib/entry';
 
 export interface GalleryMedia {
   id: string;
@@ -62,4 +63,56 @@ export async function getGalleryAlbumWithMedia(albumId: string) {
     ...(album as unknown as GalleryAlbum),
     media: (media ?? []) as unknown as GalleryMedia[],
   } as GalleryAlbumWithMedia;
+}
+
+/**
+ * Load an Entry album (CONTEXT.md) as the shared `EntryAlbum` shape: the
+ * album's published image media in display order. Returns null when there is
+ * no album id, the album isn't published, or it has no photos — callers then
+ * fall back to the Card photo.
+ */
+export async function getEntryAlbum(albumId: string | null | undefined): Promise<EntryAlbum | null> {
+  if (!albumId) return null;
+  return (await getEntryAlbums([albumId])).get(albumId) ?? null;
+}
+
+/**
+ * Batch form of `getEntryAlbum` for a grid of Cards: one query for every
+ * album's published photos. Returns a map keyed by album id; albums that are
+ * unpublished or empty are simply absent.
+ */
+export async function getEntryAlbums(
+  albumIds: Array<string | null | undefined>,
+): Promise<Map<string, EntryAlbum>> {
+  const ids = [...new Set(albumIds.filter((id): id is string => !!id))];
+  const result = new Map<string, EntryAlbum>();
+  if (ids.length === 0) return result;
+
+  const supabase = publicSupabase();
+  const { data: albums, error: albumError } = await supabase
+    .from('gallery_albums')
+    .select('id')
+    .in('id', ids)
+    .eq('status', 'published')
+    .is('deleted_at', null);
+  if (albumError) throw albumError;
+  const publishedIds = (albums ?? []).map((a) => a.id);
+  if (publishedIds.length === 0) return result;
+
+  const { data: media, error: mediaError } = await supabase
+    .from('gallery_media')
+    .select('id, album_id, url, caption, media_type')
+    .in('album_id', publishedIds)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .order('sort_order', { ascending: true });
+  if (mediaError) throw mediaError;
+
+  for (const m of media ?? []) {
+    if (m.media_type !== 'image' || !m.url) continue;
+    const album = result.get(m.album_id) ?? { id: m.album_id, media: [] };
+    album.media.push({ id: m.id, url: m.url, caption: m.caption });
+    result.set(m.album_id, album);
+  }
+  return result;
 }

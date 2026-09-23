@@ -8,6 +8,7 @@ import { EntryPhotosEditor } from './EntryPhotosEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
+import { EVENT_TYPE_LABELS } from '@/lib/event-types';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import {
   useReactTable,
@@ -149,6 +150,9 @@ interface TableFieldConfig {
   defaultsToScopeLevel?: boolean;
   // Custom field renderer, dispatched by name in the edit form below.
   render?: 'department-meta' | 'entry-photos';
+  // Enum fields only: human-readable option labels keyed by enum value
+  // (falls back to formatLabel for any value not listed).
+  optionLabels?: Record<string, string>;
 }
 
 // Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
@@ -203,6 +207,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      event_type: { optionLabels: EVENT_TYPE_LABELS },
       is_featured: {
         lockedForNonGlobal: true,
         booleanLabel: 'Feature on homepage (max 8 at once)',
@@ -1002,7 +1007,8 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       </select>
                     ) : col.type === 'USER-DEFINED' && col.enum_values ? (
                       (() => {
-                        const lockedScope = !!TABLE_CONFIGS[tableId]?.fields?.[col.name]?.lockedForNonGlobal && userScope.level !== 'global';
+                        const enumFieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
+                        const lockedScope = !!enumFieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
                         const options = lockedScope ? [userScope.level] : col.enum_values;
                         return (
                           <select
@@ -1014,7 +1020,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                           >
                             <option value="">-- Select --</option>
                             {options.map((v: string) => (
-                              <option key={v} value={v}>{formatLabel(v)}</option>
+                              <option key={v} value={v}>{enumFieldConfig?.optionLabels?.[v] ?? formatLabel(v)}</option>
                             ))}
                           </select>
                         );

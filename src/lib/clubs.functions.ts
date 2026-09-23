@@ -7,6 +7,9 @@ export interface StudentClub {
   slug: string;
   description: string | null;
   logo_url: string | null;
+  card_photo_url: string | null;
+  has_detail_page: boolean;
+  album_id: string | null;
   coordinator_id: string | null;
   student_coordinator_name: string | null;
   featured: boolean;
@@ -98,6 +101,7 @@ export interface ClubEvent {
   eventDate: string;
   imageUrl: string | null;
   hasDetailPage: boolean;
+  albumId: string | null;
 }
 
 function mapClubEventRow(e: any): ClubEvent {
@@ -109,6 +113,7 @@ function mapClubEventRow(e: any): ClubEvent {
     eventDate: e.start_date,
     imageUrl: e.card_photo_url,
     hasDetailPage: !!e.has_detail_page,
+    albumId: e.album_id ?? null,
   };
 }
 
@@ -122,7 +127,7 @@ export async function getClubEvents(clubId: string) {
   const supabase = publicSupabase();
   const { data, error, count } = await supabase
     .from('events')
-    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page', { count: 'exact' })
+    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page, album_id', { count: 'exact' })
     .eq('club_id', clubId)
     .eq('status', 'published')
     .is('deleted_at', null)
@@ -148,7 +153,7 @@ export async function getAllClubEvents(clubId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('events')
-    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page')
+    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page, album_id')
     .eq('club_id', clubId)
     .eq('status', 'published')
     .is('deleted_at', null)

@@ -4,6 +4,8 @@
 // department_activities) keyed off a department's real id.
 import { publicSupabase } from '@/lib/supabase-public';
 import { compareByMuster } from '@/lib/staff-order';
+import { getEntryAlbums } from '@/lib/gallery.functions';
+import type { EntryAlbum } from '@/lib/entry';
 
 export interface DeptStaffMember {
   id: string;
@@ -64,18 +66,24 @@ export async function getStaffByDepartmentId(departmentId: string) {
 
 export interface DeptAchievement {
   id: string;
+  slug: string;
   title: string;
   date: string;
+  category: string;
   description: string | null;
+  cardPhotoUrl: string | null;
+  hasDetailPage: boolean;
+  album: EntryAlbum | null;
 }
 
 export async function getAchievementsByDepartmentId(departmentId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('achievements')
-    .select('id, title, date, description')
+    .select('id, slug, title, date, category, description, card_photo_url, has_detail_page, album_id')
     .eq('department_id', departmentId)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('date', { ascending: false });
 
   if (error) {
@@ -83,7 +91,23 @@ export async function getAchievementsByDepartmentId(departmentId: string) {
     throw error;
   }
 
-  return (data ?? []) as DeptAchievement[];
+  const rows = data ?? [];
+  // Albums only matter for Cards that open the Entry viewer (no Detail page).
+  const albums = await getEntryAlbums(
+    rows.filter((r) => !r.has_detail_page).map((r) => r.album_id),
+  ).catch(() => new Map<string, EntryAlbum>());
+
+  return rows.map((r): DeptAchievement => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    date: r.date,
+    category: r.category,
+    description: r.description,
+    cardPhotoUrl: r.card_photo_url,
+    hasDetailPage: !!r.has_detail_page,
+    album: (r.album_id ? albums.get(r.album_id) : null) ?? null,
+  }));
 }
 
 export interface DeptClub {

@@ -1,61 +1,55 @@
 import { publicSupabase } from '@/lib/supabase-public';
 
+/** A sports highlight carried over from the old `facilities` row (see the entry-model migration). */
+export interface SportHighlight {
+  title: string;
+  description?: string | null;
+}
+
+/**
+ * `metadata` on sports merged in from `facilities` (Carrom, Pickleball,
+ * Weightlifting, …) carries the old venue name, subtitle and highlights.
+ */
+export interface SportMetadata {
+  venue_name?: string | null;
+  subtitle?: string | null;
+  highlights?: SportHighlight[] | null;
+  [key: string]: unknown;
+}
+
 export interface Sport {
   id: string;
   name: string;
   slug: string;
   category: "outdoor" | "indoor" | "aquatic" | "combat";
   description: string | null;
-  cover_image_url: string | null;
+  card_photo_url: string | null;
+  has_detail_page: boolean;
+  album_id: string | null;
   is_active: boolean;
   sort_order: number;
-  status: string;
+  status: "draft" | "published" | "archived";
   players_count: number | null;
   coach_name: string | null;
   coach_image_url: string | null;
-  achievements_count: number | null;
-  metadata: Record<string, any>;
+  metadata: SportMetadata;
   created_at: string;
 }
 
-export interface SportAchievement {
-  id: string;
-  sport_id: string | null;
-  title: string;
-  description: string | null;
-  achievement_date: string | null;
-  level: "university" | "state" | "national" | "international";
-  position: string | null;
-  image_url: string | null;
-  is_active: boolean;
-  sort_order: number;
-  status: string;
-  metadata: Record<string, string | number | boolean | null>;
-  sport?: { name: string; slug: string } | null;
-}
+// Sports achievements used to live in `sports_achievements`; that table was
+// merged into `achievements` (category = 'sports') and dropped.
 
 export async function getSports() {
   const supabase = publicSupabase();
   const { data, error } = await (supabase as any)
     .from("sports")
-    .select("id, name, slug, category, description, cover_image_url, is_active, sort_order, status, metadata, created_at")
+    .select(
+      "id, name, slug, category, description, card_photo_url, has_detail_page, album_id, is_active, sort_order, status, players_count, coach_name, coach_image_url, metadata, created_at",
+    )
     .eq("status", "published")
     .eq("is_active", true)
     .is("deleted_at", null)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
-  return (data ?? []) as Sport[];
-}
-
-export async function getSportsAchievements() {
-  const supabase = publicSupabase();
-  const { data, error } = await (supabase as any)
-    .from("sports_achievements")
-    .select("id, sport_id, title, description, achievement_date, level, position, image_url, is_active, sort_order, status, metadata, sport:sport_id(name, slug)")
-    .eq("status", "published")
-    .eq("is_active", true)
-    .is("deleted_at", null)
-    .order("achievement_date", { ascending: false });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as SportAchievement[];
+  return ((data ?? []) as Sport[]).map((s) => ({ ...s, metadata: s.metadata ?? {} }));
 }
