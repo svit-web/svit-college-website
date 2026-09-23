@@ -92,27 +92,41 @@ export async function getStudentClubBySlug(slug: string) {
 
 export interface ClubEvent {
   id: string;
+  slug: string;
   title: string;
   description: string | null;
   eventDate: string;
   imageUrl: string | null;
+  hasDetailPage: boolean;
+}
+
+function mapClubEventRow(e: any): ClubEvent {
+  return {
+    id: e.id,
+    slug: e.slug,
+    title: e.title,
+    description: e.description,
+    eventDate: e.start_date,
+    imageUrl: e.card_photo_url,
+    hasDetailPage: !!e.has_detail_page,
+  };
 }
 
 /**
- * Fetch a club's own events — a dedicated table (club_events), separate
- * from the general campus-life events. Admin-managed at
- * /admin/tables/club_events via the Club Id field. Events accumulate with
- * no auto-archiving; this preview is capped at the 3 most recent for the
- * slider, plus the true total so callers know whether to show "View more".
+ * Fetch a club's own events — events.club_id (club_events was merged into
+ * events, see docs/adr/0002-one-events-table.md). This preview is capped at
+ * the 3 most recent for the slider, plus the true total so callers know
+ * whether to show "View more".
  */
 export async function getClubEvents(clubId: string) {
   const supabase = publicSupabase();
   const { data, error, count } = await supabase
-    .from('club_events')
-    .select('id, title, description, event_date, image_url', { count: 'exact' })
+    .from('events')
+    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page', { count: 'exact' })
     .eq('club_id', clubId)
     .eq('status', 'published')
-    .order('event_date', { ascending: false })
+    .is('deleted_at', null)
+    .order('start_date', { ascending: false })
     .limit(3);
 
   if (error) {
@@ -121,13 +135,7 @@ export async function getClubEvents(clubId: string) {
   }
 
   return {
-    events: (data ?? []).map((e): ClubEvent => ({
-      id: e.id,
-      title: e.title,
-      description: e.description,
-      eventDate: e.event_date,
-      imageUrl: e.image_url,
-    })),
+    events: (data ?? []).map(mapClubEventRow),
     total: count ?? 0,
   };
 }
@@ -139,22 +147,17 @@ export async function getClubEvents(clubId: string) {
 export async function getAllClubEvents(clubId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('club_events')
-    .select('id, title, description, event_date, image_url')
+    .from('events')
+    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page')
     .eq('club_id', clubId)
     .eq('status', 'published')
-    .order('event_date', { ascending: false });
+    .is('deleted_at', null)
+    .order('start_date', { ascending: false });
 
   if (error) {
     console.error('Error fetching all club events:', error);
     throw error;
   }
 
-  return (data ?? []).map((e): ClubEvent => ({
-    id: e.id,
-    title: e.title,
-    description: e.description,
-    eventDate: e.event_date,
-    imageUrl: e.image_url,
-  }));
+  return (data ?? []).map(mapClubEventRow);
 }

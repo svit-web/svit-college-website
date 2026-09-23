@@ -45,7 +45,7 @@ export default async function ClubLeaf({ params }: { params: Promise<{ slug: str
 
   const slides: EventSlide[] = events.map((e) => ({
     id: e.id,
-    slug: null,
+    slug: e.hasDetailPage ? e.slug : null,
     title: e.title,
     tag: "Event",
     date: new Date(e.eventDate).toLocaleDateString("en-GB", {

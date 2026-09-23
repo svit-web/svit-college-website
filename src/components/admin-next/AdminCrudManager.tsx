@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
 import { MediaUploader } from './MediaUploader';
 import { SeoEditor } from './SeoEditor';
+import { EntryPhotosEditor } from './EntryPhotosEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
@@ -147,8 +148,16 @@ interface TableFieldConfig {
   // New-record default: prefill with the acting admin's own scope level.
   defaultsToScopeLevel?: boolean;
   // Custom field renderer, dispatched by name in the edit form below.
-  render?: 'department-meta';
+  render?: 'department-meta' | 'entry-photos';
 }
+
+// Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
+// card_photo_url and also owns album_id + has_detail_page, which are therefore
+// skipped by the default field renderer.
+const ENTRY_PHOTO_FIELDS: Record<string, TableFieldConfig> = {
+  card_photo_url: { render: 'entry-photos' },
+};
+const ENTRY_PHOTOS_OWNED_COLUMNS = new Set(['album_id', 'has_detail_page']);
 
 interface TableConfig {
   scope?: {
@@ -192,6 +201,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   events: {
     scope: { collegeScopeExtra: { column: 'scope_type', value: 'college' } },
     fields: {
+      ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
       is_featured: {
         lockedForNonGlobal: true,
@@ -200,6 +210,12 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       },
     },
   },
+  facilities: { fields: ENTRY_PHOTO_FIELDS },
+  centers: { fields: ENTRY_PHOTO_FIELDS },
+  sports: { fields: ENTRY_PHOTO_FIELDS },
+  achievements: { fields: ENTRY_PHOTO_FIELDS },
+  student_clubs: { fields: ENTRY_PHOTO_FIELDS },
+  posts: { fields: ENTRY_PHOTO_FIELDS },
   user_profiles: {
     rowActions: { resetPassword: true },
   },
@@ -912,6 +928,23 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                       <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{formatLabel(col.name)}</label>
                       <input type="text" value={formValues[col.name] || ''} readOnly className="w-full rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 focus:outline-none" />
                     </div>
+                  );
+                }
+
+                const tableFields = TABLE_CONFIGS[tableId]?.fields;
+                const usesEntryPhotos = !!tableFields && Object.values(tableFields).some((f) => f.render === 'entry-photos');
+                if (usesEntryPhotos && ENTRY_PHOTOS_OWNED_COLUMNS.has(col.name)) return null;
+                if (tableFields?.[col.name]?.render === 'entry-photos') {
+                  return (
+                    <EntryPhotosEditor
+                      key={col.name}
+                      tableId={tableId}
+                      recordId={editingRecord ? editingRecord[schema.primary_key] : null}
+                      primaryKey={schema.primary_key}
+                      values={formValues}
+                      onChange={handleFieldChange}
+                      hasDetailPageField={schema.columns.some((c: any) => c.name === 'has_detail_page')}
+                    />
                   );
                 }
 

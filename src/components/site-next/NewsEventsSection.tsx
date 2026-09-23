@@ -104,9 +104,9 @@ export function NewsEventsSection({ events }: { events: EventRow[] }) {
                     {item.description && <p>{item.description}</p>}
                     <PillLink href={eventHref(item.slug)}>Read more</PillLink>
                   </div>
-                  {item.featured_image_url && (
+                  {item.card_photo_url && (
                     <CurtainImage
-                      src={item.featured_image_url}
+                      src={item.card_photo_url}
                       alt={item.title}
                       className="group aspect-video w-full rounded-xl"
                     />
@@ -127,7 +127,7 @@ export function NewsEventsSection({ events }: { events: EventRow[] }) {
             <Reveal>
               <article className="grid gap-3.5 border-b border-border pb-7">
                 <CurtainImage
-                  src={featured.featured_image_url ?? ""}
+                  src={featured.card_photo_url ?? ""}
                   alt={featured.title}
                   className="group aspect-[4/3] w-full rounded-xl [&_img]:object-top"
                 />

@@ -122,26 +122,46 @@ export async function getClubsByDepartmentId(departmentId: string) {
   }));
 }
 
-export type DeptActivityType = 'expert_lecture' | 'industry_visit' | 'mou' | 'seminar_workshop' | 'sttp_fdp';
+// department_activities was merged into events (see docs/adr/0002); an
+// "activity" is just a department-scoped event of one of these types.
+export type DeptActivityType =
+  | 'expert_session'
+  | 'industrial_visit'
+  | 'seminar'
+  | 'workshop'
+  | 'sttp'
+  | 'fdp';
+
+const ACTIVITY_EVENT_TYPES: DeptActivityType[] = [
+  'expert_session',
+  'industrial_visit',
+  'seminar',
+  'workshop',
+  'sttp',
+  'fdp',
+];
 
 export interface DeptActivity {
   id: string;
-  type: DeptActivityType;
+  slug: string;
+  type: DeptActivityType | null;
   title: string;
   startDate: string;
   endDate: string | null;
   notes: string | null;
-  documentUrl: string | null;
-  company: string | null;
+  cardPhotoUrl: string | null;
+  hasDetailPage: boolean;
 }
 
 export async function getDepartmentActivities(departmentId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('department_activities')
-    .select('*')
+    .from('events')
+    .select('id, slug, event_type, title, start_date, end_date, description, card_photo_url, has_detail_page')
     .eq('department_id', departmentId)
     .eq('status', 'published')
+    .is('deleted_at', null)
+    .in('event_type', ACTIVITY_EVENT_TYPES)
     .order('start_date', { ascending: false });
 
   if (error) {
@@ -151,12 +171,13 @@ export async function getDepartmentActivities(departmentId: string) {
 
   return (data ?? []).map((a: any): DeptActivity => ({
     id: a.id,
-    type: a.activity_type,
+    slug: a.slug,
+    type: a.event_type,
     title: a.title,
     startDate: a.start_date,
     endDate: a.end_date,
-    notes: a.notes,
-    documentUrl: a.document_url,
-    company: a.company,
+    notes: a.description,
+    cardPhotoUrl: a.card_photo_url,
+    hasDetailPage: !!a.has_detail_page,
   }));
 }

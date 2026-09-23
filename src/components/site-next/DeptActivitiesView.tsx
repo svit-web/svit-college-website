@@ -1,15 +1,18 @@
 "use client";
 
+import Image from "next/image";
+import Link from "next/link";
 import { Reveal } from "./Reveal";
 import type { DeptActivity, DeptActivityType } from "@/lib/department-content.functions";
-import { Calendar } from "lucide-react";
+import { EntryCardPlaceholder } from "./EntryCard";
 
 const TYPE_LABELS: Record<DeptActivityType, string> = {
-  expert_lecture: "Expert Lecture",
-  industry_visit: "Industry Visit",
-  mou: "MoU",
-  seminar_workshop: "Seminar / Workshop",
-  sttp_fdp: "STTP / FDP",
+  expert_session: "Expert Session",
+  industrial_visit: "Industry Visit",
+  seminar: "Seminar",
+  workshop: "Workshop",
+  sttp: "STTP",
+  fdp: "FDP",
 };
 
 function formatDate(iso: string) {
@@ -25,27 +28,38 @@ function formatDate(iso: string) {
 }
 
 function ActivityCard({ item, i }: { item: DeptActivity; i: number }) {
+  const body = (
+    <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden hover:border-gold transition-colors">
+      <div className="relative aspect-video w-full overflow-hidden bg-navy">
+        {item.cardPhotoUrl ? (
+          <Image src={item.cardPhotoUrl} alt={item.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover" />
+        ) : (
+          <EntryCardPlaceholder />
+        )}
+      </div>
+      <div className="p-5">
+        <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+          {(item.type && TYPE_LABELS[item.type]) || "Event"}
+        </div>
+        <h4 className="mt-1 font-display font-bold text-navy">{item.title}</h4>
+        <p className="mt-1 text-sm text-muted-foreground">
+          {formatDate(item.startDate)}
+          {item.endDate && item.endDate !== item.startDate && <> — {formatDate(item.endDate)}</>}
+        </p>
+        {item.notes && (
+          <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{item.notes}</p>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <Reveal delay={i * 0.03}>
-      <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden hover:border-gold transition-colors">
-        <div className="aspect-video bg-secondary/60 flex items-center justify-center">
-          <Calendar className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <div className="p-5">
-          <div className="text-xs font-bold uppercase tracking-widest text-crimson">
-            {TYPE_LABELS[item.type] || "Event"}
-          </div>
-          <h4 className="mt-1 font-display font-bold text-navy">{item.title}</h4>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {formatDate(item.startDate)}
-            {item.endDate && item.endDate !== item.startDate && <> — {formatDate(item.endDate)}</>}
-            {item.company && <> · {item.company}</>}
-          </p>
-          {item.notes && (
-            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{item.notes}</p>
-          )}
-        </div>
-      </div>
+      {item.hasDetailPage ? (
+        <Link href={`/campus-life/events/${item.slug}`}>{body}</Link>
+      ) : (
+        body
+      )}
     </Reveal>
   );
 }

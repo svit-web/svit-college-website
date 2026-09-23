@@ -10,16 +10,26 @@ export interface SliderPhoto {
   focalY?: "top" | "center" | "bottom";
 }
 
-// Fixed at 4:3 for a consistent look — not admin-editable.
+// Fixed at 4:3 for a consistent look — not admin-editable. Callers with a
+// different layout (e.g. the Detail page slideshow) may pass `aspectRatio`.
 const PHOTO_ASPECT_RATIO = "4/3";
 
 interface Props {
   photos: SliderPhoto[];
   ariaLabel?: string;
   photoAlt?: string;
+  aspectRatio?: string;
+  /** When set, clicking the current slide calls this (e.g. to open a lightbox). */
+  onPhotoClick?: (index: number) => void;
 }
 
-export function PhotoSlider({ photos, ariaLabel = "Photos", photoAlt = "Photo" }: Props) {
+export function PhotoSlider({
+  photos,
+  ariaLabel = "Photos",
+  photoAlt = "Photo",
+  aspectRatio = PHOTO_ASPECT_RATIO,
+  onPhotoClick,
+}: Props) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   const count = photos.length;
@@ -43,7 +53,7 @@ export function PhotoSlider({ photos, ariaLabel = "Photos", photoAlt = "Photo" }
     >
       <div
         className="relative w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-secondary/60"
-        style={{ aspectRatio: PHOTO_ASPECT_RATIO }}
+        style={{ aspectRatio }}
       >
         {photos.map((photo, i) => (
           <div
@@ -67,6 +77,15 @@ export function PhotoSlider({ photos, ariaLabel = "Photos", photoAlt = "Photo" }
                 objectPosition: `${photo.focalX ?? "center"} ${photo.focalY ?? "center"}`,
               }}
             />
+            {onPhotoClick && (
+              <button
+                type="button"
+                onClick={() => onPhotoClick(i)}
+                tabIndex={i === index ? 0 : -1}
+                aria-label={`View photo ${i + 1} full screen`}
+                className="absolute inset-0 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
+              />
+            )}
           </div>
         ))}
       </div>
