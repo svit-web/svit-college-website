@@ -1,0 +1,20 @@
+insert into designations (title, status) values
+  ('Asst. Deputy Engineer', 'published'),
+  ('Driver', 'published'),
+  ('Electrician', 'published'),
+  ('Gardener', 'published'),
+  ('I/C Administrative Officer', 'published'),
+  ('Junior Wireman', 'published'),
+  ('Maintenance Attendant', 'published'),
+  ('Maintenance Helper', 'published'),
+  ('Maintenance Supervisor', 'published'),
+  ('Maintenance Worker', 'published'),
+  ('Mechanic (C Grade)', 'published'),
+  ('PA to Chairman', 'published'),
+  ('Physician', 'published'),
+  ('Plumber', 'published'),
+  ('Purchase Officer', 'published'),
+  ('Senior Library Assistant', 'published'),
+  ('Telephone & Xerox Attendant', 'published'),
+  ('Wireman', 'published')
+returning id, title;
