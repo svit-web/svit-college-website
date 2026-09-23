@@ -47,7 +47,7 @@ export function RecruitersMarquee({ recruiters }: { recruiters: RecruiterRow[] }
     const tween = gsap.fromTo(
       track,
       { xPercent: 0 },
-      { xPercent: -50, duration: 60, ease: "none", repeat: -1 },
+      { xPercent: -50, duration: 130, ease: "none", repeat: -1 },
     );
 
     let hover = 1;

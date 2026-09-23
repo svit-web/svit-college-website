@@ -61,7 +61,7 @@ async function loadCollege(slug: string) {
     stats: stats.length > 0 ? stats : null,
     whyChoose: whyChoose.length > 0 ? whyChoose : null,
     trustBadges,
-    recruiters: recruiters.map((r) => r.company_name),
+    recruiters,
     departments,
   };
 

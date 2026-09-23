@@ -1,44 +1,65 @@
-'use client';
+"use client";
 
-import { SectionHeading } from "./SectionHeading";
-import type { DeptActivity } from "@/lib/department-content.functions";
-import {
-  Calendar,
-  FileText,
-} from "lucide-react";
+import { Reveal } from "./Reveal";
+import type { DeptActivity, DeptActivityType } from "@/lib/department-content.functions";
+import { Calendar } from "lucide-react";
+
+const TYPE_LABELS: Record<DeptActivityType, string> = {
+  expert_lecture: "Expert Lecture",
+  industry_visit: "Industry Visit",
+  mou: "MoU",
+  seminar_workshop: "Seminar / Workshop",
+  sttp_fdp: "STTP / FDP",
+};
 
 function formatDate(iso: string) {
   try {
-    return new Date(iso).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" });
+    return new Date(iso).toLocaleDateString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
   } catch {
     return iso;
   }
 }
 
-function ActivityList({ items }: { items: DeptActivity[] }) {
+function ActivityCard({ item, i }: { item: DeptActivity; i: number }) {
+  return (
+    <Reveal delay={i * 0.03}>
+      <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white overflow-hidden hover:border-gold transition-colors">
+        <div className="aspect-video bg-secondary/60 flex items-center justify-center">
+          <Calendar className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <div className="p-5">
+          <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+            {TYPE_LABELS[item.type] || "Event"}
+          </div>
+          <h4 className="mt-1 font-display font-bold text-navy">{item.title}</h4>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {formatDate(item.startDate)}
+            {item.endDate && item.endDate !== item.startDate && <> — {formatDate(item.endDate)}</>}
+            {item.company && <> · {item.company}</>}
+          </p>
+          {item.notes && (
+            <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{item.notes}</p>
+          )}
+        </div>
+      </div>
+    </Reveal>
+  );
+}
+
+function ActivityGrid({ items }: { items: DeptActivity[] }) {
   if (items.length === 0) {
     return <p className="text-sm text-muted-foreground">No events yet.</p>;
   }
   return (
-    <ul className="space-y-3">
-      {items.map((a) => (
-        <li key={a.id} className="rounded-xl border-2 border-navy/15 bg-white p-4">
-          <div className="flex flex-wrap items-center gap-2 text-xs font-semibold text-crimson">
-            <Calendar className="h-3.5 w-3.5" />
-            {formatDate(a.startDate)}
-            {a.endDate && a.endDate !== a.startDate && <span>— {formatDate(a.endDate)}</span>}
-          </div>
-          <div className="mt-1 font-display text-sm font-bold text-navy">{a.title}</div>
-          {a.company && <div className="text-xs text-muted-foreground">{a.company}</div>}
-          {a.notes && <p className="mt-1 text-xs text-muted-foreground">{a.notes}</p>}
-          {a.documentUrl && (
-            <a href={a.documentUrl} target="_blank" rel="noreferrer" className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-navy hover:text-gold-strong">
-              <FileText className="h-3.5 w-3.5" /> View more
-            </a>
-          )}
-        </li>
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {items.map((a, i) => (
+        <ActivityCard key={a.id} item={a} i={i} />
       ))}
-    </ul>
+    </div>
   );
 }
 
@@ -47,10 +68,7 @@ export function DeptActivitiesView({ activities = [] }: { activities?: DeptActiv
 
   return (
     <div>
-      <SectionHeading eyebrow="Departmental Events" title="Learning Beyond the Classroom" />
-      <div className="mt-6">
-        <ActivityList items={items} />
-      </div>
+      <ActivityGrid items={items} />
     </div>
   );
 }

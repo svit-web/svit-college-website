@@ -72,7 +72,7 @@ export function Header({
         .filter((c) => c.show_in_navigation !== false)
         .map((c) => ({
           id: c.slug,
-          shortCode: c.code,
+          shortCode: c.nav_label ?? c.code,
           name: c.name,
           logo: c.logo_url ?? undefined,
         })),

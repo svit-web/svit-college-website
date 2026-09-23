@@ -609,6 +609,7 @@ export type Database = {
           logo_url: string | null
           metadata: Json
           name: string
+          nav_label: string | null
           show_in_navigation: boolean
           slug: string
           sort_order: number
@@ -631,6 +632,7 @@ export type Database = {
           logo_url?: string | null
           metadata?: Json
           name: string
+          nav_label?: string | null
           show_in_navigation?: boolean
           slug: string
           sort_order?: number
@@ -653,6 +655,7 @@ export type Database = {
           logo_url?: string | null
           metadata?: Json
           name?: string
+          nav_label?: string | null
           show_in_navigation?: boolean
           slug?: string
           sort_order?: number

@@ -15,6 +15,8 @@ import { heroOverlayStyles, heroTextVars, DEFAULT_HERO_APPEARANCE, type HeroAppe
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
+import { RecruitersMarquee } from "@/components/site-next/RecruitersMarquee";
+import type { RecruiterRow } from "@/lib/homepage";
 
 export interface CollegeDept {
   id: string;
@@ -36,7 +38,7 @@ export interface College {
   stats: { value: string; label: string }[] | null;
   whyChoose: { title: string; desc: string; icon: string }[] | null;
   trustBadges: { label: string; icon: string }[];
-  recruiters: string[];
+  recruiters: RecruiterRow[];
   departments: CollegeDept[];
 }
 
@@ -258,23 +260,15 @@ function Events() {
   );
 }
 
-function RecruitersStrip({ data }: { data: string[] }) {
+function RecruitersStrip({ data }: { data: RecruiterRow[] }) {
+  if (data.length === 0) return null;
   return (
     <section className="container-page pb-20">
       <Reveal>
         <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           Our Recruiters
         </div>
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-          {data.map((r) => (
-            <span
-              key={r}
-              className="font-display text-lg font-bold text-navy/50 hover:text-navy transition-colors"
-            >
-              {r}
-            </span>
-          ))}
-        </div>
+        <RecruitersMarquee recruiters={data} />
       </Reveal>
     </section>
   );
