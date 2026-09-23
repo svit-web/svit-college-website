@@ -81,6 +81,11 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
       <div className="mt-10 grid grid-cols-1 gap-10 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] md:gap-0">
         {/* News column */}
         <div className="md:pr-[clamp(1.5rem,3vw,3rem)]">
+          {newsItems.length === 0 && (
+            <p className="py-10 text-sm text-muted-foreground">
+              No news posted yet — check back soon.
+            </p>
+          )}
           {newsItems.map((item, i) => (
             <Reveal key={item.id} delay={i * 0.05}>
               <article className="grid gap-5 border-b border-border py-[clamp(1.8rem,3.5vw,2.6rem)] first:pt-0">
