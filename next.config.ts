@@ -64,6 +64,10 @@ const nextConfig: NextConfig = {
       { source: "/student-corner/coe", destination: "/coe", permanent: true },
       // Central Facilities moved out of About into Campus Life.
       { source: "/about/facilities", destination: "/campus-life/facilities", permanent: true },
+      // /campus was an orphaned page with no inbound links; its content lives in Campus Life now.
+      { source: "/campus", destination: "/campus-life/facilities", permanent: true },
+      // Alumni relations moved to a dedicated external portal.
+      { source: "/alumni", destination: "https://alumni.svitvasad.ac.in", permanent: true },
     ];
   },
 };

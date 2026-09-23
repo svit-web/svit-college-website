@@ -73,7 +73,6 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Post Categories', to: '/admin/tables/content_categories' },
       { label: 'T&P Master Hub', to: '/admin/tnp-hub' },
       { label: 'Recruiters', to: '/admin/recruiters' },
-      { label: 'Testimonials', to: '/admin/tables/testimonials' },
       { label: 'Board of Management', to: '/admin/tables/board_members' },
       { label: 'Committees', to: '/admin/tables/committees' },
       { label: 'Accreditations', to: '/admin/tables/accreditations' },

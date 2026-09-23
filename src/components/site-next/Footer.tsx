@@ -52,7 +52,6 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
     { label: "Grievance Redressal", to: "/grievance" },
     { label: "Downloads", to: "/downloads" },
     { label: "Careers", to: "/careers" },
-    { label: "Alumni", to: "/alumni" },
   ];
 
   return (
@@ -110,7 +109,11 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
           </div>
 
           <FooterCol title="Quick Links" links={quick} />
-          <FooterCol title="Important" links={important} />
+          <FooterCol
+            title="Important"
+            links={important}
+            externalLinks={[{ label: "Alumni", href: "https://alumni.svitvasad.ac.in" }]}
+          />
         </div>
       </div>
       <div className="border-t border-white/10">
@@ -126,7 +129,15 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
   );
 }
 
-function FooterCol({ title, links }: { title: string; links: { label: string; to: string }[] }) {
+function FooterCol({
+  title,
+  links,
+  externalLinks = [],
+}: {
+  title: string;
+  links: { label: string; to: string }[];
+  externalLinks?: { label: string; href: string }[];
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -171,6 +182,18 @@ function FooterCol({ title, links }: { title: string; links: { label: string; to
                 </Link>
               </li>
             ))}
+            {externalLinks.map((l) => (
+              <li key={l.href} className="pt-1 first:pt-0">
+                <a
+                  href={l.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="hover:text-gold transition-colors"
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
           </motion.ul>
         )}
       </AnimatePresence>
@@ -182,6 +205,18 @@ function FooterCol({ title, links }: { title: string; links: { label: string; to
             <Link href={l.to} className="hover:text-gold transition-colors">
               {l.label}
             </Link>
+          </li>
+        ))}
+        {externalLinks.map((l) => (
+          <li key={l.href}>
+            <a
+              href={l.href}
+              target="_blank"
+              rel="noreferrer"
+              className="hover:text-gold transition-colors"
+            >
+              {l.label}
+            </a>
           </li>
         ))}
       </ul>

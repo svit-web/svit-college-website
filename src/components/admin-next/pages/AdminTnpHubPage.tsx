@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { Sparkles, ExternalLink, Eye, EyeOff, Save, Plus, Trash2, Pencil, GraduationCap, ShieldCheck, UserCircle2, BarChart3, FileText, LayoutDashboard, Quote, Star } from 'lucide-react';
+import { Sparkles, ExternalLink, Eye, EyeOff, Save, Plus, Trash2, Pencil, GraduationCap, ShieldCheck, UserCircle2, BarChart3, FileText, LayoutDashboard } from 'lucide-react';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import {
   getPlacementContent,
@@ -15,7 +15,6 @@ import {
   type PlacementYearPoint,
   type PlacedStudent,
   type RecruiterItem,
-  type PlacementTestimonial,
   type SectionVisibility,
 } from '@/lib/placement.functions';
 
@@ -39,7 +38,7 @@ export function AdminTnpHubPage() {
   const [colleges, setColleges] = useState<CollegeOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState<'toggles' | 'hero' | 'about' | 'trend' | 'students' | 'recruiters' | 'officer' | 'testimonials'>('toggles');
+  const [activeTab, setActiveTab] = useState<'toggles' | 'hero' | 'about' | 'trend' | 'students' | 'recruiters' | 'officer'>('toggles');
 
   useEffect(() => {
     let cancelled = false;
@@ -261,72 +260,6 @@ export function AdminTnpHubPage() {
     toast.success('Recruiter deleted');
   };
 
-  const [showTestimonialModal, setShowTestimonialModal] = useState(false);
-  const [editingTestimonialId, setEditingTestimonialId] = useState<string | null>(null);
-  const [testimonialForm, setTestimonialForm] = useState<PlacementTestimonial>({
-    id: '',
-    studentName: '',
-    designation: 'Software Engineer',
-    companyName: '',
-    batchYear: '2024',
-    departmentName: 'Computer Engineering',
-    quote: '',
-    photoUrl: null,
-    rating: 5,
-  });
-
-  const openAddTestimonial = () => {
-    setEditingTestimonialId(null);
-    setTestimonialForm({
-      id: `t_${Date.now()}`,
-      studentName: '',
-      designation: 'Software Engineer',
-      companyName: '',
-      batchYear: '2024',
-      departmentName: 'Computer Engineering',
-      quote: '',
-      photoUrl: null,
-      rating: 5,
-    });
-    setShowTestimonialModal(true);
-  };
-
-  const openEditTestimonial = (t: PlacementTestimonial) => {
-    setEditingTestimonialId(t.id);
-    setTestimonialForm({ ...t });
-    setShowTestimonialModal(true);
-  };
-
-  const saveTestimonial = () => {
-    if (!testimonialForm.studentName.trim() || !testimonialForm.quote.trim()) {
-      toast.error('Student name and quote are required');
-      return;
-    }
-
-    if (editingTestimonialId) {
-      setData((prev) => ({
-        ...prev,
-        testimonials: (prev.testimonials || []).map((t) => (t.id === editingTestimonialId ? testimonialForm : t)),
-      }));
-      toast.success('Testimonial updated');
-    } else {
-      setData((prev) => ({
-        ...prev,
-        testimonials: [testimonialForm, ...(prev.testimonials || [])],
-      }));
-      toast.success('Testimonial added');
-    }
-    setShowTestimonialModal(false);
-  };
-
-  const deleteTestimonial = (id: string) => {
-    setData((prev) => ({
-      ...prev,
-      testimonials: (prev.testimonials || []).filter((t) => t.id !== id),
-    }));
-    toast.success('Testimonial deleted');
-  };
-
   if (loading) {
     return <div className="max-w-5xl py-20 text-center text-sm font-semibold text-slate-500">Loading Training &amp; Placement content…</div>;
   }
@@ -340,7 +273,7 @@ export function AdminTnpHubPage() {
             Training &amp; Placement Hub Manager
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
-            Full control over /placement hero, metric ticker, about block, trend statistics, placed student showcase, recruiter wall, officer contact card, and testimonials.
+            Full control over /placement hero, metric ticker, about block, trend statistics, placed student showcase, recruiter wall, and officer contact card.
           </p>
         </div>
 
@@ -369,7 +302,6 @@ export function AdminTnpHubPage() {
           { id: 'students', label: 'Placed Students', icon: GraduationCap },
           { id: 'recruiters', label: 'Recruiters', icon: ShieldCheck },
           { id: 'officer', label: 'TNP Officer', icon: UserCircle2 },
-          { id: 'testimonials', label: 'Testimonials', icon: Quote },
         ].map((t) => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -400,7 +332,6 @@ export function AdminTnpHubPage() {
               { key: 'placedStudents', label: 'Placed Students Showcase', desc: 'Student cards with photos & pagination' },
               { key: 'recruiters', label: 'Recruiting Partners Logo Wall', desc: 'Partner logo grid with pagination' },
               { key: 'officer', label: 'T&P Officer Contact Card', desc: 'Leadership details, phone & email' },
-              { key: 'testimonials', label: 'Student Testimonials', desc: 'Placed student quotes, ratings & reviews' },
             ].map((s) => {
               const key = s.key as keyof SectionVisibility;
               const isEnabled = data.sectionConfig?.sections?.[key] ?? true;
@@ -681,61 +612,6 @@ export function AdminTnpHubPage() {
         </div>
       )}
 
-      {activeTab === 'testimonials' && (
-        <div className="rounded-xl border border-slate-200 bg-white p-5 space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <h2 className="text-sm font-bold text-slate-900">Student &amp; Alumni Testimonials</h2>
-              <p className="text-xs text-slate-500">Manage student review quotes, designation, company, and ratings.</p>
-            </div>
-            <button type="button" onClick={openAddTestimonial} className="inline-flex items-center gap-1.5 rounded-lg bg-navy px-3 py-1.5 text-xs font-bold text-white hover:bg-navy/90 transition">
-              <Plus className="h-3.5 w-3.5 text-gold" /> Add Testimonial
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {(data.testimonials || []).map((t) => (
-              <div key={t.id} className="group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 hover:border-navy transition shadow-xs">
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      {Array.from({ length: t.rating || 5 }).map((_, starIdx) => (
-                        <Star key={starIdx} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                      ))}
-                    </div>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button type="button" onClick={() => openEditTestimonial(t)} className="p-1 text-slate-500 hover:text-navy">
-                        <Pencil className="h-3 w-3" />
-                      </button>
-                      <button type="button" onClick={() => deleteTestimonial(t.id)} className="p-1 text-rose-500 hover:text-rose-700">
-                        <Trash2 className="h-3 w-3" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <p className="text-xs text-slate-700 italic font-medium leading-relaxed">&ldquo;{t.quote}&rdquo;</p>
-                </div>
-
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-full bg-navy/10 overflow-hidden flex items-center justify-center shrink-0">
-                    {t.photoUrl ? <img src={t.photoUrl} alt={t.studentName} className="h-full w-full object-cover" /> : <span className="font-bold text-xs text-navy">{t.studentName.slice(0, 2).toUpperCase()}</span>}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="font-bold text-xs text-slate-900 truncate">{t.studentName}</div>
-                    <div className="text-[11px] font-semibold text-crimson truncate">
-                      {t.designation} @ {t.companyName}
-                    </div>
-                    <div className="text-[10px] text-slate-400 truncate">
-                      {t.departmentName} &bull; Batch {t.batchYear}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {showStudentModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4">
@@ -842,99 +718,6 @@ export function AdminTnpHubPage() {
         </div>
       )}
 
-      {showTestimonialModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl space-y-4">
-            <h3 className="text-base font-bold text-slate-900">{editingTestimonialId ? 'Edit Testimonial' : 'Add Testimonial'}</h3>
-
-            <div className="space-y-3">
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Student Name</label>
-                <input
-                  type="text"
-                  value={testimonialForm.studentName}
-                  onChange={(e) => setTestimonialForm({ ...testimonialForm, studentName: e.target.value })}
-                  placeholder="e.g. Aarav Sharma"
-                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Job Title/Role</label>
-                  <input
-                    type="text"
-                    value={testimonialForm.designation}
-                    onChange={(e) => setTestimonialForm({ ...testimonialForm, designation: e.target.value })}
-                    placeholder="e.g. Software Engineer"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Company Name</label>
-                  <input
-                    type="text"
-                    value={testimonialForm.companyName}
-                    onChange={(e) => setTestimonialForm({ ...testimonialForm, companyName: e.target.value })}
-                    placeholder="e.g. Google"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Batch Year</label>
-                  <input
-                    type="text"
-                    value={testimonialForm.batchYear}
-                    onChange={(e) => setTestimonialForm({ ...testimonialForm, batchYear: e.target.value })}
-                    placeholder="2024"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Department / Institute</label>
-                  <input
-                    type="text"
-                    value={testimonialForm.departmentName}
-                    onChange={(e) => setTestimonialForm({ ...testimonialForm, departmentName: e.target.value })}
-                    placeholder="e.g. Computer Engineering"
-                    className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Testimonial Quote</label>
-                <textarea
-                  rows={3}
-                  value={testimonialForm.quote}
-                  onChange={(e) => setTestimonialForm({ ...testimonialForm, quote: e.target.value })}
-                  placeholder="Share the student's feedback and experience..."
-                  className="w-full rounded-lg border border-slate-300 p-3 text-xs text-slate-800"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-xs font-semibold text-slate-700">Student Photo (Optional)</label>
-                <MediaUploader value={testimonialForm.photoUrl || ''} onChange={(url) => setTestimonialForm({ ...testimonialForm, photoUrl: url || null })} type="image" />
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-2 pt-2">
-              <button type="button" onClick={() => setShowTestimonialModal(false)} className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50">
-                Cancel
-              </button>
-              <button type="button" onClick={saveTestimonial} className="rounded-lg bg-navy px-4 py-2 text-xs font-bold text-white hover:bg-navy/90">
-                Save Testimonial
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

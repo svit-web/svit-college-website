@@ -31,7 +31,6 @@ const SOFT_DELETE_TABLES = [
   'achievements',
   'gallery_albums',
   'gallery_media',
-  'testimonials',
   'downloads',
   'recruiters',
   'placed_students',

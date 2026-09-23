@@ -25,12 +25,7 @@ import {
 import { PageHero } from "./PageHero";
 import { Reveal } from "./Reveal";
 import { SectionHeading } from "./SectionHeading";
-import { PlacementTestimonialsSlider } from "./PlacementTestimonialsSlider";
-import {
-  type FullPlacementData,
-  type PlacementHighlight,
-  type PlacementTestimonial,
-} from "@/lib/placement.functions";
+import { type FullPlacementData, type PlacementHighlight } from "@/lib/placement.functions";
 
 const STUDENTS_PER_PAGE = 10;
 const RECRUITERS_PER_PAGE = 12;
@@ -68,7 +63,6 @@ export function PlacementPage({ data }: PlacementPageProps) {
   const officer = data.officer;
   const graphicalData = data.graphicalData || [];
   const displayStudents = data.placedStudents;
-  const testimonials: PlacementTestimonial[] = data.testimonials || [];
 
   const placedStudentCount = displayStudents.length;
   const recruiterCount = data.recruiters.length;
@@ -90,7 +84,6 @@ export function PlacementPage({ data }: PlacementPageProps) {
     placedStudents: true,
     recruiters: true,
     officer: true,
-    testimonials: true,
   };
 
   const highlights: PlacementHighlight[] = data.sectionConfig?.highlights || [];
@@ -492,21 +485,6 @@ export function PlacementPage({ data }: PlacementPageProps) {
                       </div>
                     </div>
                   </div>
-                </div>
-              </section>
-            )}
-
-            {/* ── Section 8 — Testimonials Sliding Carousel (#testimonials) ─ */}
-            {sections.testimonials !== false && testimonials.length > 0 && (
-              <section id="testimonials" className="scroll-mt-24">
-                <SectionHeading
-                  eyebrow="Student Success Stories"
-                  title="What Our Placed Graduates Say"
-                  variant="eyebrow"
-                />
-
-                <div className="mt-6">
-                  <PlacementTestimonialsSlider items={testimonials} />
                 </div>
               </section>
             )}

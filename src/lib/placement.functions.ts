@@ -3,7 +3,7 @@
 // Storage map for the unified placement page:
 //   hero / about / officer          → placement_cells row where college_code = 'overview'
 //   packages, section config,
-//   highlights, trend, testimonials → placement_cells.metadata (jsonb) on that same row
+//   highlights, trend               → placement_cells.metadata (jsonb) on that same row
 //   placed student cards            → placed_students table (FK → colleges)
 //   recruiter logo wall             → recruiters table
 //
@@ -36,7 +36,6 @@ export interface SectionVisibility {
   placedStudents: boolean;
   recruiters: boolean;
   officer: boolean;
-  testimonials?: boolean;
 }
 
 export interface SectionConfig {
@@ -79,18 +78,6 @@ export interface PlacementYearPoint {
   placementPercentage: number;
 }
 
-export interface PlacementTestimonial {
-  id: string;
-  studentName: string;
-  designation: string;
-  companyName: string;
-  batchYear: string;
-  departmentName: string;
-  quote: string;
-  photoUrl: string | null;
-  rating?: number;
-}
-
 export interface CollegeOption {
   slug: string;
   name: string;
@@ -108,7 +95,6 @@ export interface FullPlacementData {
   placedStudents: PlacedStudent[];
   recruiters: RecruiterItem[];
   graphicalData: PlacementYearPoint[];
-  testimonials: PlacementTestimonial[];
 }
 
 // ── Fallbacks ───────────────────────────────────────────────────────
@@ -130,9 +116,8 @@ export const DEFAULT_SECTION_CONFIG: SectionConfig = {
     placedStudents: true,
     recruiters: true,
     officer: true,
-    testimonials: true,
   },
-  order: ["about", "trend", "placedStudents", "recruiters", "officer", "testimonials"],
+  order: ["about", "trend", "placedStudents", "recruiters", "officer"],
   highlights: DEFAULT_HIGHLIGHTS,
 };
 
@@ -148,7 +133,6 @@ export const EMPTY_PLACEMENT_DATA: FullPlacementData = {
   placedStudents: [],
   recruiters: [],
   graphicalData: [],
-  testimonials: [],
 };
 
 // ── Shape helpers ───────────────────────────────────────────────────
@@ -158,7 +142,6 @@ type OverviewMeta = {
   averagePackage?: string;
   sectionConfig?: Partial<SectionConfig>;
   graphicalData?: PlacementYearPoint[];
-  testimonials?: PlacementTestimonial[];
 };
 
 function readMeta(raw: unknown): OverviewMeta {
@@ -239,7 +222,6 @@ export async function getPlacementContent(): Promise<FullPlacementData> {
         sortOrder: r.sort_order ?? 0,
       })),
       graphicalData: meta.graphicalData ?? [],
-      testimonials: meta.testimonials ?? [],
     };
 }
 
@@ -303,7 +285,6 @@ export async function savePlacementContent(data: FullPlacementData): Promise<voi
         averagePackage: data.averagePackage,
         sectionConfig: data.sectionConfig,
         graphicalData: data.graphicalData,
-        testimonials: data.testimonials,
       },
     },
     { onConflict: "college_code" },
