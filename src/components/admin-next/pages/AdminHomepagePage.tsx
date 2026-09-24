@@ -2,15 +2,26 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
-import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette } from 'lucide-react';
+import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { HeroAppearancePanel } from '@/components/admin-next/pages/HeroAppearancePanel';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import type { HeroAppearance } from '@/lib/theme';
+import { HomePopupPanel } from '@/components/admin-next/pages/HomePopupPanel';
+import type { HomePopup } from '@/lib/home-popup';
 
-export function AdminHomepagePage({ admin, initialAppearance }: { admin: AdminUser; initialAppearance: HeroAppearance }) {
-  const [activeTab, setActiveTab] = useState<'items' | 'appearance'>('items');
+export function AdminHomepagePage({
+  admin,
+  initialAppearance,
+  initialPopup,
+}: {
+  admin: AdminUser;
+  initialAppearance: HeroAppearance;
+  /** Only passed for global admins — the only role app_settings' RLS lets write it. */
+  initialPopup: HomePopup | null;
+}) {
+  const [activeTab, setActiveTab] = useState<'items' | 'appearance' | 'popup'>('items');
 
   return (
     <div className="space-y-6">
@@ -37,11 +48,21 @@ export function AdminHomepagePage({ admin, initialAppearance }: { admin: AdminUs
           <Palette className="h-4 w-4" />
           <span>Hero Appearance</span>
         </button>
+        {initialPopup && (
+          <button
+            onClick={() => setActiveTab('popup')}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === 'popup' ? 'border-crimson text-navy' : 'border-transparent text-slate-600 hover:text-slate-900'}`}
+          >
+            <Megaphone className="h-4 w-4" />
+            <span>Popup</span>
+          </button>
+        )}
       </div>
 
       <div>
         {activeTab === 'items' && <HomepageItemsManager userId={admin.id} />}
         {activeTab === 'appearance' && <HeroAppearancePanel initialAppearance={initialAppearance} />}
+        {activeTab === 'popup' && initialPopup && <HomePopupPanel initialPopup={initialPopup} userId={admin.id} />}
       </div>
     </div>
   );

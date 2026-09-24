@@ -39,13 +39,15 @@ import { getFeaturedPosts } from "@/lib/posts.functions";
 import { getHeroAppearance, DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
 import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
+import { getHomePopup } from "@/lib/home-popup.functions";
+import { HomePopup } from "@/components/site-next/HomePopup";
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   BadgeCheck, GraduationCap, Briefcase, Building2, Users, Lightbulb, Award, Trees, ShieldCheck,
 };
 
 export default async function Home() {
-  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats] = await Promise.all([
+  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats, popup] = await Promise.all([
     getGlobalHomepageItems().catch(() => []),
     getCollegesGrid().catch(() => []),
     getRecruiterLogos().catch(() => []),
@@ -54,6 +56,7 @@ export default async function Home() {
     getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
     getMiscSettings().catch(() => null),
     getLiveStats().catch(() => null),
+    getHomePopup().catch(() => null),
   ]);
 
   return (
@@ -67,6 +70,7 @@ export default async function Home() {
       <TrustBand items={items} />
       <EventsAndEnquiry events={events} posts={posts} recruiters={recruiters} />
       <CTABannerSection items={items} misc={misc} />
+      {popup && <HomePopup popup={popup} />}
     </>
   );
 }
