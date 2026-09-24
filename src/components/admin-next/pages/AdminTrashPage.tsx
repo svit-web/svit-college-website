@@ -24,6 +24,7 @@ const SOFT_DELETE_TABLES = [
   'homepage_widgets',
   'homepage_items',
   'designations',
+  'staff_posts',
   'staff_department_assignments',
   'content_categories',
   'posts',

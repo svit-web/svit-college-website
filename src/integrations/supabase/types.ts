@@ -1001,11 +1001,13 @@ export type Database = {
       }
       designations: {
         Row: {
+          category: Database["public"]["Enums"]["designation_category"] | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
           id: string
+          is_selectable: boolean
           metadata: Json
           status: Database["public"]["Enums"]["content_status"]
           title: string
@@ -1013,11 +1015,13 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          category?: Database["public"]["Enums"]["designation_category"] | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           id?: string
+          is_selectable?: boolean
           metadata?: Json
           status?: Database["public"]["Enums"]["content_status"]
           title: string
@@ -1025,11 +1029,13 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          category?: Database["public"]["Enums"]["designation_category"] | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           id?: string
+          is_selectable?: boolean
           metadata?: Json
           status?: Database["public"]["Enums"]["content_status"]
           title?: string
@@ -3558,6 +3564,7 @@ export type Database = {
           id: string
           is_primary: boolean
           metadata: Json
+          post_ids: string[]
           rank_group: string | null
           staff_id: string
           status: Database["public"]["Enums"]["content_status"]
@@ -3575,6 +3582,7 @@ export type Database = {
           id?: string
           is_primary?: boolean
           metadata?: Json
+          post_ids?: string[]
           rank_group?: string | null
           staff_id: string
           status?: Database["public"]["Enums"]["content_status"]
@@ -3592,6 +3600,7 @@ export type Database = {
           id?: string
           is_primary?: boolean
           metadata?: Json
+          post_ids?: string[]
           rank_group?: string | null
           staff_id?: string
           status?: Database["public"]["Enums"]["content_status"]
@@ -3642,6 +3651,51 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      staff_posts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_department_head: boolean
+          metadata: Json
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_department_head?: boolean
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_department_head?: boolean
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
       }
       staff_profiles: {
         Row: {
@@ -4235,6 +4289,7 @@ export type Database = {
     }
     Enums: {
       content_status: "draft" | "published" | "archived"
+      designation_category: "teaching" | "technical" | "administrative" | "support"
       degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
       event_status: "draft" | "published" | "cancelled" | "archived"
       event_type_enum:
@@ -4384,6 +4439,7 @@ export const Constants = {
   public: {
     Enums: {
       content_status: ["draft", "published", "archived"],
+      designation_category: ["teaching", "technical", "administrative", "support"],
       degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
       event_status: ["draft", "published", "cancelled", "archived"],
       event_type_enum: [

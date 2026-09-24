@@ -129,6 +129,7 @@ const STATUS_STYLES: Record<string, string> = {
 const FK_LABEL_COLUMNS: Record<string, string> = {
   roles: 'code',
   designations: 'title',
+  staff_posts: 'title',
   gallery_albums: 'title',
   homepage_sections: 'title',
   inquiry_forms: 'form_name',
@@ -223,6 +224,19 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   posts: { fields: ENTRY_PHOTO_FIELDS },
   user_profiles: {
     rowActions: { resetPassword: true },
+  },
+  designations: {
+    fields: {
+      category: {
+        optionLabels: { teaching: 'Teaching', technical: 'Technical / Lab', administrative: 'Administrative & Library', support: 'Support (not offered for faculty)' },
+      },
+      is_selectable: { booleanLabel: 'Offer in the faculty designation dropdown' },
+    },
+  },
+  staff_posts: {
+    fields: {
+      is_department_head: { booleanLabel: 'Department head (only one holder per department)' },
+    },
   },
 };
 

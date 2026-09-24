@@ -4,6 +4,7 @@ import type { Database } from '@/integrations/supabase/types';
 import type { UserScope } from '@/hooks/useUserScope';
 import { canWriteDepartment } from '@/lib/import-scope';
 import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
+import type { StaffPost } from '@/lib/staff-posts';
 
 export const FACULTY_CSV_HEADERS = [
   'first_name',
@@ -11,6 +12,7 @@ export const FACULTY_CSV_HEADERS = [
   'email',
   'department',
   'designation',
+  'post',
   'phone',
   'employee_code',
   'muster_number',
@@ -46,6 +48,7 @@ export function buildFacultyTemplateCsv(sampleDepartmentCode?: string): string {
     email: 'jane.doe@example.edu',
     department: sampleDepartmentCode || 'CSE',
     designation: 'Assistant Professor',
+    post: '',
     phone: '9876543210',
     employee_code: 'EMP1234',
     muster_number: '0',
@@ -86,6 +89,7 @@ export async function importFacultyCsv(
     scope: UserScope;
     departments: DepartmentLookup[];
     designations: DesignationLookup[];
+    posts: StaffPost[];
   }
 ): Promise<FacultyImportSummary> {
   const summary: FacultyImportSummary = { totalRows: rows.length, created: 0, updated: 0, errors: [] };
@@ -123,6 +127,21 @@ export async function importFacultyCsv(
       summary.errors.push({ row: rowNum, email, message: `Unknown designation "${designationText}".` });
       continue;
     }
+
+    // Optional; several posts separated by ";". Blank leaves an existing
+    // assignment's posts untouched.
+    const postTitles = (raw.post || '')
+      .split(';')
+      .map((t) => t.trim())
+      .filter(Boolean);
+    const unknownPost = postTitles.find((t) => !ctx.posts.some((p) => p.title.toLowerCase() === t.toLowerCase()));
+    if (unknownPost) {
+      summary.errors.push({ row: rowNum, email, message: `Unknown post "${unknownPost}".` });
+      continue;
+    }
+    const postIds = [
+      ...new Set(postTitles.map((t) => ctx.posts.find((p) => p.title.toLowerCase() === t.toLowerCase())!.id)),
+    ];
 
     let joiningYear: number | null = null;
     if (raw.joining_year?.trim()) {
@@ -206,7 +225,7 @@ export async function importFacultyCsv(
       if (existingAssignment) {
         const { error: updateAssignErr } = await supabase
           .from('staff_department_assignments')
-          .update({ designation_id: designation.id, updated_by: ctx.adminId })
+          .update({ designation_id: designation.id, ...(postIds.length ? { post_ids: postIds } : {}), updated_by: ctx.adminId })
           .eq('id', existingAssignment.id);
         if (updateAssignErr) throw updateAssignErr;
       } else {
@@ -221,6 +240,7 @@ export async function importFacultyCsv(
           staff_id: staffId,
           department_id: dept.id,
           designation_id: designation.id,
+          post_ids: postIds,
           is_primary: (count || 0) === 0,
           status: 'published',
           created_by: ctx.adminId,

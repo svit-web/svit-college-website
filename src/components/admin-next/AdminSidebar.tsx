@@ -57,7 +57,11 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Staff & Faculty',
     icon: Users,
-    items: [{ label: 'Staff Profiles', to: '/admin/staff-wizards' }],
+    items: [
+      { label: 'Staff Profiles', to: '/admin/staff-wizards' },
+      { label: 'Designations', to: '/admin/tables/designations' },
+      { label: 'Posts (HOD, Principal…)', to: '/admin/tables/staff_posts' },
+    ],
   },
   {
     label: 'Website CMS',

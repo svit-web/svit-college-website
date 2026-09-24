@@ -6,6 +6,7 @@ import { publicSupabase } from '@/lib/supabase-public';
 import { compareByMuster } from '@/lib/staff-order';
 import { getEntryAlbums } from '@/lib/gallery.functions';
 import type { EntryAlbum } from '@/lib/entry';
+import { STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds } from '@/lib/staff-posts';
 
 export interface DeptStaffMember {
   id: string;
@@ -22,15 +23,19 @@ export interface DeptStaffMember {
 
 export async function getStaffByDepartmentId(departmentId: string) {
   const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('staff_department_assignments')
-    .select(`
-      is_primary,
-      designations ( title ),
-      staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, employee_code, muster_number, photo_url )
-    `)
-    .eq('department_id', departmentId)
-    .eq('status', 'published');
+  const [{ data, error }, { data: posts }] = await Promise.all([
+    supabase
+      .from('staff_department_assignments')
+      .select(`
+        is_primary,
+        post_ids,
+        designations ( title, category ),
+        staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, employee_code, muster_number, photo_url )
+      `)
+      .eq('department_id', departmentId)
+      .eq('status', 'published'),
+    supabase.from('staff_posts').select(STAFF_POST_COLUMNS).eq('status', 'published').is('deleted_at', null),
+  ]);
 
   if (error) {
     console.error('Error fetching department staff:', error);
@@ -41,16 +46,19 @@ export async function getStaffByDepartmentId(departmentId: string) {
     .filter((a: any) => a.staff_profiles?.status === 'published')
     .map((a: any): DeptStaffMember => {
       const s = a.staff_profiles;
-      const designation = a.designations?.title ?? 'Faculty';
-      const rankGroup: DeptStaffMember['rankGroup'] = a.is_primary && /head|hod/i.test(designation)
+      const designationTitle = a.designations?.title ?? 'Faculty';
+      const heldPosts = postsForIds(a.post_ids, posts ?? []);
+      // Legacy combined titles ("Professor & Head of Department") still mark the head.
+      const isHead = heldPosts.some((p) => p.is_department_head) || (a.is_primary && /head|hod/i.test(designationTitle));
+      const rankGroup: DeptStaffMember['rankGroup'] = isHead
         ? 'HOD'
-        : /professor|lecturer|assistant/i.test(designation)
+        : a.designations?.category === 'teaching' || /professor|lecturer|assistant/i.test(designationTitle)
         ? 'Faculty'
         : 'Support';
       return {
         id: s.id,
         name: `${s.title ? s.title + ' ' : ''}${s.first_name} ${s.last_name}`.trim(),
-        designation,
+        designation: formatDesignationWithPosts(designationTitle, heldPosts),
         rankGroup,
         email: s.email ?? null,
         avatarUrl: s.photo_url ?? null,

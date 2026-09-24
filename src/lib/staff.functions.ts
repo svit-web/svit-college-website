@@ -1,6 +1,12 @@
 // Server functions for staff data from Supabase
 import { publicSupabase } from "@/lib/supabase-public";
 import { compareByMuster } from "@/lib/staff-order";
+import {
+  STAFF_POST_COLUMNS,
+  formatDesignationWithPosts,
+  holdsDepartmentHeadPost,
+  postsForIds,
+} from "@/lib/staff-posts";
 
 export interface StaffAchievement {
   id: string;
@@ -47,11 +53,11 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
   if (error) throw error;
   if (!data) return null;
 
-  const [assignmentRes, achievementsRes] = await Promise.all([
+  const [assignmentRes, achievementsRes, postsRes] = await Promise.all([
     supabase
       .from("staff_department_assignments")
       .select(
-        "designation_id, metadata, rank_group, designation_override, departments(id, name, code)",
+        "designation_id, metadata, rank_group, designation_override, post_ids, departments(id, name, code)",
       )
       .eq("staff_id", data.id)
       .eq("is_primary", true)
@@ -63,9 +69,15 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
       .eq("staff_id", data.id)
       .is("deleted_at", null)
       .order("year", { ascending: false }),
+    supabase
+      .from("staff_posts")
+      .select(STAFF_POST_COLUMNS)
+      .eq("status", "published")
+      .is("deleted_at", null),
   ]);
 
   const assignment = assignmentRes.data;
+  const posts = postsRes.data ?? [];
   const dept = assignment
     ? Array.isArray((assignment as any).departments)
       ? (assignment as any).departments[0]
@@ -96,9 +108,13 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
   return {
     id: data.id,
     name: fullName,
-    designation:
+    designation: formatDesignationWithPosts(
       designationTitle || (assignment as any)?.designation_override || data.designation || "",
-    rankGroup: (assignment as any)?.rank_group ?? data.rank_group ?? "Support",
+      postsForIds(assignment?.post_ids, posts),
+    ),
+    rankGroup: holdsDepartmentHeadPost(assignment?.post_ids, posts)
+      ? "HOD"
+      : ((assignment as any)?.rank_group ?? data.rank_group ?? "Support"),
     employeeCode: data.employee_code ?? "",
     expertise: (data.expertise as string[] | null) ?? [],
     email: data.email,
