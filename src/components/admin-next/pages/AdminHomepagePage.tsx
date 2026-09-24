@@ -232,6 +232,11 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
     return acc;
   }, {} as Record<string, any[]>);
 
+  // The homepage bottom banner's button text is the site-wide cta_button_label
+  // setting (Settings → Call to Action), not this card's link_label.
+  const isCtaBannerItem =
+    form.item_type === 'promo_card' && (editingItem?.metadata as any)?.slot === 'home_cta_banner';
+
   const f = (key: keyof typeof EMPTY_FORM, val: any) => setForm((p) => ({ ...p, [key]: val }));
 
   return (
@@ -432,12 +437,18 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
-                    <input
-                      value={form.link_label}
-                      onChange={(e) => f('link_label', e.target.value)}
-                      placeholder="Apply Now"
-                      className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
-                    />
+                    {isCtaBannerItem ? (
+                      <p className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                        Button text comes from Settings → Call to Action (global admin only).
+                      </p>
+                    ) : (
+                      <input
+                        value={form.link_label}
+                        onChange={(e) => f('link_label', e.target.value)}
+                        placeholder="Enquire Now"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                      />
+                    )}
                   </div>
                 </div>
               )}

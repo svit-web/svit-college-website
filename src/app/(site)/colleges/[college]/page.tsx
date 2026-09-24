@@ -9,6 +9,7 @@ import {
 } from "@/lib/homepage.functions";
 import { getHeroAppearance } from "@/lib/theme.functions";
 import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme";
+import { DEFAULT_MISC, getMiscSettings } from "@/lib/site-settings.functions";
 
 type HomepageItems = Awaited<ReturnType<typeof getGlobalHomepageItems>>;
 
@@ -17,7 +18,7 @@ function byType(items: HomepageItems, type: string) {
 }
 
 async function loadCollege(slug: string) {
-  const [dbCollege, departments, globalItems, collegeItems, recruiters, appearance] =
+  const [dbCollege, departments, globalItems, collegeItems, recruiters, appearance, misc] =
     await Promise.all([
       getCollegeBySlug(slug),
       getDepartmentsByCollegeSlug(slug),
@@ -25,6 +26,7 @@ async function loadCollege(slug: string) {
       getCollegeHomepageItems(slug),
       getRecruiterLogos(),
       getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
+      getMiscSettings().catch(() => DEFAULT_MISC),
     ]);
   if (!dbCollege) return null;
 
@@ -65,7 +67,7 @@ async function loadCollege(slug: string) {
     departments,
   };
 
-  return { college, appearance };
+  return { college, appearance, ctaLabel: misc.cta_button_label };
 }
 
 export async function generateMetadata({
@@ -94,5 +96,5 @@ export default async function CollegePage({ params }: { params: Promise<{ colleg
   const result = await loadCollege(slug);
   if (!result) notFound();
 
-  return <CollegeLandingPage college={result.college} appearance={result.appearance} />;
+  return <CollegeLandingPage college={result.college} appearance={result.appearance} ctaLabel={result.ctaLabel} />;
 }

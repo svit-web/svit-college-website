@@ -339,7 +339,7 @@ function CTABannerSection({ items, misc }: { items: HomepageItem[]; misc: MiscSe
       eyebrow={promo?.eyebrow ?? undefined}
       title={promo?.title ?? undefined}
       subtitle={promo?.subtitle ?? promo?.body ?? undefined}
-      primaryActionLabel={promo?.link_label ?? undefined}
+      primaryActionLabel={misc?.cta_button_label}
       primaryActionTo={promo?.link_href ?? undefined}
       secondaryActionLabel={promo?.secondary_link_label ?? undefined}
       secondaryActionTo={promo?.secondary_link_href ?? undefined}

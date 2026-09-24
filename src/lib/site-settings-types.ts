@@ -14,6 +14,7 @@ export interface MiscSettings {
   campus_size_acres: number;
   meta_description: string;
   colleges_label: string;
+  cta_button_label: string;
 }
 
 export interface ContactInfoSettings {
@@ -41,6 +42,7 @@ export const MISC_KEYS: (keyof MiscSettings)[] = [
   'campus_size_acres',
   'meta_description',
   'colleges_label',
+  'cta_button_label',
 ];
 
 export const DEFAULT_MISC: MiscSettings = {
@@ -57,6 +59,7 @@ export const DEFAULT_MISC: MiscSettings = {
   meta_description:
     'AICTE-approved engineering, management and applied sciences programmes on a 15-acre campus in Vasad, Gujarat. 95% placements, modern labs, vibrant campus life.',
   colleges_label: 'Colleges',
+  cta_button_label: 'Enquire Now',
 };
 
 export const DEFAULT_CONTACT: ContactInfoSettings = {

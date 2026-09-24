@@ -63,9 +63,11 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export function CollegeLandingPage({
   college,
   appearance,
+  ctaLabel,
 }: {
   college: College;
   appearance: HeroAppearance | null;
+  ctaLabel: string;
 }) {
   const displayStats = college.stats ?? [];
   const displayWhy = college.whyChoose ?? [];
@@ -73,7 +75,7 @@ export function CollegeLandingPage({
 
   return (
     <>
-      <Hero college={college} appearance={appearance ?? DEFAULT_HERO_APPEARANCE} />
+      <Hero college={college} appearance={appearance ?? DEFAULT_HERO_APPEARANCE} ctaLabel={ctaLabel} />
       <StatsStrip data={displayStats} />
       <ProgramsSection college={college} />
       <WhySection college={college} data={displayWhy} />
@@ -84,7 +86,15 @@ export function CollegeLandingPage({
   );
 }
 
-function Hero({ college, appearance }: { college: College; appearance: HeroAppearance }) {
+function Hero({
+  college,
+  appearance,
+  ctaLabel,
+}: {
+  college: College;
+  appearance: HeroAppearance;
+  ctaLabel: string;
+}) {
   const { imageStyle, overlayStyle } = heroOverlayStyles(appearance);
 
   return (
@@ -120,7 +130,7 @@ function Hero({ college, appearance }: { college: College; appearance: HeroAppea
               href="/admissions/inquiry"
               className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
             >
-              Apply Now <ArrowRight className="h-4 w-4" />
+              {ctaLabel} <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#programmes"
