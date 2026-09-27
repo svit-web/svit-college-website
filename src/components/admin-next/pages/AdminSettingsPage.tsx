@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Settings as SettingsIcon, Phone, Mail, MapPin, Globe, Building2, Calendar, Shield, Headphones, Share2, BarChart3 } from 'lucide-react';
+import { Settings as SettingsIcon, Phone, Mail, MapPin, Globe, Building2, Calendar, Shield, Headphones, Share2, BarChart3, MousePointerClick } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { saveContactInfo, saveMiscSettings } from '@/lib/site-settings-next';
+import { saveContactInfo, saveMiscSettings, saveCtaButtonLabel } from '@/lib/site-settings-next';
 import { DEFAULT_CONTACT, DEFAULT_MISC, type ContactInfoSettings, type MiscSettings } from '@/lib/site-settings-types';
 
 export function AdminSettingsPage({
@@ -18,6 +18,8 @@ export function AdminSettingsPage({
   const [m, setM] = useState<MiscSettings>(initialMisc ?? DEFAULT_MISC);
   const [contactSaving, setContactSaving] = useState(false);
   const [miscSaving, setMiscSaving] = useState(false);
+  const [ctaLabel, setCtaLabel] = useState(initialMisc?.cta_button_label ?? DEFAULT_MISC.cta_button_label);
+  const [ctaSaving, setCtaSaving] = useState(false);
 
   const handleSaveContact = async () => {
     setContactSaving(true);
@@ -40,6 +42,21 @@ export function AdminSettingsPage({
       toast.error(`Failed: ${err.message}`);
     } finally {
       setMiscSaving(false);
+    }
+  };
+
+  const handleSaveCta = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCtaSaving(true);
+    try {
+      const saved = await saveCtaButtonLabel(ctaLabel);
+      setCtaLabel(saved);
+      setM((prev) => ({ ...prev, cta_button_label: saved }));
+      toast.success('Button text saved.');
+    } catch (err: any) {
+      toast.error(`Failed: ${err.message}`);
+    } finally {
+      setCtaSaving(false);
     }
   };
 
@@ -194,6 +211,33 @@ export function AdminSettingsPage({
           </button>
         </div>
       </section>
+
+      <form onSubmit={handleSaveCta} className="rounded-xl border border-slate-200 bg-white p-6 space-y-5">
+        <h2 className="font-display text-base font-bold text-navy flex items-center gap-2">
+          <MousePointerClick className="h-4 w-4 text-crimson" /> Call to Action
+        </h2>
+
+        <Field label="Button Text" full>
+          <input
+            required
+            maxLength={40}
+            value={ctaLabel}
+            onChange={(e) => setCtaLabel(e.target.value)}
+            className={inputCls}
+            placeholder={DEFAULT_MISC.cta_button_label}
+          />
+        </Field>
+        <p className="text-xs text-slate-500 -mt-2">
+          Shown on the homepage bottom banner, the hero of every college page, and the sidebar of every
+          course page. Each button keeps its own link. Falls back to &quot;{DEFAULT_MISC.cta_button_label}&quot; if empty.
+        </p>
+
+        <div className="flex justify-end pt-2">
+          <button type="submit" disabled={ctaSaving} className={saveBtnCls}>
+            {ctaSaving ? 'Saving…' : 'Save Button Text'}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

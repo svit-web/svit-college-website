@@ -2,7 +2,23 @@
 
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
-import { requireAdmin, isAdmin } from '@/app/lib/auth/admin';
+import { revalidatePath } from 'next/cache';
+import { requireAdmin, isAdmin, getAdminUser } from '@/app/lib/auth/admin';
+
+/**
+ * Drops every cached/prerendered page so the public site re-reads Supabase on
+ * the next visit. Called by the browser Supabase client after any admin write
+ * (see src/app/lib/supabase/client.ts) — without it, public pages keep serving
+ * whatever was in the DB at build time until the next deploy.
+ *
+ * Silently no-ops for non-admins so an anonymous caller can't use it to force
+ * site-wide re-renders.
+ */
+export async function revalidatePublicSite() {
+  const admin = await getAdminUser();
+  if (!admin) return;
+  revalidatePath('/', 'layout');
+}
 
 /**
  * Sends a standard Supabase password-reset email to a user, looked up by

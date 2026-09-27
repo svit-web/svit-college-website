@@ -76,5 +76,7 @@ export async function getMiscSettings(): Promise<MiscSettings> {
     campus_size_acres: (map.campus_size_acres as number) ?? DEFAULT_MISC.campus_size_acres,
     meta_description: (map.meta_description as string) ?? DEFAULT_MISC.meta_description,
     colleges_label: (map.colleges_label as string) ?? DEFAULT_MISC.colleges_label,
+    cta_button_label:
+      (map.cta_button_label as string | undefined)?.trim() || DEFAULT_MISC.cta_button_label,
   };
 }

@@ -37,6 +37,8 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/settings",
   "/admin/scholarships",
   "/admin/tables/placed_students",
+  "/admin/tables/designations",
+  "/admin/tables/staff_posts",
 ] as const;
 
 export function isGlobalOnlyRoute(pathname: string): boolean {
@@ -95,6 +97,8 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "audit_logs",
   "placed_students",
   "recruiters",
+  "designations",
+  "staff_posts",
 ]);
 
 // Maps a route (still gated global-only by the checks above) to the

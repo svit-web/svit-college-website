@@ -30,6 +30,25 @@ Added as part of the hybrid image-compression feature (`src/lib/image-compressio
 
 The toggle UI (`/admin/settings`) is disabled with an explanatory note; `app_settings.image_compression_mode` stays seeded at `"client"`. To actually fix server-side compression: bypass each `@jsquash/*` package's default WASM loader and manually feed it a `WebAssembly.Module` through that package's `init()` — either via a static `.wasm` import Vite bundles correctly for the server target, or via Cloudflare's `ASSETS` binding (`wrangler.json` already has an `assets` binding configured). Needs verification via an actual `wrangler dev`/deployed run, not just a successful build (the build succeeds silently even though the runtime path is broken).
 
+## 4. Public-site revalidation is site-wide, and dynamic pages are uncached (2026-09-24)
+
+Public data is read with supabase-js (not `fetch`), so Next never caches it per-query: `○` routes
+(`/`, `/news`, `/placement`, `/gallery`, `/downloads`, …) are prerendered at build and `ƒ` routes
+(`/colleges/[college]`, `/staff/[staff]`, `/departments/[dept]`, …) hit Supabase on every request.
+Commit `70a196d` fixed admin edits not appearing until a redeploy: the browser Supabase client
+(`src/app/lib/supabase/client.ts`) calls `revalidatePublicSite()` (`src/app/admin/actions.ts`,
+admin-only, debounced) after any `/rest/v1/` write from `/admin`, which runs
+`revalidatePath('/', 'layout')` — every page goes stale and re-renders lazily on its next visit.
+
+Fine at current scale (~15 static routes, low edit frequency). Possible refinement, only if
+performance ever warrants it: wrap each `src/lib/*.functions.ts` reader in `'use cache'` /
+`unstable_cache` with a per-table tag and revalidate only the changed table's tag. The real win
+would be caching the `ƒ` routes; narrowing revalidation alone gains little, because
+colleges/departments/menus/settings feed the Header/Footer on every page. Risk: a missed or wrong
+tag brings back stale content, which CLAUDE.md treats as a regression. Still uncovered by the
+current hook: edits made directly in the Supabase dashboard (need a redeploy, or a DB webhook → a
+route handler calling `revalidatePath`).
+
 ## Other stale-doc notes (lower priority)
 
 - `migration/implemented/status_summary.md` lists "Homepage Layout Builder" and "Inquiry Forms & Submissions Dashboard" as outstanding (Phase 4), but `migration/implemented/5_homepage_inquiries.md` documents both as completed — `status_summary.md` is stale.

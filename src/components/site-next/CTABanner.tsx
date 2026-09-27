@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowRight, Download } from "lucide-react";
 import { Reveal } from "./Reveal";
 import type { MiscSettings } from "@/lib/site-settings.functions";
+import { DEFAULT_MISC } from "@/lib/site-settings-types";
 
 interface CTABannerProps {
   misc?: MiscSettings | null;
@@ -19,7 +20,7 @@ export function CTABanner({
   eyebrow,
   title = "Ready to Shape Your Engineering & Architectural Career?",
   subtitle,
-  primaryActionLabel = "Apply Now",
+  primaryActionLabel = DEFAULT_MISC.cta_button_label,
   primaryActionTo = "/admissions/inquiry",
   secondaryActionLabel = "Download Brochure",
   secondaryActionTo = "/downloads",

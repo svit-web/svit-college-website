@@ -12,6 +12,7 @@ import type { AdminUser } from '@/app/lib/auth/admin';
 import { parseFacultyCsv, importFacultyCsv, buildFacultyTemplateCsv, type FacultyImportSummary } from '@/lib/faculty-import';
 import { compareByMuster } from '@/lib/staff-order';
 import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
+import { PICKER_DESIGNATION_CATEGORIES, STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds, type StaffPost } from '@/lib/staff-posts';
 import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/achievements-import';
 
 type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience';
@@ -50,6 +51,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
   const [departments, setDepartments] = useState<any[]>([]);
   const [designations, setDesignations] = useState<any[]>([]);
+  const [posts, setPosts] = useState<StaffPost[]>([]);
 
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [generalForm, setGeneralForm] = useState<Record<string, any>>({});
@@ -58,7 +60,13 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   const [achievements, setAchievements] = useState<any[]>([]);
   const [expertise, setExpertise] = useState<string[]>([]);
 
-  const [newAssignment, setNewAssignment] = useState({ department_id: '', designation_id: '', is_primary: false });
+  const [newAssignment, setNewAssignment] = useState<{ department_id: string; designation_id: string; post_ids: string[]; is_primary: boolean }>({
+    department_id: '',
+    designation_id: '',
+    post_ids: [],
+    is_primary: false,
+  });
+  const [editingPostsFor, setEditingPostsFor] = useState<string | null>(null);
   const [newAchievement, setNewAchievement] = useState<{ type: AchievementType; title: string; year: string; description: string }>({
     type: 'award',
     title: '',
@@ -95,6 +103,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           id, title, first_name, last_name, email, status, expertise, metadata, muster_number,
           staff_department_assignments(
             is_primary,
+            post_ids,
             department_id,
             department:department_id(name),
             designation:designation_id(title)
@@ -120,12 +129,14 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   }
 
   async function loadMasters() {
-    const [{ data: d }, { data: des }] = await Promise.all([
+    const [{ data: d }, { data: des }, { data: p }] = await Promise.all([
       supabase.from('departments').select('id, name, code, college_id').is('deleted_at', null).order('name'),
-      supabase.from('designations').select('id, title').is('deleted_at', null).order('title'),
+      supabase.from('designations').select('id, title, category, is_selectable').is('deleted_at', null).order('title'),
+      supabase.from('staff_posts').select(STAFF_POST_COLUMNS).eq('status', 'published').is('deleted_at', null).order('sort_order'),
     ]);
     setDepartments(d || []);
     setDesignations(des || []);
+    setPosts(p || []);
   }
 
   async function loadDetails(staffId: string) {
@@ -135,7 +146,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         supabase.from('staff_profiles').select('*').eq('id', staffId).maybeSingle(),
         supabase
           .from('staff_department_assignments')
-          .select('id, department_id, designation_id, is_primary, department:department_id(name,code), designation:designation_id(title)')
+          .select('id, department_id, designation_id, post_ids, is_primary, department:department_id(name,code), designation:designation_id(title)')
           .eq('staff_id', staffId)
           .is('deleted_at', null),
         (supabase as any).from('staff_achievements').select('*').eq('staff_id', staffId).is('deleted_at', null).order('year', { ascending: false }),
@@ -274,14 +285,31 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         staff_id: selectedId,
         department_id: newAssignment.department_id,
         designation_id: newAssignment.designation_id,
+        post_ids: newAssignment.post_ids,
         is_primary: newAssignment.is_primary,
         status: 'published',
       });
       if (error) throw error;
       toast.success('Assignment added!');
-      setNewAssignment({ department_id: '', designation_id: '', is_primary: false });
+      setNewAssignment({ department_id: '', designation_id: '', post_ids: [], is_primary: false });
       loadDetails(selectedId);
+      loadStaffList();
     } catch (err: any) {
+      toast.error(err.message);
+    }
+  }
+
+  async function handleUpdateAssignmentPosts(assignmentId: string, postIds: string[]) {
+    try {
+      const { error } = await supabase
+        .from('staff_department_assignments')
+        .update({ post_ids: postIds, updated_by: admin.id })
+        .eq('id', assignmentId);
+      if (error) throw error;
+      setAssignments((prev) => prev.map((a) => (a.id === assignmentId ? { ...a, post_ids: postIds } : a)));
+      loadStaffList();
+    } catch (err: any) {
+      // The DB rejects a second HOD / I/C HOD in the same department and names the current head.
       toast.error(err.message);
     }
   }
@@ -399,6 +427,15 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     );
   }, [visibleStaffList, searchQuery, sortBy]);
 
+  const designationGroups = useMemo(
+    () =>
+      PICKER_DESIGNATION_CATEGORIES.map((c) => ({
+        ...c,
+        options: designations.filter((d) => d.is_selectable && d.category === c.value),
+      })).filter((g) => g.options.length > 0),
+    [designations]
+  );
+
   const getPrimary = (staff: any) => {
     const assignments = staff.staff_department_assignments;
     if (!assignments?.length) return null;
@@ -506,7 +543,11 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                     <p className="font-semibold text-slate-900 text-sm leading-snug truncate">
                       {staff.title} {staff.first_name} {staff.last_name}
                     </p>
-                    {primary && <p className="text-xs text-slate-600 truncate mt-0.5">{primary.designation?.title || '—'}</p>}
+                    {primary && (
+                      <p className="text-xs text-slate-600 truncate mt-0.5">
+                        {formatDesignationWithPosts(primary.designation?.title || '', postsForIds(primary.post_ids, posts)) || '—'}
+                      </p>
+                    )}
                     {primary && <p className="text-[11px] text-slate-400 truncate">{primary.department?.name || ''}</p>}
                   </div>
                 </div>
@@ -786,12 +827,20 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                             className="field-input"
                           >
                             <option value="">Select designation…</option>
-                            {designations.map((d) => (
-                              <option key={d.id} value={d.id}>
-                                {d.title}
-                              </option>
+                            {designationGroups.map((g) => (
+                              <optgroup key={g.value} label={g.label}>
+                                {g.options.map((d) => (
+                                  <option key={d.id} value={d.id}>
+                                    {d.title}
+                                  </option>
+                                ))}
+                              </optgroup>
                             ))}
                           </select>
+                        </div>
+                        <div className="space-y-1">
+                          <label className="field-label">Post (optional)</label>
+                          <PostPicker posts={posts} value={newAssignment.post_ids} onChange={(post_ids) => setNewAssignment((p) => ({ ...p, post_ids }))} />
                         </div>
                         <div className="flex items-center justify-between">
                           <label className="flex items-center gap-2 text-xs text-zinc-400 cursor-pointer">
@@ -816,19 +865,33 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                         ) : (
                           <div className="space-y-2">
                             {assignments.map((a) => (
-                              <div key={a.id} className="flex items-center justify-between rounded-lg border border-zinc-800 bg-zinc-900/40 p-3">
-                                <div>
-                                  <p className="text-sm font-medium text-white">{a.department?.name || '—'}</p>
-                                  <p className="text-xs text-zinc-500">{a.designation?.title || '—'}</p>
+                              <div key={a.id} className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-3 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <p className="text-sm font-medium text-white">{a.department?.name || '—'}</p>
+                                    <p className="text-xs text-zinc-500">
+                                      {formatDesignationWithPosts(a.designation?.title || '', postsForIds(a.post_ids, posts)) || '—'}
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    {a.is_primary && (
+                                      <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">Primary</span>
+                                    )}
+                                    <button
+                                      type="button"
+                                      onClick={() => setEditingPostsFor((cur) => (cur === a.id ? null : a.id))}
+                                      className="rounded px-1.5 py-0.5 text-[11px] font-medium text-zinc-400 hover:bg-zinc-800 hover:text-white transition"
+                                    >
+                                      {editingPostsFor === a.id ? 'Done' : 'Posts'}
+                                    </button>
+                                    <button onClick={() => handleDeleteAssignment(a.id)} className="rounded p-1 text-zinc-600 hover:bg-rose-500/10 hover:text-rose-400 transition">
+                                      <Trash2 className="h-3.5 w-3.5" />
+                                    </button>
+                                  </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  {a.is_primary && (
-                                    <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400 border border-emerald-500/20">Primary</span>
-                                  )}
-                                  <button onClick={() => handleDeleteAssignment(a.id)} className="rounded p-1 text-zinc-600 hover:bg-rose-500/10 hover:text-rose-400 transition">
-                                    <Trash2 className="h-3.5 w-3.5" />
-                                  </button>
-                                </div>
+                                {editingPostsFor === a.id && (
+                                  <PostPicker posts={posts} value={a.post_ids ?? []} onChange={(ids) => handleUpdateAssignmentPosts(a.id, ids)} />
+                                )}
                               </div>
                             ))}
                           </div>
@@ -972,6 +1035,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           scope={userScope}
           departments={departments}
           designations={designations}
+          posts={posts}
           ownDepartmentCode={ownDepartmentCode}
           onClose={() => setImportFacultyOpen(false)}
           onDone={loadStaffList}
@@ -981,6 +1045,32 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       {importAchievementsOpen && (
         <ImportAchievementsModal supabase={supabase} scope={userScope} departments={departments} onClose={() => setImportAchievementsOpen(false)} />
       )}
+    </div>
+  );
+}
+
+// Multi-select of posts as toggle chips; none selected means no post.
+function PostPicker({ posts, value, onChange }: { posts: StaffPost[]; value: string[]; onChange: (ids: string[]) => void }) {
+  if (posts.length === 0) return <p className="text-xs text-zinc-600">No posts defined.</p>;
+  return (
+    <div className="flex flex-wrap gap-1.5">
+      {posts.map((p) => {
+        const active = value.includes(p.id);
+        return (
+          <button
+            key={p.id}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(active ? value.filter((id) => id !== p.id) : [...value, p.id])}
+            className={cn(
+              'rounded-full border px-2.5 py-1 text-xs font-medium transition',
+              active ? 'border-crimson bg-crimson/15 text-white' : 'border-zinc-700 bg-zinc-900 text-zinc-400 hover:border-zinc-500 hover:text-zinc-200'
+            )}
+          >
+            {p.title}
+          </button>
+        );
+      })}
     </div>
   );
 }
@@ -1016,6 +1106,7 @@ function ImportFacultyModal({
   scope,
   departments,
   designations,
+  posts,
   ownDepartmentCode,
   onClose,
   onDone,
@@ -1025,6 +1116,7 @@ function ImportFacultyModal({
   scope: UserScope;
   departments: any[];
   designations: any[];
+  posts: StaffPost[];
   ownDepartmentCode?: string;
   onClose: () => void;
   onDone: () => void;
@@ -1038,7 +1130,7 @@ function ImportFacultyModal({
     setImporting(true);
     try {
       const { rows, parseErrors } = await parseFacultyCsv(file);
-      const result = await importFacultyCsv(supabase, rows, { adminId: admin.id, scope, departments, designations });
+      const result = await importFacultyCsv(supabase, rows, { adminId: admin.id, scope, departments, designations, posts });
       result.errors = [...parseErrors, ...result.errors];
       setSummary(result);
       if (result.created + result.updated > 0) {

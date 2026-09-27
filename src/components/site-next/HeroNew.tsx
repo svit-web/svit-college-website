@@ -31,7 +31,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
   const titleAccent = hero?.title_accent || "Technology";
   const subtitle = hero?.subtitle ||
     "A premier AICTE-approved institute on the banks of the Mahi River — shaping engineers, technologists, architects and nurses for nearly three decades.";
-  const primaryLabel = hero?.link_label ?? "Apply Now 2026–27";
+  const primaryLabel = hero?.link_label ?? "Enquire Now";
   const primaryHref = hero?.link_href ?? "/admissions/inquiry";
   const secondaryLabel = "Explore Courses";
   const secondaryHref = "/colleges";

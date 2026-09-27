@@ -2,15 +2,26 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
-import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette } from 'lucide-react';
+import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { HeroAppearancePanel } from '@/components/admin-next/pages/HeroAppearancePanel';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import type { HeroAppearance } from '@/lib/theme';
+import { HomePopupPanel } from '@/components/admin-next/pages/HomePopupPanel';
+import type { HomePopup } from '@/lib/home-popup';
 
-export function AdminHomepagePage({ admin, initialAppearance }: { admin: AdminUser; initialAppearance: HeroAppearance }) {
-  const [activeTab, setActiveTab] = useState<'items' | 'appearance'>('items');
+export function AdminHomepagePage({
+  admin,
+  initialAppearance,
+  initialPopup,
+}: {
+  admin: AdminUser;
+  initialAppearance: HeroAppearance;
+  /** Only passed for global admins — the only role app_settings' RLS lets write it. */
+  initialPopup: HomePopup | null;
+}) {
+  const [activeTab, setActiveTab] = useState<'items' | 'appearance' | 'popup'>('items');
 
   return (
     <div className="space-y-6">
@@ -37,11 +48,21 @@ export function AdminHomepagePage({ admin, initialAppearance }: { admin: AdminUs
           <Palette className="h-4 w-4" />
           <span>Hero Appearance</span>
         </button>
+        {initialPopup && (
+          <button
+            onClick={() => setActiveTab('popup')}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === 'popup' ? 'border-crimson text-navy' : 'border-transparent text-slate-600 hover:text-slate-900'}`}
+          >
+            <Megaphone className="h-4 w-4" />
+            <span>Popup</span>
+          </button>
+        )}
       </div>
 
       <div>
         {activeTab === 'items' && <HomepageItemsManager userId={admin.id} />}
         {activeTab === 'appearance' && <HeroAppearancePanel initialAppearance={initialAppearance} />}
+        {activeTab === 'popup' && initialPopup && <HomePopupPanel initialPopup={initialPopup} userId={admin.id} />}
       </div>
     </div>
   );
@@ -210,6 +231,11 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
     acc[key].push(item);
     return acc;
   }, {} as Record<string, any[]>);
+
+  // The homepage bottom banner's button text is the site-wide cta_button_label
+  // setting (Settings → Call to Action), not this card's link_label.
+  const isCtaBannerItem =
+    form.item_type === 'promo_card' && (editingItem?.metadata as any)?.slot === 'home_cta_banner';
 
   const f = (key: keyof typeof EMPTY_FORM, val: any) => setForm((p) => ({ ...p, [key]: val }));
 
@@ -411,12 +437,18 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
-                    <input
-                      value={form.link_label}
-                      onChange={(e) => f('link_label', e.target.value)}
-                      placeholder="Apply Now"
-                      className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
-                    />
+                    {isCtaBannerItem ? (
+                      <p className="rounded border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                        Button text comes from Settings → Call to Action (global admin only).
+                      </p>
+                    ) : (
+                      <input
+                        value={form.link_label}
+                        onChange={(e) => f('link_label', e.target.value)}
+                        placeholder="Enquire Now"
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                      />
+                    )}
                   </div>
                 </div>
               )}

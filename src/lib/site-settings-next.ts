@@ -26,3 +26,19 @@ export async function saveMiscSettings(data: MiscSettings): Promise<MiscSettings
   if (error) throw new Error(error.message);
   return data;
 }
+
+// Single site-wide label for the enquiry CTA button (homepage banner, college
+// hero, course sidebar). Saved on its own so the Settings "Call to action"
+// card doesn't also commit unsaved General Settings edits.
+export async function saveCtaButtonLabel(label: string): Promise<string> {
+  const value = label.trim();
+  if (!value) throw new Error('Button text is required.');
+  const supabase = createClient();
+  const { error } = await supabase.from('app_settings').upsert({
+    key: 'cta_button_label',
+    value,
+    updated_at: new Date().toISOString(),
+  });
+  if (error) throw new Error(error.message);
+  return value;
+}

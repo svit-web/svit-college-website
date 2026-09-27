@@ -5,13 +5,21 @@ import { PageHero } from "@/components/site-next/PageHero";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getProgrammeBySlug } from "@/lib/programmes.functions";
 import { getAllRecruiters, type Recruiter } from "@/lib/placement.functions";
+import { DEFAULT_MISC, getMiscSettings } from "@/lib/site-settings.functions";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
 
 async function loadCourse(slug: string) {
   const programme = await getProgrammeBySlug(slug);
   if (!programme) return null;
-  const recruitersData = await getAllRecruiters();
-  return { course: programme, recruiters: recruitersData.map((r: Recruiter) => r.company_name) };
+  const [recruitersData, misc] = await Promise.all([
+    getAllRecruiters(),
+    getMiscSettings().catch(() => DEFAULT_MISC),
+  ]);
+  return {
+    course: programme,
+    recruiters: recruitersData.map((r: Recruiter) => r.company_name),
+    ctaLabel: misc.cta_button_label,
+  };
 }
 
 export async function generateMetadata({
@@ -37,7 +45,7 @@ export default async function CoursePage({
   const result = await loadCourse(slug);
   if (!result) notFound();
 
-  const { course, recruiters } = result;
+  const { course, recruiters, ctaLabel } = result;
   const m = course.metadata;
 
   return (
@@ -81,7 +89,7 @@ export default async function CoursePage({
                 <div><dt className="text-white/60 text-xs">Intake</dt><dd>{String(course.intake ?? "—")}</dd></div>
               </dl>
               <Link href="/admissions/inquiry" className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gold px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft">
-                Apply Now
+                {ctaLabel}
               </Link>
             </div>
             <div className="rounded-2xl border border-border bg-white p-6">

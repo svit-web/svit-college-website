@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { requireAdmin, getScopeLevel } from '@/app/lib/auth/admin';
 import { isRouteAllowedForUser } from '@/lib/admin-sections';
 import { getHeroAppearance } from '@/lib/theme.functions';
+import { getHomePopupForAdmin } from '@/lib/home-popup.functions';
 import { AdminHomepagePage } from '@/components/admin-next/pages/AdminHomepagePage';
 
 export default async function HomepagePage() {
@@ -12,7 +13,13 @@ export default async function HomepagePage() {
     redirect('/admin');
   }
 
-  const appearance = await getHeroAppearance();
+  // Mirrors the DB's is_global_admin(): any role granted at global scope.
+  const isGlobalAdmin = admin.roles.some((r) => r.scope_type === 'global');
 
-  return <AdminHomepagePage admin={admin} initialAppearance={appearance} />;
+  const [appearance, popup] = await Promise.all([
+    getHeroAppearance(),
+    isGlobalAdmin ? getHomePopupForAdmin() : Promise.resolve(null),
+  ]);
+
+  return <AdminHomepagePage admin={admin} initialAppearance={appearance} initialPopup={popup} />;
 }
