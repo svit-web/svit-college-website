@@ -3,11 +3,14 @@
 import type { ReactNode } from "react";
 import { AnimatePresence, motion, useMotionValue, useTransform, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
+import { useDialogFocus } from "./useDialogFocus";
 
 export type LightboxPhoto = { id?: string; url: string; caption: string | null };
 
-const NAV_BUTTON =
-  "absolute top-1/2 z-20 -translate-y-1/2 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150 disabled:opacity-20";
+// Light-on-dark round controls, 44px tap targets.
+const DARK_ICON_BUTTON =
+  "flex h-11 w-11 items-center justify-center rounded-full border border-cream/25 text-cream transition-colors duration-150 hover:border-cream hover:bg-cream hover:text-ink active:scale-90 disabled:opacity-20";
+const NAV_BUTTON = `absolute top-1/2 z-20 -translate-y-1/2 ${DARK_ICON_BUTTON}`;
 
 /**
  * Single-photo lightbox: swipe up/down to dismiss, arrow keys, prev/next
@@ -38,6 +41,7 @@ export function PhotoLightbox({
   const dragY = useMotionValue(0);
   const bgOpacity = useTransform(dragY, [-200, 0, 200], [0, 0.9, 0]);
   const hasPanel = children != null;
+  const dialogRef = useDialogFocus<HTMLDivElement>();
 
   function handleKey(e: React.KeyboardEvent) {
     if (e.key === "ArrowLeft" && index > 0) onChange(index - 1);
@@ -57,7 +61,7 @@ export function PhotoLightbox({
 
   const counter = (
     <div
-      className={`rounded-full bg-black/40 px-4 py-1.5 text-sm text-white/80 ${hasPanel ? "relative z-10" : "absolute bottom-4 left-1/2 z-10 -translate-x-1/2"}`}
+      className={`rounded-full bg-ink/60 px-4 py-1.5 text-sm text-cream/80 ${hasPanel ? "relative z-10" : "absolute bottom-4 left-1/2 z-10 -translate-x-1/2"}`}
     >
       {index + 1} / {images.length}
     </div>
@@ -69,25 +73,24 @@ export function PhotoLightbox({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ type: "spring", bounce: 0, duration: 0.25 }}
-      className="fixed inset-0 z-50 flex items-center justify-center outline-none"
+      className="fixed inset-0 z-[70] flex items-center justify-center outline-none"
       role="dialog"
       aria-modal="true"
       aria-label={label ?? "Photo viewer"}
       onKeyDown={handleKey}
-      tabIndex={0}
-      // eslint-disable-next-line jsx-a11y/no-autofocus
-      autoFocus
+      tabIndex={-1}
+      ref={dialogRef}
     >
       {/* Background — dims with drag distance */}
       <motion.div
-        className="absolute inset-0 bg-black"
+        className="absolute inset-0 bg-ink"
         style={{ opacity: bgOpacity }}
         onClick={onClose}
       />
 
       {/* Close */}
       <button
-        className="absolute right-4 top-4 z-20 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 active:scale-90 transition-[background-color] duration-150"
+        className={`absolute right-4 top-4 z-20 ${DARK_ICON_BUTTON}`}
         onClick={onClose}
         aria-label="Close"
       >
@@ -133,7 +136,7 @@ export function PhotoLightbox({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ type: "spring", bounce: 0, duration: 0.25 }}
-              className={`${hasPanel ? "max-h-[55dvh]" : "max-h-[90vh]"} max-w-[90vw] rounded-lg object-contain pointer-events-none select-none`}
+              className={`${hasPanel ? "max-h-[55dvh]" : "max-h-[90vh]"} max-w-[90vw] object-contain pointer-events-none select-none`}
             />
           </AnimatePresence>
         </motion.div>
@@ -142,7 +145,7 @@ export function PhotoLightbox({
           <>
             {images.length > 1 && counter}
             <div
-              className="pointer-events-auto w-full max-w-3xl min-h-0 overflow-y-auto overscroll-contain rounded-2xl bg-white p-6"
+              className="pointer-events-auto w-full max-w-3xl min-h-0 overflow-y-auto overscroll-contain border border-line bg-paper p-6"
               onClick={(e) => e.stopPropagation()}
             >
               {children}

@@ -149,11 +149,17 @@ _Done 2026-09-29._
 
 Keep the dark backdrop (right for photo viewing); the panels match the site.
 
-- [ ] `EntryViewer.tsx`: panel `rounded-2xl bg-white` → square `bg-paper border border-line`; close button
+- [x] `EntryViewer.tsx`: panel `rounded-2xl bg-white` → square `bg-paper border border-line`; close button
       = circle icon button.
-- [ ] `PhotoLightbox.tsx`: caption panel → square `bg-paper`; image `rounded-lg` → square; controls
+- [x] `PhotoLightbox.tsx`: caption panel → square `bg-paper`; image `rounded-lg` → square; controls
       light-on-dark stay legible.
-- [ ] Verify focus trap / Esc / swipe unchanged; mobile full-height panel scrolls.
+- [x] Verify focus trap / Esc / swipe unchanged; mobile full-height panel scrolls.
+
+_Done 2026-09-30. Found and fixed while verifying: (1) neither dialog ever received focus — React's
+`autoFocus` doesn't focus a `tabIndex` div — so Escape/arrow keys did nothing for keyboard users; new
+`useDialogFocus` hook focuses the dialog and returns focus to the opener on close. (2) Dialogs were `z-50`,
+under the fixed mobile header (`z-[60]`), which covered the lightbox close button on phones; now `z-[70]`
+like HomePopup. Backdrops use `ink`; round controls are 44px light-on-dark outlines._
 
 ## Phase 5 — Forms
 
