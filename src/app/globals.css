@@ -48,12 +48,14 @@
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-cream: var(--cream);
+  --color-paper-deep: var(--paper-deep);
 }
 
 :root {
   --radius: 0.875rem;
 
   --paper: #fbf8f1;
+  --paper-deep: #f3ecdf;
   --surface: #ffffff;
   --ink: #1d1f2b;
   --ink-soft: #5a5e70;

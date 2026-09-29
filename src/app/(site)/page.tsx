@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Trees,
   Users,
+  type LucideIcon,
 } from "lucide-react";
 import { HomeCarousel, type CarouselSlide } from "@/components/site-next/Carousel";
 import { CTABanner } from "@/components/site-next/CTABanner";
@@ -41,8 +42,9 @@ import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.function
 import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
 import { getHomePopup } from "@/lib/home-popup.functions";
 import { HomePopup } from "@/components/site-next/HomePopup";
+import { sectionSpacing } from "@/components/site-next/site-styles";
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+const iconMap: Record<string, LucideIcon> = {
   BadgeCheck, GraduationCap, Briefcase, Building2, Users, Lightbulb, Award, Trees, ShieldCheck,
 };
 
@@ -92,30 +94,36 @@ function StatsStrip({ items, liveStats }: { items: HomepageItem[]; liveStats: Li
   ].filter((s): s is { id: string; title: string; subtitle: string } => Boolean(s));
 
   return (
-    <section className="bg-navy text-white">
-      <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-5">
-        {stats.map((s) => (
-          <div key={s.id} className="text-center">
-            <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.title}</div>
-            <div className="mt-1 text-xs uppercase tracking-widest text-white/70">{s.subtitle ?? ""}</div>
-          </div>
-        ))}
+    <section className="bg-paper py-10 md:py-14">
+      {/* Hairlines via gap-px over a bg-line grid; an odd last figure spans the
+          row on phones. From lg the figures sit in one divided row. */}
+      <div className="container-page">
+        <div className="grid grid-cols-2 gap-px bg-line lg:flex lg:gap-0 lg:divide-x lg:divide-line lg:bg-transparent">
+          {stats.map((s) => (
+            <div key={s.id} className="bg-paper px-3 py-6 text-center last:odd:col-span-2 lg:flex-1 lg:px-2 lg:py-2">
+              <div className="font-display text-3xl font-medium text-navy md:text-4xl lg:text-3xl 2xl:text-4xl">
+                {s.title}
+              </div>
+              <div className="mt-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
+                {s.subtitle ?? ""}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-// Column count follows the number of colleges so rows fill evenly (5 → 3+2,
-// 6 → 3+3, 7+ → 4 per row); partial last rows are centered by the flex wrap.
+// Column count follows the number of colleges so rows fill evenly (5-6 -> 3 per
+// row, 4 or 7+ -> 4 per row). Joined grid like "Why SVIT": the frame draws
+// top/left and each cell its right/bottom, so a partial last row stays clean.
 // Full class strings, not interpolated, so Tailwind can see them.
-function collegeCardWidth(count: number): string {
-  const base = "w-full";
-  if (count <= 1) return base;
-  if (count === 2) return `${base} sm:w-[calc((100%-1.25rem)/2)]`;
-  if (count === 3) return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]`;
-  if (count === 4) return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-3.75rem)/4)]`;
-  if (count <= 6) return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-2.5rem)/3)]`;
-  return `${base} sm:w-[calc((100%-1.25rem)/2)] lg:w-[calc((100%-3.75rem)/4)]`;
+function collegeGridCols(count: number): string {
+  if (count <= 1) return "";
+  if (count === 2) return "md:grid-cols-2";
+  if (count === 4 || count > 6) return "md:grid-cols-2 lg:grid-cols-4";
+  return "md:grid-cols-2 lg:grid-cols-3";
 }
 
 function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: MiscSettings | null }) {
@@ -132,31 +140,37 @@ function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: Mis
       : [];
 
   return (
-    <section className="container-page py-20">
+    <section className={`container-page ${sectionSpacing}`}>
       <SectionHeading
         center
         eyebrow="SVIT Group"
         title={`Our ${collegesLabel}`}
         subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
       />
-      <div className="mt-12 flex flex-wrap justify-center gap-5">
+      <div className={`mt-12 grid border-t border-l border-line ${collegeGridCols(rows.length)}`}>
         {rows.map((c, i) => (
-          <Reveal key={c.id} delay={i * 0.05} className={collegeCardWidth(rows.length)}>
+          <Reveal key={c.id} delay={i * 0.05} className="border-r border-b border-line">
+            {/* Phones: logo beside the text to keep the stack short; md+: logo on top. */}
             <Link
               href={`/colleges/${c.id}`}
-              className="card-lift group flex h-full flex-col items-center gap-4 rounded-2xl border border-border bg-white p-6 text-center"
+              className="group flex h-full gap-4 p-5 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-paper-deep active:bg-paper-deep md:flex-col md:gap-5 md:p-8"
             >
               <CollegeLogo
                 shortCode={c.shortCode}
                 src={c.logo}
-                className="h-24 w-24 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
+                className="h-14 w-14 shrink-0 border border-line bg-surface p-1.5 text-navy md:h-16 md:w-16"
               />
-              <div className="flex w-full min-w-0 flex-1 flex-col items-center">
-                <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.shortCode}</div>
-                <h3 className="mt-1 font-display text-lg font-bold text-navy leading-tight">{c.name}</h3>
-                <p className="mt-2 text-sm text-muted-foreground italic">{c.tagline}</p>
-                <div className="mt-auto flex items-center justify-center gap-1 pt-4 text-xs font-semibold text-navy group-hover:text-gold">
-                  Explore {c.shortCode} <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+              <div className="flex min-w-0 flex-1 flex-col">
+                <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
+                  {c.shortCode}
+                </div>
+                <h3 className="mt-1 font-display text-lg font-medium leading-tight text-navy md:text-xl">
+                  {c.name}
+                </h3>
+                {c.tagline && <p className="mt-2 text-sm italic text-ink-soft">{c.tagline}</p>}
+                <div className="mt-auto flex items-center gap-1 pt-3 text-xs font-semibold text-navy transition-colors group-hover:text-crimson md:pt-5">
+                  Explore {c.shortCode}
+                  <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
             </Link>
@@ -280,7 +294,7 @@ function WhySection({ items }: { items: HomepageItem[] }) {
   const cards = byType(items, "why_choose");
   const rows = cards.map((c) => ({ title: c.title, desc: c.body ?? "", icon: c.icon_name ?? "BadgeCheck" }));
   return (
-    <section className="bg-secondary/50 py-20">
+    <section className={`border-y border-line bg-paper-deep ${sectionSpacing}`}>
       <div className="container-page">
         <SectionHeading
           center
@@ -288,17 +302,17 @@ function WhySection({ items }: { items: HomepageItem[] }) {
           title="A Place to Grow, Not Just Study"
           subtitle="What sets SVIT Vasad apart — from faculty and infrastructure to research culture and industry linkages."
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {/* Joined grid: the frame draws top/left, each cell its right/bottom, so a
+            partial last row stays clean. */}
+        <div className="mt-12 grid border-t border-l border-line md:grid-cols-2 lg:grid-cols-3">
           {rows.map((w, i) => {
             const Icon = iconMap[w.icon] ?? BadgeCheck;
             return (
-              <Reveal key={w.title} delay={i * 0.05}>
-                <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-md bg-navy/5 text-navy">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-4 font-display text-lg font-bold text-navy">{w.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{w.desc}</p>
+              <Reveal key={w.title} delay={i * 0.05} className="border-r border-b border-line">
+                <div className="h-full p-6 md:p-8">
+                  <Icon className="h-6 w-6 text-navy" strokeWidth={1.5} />
+                  <h3 className="mt-5 font-display text-xl font-medium text-navy">{w.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{w.desc}</p>
                 </div>
               </Reveal>
             );
@@ -319,11 +333,11 @@ function TrustBand({ items }: { items: HomepageItem[] }) {
   });
   return (
     <section className="container-page py-14">
-      <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-white p-8 md:grid-cols-4">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-y border-line py-7 md:grid-cols-4 md:gap-y-6">
         {uniqueBadges.map((b) => (
-          <div key={b.id} className="flex items-center justify-center gap-2 text-navy">
-            <BadgeCheck className="h-5 w-5 text-gold" />
-            <span className="text-sm font-semibold uppercase tracking-wider">{b.title}</span>
+          <div key={b.id} className="flex items-center justify-center gap-2 text-center text-navy">
+            <BadgeCheck className="h-5 w-5 shrink-0 text-gold" />
+            <span className="text-xs font-semibold uppercase tracking-wider md:text-sm">{b.title}</span>
           </div>
         ))}
       </div>

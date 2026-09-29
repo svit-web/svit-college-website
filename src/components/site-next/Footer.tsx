@@ -55,36 +55,36 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
   ];
 
   return (
-    <footer className="bg-navy-deep text-white/80">
+    <footer className="border-t border-line bg-paper-deep text-ink-soft">
       <div className="container-page py-8 md:py-14">
         <div className="grid gap-0 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2 mb-2 md:mb-0">
-            <Logo light logoUrl={logoUrl} />
-            <p className="mt-4 text-sm text-white/70 max-w-sm">
+            <Logo logoUrl={logoUrl} />
+            <p className="mt-4 text-sm text-ink-soft max-w-sm">
               {site.fullName} — a premier institute committed to excellence in education, research
               and community impact{misc?.year_established ? ` since ${misc.year_established}` : ""}.
             </p>
             <div className="mt-5 space-y-2 text-sm">
               {site.address && (
                 <div className="flex items-start gap-2">
-                  <MapPin className="mt-0.5 h-4 w-4 text-gold shrink-0" />
+                  <MapPin className="mt-0.5 h-4 w-4 text-navy shrink-0" />
                   <span>{site.address}</span>
                 </div>
               )}
               {site.phone && (
                 <a
                   href={`tel:${site.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-2 hover:text-gold"
+                  className="flex items-center gap-2 hover:text-crimson"
                 >
-                  <Phone className="h-4 w-4 text-gold" /> {site.phone}
+                  <Phone className="h-4 w-4 text-navy" /> {site.phone}
                 </a>
               )}
               {site.email && (
                 <a
                   href={`mailto:${site.email}`}
-                  className="flex items-center gap-2 hover:text-gold"
+                  className="flex items-center gap-2 hover:text-crimson"
                 >
-                  <Mail className="h-4 w-4 text-gold" /> {site.email}
+                  <Mail className="h-4 w-4 text-navy" /> {site.email}
                 </a>
               )}
             </div>
@@ -98,7 +98,7 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-md border border-white/15 p-2 hover:bg-white/10 hover:text-gold transition-colors"
+                    className="rounded-full border border-line-strong p-2 text-navy hover:border-ink hover:bg-ink hover:text-cream transition-colors"
                     aria-label={platform}
                   >
                     <Icon className="h-4 w-4" />
@@ -116,8 +116,8 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
           />
         </div>
       </div>
-      <div className="border-t border-white/10">
-        <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-white/60 md:flex-row">
+      <div className="border-t border-line">
+        <div className="container-page flex flex-col items-center justify-between gap-2 py-5 text-xs text-ink-mute md:flex-row">
           <div>
             &copy; {new Date().getFullYear()}
             {site.fullName ? ` ${site.fullName}` : ""}. All rights reserved.
@@ -141,26 +141,26 @@ function FooterCol({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-white/10 md:border-none">
+    <div className="border-b border-line md:border-none">
       {/* Mobile: tappable header */}
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
         className="flex w-full items-center justify-between py-3 md:hidden"
       >
-        <h4 className="font-display text-sm font-bold uppercase tracking-widest text-white">
+        <h4 className="font-display text-sm font-bold uppercase tracking-widest text-navy">
           {title}
         </h4>
         <motion.div
           animate={{ rotate: open ? 180 : 0 }}
           transition={{ type: "spring", bounce: 0, duration: 0.25 }}
         >
-          <ChevronDown className="h-4 w-4 text-white/50" />
+          <ChevronDown className="h-4 w-4 text-ink-mute" />
         </motion.div>
       </button>
 
       {/* Desktop: always visible heading */}
-      <h4 className="hidden md:block font-display text-sm font-bold uppercase tracking-widest text-white">
+      <h4 className="hidden md:block font-display text-sm font-bold uppercase tracking-widest text-navy">
         {title}
       </h4>
 
@@ -177,7 +177,7 @@ function FooterCol({
           >
             {links.map((l) => (
               <li key={l.to} className="pt-1 first:pt-0">
-                <Link href={l.to} className="hover:text-gold transition-colors">
+                <Link href={l.to} className="hover:text-crimson transition-colors">
                   {l.label}
                 </Link>
               </li>
@@ -188,7 +188,7 @@ function FooterCol({
                   href={l.href}
                   target="_blank"
                   rel="noreferrer"
-                  className="hover:text-gold transition-colors"
+                  className="hover:text-crimson transition-colors"
                 >
                   {l.label}
                 </a>
@@ -202,7 +202,7 @@ function FooterCol({
       <ul className="hidden md:block space-y-2 text-sm mt-4">
         {links.map((l) => (
           <li key={l.to}>
-            <Link href={l.to} className="hover:text-gold transition-colors">
+            <Link href={l.to} className="hover:text-crimson transition-colors">
               {l.label}
             </Link>
           </li>
@@ -213,7 +213,7 @@ function FooterCol({
               href={l.href}
               target="_blank"
               rel="noreferrer"
-              className="hover:text-gold transition-colors"
+              className="hover:text-crimson transition-colors"
             >
               {l.label}
             </a>
