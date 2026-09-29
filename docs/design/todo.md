@@ -22,18 +22,22 @@ Legend for audit counts (from the 2026-09-29 scan): `r` rounded-lg/xl/2xl · `li
 
 Shared building blocks every later phase imports. Do this first so later phases just swap classes.
 
-- [ ] `src/components/site-next/site-styles.ts`: add `pillLink` (small "Read more" pill from
+- [x] `src/components/site-next/site-styles.ts`: add `pillLink` (small "Read more" pill from
       `NewsEventsSection`'s `PillLink`), `circleIconButton` (carousel arrows), `eyebrow`
       (`text-[11px] font-bold uppercase tracking-[0.2em] text-crimson`), `editorialH2`
       (`font-display text-[clamp(2rem,4.2vw,3.3rem)] font-medium leading-[1.12] tracking-[-0.01em] text-navy`).
-- [ ] Extract `PillLink` from `NewsEventsSection.tsx` into its own component (`PillLink.tsx`) and use it there.
-- [ ] `SectionHeading.tsx` (used in ~29 files): h2 → editorial style (`font-medium`, clamp size);
+- [x] Extract `PillLink` from `NewsEventsSection.tsx` into its own component (`PillLink.tsx`) and use it there.
+- [x] `SectionHeading.tsx` (used in ~29 files): h2 → editorial style (`font-medium`, clamp size);
       eyebrow → `eyebrow` string; subtitle `text-muted-foreground` → `text-ink-soft`. Check the
       `variant="simple"` gold `accent-underline` still reads well (gold as decoration is allowed).
-- [ ] Form field styles: add `fieldInput` / `fieldLabel` strings — square, `border border-line bg-surface`,
+- [x] Form field styles: add `fieldInput` / `fieldLabel` strings — square, `border border-line bg-surface`,
       `focus:border-navy focus:ring-0`, label `text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft`.
-- [ ] `globals.css`: mark `card-lift` as deprecated in a comment (delete in Phase 9 once unused).
-- [ ] Update `BEIGE_DESIGN_SYSTEM.md` §6 with the new shared strings.
+- [x] `globals.css`: mark `card-lift` as deprecated in a comment (delete in Phase 9 once unused).
+- [x] Update `BEIGE_DESIGN_SYSTEM.md` §6 with the new shared strings.
+- [x] Our Institutes subtitle: dropped the hardcoded "Four" (six colleges listed).
+
+_Done 2026-09-29. `SectionHeading` uses `sectionH2` (a step below `editorialH2`) so dense inner pages
+don't get 53px headings. `fieldInput`/`fieldLabel` are defined but first used in Phase 5._
 
 ## Phase 1 — Hero system
 

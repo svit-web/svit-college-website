@@ -100,8 +100,8 @@ Notes:
   the old theme. Hero h1 and `SplitHeading` bold bases are the exceptions.
 - A crimson full stop after a section title (`Life beyond the classroom<span className="text-crimson">.</span>`)
   is an optional signature accent — use at most once or twice per page.
-- `SectionHeading` (`src/components/site-next/SectionHeading.tsx`) still renders `font-bold` h2s and is
-  used in ~29 files. Updating it to the editorial h2 is a one-line, site-wide win (see §9).
+- `SectionHeading` renders `sectionH2` (`clamp(1.85rem,3.2vw,2.6rem)`, medium) — a step below
+  `editorialH2` so dense inner pages don't get 53px headings.
 
 ---
 
@@ -162,8 +162,18 @@ separated by `border-b border-line`, heading block underlined by an animated hai
 
 ## 6. Component recipes
 
-Shared class strings: `src/components/site-next/site-styles.ts` (`pillPrimary`, `pillOutline`,
-`sectionSpacing`). Import these rather than re-typing.
+Shared class strings: `src/components/site-next/site-styles.ts`. Import these rather than re-typing.
+
+| Export | Use |
+|---|---|
+| `pillPrimary` / `pillOutline` | Buttons (below) |
+| `pillLink` | Small inline pill; render via the `PillLink` component |
+| `circleIconButton` | Round outline icon buttons (arrows, close, socials) |
+| `sectionSpacing` | Vertical padding for major sections |
+| `eyebrow` | Crimson uppercase kicker above headings |
+| `editorialH2` | Large editorial section title (mosaic, carousel, CTA band) |
+| `sectionH2` | Standard section title — what `SectionHeading` renders |
+| `fieldInput` / `fieldLabel` | Square hairline form fields and their labels |
 
 ### Buttons
 
@@ -171,8 +181,8 @@ Shared class strings: `src/components/site-next/site-styles.ts` (`pillPrimary`, 
 |---|---|
 | Primary | `pillPrimary` — ink fill, cream text, → crimson on hover |
 | Secondary | `pillOutline` — `line-strong` outline, ink text, → ink fill on hover |
-| Small link-pill ("Read more", "All news") | `rounded-full border border-line px-3.5 py-1.5 text-xs font-semibold text-navy hover:border-navy hover:bg-navy hover:text-white` (`PillLink` in `NewsEventsSection`) |
-| Circular icon button (arrows, socials) | `h-10 w-10 rounded-full border border-line-strong text-ink hover:border-ink hover:bg-ink hover:text-cream` |
+| Small link-pill ("Read more", "All news") | `<PillLink href>` (`PillLink.tsx`, class `pillLink`) |
+| Circular icon button (arrows, socials) | `circleIconButton` |
 | Trailing arrow | `ArrowRight h-4 w-4 transition-transform group-hover:translate-x-0.5` |
 
 Gold buttons (`bg-gold text-navy`), `rounded-md/xl` buttons and white-on-glass buttons are retired.

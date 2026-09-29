@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Reveal } from "./Reveal";
+import { eyebrow as eyebrowClass, sectionH2 } from "./site-styles";
 
 export function SectionHeading({
   eyebrow,
@@ -20,20 +21,18 @@ export function SectionHeading({
     <Reveal className={cn(center && "text-center", className)}>
       <div className={cn("max-w-3xl", center && "mx-auto")}>
         {variant === "eyebrow" && eyebrow && (
-          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
-            {eyebrow}
-          </div>
+          <div className={cn("mb-3", eyebrowClass)}>{eyebrow}</div>
         )}
-        <h2
-          className={cn(
-            "font-display text-3xl md:text-4xl font-bold text-navy",
-            variant === "simple" && center && "accent-underline pb-3"
-          )}
-        >
+        <h2 className={cn(sectionH2, variant === "simple" && center && "accent-underline pb-3")}>
           {title}
         </h2>
         {subtitle && (
-          <p className={cn("mt-4 text-base md:text-lg text-muted-foreground leading-relaxed", center && "mx-auto")}>
+          <p
+            className={cn(
+              "mt-4 text-base leading-relaxed text-ink-soft md:text-lg",
+              center && "mx-auto",
+            )}
+          >
             {subtitle}
           </p>
         )}

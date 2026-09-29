@@ -145,7 +145,7 @@ function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: Mis
         center
         eyebrow="SVIT Group"
         title={`Our ${collegesLabel}`}
-        subtitle="Four constituent institutes under one campus — each with its own identity, faculty, and programmes."
+        subtitle="Constituent institutes under one campus — each with its own identity, faculty, and programmes."
       />
       <div className={`mt-12 grid border-t border-l border-line ${collegeGridCols(rows.length)}`}>
         {rows.map((c, i) => (

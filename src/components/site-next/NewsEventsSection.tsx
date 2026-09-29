@@ -1,8 +1,7 @@
 "use client";
 
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { PillLink } from "./PillLink";
 import { Reveal } from "./Reveal";
 import { CurtainImage } from "./CurtainImage";
 import { SplitHeading } from "./SplitHeading";
@@ -25,18 +24,6 @@ function formatDateRange(start: string, end: string | null): string {
     return `${s.getDate()}–${e.toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`;
   }
   return `${formatDate(start)} – ${formatDate(end)}`;
-}
-
-function PillLink({ href, children }: { href: string; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      className="group inline-flex items-center gap-2 rounded-full border border-border px-3.5 py-1.5 text-xs font-semibold text-navy transition-colors hover:border-navy hover:bg-navy hover:text-white"
-    >
-      {children}
-      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-    </Link>
-  );
 }
 
 function eventHref(slug: string | null) {
