@@ -113,8 +113,7 @@ case-insensitive (`/departments/ca` vs `CA`)._
 - [x] Pill buttons, sidebar/tab pills `min-h-11`; `circleIconButton` 44px; carousel dots 44px hit area.
 - [x] Breadcrumb links, footer phone/email ≥24px; footer socials, mobile header search/menu 44px.
 - [x] HomePopup pills `min-h-11`, minimise button 44px.
-- [ ] HomePopup measures 43px at 390/768 — probably caught mid entrance animation (scale 0.94→1).
-      Re-check with a longer wait before treating it as real.
+- [x] HomePopup 43px was the entrance animation (scale 0.94→1): passes with `WAIT=3500`.
 - [ ] `/admissions` "Download fee structure →" link is 20px → fix in Phase 7 (page-local).
 
 ## Phase 3 — Shared cards and layouts

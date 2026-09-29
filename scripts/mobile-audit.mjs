@@ -6,11 +6,13 @@
 //
 // Usage: node scripts/mobile-audit.mjs /path/one /path/two ...
 // Env:   BASE_URL (default http://localhost:3000), CHROME_PATH (system Chrome if
-//        Playwright's bundled browser isn't installed), WIDTHS (default 360,390,768)
+//        Playwright's bundled browser isn't installed), WIDTHS (default 360,390,768),
+//        WAIT ms after load before measuring (default 1200; raise it to let entrance animations settle)
 import { chromium } from "playwright";
 
 const base = process.env.BASE_URL ?? "http://localhost:3000";
 const widths = (process.env.WIDTHS ?? "360,390,768").split(",").map(Number);
+const wait = Number(process.env.WAIT ?? 1200);
 const paths = process.argv.slice(2);
 if (paths.length === 0) {
   console.error("Usage: node scripts/mobile-audit.mjs /path [/path ...]");
@@ -30,7 +32,7 @@ for (const width of widths) {
       isMobile: width < 768,
     });
     await page.goto(base + path, { waitUntil: "load", timeout: 120000 });
-    await page.waitForTimeout(1200);
+    await page.waitForTimeout(wait);
     const result = await page.evaluate(() => {
       const vw = document.documentElement.clientWidth;
       const overflow = document.documentElement.scrollWidth - vw;
