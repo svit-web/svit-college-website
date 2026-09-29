@@ -55,7 +55,7 @@ export function PageHero({
             {crumbs.map((c, i) => (
               <span key={i} className="flex items-center gap-1.5">
                 {c.to ? (
-                  <Link href={c.to} className="transition-colors hover:text-crimson">
+                  <Link href={c.to} className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
                     {c.label}
                   </Link>
                 ) : (

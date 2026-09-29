@@ -293,8 +293,8 @@ function PopupLink({
   // Same pills as the homepage hero.
   const className =
     kind === "primary"
-      ? "group inline-flex items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-colors hover:border-crimson hover:bg-crimson"
-      : "group inline-flex items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream";
+      ? "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-colors hover:border-crimson hover:bg-crimson"
+      : "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream";
   const content = (
     <>
       <span>{link.label}</span>
@@ -395,7 +395,7 @@ export function HomePopupCard({
       type="button"
       onClick={onMinimize}
       aria-label="Minimize"
-      className="absolute top-3 right-3 z-20 flex h-9 w-9 items-center justify-center rounded-full border border-line-strong bg-cream text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream"
+      className="absolute top-2 right-2 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-line-strong bg-cream text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream"
     >
       <Minus className="h-4 w-4" aria-hidden />
     </button>

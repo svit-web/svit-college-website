@@ -6,6 +6,7 @@ import { ArrowRight } from "lucide-react";
 import type { HomepageItem } from "@/lib/homepage";
 import type { MiscSettings } from "@/lib/site-settings.functions";
 import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
+import { pillOutline, pillPrimary } from "@/components/site-next/site-styles";
 import { HOMEPAGE_ROTATE_MS, heroFadeStyles, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 
 const DEFAULT_IMAGE_URL =
@@ -89,14 +90,14 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
           <div className="flex flex-wrap justify-start gap-[0.7rem]">
             <Link
               href={primaryHref}
-              className="group inline-flex items-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-all hover:bg-crimson hover:border-crimson"
+              className={pillPrimary}
             >
               {primaryLabel}
               <ArrowRight className="h-[14px] w-[14px] shrink-0 transition-transform group-hover:translate-x-[3px]" />
             </Link>
             <Link
               href={secondaryHref}
-              className="group inline-flex items-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-all hover:border-ink hover:bg-ink hover:text-cream"
+              className={pillOutline}
             >
               {secondaryLabel}
               <ArrowRight className="h-[14px] w-[14px] shrink-0 transition-transform group-hover:translate-x-[3px]" />

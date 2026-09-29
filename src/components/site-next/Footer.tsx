@@ -74,7 +74,7 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
               {site.phone && (
                 <a
                   href={`tel:${site.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-2 hover:text-crimson"
+                  className="flex items-center gap-2 py-1 hover:text-crimson"
                 >
                   <Phone className="h-4 w-4 text-navy" /> {site.phone}
                 </a>
@@ -82,7 +82,7 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
               {site.email && (
                 <a
                   href={`mailto:${site.email}`}
-                  className="flex items-center gap-2 hover:text-crimson"
+                  className="flex items-center gap-2 py-1 hover:text-crimson"
                 >
                   <Mail className="h-4 w-4 text-navy" /> {site.email}
                 </a>
@@ -98,7 +98,7 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full border border-line-strong p-2 text-navy hover:border-ink hover:bg-ink hover:text-cream transition-colors"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-line-strong text-navy transition-colors hover:border-ink hover:bg-ink hover:text-cream"
                     aria-label={platform}
                   >
                     <Icon className="h-4 w-4" />

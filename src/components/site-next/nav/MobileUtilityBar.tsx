@@ -20,13 +20,13 @@ export function MobileUtilityBar({
       <Logo logoUrl={logoUrl} instituteName={instituteName} />
       <div className="flex items-center gap-1">
         <SiteSearch
-          className="rounded-md p-2 text-ink transition-colors hover:text-crimson"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-ink transition-colors hover:text-crimson"
           iconClassName="h-5 w-5"
         />
         <button
           type="button"
           onClick={onToggle}
-          className="rounded-md p-2 text-ink transition-colors hover:text-crimson"
+          className="flex h-11 w-11 items-center justify-center rounded-full text-ink transition-colors hover:text-crimson"
           aria-label="Toggle menu"
           aria-expanded={open}
           aria-controls="mobile-nav-panel"

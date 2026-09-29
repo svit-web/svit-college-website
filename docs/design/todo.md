@@ -9,7 +9,9 @@ release (8–9). Most pages change "for free" once Phases 0–3 land; Phase 7 is
 
 **Every item, every phase:**
 - Style only — never hardcode content the admin panel edits; no data-layer changes unless stated.
-- Check at **390 / 1024 / 1440** px (Playwright + `/usr/bin/google-chrome`), before and after.
+- Check at **360 / 390 / 768 / 1024 / 1440** px (Playwright + `/usr/bin/google-chrome`), before and after.
+- Run `CHROME_PATH=/usr/bin/google-chrome node scripts/mobile-audit.mjs <paths>` on every touched page:
+  no horizontal overflow; tap targets ≥44px for controls (buttons, pills, tabs), ≥24px for inline links.
 - `npx tsc --noEmit` + `npx eslint <changed files>` clean for touched lines.
 - Admin must not regress (CLAUDE.md).
 
@@ -104,6 +106,16 @@ _Done 2026-09-29. The three sidebars (About, Campus Life, Department) now share 
 (vertical list on lg, active = ink pill; one sideways-scrolling pill row below lg, active pill centred).
 Their layout wrappers moved from `bg-secondary/30` to `bg-paper`. Department tab matching is now
 case-insensitive (`/departments/ca` vs `CA`)._
+
+## Mobile pass (after Phase 2)
+
+- [x] `scripts/mobile-audit.mjs` added (overflow + tap-target check, widths 360/390/768).
+- [x] Pill buttons, sidebar/tab pills `min-h-11`; `circleIconButton` 44px; carousel dots 44px hit area.
+- [x] Breadcrumb links, footer phone/email ≥24px; footer socials, mobile header search/menu 44px.
+- [x] HomePopup pills `min-h-11`, minimise button 44px.
+- [ ] HomePopup measures 43px at 390/768 — probably caught mid entrance animation (scale 0.94→1).
+      Re-check with a longer wait before treating it as real.
+- [ ] `/admissions` "Download fee structure →" link is 20px → fix in Phase 7 (page-local).
 
 ## Phase 3 — Shared cards and layouts
 

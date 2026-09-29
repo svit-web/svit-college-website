@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { pillPrimary, sectionSpacing } from "./site-styles";
+import { circleIconButton, pillPrimary, sectionSpacing } from "./site-styles";
 
 export interface CarouselSlide {
   image: string;
@@ -19,8 +19,7 @@ interface Props {
   slides?: CarouselSlide[];
 }
 
-const arrowButton =
-  "hidden h-10 w-10 items-center justify-center rounded-full border border-line-strong text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream md:inline-flex";
+const arrowButton = `${circleIconButton} max-md:hidden`;
 
 // Split layout (like the homepage hero): the photo and the text occupy separate
 // regions, so photos are shown untinted and text stays legible on any upload.
@@ -128,7 +127,7 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
               >
                 <ChevronLeft className="h-5 w-5" />
               </button>
-              <div className="flex gap-2">
+              <div className="flex">
                 {slides.map((_, i) => (
                   <button
                     key={i}
@@ -136,10 +135,17 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
                     onClick={() => setIndex(i)}
                     aria-label={`Go to slide ${i + 1}`}
                     aria-current={i === index}
-                    className={`h-1.5 rounded-full transition-all ${
-                      i === index ? "w-8 bg-navy" : "w-3 bg-line-strong hover:bg-ink-mute"
-                    }`}
-                  />
+                    className="group/dot flex h-11 items-center px-1"
+                  >
+                    {/* Thin visible bar inside a 44px-tall tap target. */}
+                    <span
+                      className={`block h-1.5 rounded-full transition-all ${
+                        i === index
+                          ? "w-8 bg-navy"
+                          : "w-3 bg-line-strong group-hover/dot:bg-ink-mute"
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
               <button

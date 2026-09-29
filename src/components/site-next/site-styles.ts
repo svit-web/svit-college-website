@@ -3,10 +3,10 @@
 
 // The hero's pill buttons (HeroNew), shared so every section uses one button style.
 export const pillPrimary =
-  "group inline-flex items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-colors hover:border-crimson hover:bg-crimson active:scale-[0.98]";
+  "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-colors hover:border-crimson hover:bg-crimson active:scale-[0.98]";
 
 export const pillOutline =
-  "group inline-flex items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream active:scale-[0.98]";
+  "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream active:scale-[0.98]";
 
 // Small inline pill ("Read more", "All news & events"); render via <PillLink>.
 export const pillLink =
@@ -14,7 +14,7 @@ export const pillLink =
 
 // Round outline icon button (carousel arrows, close buttons, socials).
 export const circleIconButton =
-  "inline-flex h-10 w-10 items-center justify-center rounded-full border border-line-strong text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream";
+  "inline-flex h-11 w-11 items-center justify-center rounded-full border border-line-strong text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream";
 
 // Vertical rhythm of the reference sections (campus-life mosaic): shrinks on phones.
 export const sectionSpacing = "py-[clamp(84px,11vw,144px)]";

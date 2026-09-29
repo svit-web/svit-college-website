@@ -53,7 +53,7 @@ export function SectionSideNav({
                 href={item.href}
                 aria-current={item.active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-2.5 whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors lg:whitespace-normal",
+                  "flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors lg:whitespace-normal",
                   item.active
                     ? "border-ink bg-ink text-cream"
                     : "border-line-strong text-ink hover:border-ink lg:border-transparent lg:text-ink-soft lg:hover:border-transparent lg:hover:bg-paper-deep lg:hover:text-ink",
