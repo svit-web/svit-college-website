@@ -4,7 +4,7 @@
 import { publicSupabase } from '@/lib/supabase-public';
 import { DEFAULT_HERO_APPEARANCE, type HeroAppearance } from '@/lib/theme';
 
-export { HOMEPAGE_ROTATE_MS, DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, type HeroAppearance } from '@/lib/theme';
+export { HOMEPAGE_ROTATE_MS, DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroFadeStyles, heroTextVars, type HeroAppearance } from '@/lib/theme';
 
 const HERO_APPEARANCE_KEY = 'hero_appearance';
 

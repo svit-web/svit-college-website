@@ -4,16 +4,20 @@ Public marketing site + admin panel for SVIT Vasad, built on Next.js with Supaba
 
 ## Language
 
-**Overlay hero**:
-A hero/banner section where text is rendered on top of a tinted, blurred photo background — the photo is decoration, not content. Used by `PageHero`, `CollegeLandingPage`, and the About/Campus Life banners. Legibility comes from `HeroAppearance`'s tint/overlay/blur/text-color fields, applied via `heroOverlayStyles()`.
-_Avoid_: banner hero, background hero
+**Photo hero**:
+A full-bleed photo hero whose text sits on a paper-coloured fade down the left side (`heroFadeStyles()`), with an optional tint over the photo (`heroOverlayStyles()`). Used by the homepage (`HeroNew`) and college landing pages (`CollegeLandingPage`); the college hero additionally applies the whole-photo Background Blur. Replaced the old navy "Overlay hero" in the beige redesign (2026-09).
+_Avoid_: overlay hero, background hero
+
+**Page banner**:
+The beige, photo-less hero on inner pages (`PageHero`, also used by the About and Campus Life layouts): breadcrumbs, crimson eyebrow, homepage-scale title. Only the admin Text Color affects it.
+_Avoid_: page hero (ambiguous with Photo hero)
 
 **Split hero**:
-A hero section where the photo and the text occupy separate, non-overlapping regions — the photo is primary content, not a text backdrop, so no tint/overlay is applied to it. Used by the homepage hero (`HeroNew`). `HeroPhotoLayer`'s `overlay` prop distinguishes this from an Overlay hero.
+A section where the photo and the text occupy separate, non-overlapping regions, so the photo is shown untinted — e.g. the homepage carousel (`Carousel.tsx`). `HeroPhotoLayer`'s `overlay={false}` renders a photo this way.
 _Avoid_: content hero, split-screen hero
 
 **HeroAppearance**:
-The shared, admin-editable record (`app_settings` key `hero_appearance`) controlling hero photography across the site. It bundles two distinct concerns: overlay/tint config (`heroImageOpacity`, `heroOverlayOpacity`, `heroOverlayColor`, `heroTextColor`, `heroBlurPx`) that only applies to Overlay heroes, and photo assets (`homepagePhotos`, `aboutPhoto`, `campusLifePhoto`) used by both hero types.
+The shared, admin-editable record (`app_settings` key `hero_appearance`) controlling hero photography across the site. It bundles two distinct concerns: overlay/tint config (`heroImageOpacity`, `heroOverlayOpacity`, `heroOverlayColor`, `heroTextColor`, `heroBlurPx`) that applies to Photo heroes (text colour: every hero, via `--hero-text` set in the public site layout), and photo assets (`homepagePhotos`, `aboutPhoto`, `campusLifePhoto`) used by both hero types.
 _Avoid_: hero settings, theme settings
 
 **Homepage photo slideshow**:

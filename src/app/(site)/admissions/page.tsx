@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { PageHero } from "@/components/site-next/PageHero";
+import { pillPrimary } from "@/components/site-next/site-styles";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { FaqItem } from "@/components/site-next/FaqItem";
@@ -40,8 +42,9 @@ export default async function Admissions() {
   return (
     <>
       <PageHero title="Admissions" accent={`${yr} Batch`} subtitle="Everything you need to know about applying to SVIT Vasad." crumbs={[{ label: "Home", to: "/" }, { label: "Admissions" }]}>
-        <Link href="/admissions/inquiry" className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft">
+        <Link href="/admissions/inquiry" className={pillPrimary}>
           Start Application
+          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </Link>
       </PageHero>
 

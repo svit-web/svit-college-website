@@ -54,26 +54,26 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
         ]}
         rightSlot={
           department.logo_url ? (
-            <div className="relative flex h-72 w-72 items-center justify-center overflow-hidden rounded-3xl bg-white/10 p-4 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm">
+            <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden border border-line bg-surface">
               <Image
                 src={department.logo_url}
                 alt={`${department.name} logo`}
                 fill
-                sizes="288px"
-                className="object-contain p-4"
+                sizes="240px"
+                className="object-contain p-6"
               />
             </div>
           ) : undefined
         }
       >
         {college && (
-          <div className="mt-4 inline-flex items-center gap-3 rounded-full bg-white/10 px-4 py-2 backdrop-blur">
+          <div className="inline-flex items-center gap-3 rounded-full border border-line-strong py-1.5 pl-1.5 pr-4">
             <CollegeLogo
               shortCode={college.shortCode}
               src={college.logo}
-              className="h-8 w-8 rounded-full bg-white p-0.5"
+              className="h-8 w-8 rounded-full border border-line bg-surface p-0.5"
             />
-            <span className="text-xs font-semibold uppercase tracking-widest text-white/90">
+            <span className="text-xs font-semibold uppercase tracking-widest text-ink-soft">
               {college.name}
             </span>
           </div>

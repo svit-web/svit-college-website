@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import type { HomepageItem } from "@/lib/homepage";
 import type { MiscSettings } from "@/lib/site-settings.functions";
 import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
-import { HOMEPAGE_ROTATE_MS, type HeroAppearance } from "@/lib/theme.functions";
+import { HOMEPAGE_ROTATE_MS, heroFadeStyles, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 
 const DEFAULT_IMAGE_URL =
   "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1785967226472-1d6hzb.webp";
@@ -18,9 +18,10 @@ interface HeroNewProps {
 }
 
 /**
- * Split hero: photo (or slideshow) fills its own column/band, text sits
- * alongside it. Unlike the site's other heroes, no text is ever rendered on
- * top of the photo, so it renders HeroPhotoLayer with overlay={false}.
+ * Homepage hero: full-bleed photo marquee with the text on a paper fade down
+ * the left side. Photo Visibility and the overlay tint apply via
+ * HeroPhotoLayer; the whole-photo Background Blur does not (overlayBlur off) —
+ * the fade carries its own masked blur (Homepage Blur).
  */
 export function HeroNew({ items, misc, appearance }: HeroNewProps) {
   const hero = items.find((item) => item.item_type === "hero");
@@ -39,11 +40,12 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
   const imageAlt = (hero?.metadata as { image_alt?: string })?.image_alt || "The SVIT Vasad campus on the banks of the Mahi River";
   const photos = appearance.homepagePhotos.length > 0 ? appearance.homepagePhotos : [hero?.image_url || DEFAULT_IMAGE_URL];
   const [photoLoaded, setPhotoLoaded] = useState(false);
+  const fade = heroFadeStyles(appearance);
 
   return (
     <section
       className="relative min-h-[640px] w-full overflow-hidden lg:h-[100vh]"
-      style={{ ["--hero-offset" as never]: "clamp(150px,18vh,200px)" }}
+      style={{ ["--hero-offset" as never]: "clamp(150px,18vh,200px)", ...heroTextVars(appearance) }}
     >
       {/* Full-bleed photo. Backed by cream (not navy) so an unloaded/broken photo reads as blank space, not a broken-looking dark panel; the gradient/blur chrome that assumes a photo underneath only mounts once one has actually loaded. */}
       <div className="absolute inset-0 bg-cream">
@@ -51,45 +53,18 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
           photos={photos}
           appearance={appearance}
           rotateMs={HOMEPAGE_ROTATE_MS}
-          overlay={false}
+          overlayBlur={false}
           transition="marquee"
           alt={imageAlt}
           onLoad={() => setPhotoLoaded(true)}
         />
         {photoLoaded && (
           <>
-            {/* Left-to-right gradient, faded to nothing by the horizontal midpoint, so the right half of the photo stays clear while the text on the left stays readable. Backdrop-blur is masked with the same falloff so the photo softens under the gradient without blurring the clear right half. */}
-            <div
-              className="absolute inset-0"
-              style={{
-                backdropFilter: `blur(${appearance.homepageBlurPx}px)`,
-                WebkitBackdropFilter: `blur(${appearance.homepageBlurPx}px)`,
-                WebkitMaskImage: "linear-gradient(to right, black 0%, black 32%, transparent 50%)",
-                maskImage: "linear-gradient(to right, black 0%, black 32%, transparent 50%)",
-              }}
-            />
-            <div 
-              className="absolute inset-0" 
-              style={{
-                background: `linear-gradient(to right, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100}) 0%, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100 * 0.87}) 16%, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100 * 0.51}) 32%, transparent 50%)`
-              }}
-            />
-            {/* Cream fade at the very top so the full-bleed photo blends into the floating navbar card */}
-            <div
-              className="absolute inset-x-0 top-0 h-32 lg:h-40"
-              style={{
-                backdropFilter: `blur(${appearance.homepageBlurPx}px)`,
-                WebkitBackdropFilter: `blur(${appearance.homepageBlurPx}px)`,
-                WebkitMaskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-                maskImage: "linear-gradient(to bottom, black 0%, transparent 100%)",
-              }}
-            />
-            <div 
-              className="absolute inset-x-0 top-0 h-32 lg:h-40" 
-              style={{
-                background: `linear-gradient(to bottom, rgba(251, 248, 241, ${appearance.homepageGradientOpacity / 100 * 0.82}) 0%, transparent 100%)`
-              }}
-            />
+            {/* Left-to-right paper fade (with a matching masked blur) that clears by the horizontal midpoint, plus a short top fade into the floating navbar. Shared with the college heroes via heroFadeStyles(). */}
+            <div className="absolute inset-0" style={fade.sideBlur} />
+            <div className="absolute inset-0" style={fade.sideGradient} />
+            <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topBlur} />
+            <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topGradient} />
           </>
         )}
       </div>
@@ -99,7 +74,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
           <p className="inline-block text-[0.7rem] font-bold uppercase tracking-[0.22em] text-crimson">
             {eyebrow}
           </p>
-          <h1 className="mt-[1.1rem] text-[clamp(1.9rem,3.6vw,3.3rem)] font-bold leading-[1.02] tracking-[-0.035em] text-ink">
+          <h1 className="mt-[1.1rem] text-[clamp(1.9rem,3.6vw,3.3rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[var(--hero-text)]">
             {title}{" "}
             <em className="font-serif font-medium italic tracking-[-0.01em]">
               {titleAccent}
@@ -108,7 +83,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
         </div>
 
         <div className="mr-auto grid max-w-[36ch] justify-items-start gap-[1.4rem] text-left">
-          <p className="text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-ink">
+          <p className="text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-[var(--hero-text)]">
             {subtitle}
           </p>
           <div className="flex flex-wrap justify-start gap-[0.7rem]">

@@ -57,32 +57,38 @@ Decisions (2026-09-29):
 | Text colour (`heroTextColor`) | Hero heading/text on **every** hero incl. beige banners; **unset → navy `#2b2f5e`** (was white) |
 
 Checklist:
-- [ ] `src/lib/theme.ts`: `heroOverlayStyles()` fallback colour navy → `var(--paper)`; `heroTextVars()`
+- [x] `src/lib/theme.ts`: `heroOverlayStyles()` fallback colour navy → `var(--paper)`; `heroTextVars()`
       fallback `#ffffff` → `var(--navy)`. Add a helper for the homepage-style left fade + masked blur
       (move the inline gradient/blur code out of `HeroNew.tsx`) so HeroNew and the college hero share it.
-- [ ] `HeroNew.tsx`: use the shared fade helper; apply `heroImageOpacity` + overlay tint via
+- [x] `HeroNew.tsx`: use the shared fade helper; apply `heroImageOpacity` + overlay tint via
       `HeroPhotoLayer` / `heroOverlayStyles`; hero text uses `var(--hero-text)`. Verify the homepage
       looks unchanged with current saved values (opacity 100, overlay 5%).
-- [ ] `PageHero.tsx` (≈20 callers): remove `bg-navy`, radial gradient and blur orbs; `bg-paper` +
+- [x] `PageHero.tsx` (≈20 callers): remove `bg-navy`, radial gradient and blur orbs; `bg-paper` +
       `border-b border-line`; crumbs `text-ink-mute hover:text-crimson`; eyebrow crimson; h1 homepage
       scale in `var(--hero-text)`; subtitle `text-ink-soft`; top padding keeps header clearance
       (`--hero-offset`); drop photo rendering (keep the `backgroundImage` prop accepted but unused, or
       remove it with its one caller in `campus-life/layout.tsx`). `rightSlot` stays.
-- [ ] `PageHero` children: every caller that passes gold/white buttons (e.g. `admissions/page.tsx`
+- [x] `PageHero` children: every caller that passes gold/white buttons (e.g. `admissions/page.tsx`
       "Start Application") → `pillPrimary` / `pillOutline`. Grep `<PageHero` and fix each.
-- [ ] `about/layout.tsx` hero: same treatment as `PageHero` (currently its own navy gradient + white chips);
+- [x] `about/layout.tsx` hero: same treatment as `PageHero` (currently its own navy gradient + white chips);
       chips → `rounded-full border border-line-strong` ink text. Consider switching it to `PageHero`.
-- [ ] `CollegeLandingPage.tsx` hero (`CollegeHero`): homepage-style photo hero — `bg-cream` base,
+- [x] `CollegeLandingPage.tsx` hero (`CollegeHero`): homepage-style photo hero — `bg-cream` base,
       untinted-by-default photo with Photo Visibility + tint + Background Blur, left paper fade from the
       shared helper, kicker chip → crimson eyebrow, `(SVIT)` gold text → navy/crimson, pill buttons.
       Fallback when a college has no photo: plain beige banner like `PageHero`.
-- [ ] `HeroAppearancePanel.tsx` (admin): update the live preview to render the beige banner + photo-hero
+- [x] `HeroAppearancePanel.tsx` (admin): update the live preview to render the beige banner + photo-hero
       look so admins see real results; relabel help text to say where each control applies (table above).
       Keep every control visible. **Do not remove any control.**
-- [ ] Update `CONTEXT.md` glossary (Overlay hero vs Split hero vs beige banner) and
+- [x] Update `CONTEXT.md` glossary (Overlay hero vs Split hero vs beige banner) and
       `BEIGE_DESIGN_SYSTEM.md` with a "Heroes" section.
-- [ ] **Release step (Phase 9):** set saved `app_settings.hero_appearance.heroTextColor` from `#ffffff`
-      to `#2b2f5e` (admins may change it later).
+- [x] Set saved `app_settings.hero_appearance.heroTextColor` `#ffffff` → `#2b2f5e` — done early (2026-09-29):
+      `origin/prod` never reads `heroTextColor`, so the live site is unaffected, and doing it now avoids
+      white-on-beige banners during development. Revert: set it back to `#ffffff`.
+
+_Done 2026-09-29. Notes: `--hero-text` is set once on the `(site)` layout wrapper (PageHero renders inside
+client components, so it can't fetch settings). About banner now uses `PageHero` (+ breadcrumbs). The
+admin panel preview shows a college photo hero + an inner page banner; nothing was hidden. The whole
+college photo is blurred at the saved Background Blur (5px) — admins can lower it._
 
 ## Phase 2 — Section navigation
 
@@ -140,7 +146,8 @@ Keep the dark backdrop (right for photo viewing); the panels match the site.
 - [ ] `PlacementPage.tsx` (r17 lift2 navy13 grey6 shadow1 gold7): the heaviest file — stat strips per
       homepage numbers strip, recruiter/company grids as joined grids, navy bands → paper/paper-deep,
       charts/tables hairline-styled, one gold-soft CTA max. Consider splitting into sub-components while here.
-- [ ] `CollegeLandingPage.tsx` body (r3 lift2 navy3 grey1 gold5): sections per design system; program/
+- [ ] `CollegeLandingPage.tsx` body (r3 lift2 navy3 grey1 gold5); also dedupe trust badges by title
+      ("AICTE Approved" appears twice → React duplicate-key error), as the homepage `TrustBand` does: sections per design system; program/
       department cards via `DeptBranchCard`; stats per numbers strip; closing CTA uses `CTABanner`.
 
 ## Phase 7 — Page by page
@@ -239,8 +246,7 @@ Not in scope (redirect only): `/placement/[college]`, `/courses/[course]/faculty
 - [ ] Delete `card-lift` from `globals.css` once unused.
 - [ ] Admin regression pass: Homepage editor, Hero Appearance panel (every control changes something
       visible per the Phase 1 table), media uploads, menus, CRUD pages that preview public components.
-- [ ] Set `hero_appearance.heroTextColor` → `#2b2f5e` in the live DB (one-row update; note old value
-      `#ffffff` in the release notes so it can be reverted).
+- [x] Set `hero_appearance.heroTextColor` → `#2b2f5e` — done in Phase 1 (old value `#ffffff`).
 - [ ] Full-page screenshots of every Phase 7 page at 390 / 1440 for sign-off.
 - [ ] `npm run build` passes (needs public Supabase env vars; build crawls a running server for the search index).
 - [ ] Update `BEIGE_DESIGN_SYSTEM.md` (heroes, forms, tabs sections) and prune the §10 rollout list.

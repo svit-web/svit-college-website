@@ -30,36 +30,75 @@ export const DEFAULT_HERO_APPEARANCE: HeroAppearance = {
 };
 
 /**
- * Derives the actual photo-opacity + overlay CSS for a hero section from one
- * appearance record. The overlay keeps its original top/mid/bottom gradient
- * shape (30/40/55 at the shipped defaults) scaled proportionally off a single
- * "overlay intensity" number, so editors only reason about one slider instead
- * of three raw gradient stops.
+ * Derives the photo-opacity + tint CSS for a photo hero (homepage, college
+ * pages) from one appearance record. The tint keeps its top/mid/bottom
+ * gradient shape (30/40/55 at the shipped defaults) scaled off a single
+ * "overlay intensity" number. An unset overlay colour tints toward the paper
+ * background so the photo blends into the beige theme.
+ *
+ * `blur` adds the whole-photo "Background Blur" (heroBlurPx) to the tint
+ * layer — college heroes only; the homepage keeps its photo sharp and uses
+ * its own masked blur from heroFadeStyles().
  */
-export function heroOverlayStyles(a: HeroAppearance): { imageStyle: CSSProperties; overlayStyle: CSSProperties } {
+export function heroOverlayStyles(
+  a: HeroAppearance,
+  { blur = true }: { blur?: boolean } = {},
+): { imageStyle: CSSProperties; overlayStyle: CSSProperties } {
   const bottom = a.heroOverlayOpacity;
   const top = Math.round(bottom * (30 / 55));
   const mid = Math.round(bottom * (40 / 55));
-  const topColor = a.heroOverlayColor || 'var(--navy-deep)';
-  const bottomColor = a.heroOverlayColor || 'var(--navy)';
+  const color = a.heroOverlayColor || 'var(--paper)';
 
   return {
     imageStyle: { opacity: a.heroImageOpacity / 100 },
     overlayStyle: {
-      backgroundImage: `linear-gradient(to bottom, color-mix(in oklab, ${topColor} ${top}%, transparent), color-mix(in oklab, ${topColor} ${mid}%, transparent), color-mix(in oklab, ${bottomColor} ${bottom}%, transparent))`,
-      backdropFilter: `blur(${a.heroBlurPx}px)`,
-      WebkitBackdropFilter: `blur(${a.heroBlurPx}px)`,
+      backgroundImage: `linear-gradient(to bottom, color-mix(in oklab, ${color} ${top}%, transparent), color-mix(in oklab, ${color} ${mid}%, transparent), color-mix(in oklab, ${color} ${bottom}%, transparent))`,
+      ...(blur && {
+        backdropFilter: `blur(${a.heroBlurPx}px)`,
+        WebkitBackdropFilter: `blur(${a.heroBlurPx}px)`,
+      }),
     },
   };
 }
 
 /**
- * CSS custom property carrying the hero text color, scoped onto the hero
- * section's root element. Hero text classes reference it via
- * `text-[var(--hero-text)]` so a single admin setting recolors every hero's
- * title/subtitle/breadcrumbs at once. Defaults to white, matching the
- * pre-existing hardcoded `text-white` look.
+ * The homepage-style paper fade for photo heroes whose text sits on the left
+ * of the photo: a left-to-right paper gradient that clears by the horizontal
+ * midpoint, a matching masked backdrop blur, and a short top fade so the photo
+ * blends into the floating navbar. Driven by the "Homepage Blur" and
+ * "Homepage Gradient Opacity" controls; shared by the homepage and college heroes.
+ */
+export function heroFadeStyles(a: HeroAppearance): {
+  sideBlur: CSSProperties;
+  sideGradient: CSSProperties;
+  topBlur: CSSProperties;
+  topGradient: CSSProperties;
+} {
+  const o = a.homepageGradientOpacity / 100;
+  const blur = {
+    backdropFilter: `blur(${a.homepageBlurPx}px)`,
+    WebkitBackdropFilter: `blur(${a.homepageBlurPx}px)`,
+  };
+  const sideMask = 'linear-gradient(to right, black 0%, black 32%, transparent 50%)';
+  const topMask = 'linear-gradient(to bottom, black 0%, transparent 100%)';
+  return {
+    sideBlur: { ...blur, WebkitMaskImage: sideMask, maskImage: sideMask },
+    sideGradient: {
+      background: `linear-gradient(to right, rgba(251, 248, 241, ${o}) 0%, rgba(251, 248, 241, ${o * 0.87}) 16%, rgba(251, 248, 241, ${o * 0.51}) 32%, transparent 50%)`,
+    },
+    topBlur: { ...blur, WebkitMaskImage: topMask, maskImage: topMask },
+    topGradient: {
+      background: `linear-gradient(to bottom, rgba(251, 248, 241, ${o * 0.82}) 0%, transparent 100%)`,
+    },
+  };
+}
+
+/**
+ * CSS custom property carrying the hero text color. Set once on the public
+ * site layout (and on heroes that receive an appearance record), read by hero
+ * text via `text-[var(--hero-text)]`, so one admin setting recolors every
+ * hero's title/subtitle/breadcrumbs. Defaults to navy for the beige theme.
  */
 export function heroTextVars(a: HeroAppearance): CSSProperties {
-  return { ['--hero-text' as never]: a.heroTextColor || '#ffffff' };
+  return { ['--hero-text' as never]: a.heroTextColor || 'var(--navy)' };
 }

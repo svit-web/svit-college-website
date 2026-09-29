@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { DEFAULT_HERO_APPEARANCE, heroOverlayStyles, heroTextVars, HOMEPAGE_ROTATE_MS, type HeroAppearance } from '@/lib/theme';
+import { DEFAULT_HERO_APPEARANCE, heroFadeStyles, heroOverlayStyles, heroTextVars, HOMEPAGE_ROTATE_MS, type HeroAppearance } from '@/lib/theme';
 import { setHeroAppearance } from '@/lib/theme-next';
 import { Image, Images, Layers, Loader2, Save, Sparkles, Type, X } from 'lucide-react';
 import { toast } from 'sonner';
@@ -49,6 +49,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
   }
 
   const { imageStyle, overlayStyle } = heroOverlayStyles(settings);
+  const fade = heroFadeStyles(settings);
 
   return (
     <div className="space-y-6">
@@ -56,7 +57,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
         <div>
           <h1 className="font-display text-2xl font-bold tracking-tight text-navy md:text-3xl">Hero Appearance</h1>
           <p className="text-sm text-slate-500">
-            One place to control every hero photo across the site. The tint/blur overlay below applies to the About, Campus Life and Contact heroes, where text sits on top of the photo — the homepage hero shows photos full-bleed with no overlay, so those settings don&apos;t affect it.
+            One place to control every hero across the site. Photo settings apply to the two photo heroes — the homepage and each college page. Text Color applies to every hero, including the beige page banners on inner pages.
           </p>
         </div>
         <div className="flex gap-2">
@@ -76,11 +77,11 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
 
       <div className="grid gap-6 lg:grid-cols-[1fr_1.2fr]">
         <div className="space-y-6 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Overlay Settings (applies to every hero below)</span>
+          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Photo Hero Settings — homepage &amp; college pages</span>
           <SliderField
             icon={Image}
             label="Photo Visibility"
-            hint="How visible the photo is behind the tint. Higher = clearer photo."
+            hint="How visible the hero photo is. Lower fades it into the beige background."
             value={settings.heroImageOpacity}
             min={0}
             max={100}
@@ -90,7 +91,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
           <SliderField
             icon={Layers}
             label="Overlay Intensity"
-            hint="Strength of the tint. Higher = darker, better contrast for text."
+            hint="Strength of the tint over the photo. Higher = more tint, calmer photo."
             value={settings.heroOverlayOpacity}
             min={0}
             max={100}
@@ -106,7 +107,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
               <div className="flex items-center gap-2">
                 <input
                   type="color"
-                  value={settings.heroOverlayColor ?? '#1b2559'}
+                  value={settings.heroOverlayColor ?? '#fbf8f1'}
                   onChange={(e) => setSettings((s) => ({ ...s, heroOverlayColor: e.target.value }))}
                   className="h-7 w-10 cursor-pointer rounded border border-slate-200 p-0"
                 />
@@ -116,12 +117,12 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
                     onClick={() => setSettings((s) => ({ ...s, heroOverlayColor: null }))}
                     className="text-xs font-semibold text-slate-400 hover:text-crimson"
                   >
-                    Reset to navy
+                    Reset to beige
                   </button>
                 )}
               </div>
             </div>
-            <p className="mt-1 text-xs text-slate-500">Color of the tint over hero photos. Defaults to the site's navy.</p>
+            <p className="mt-1 text-xs text-slate-500">Color of the tint over hero photos. Defaults to the site&apos;s beige.</p>
           </div>
           <div>
             <div className="flex items-center justify-between">
@@ -132,7 +133,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
               <div className="flex items-center gap-2">
                 <input
                   type="color"
-                  value={settings.heroTextColor ?? '#ffffff'}
+                  value={settings.heroTextColor ?? '#2b2f5e'}
                   onChange={(e) => setSettings((s) => ({ ...s, heroTextColor: e.target.value }))}
                   className="h-7 w-10 cursor-pointer rounded border border-slate-200 p-0"
                 />
@@ -142,17 +143,17 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
                     onClick={() => setSettings((s) => ({ ...s, heroTextColor: null }))}
                     className="text-xs font-semibold text-slate-400 hover:text-crimson"
                   >
-                    Reset to white
+                    Reset to navy
                   </button>
                 )}
               </div>
             </div>
-            <p className="mt-1 text-xs text-slate-500">Color of the title and subtitle text in the hero. Defaults to white.</p>
+            <p className="mt-1 text-xs text-slate-500">Title and subtitle color on every hero — homepage, college pages and inner page banners. Defaults to navy.</p>
           </div>
           <SliderField
             icon={Sparkles}
             label="Background Blur"
-            hint="Softens the photo so text stays readable without a heavy tint."
+            hint="Blurs the whole photo on college page heroes. The homepage photo stays sharp."
             value={settings.heroBlurPx}
             min={0}
             max={20}
@@ -161,43 +162,58 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
           />
         </div>
 
-        <div className="space-y-2">
-          <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Live Preview — About / Campus Life / Contact</span>
-          <div className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 shadow-sm">
-            <img src={campusHero.src} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
-            <div className="absolute inset-0" style={overlayStyle} />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Live Preview — College page hero</span>
             <div
-              className="relative flex h-full flex-col justify-center gap-3 p-8"
-              style={{ ...heroTextVars(settings), color: 'var(--hero-text)' }}
+              className="relative aspect-video w-full overflow-hidden rounded-xl border border-slate-200 bg-cream shadow-sm"
+              style={heroTextVars(settings)}
             >
-              <div className="w-fit rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.25em] text-gold">Est. 2005 · Vasad, Gujarat</div>
-              <h2 className="font-display text-2xl font-bold leading-tight md:text-3xl">
-                Build Your Future.
-                <br />
-                <span className="text-gold">Shape The World.</span>
-              </h2>
+              <img src={campusHero.src} alt="" className="absolute inset-0 h-full w-full object-cover" style={imageStyle} />
+              <div className="absolute inset-0" style={overlayStyle} />
+              <div className="absolute inset-0" style={fade.sideBlur} />
+              <div className="absolute inset-0" style={fade.sideGradient} />
+              <div className="relative flex h-full max-w-[60%] flex-col justify-center gap-3 p-8">
+                <div className="text-[10px] font-bold uppercase tracking-[0.22em] text-crimson">Est. 1997 · Vasad, Gujarat</div>
+                <h2 className="font-display text-2xl font-bold leading-tight text-[var(--hero-text)] md:text-3xl">
+                  Build Your Future.{' '}
+                  <em className="font-medium italic text-crimson">Shape The World.</em>
+                </h2>
+              </div>
             </div>
+            <p className="text-xs text-slate-500">
+              The homepage hero looks the same, except Background Blur doesn&apos;t apply there.
+            </p>
           </div>
-          <p className="text-xs text-slate-500">
-            This mirrors the heroes that show text on top of the photo — About, Campus Life and Contact. The homepage hero doesn&apos;t use this overlay; see its photos below.
-          </p>
+          <div className="space-y-2">
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Live Preview — Inner page banner</span>
+            <div
+              className="rounded-xl border border-slate-200 bg-cream px-8 py-6"
+              style={heroTextVars(settings)}
+            >
+              <div className="text-[10px] font-semibold uppercase tracking-[0.12em] text-ink-mute">Home › Admissions</div>
+              <div className="mt-3 text-[10px] font-bold uppercase tracking-[0.22em] text-crimson">2026-27 Batch</div>
+              <div className="mt-2 font-display text-2xl font-bold text-[var(--hero-text)]">Admissions</div>
+            </div>
+            <p className="text-xs text-slate-500">Inner pages have no photo — only Text Color affects them.</p>
+          </div>
         </div>
       </div>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex items-center gap-2">
           <Images className="h-4 w-4 text-crimson" />
-          <h2 className="text-sm font-semibold text-navy">Homepage Hero</h2>
+          <h2 className="text-sm font-semibold text-navy">Photo Hero Fade &amp; Homepage Photos</h2>
         </div>
         <p className="mt-1 text-xs text-slate-500">
-          The homepage has its own blur and gradient settings (separate from the overlay settings above).
+          Blur and strength of the beige fade behind the hero text — applies to the homepage and college page heroes.
         </p>
         <div className="mt-4 grid gap-6 lg:grid-cols-2">
           <div className="space-y-4">
             <SliderField
               icon={Sparkles}
               label="Homepage Blur"
-              hint="Blur amount on the homepage hero background."
+              hint="Blur under the beige fade on the homepage and college page heroes."
               value={settings.homepageBlurPx}
               min={0}
               max={20}
@@ -207,7 +223,7 @@ export function HeroAppearancePanel({ initialAppearance }: { initialAppearance: 
             <SliderField
               icon={Layers}
               label="Homepage Gradient Opacity"
-              hint="Strength of the cream gradient overlay on homepage."
+              hint="Strength of the beige fade on the homepage and college page heroes."
               value={settings.homepageGradientOpacity}
               min={0}
               max={100}

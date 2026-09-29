@@ -9,6 +9,8 @@ import { getAllEvents } from "@/lib/events.functions";
 import { getSports } from "@/lib/sports.functions";
 import { getVisibleCenters } from "@/lib/centers.functions";
 import { getMainNavigation, getTopUtilityNavigation } from "@/lib/menus.functions";
+import { getHeroAppearance } from "@/lib/theme.functions";
+import { DEFAULT_HERO_APPEARANCE, heroTextVars } from "@/lib/theme";
 
 export default async function SiteLayout({
   children,
@@ -27,6 +29,7 @@ export default async function SiteLayout({
     centers,
     mainNav,
     utilityNav,
+    heroAppearance,
   ] = await Promise.all([
     getCollegesGrid().catch(() => []),
     getContactInfo().catch(() => null),
@@ -39,12 +42,15 @@ export default async function SiteLayout({
     getVisibleCenters().catch(() => []),
     getMainNavigation().catch(() => []),
     getTopUtilityNavigation().catch(() => []),
+    getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
   ]);
 
   const logoUrl = colleges.find((c) => c.slug === "svit-degree")?.logo_url ?? null;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    // --hero-text (admin "Text Color") is set here once so every hero — including
+    // PageHero rendered inside client components — follows the setting.
+    <div className="flex min-h-screen flex-col" style={heroTextVars(heroAppearance)}>
       <Header
         mainNav={mainNav}
         utilityNav={utilityNav}

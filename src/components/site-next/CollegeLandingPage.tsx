@@ -11,7 +11,8 @@ import {
   Trees,
   Users,
 } from "lucide-react";
-import { heroOverlayStyles, heroTextVars, DEFAULT_HERO_APPEARANCE, type HeroAppearance } from "@/lib/theme";
+import { heroFadeStyles, heroOverlayStyles, heroTextVars, DEFAULT_HERO_APPEARANCE, type HeroAppearance } from "@/lib/theme";
+import { pillOutline, pillPrimary } from "@/components/site-next/site-styles";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
@@ -86,6 +87,9 @@ export function CollegeLandingPage({
   );
 }
 
+// Photo hero in the homepage style: full-bleed college photo (Photo Visibility,
+// overlay tint and whole-photo Background Blur apply) with the shared paper
+// fade down the left for the text. No photo → a plain paper banner.
 function Hero({
   college,
   appearance,
@@ -95,47 +99,64 @@ function Hero({
   appearance: HeroAppearance;
   ctaLabel: string;
 }) {
+  const photo = college.hero.imageUrl;
   const { imageStyle, overlayStyle } = heroOverlayStyles(appearance);
+  const fade = heroFadeStyles(appearance);
 
   return (
     <section
-      className="relative overflow-hidden bg-navy-deep text-[var(--hero-text)]"
+      className="relative overflow-hidden border-b border-line bg-cream"
       style={heroTextVars(appearance)}
     >
-      {college.hero.imageUrl && (
-        <Image
-          src={college.hero.imageUrl}
-          alt=""
-          fill
-          sizes="100vw"
-          priority
-          className="object-cover"
-          style={imageStyle}
-        />
+      {photo && (
+        <div className="absolute inset-0">
+          <Image
+            src={photo}
+            alt=""
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+            style={imageStyle}
+          />
+          <div className="absolute inset-0" style={overlayStyle} />
+          <div className="absolute inset-0" style={fade.sideBlur} />
+          <div className="absolute inset-0" style={fade.sideGradient} />
+          <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topBlur} />
+          <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topGradient} />
+          {/* Phones: text spans the full width, so wash the whole photo. */}
+          <div className="absolute inset-0 bg-cream/75 md:hidden" />
+        </div>
       )}
-      <div className="absolute inset-0" style={overlayStyle} />
-      <div className="container-page relative pb-24 pt-[clamp(150px,18vh,200px)] md:pb-32">
-        <div className="max-w-3xl">
-          <div className="mb-6 inline-block rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-            {college.hero.kicker}
-          </div>
-          <h1 className="font-display text-5xl md:text-7xl font-bold leading-[1.02]">
-            {college.name} <br />
-            <span className="text-gold">({college.shortCode})</span>
+      <div className="container-page relative flex min-h-[560px] flex-col justify-end pb-[clamp(2.5rem,6vw,4.5rem)] pt-[clamp(112px,16vh,180px)] lg:min-h-[86vh]">
+        <div className="max-w-[34rem]">
+          {college.hero.kicker && (
+            <p className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-crimson">
+              {college.hero.kicker}
+            </p>
+          )}
+          <h1 className="mt-[1.1rem] text-[clamp(2rem,3.9vw,3.4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[var(--hero-text)]">
+            {college.name}{" "}
+            <span className="font-serif font-medium italic tracking-[-0.01em] text-crimson">
+              ({college.shortCode})
+            </span>
           </h1>
-          <p className="mt-5 font-display text-2xl text-gold/90 italic">{college.tagline}</p>
-          <p className="mt-4 text-lg text-[color-mix(in_oklab,var(--hero-text)_85%,transparent)] max-w-2xl">{college.hero.subhead}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <Link
-              href="/admissions/inquiry"
-              className="inline-flex items-center gap-2 rounded-md bg-gold px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-navy-deep hover:bg-gold-soft transition-colors"
-            >
-              {ctaLabel} <ArrowRight className="h-4 w-4" />
+          {college.tagline && (
+            <p className="mt-5 font-display text-xl italic text-[var(--hero-text)] md:text-2xl">
+              {college.tagline}
+            </p>
+          )}
+          {college.hero.subhead && (
+            <p className="mt-4 max-w-2xl text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-[color-mix(in_oklab,var(--hero-text)_78%,var(--paper))]">
+              {college.hero.subhead}
+            </p>
+          )}
+          <div className="mt-8 flex flex-col gap-[0.7rem] sm:flex-row">
+            <Link href="/admissions/inquiry" className={pillPrimary}>
+              {ctaLabel}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
-            <a
-              href="#programmes"
-              className="inline-flex items-center gap-2 rounded-md border border-white/25 px-6 py-3.5 text-sm font-semibold hover:bg-white/10 transition-colors"
-            >
+            <a href="#programmes" className={pillOutline}>
               Explore Programmes
             </a>
           </div>

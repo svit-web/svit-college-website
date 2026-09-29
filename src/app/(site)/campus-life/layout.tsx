@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/site-next/PageHero";
 import { CampusLifeNav } from "@/components/site-next/CampusLifeNav";
-import { getHeroAppearance } from "@/lib/theme.functions";
-import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme";
 
 export const metadata: Metadata = {
   title: "Campus Life — SVIT Vasad",
   description: "Facilities, clubs and events that make SVIT more than a college.",
 };
 
-export default async function CampusLifeLayout({ children }: { children: React.ReactNode }) {
-  const appearance = await getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE);
-
+export default function CampusLifeLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <PageHero
@@ -19,8 +15,6 @@ export default async function CampusLifeLayout({ children }: { children: React.R
         accent="Beyond the Classroom"
         subtitle="Facilities, clubs and events that make SVIT more than a college."
         crumbs={[{ label: "Home", to: "/" }, { label: "Campus Life" }]}
-        backgroundImage={undefined}
-        appearance={appearance}
       />
 
       <div className="bg-secondary/30">

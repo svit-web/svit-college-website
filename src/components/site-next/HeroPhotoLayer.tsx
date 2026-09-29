@@ -20,6 +20,8 @@ interface Props {
    * where the photo sits in its own region and no text overlaps it.
    */
   overlay?: boolean;
+  /** Include the whole-photo "Background Blur" in the overlay (default true). The homepage passes false. */
+  overlayBlur?: boolean;
   /** Alt text for the photo(s). Defaults to "" (decorative), appropriate when overlay is true. */
   alt?: string;
   /** Fires once the first photo has actually loaded, so callers can hold off on photo-dependent chrome (tints, blur) until there's something under it. */
@@ -40,7 +42,7 @@ interface Props {
  * rather than a text backdrop. Renders nothing when there are no photos yet,
  * so callers can fall back to their existing plain background.
  */
-export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, alt = "", onLoad, transition = "fade" }: Props) {
+export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, overlayBlur = true, alt = "", onLoad, transition = "fade" }: Props) {
   const [index, setIndex] = useState(0);
   // Only the current slide plus a one-ahead preload get an <Image> mounted.
   // Mounting every slide up front makes the browser fetch/optimize every
@@ -75,7 +77,7 @@ export function HeroPhotoLayer({ photos, appearance, rotateMs, overlay = true, a
 
   if (photos.length === 0) return null;
 
-  const { imageStyle, overlayStyle } = heroOverlayStyles(appearance);
+  const { imageStyle, overlayStyle } = heroOverlayStyles(appearance, { blur: overlayBlur });
   const activeOpacity = overlay && typeof imageStyle.opacity === "number" ? imageStyle.opacity : 1;
 
   if (transition === "marquee") {

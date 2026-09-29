@@ -240,6 +240,29 @@ navy h2, `ink-soft` subtitle, `pillPrimary` + `pillOutline`. One per page, just 
 `border-t border-line bg-paper-deep text-ink-soft`; non-light `Logo`; navy icons; headings
 `text-navy`; links `hover:text-crimson`; circular social buttons; `border-line` dividers.
 
+### Heroes
+Two kinds (glossary: `CONTEXT.md`):
+
+- **Photo hero** — homepage (`HeroNew`) and college pages (`CollegeLandingPage` `Hero`). Full-bleed photo
+  on `bg-cream`, `heroOverlayStyles()` tint, `heroFadeStyles()` paper fade + masked blur on the left,
+  text left in `max-w-[34rem]`–`36ch`. Phones: an extra `bg-cream/75` wash (college) since text spans the width.
+- **Page banner** — `PageHero` on every inner page. `bg-paper border-b border-line`, faint navy grid
+  texture on the right (lg+), breadcrumbs top (uppercase `ink-mute`, hover crimson), then crimson eyebrow,
+  h1 `clamp(2.2rem,4.6vw,3.8rem)` bold, subtitle, and `children` as a pill-button row.
+  `lg:min-h-[60vh]`, content-height on phones. Put actions in `children` using `pillPrimary`/`pillOutline`;
+  chips (About) as `rounded-full border border-line-strong` uppercase `ink-soft`.
+
+Admin controls (`app_settings.hero_appearance`, edited in Admin → Homepage → Hero Appearance):
+
+| Control | Applies to |
+|---|---|
+| Homepage Blur / Homepage Gradient Opacity | The left fade + blur on both photo heroes |
+| Photo Visibility / Overlay colour + intensity | Both photo heroes (unset colour → paper) |
+| Background Blur | College photo heroes only |
+| Text Color | Every hero via `--hero-text` (set on the public layout wrapper); unset → navy |
+
+Hero text uses `text-[var(--hero-text)]` (or `var(--hero-text,var(--navy))`), never a hardcoded colour.
+
 ### Header
 Already on theme: floating cream bar, `text-ink-soft hover:text-crimson`. Mega panels use `bg-white`
 logo chips with `rounded-md` — minor cleanup candidate.

@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
-import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
+import { PageHero } from "@/components/site-next/PageHero";
 import { getAboutPage } from "@/lib/pages.functions";
-import { getHeroAppearance } from "@/lib/theme.functions";
-import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme";
 import { getMiscSettings } from "@/lib/site-settings.functions";
 import { getMainNavigation } from "@/lib/menus.functions";
 import { AboutNav } from "./AboutNav";
@@ -18,13 +16,11 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutLayout({ children }: { children: React.ReactNode }) {
-  const [aboutPage, appearance, misc, mainNav] = await Promise.all([
+  const [aboutPage, misc, mainNav] = await Promise.all([
     getAboutPage().catch(() => null),
-    getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
     getMiscSettings().catch(() => null),
     getMainNavigation().catch(() => []),
   ]);
-  const resolvedAppearance = appearance ?? DEFAULT_HERO_APPEARANCE;
   const c = aboutPage;
   const aboutLinks =
     mainNav.find((item) => item.menu_type === "links_mega" && item.title === "About SVIT")
@@ -32,40 +28,25 @@ export default async function AboutLayout({ children }: { children: React.ReactN
 
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-navy via-navy to-navy-deep text-white">
-        <HeroPhotoLayer
-          photos={[]}
-          appearance={resolvedAppearance}
-        />
-        <div className="container-page relative pb-14 pt-[clamp(150px,18vh,200px)] md:pb-20">
-          <div className="max-w-3xl">
-            <div className="text-xs font-semibold uppercase tracking-[0.25em] text-gold">
-              {c?.hero?.accent}
-            </div>
-            <h1 className="mt-3 font-display text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              {c?.hero?.title}
-            </h1>
-            <p className="mt-6 text-base md:text-lg text-white/80 leading-relaxed">
-              {c?.hero?.introText}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3 text-xs font-semibold uppercase tracking-wider text-white/70">
-              <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
-                Est. {misc?.year_established}
-              </span>
-              <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
-                AICTE Approved
-              </span>
-              <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
-                NBA Accredited
-              </span>
-              <span className="rounded-full border border-white/20 bg-white/5 px-4 py-2">
-                GTU Affiliated
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <PageHero
+        title={c?.hero?.title ?? "About SVIT"}
+        accent={c?.hero?.accent}
+        subtitle={c?.hero?.introText}
+        crumbs={[{ label: "Home", to: "/" }, { label: "About" }]}
+      >
+        <span className="rounded-full border border-line-strong px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          Est. {misc?.year_established}
+        </span>
+        <span className="rounded-full border border-line-strong px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          AICTE Approved
+        </span>
+        <span className="rounded-full border border-line-strong px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          NBA Accredited
+        </span>
+        <span className="rounded-full border border-line-strong px-4 py-2 text-xs font-semibold uppercase tracking-wider text-ink-soft">
+          GTU Affiliated
+        </span>
+      </PageHero>
 
       {/* Vertical sidebar + content */}
       <div className="bg-secondary/30">
