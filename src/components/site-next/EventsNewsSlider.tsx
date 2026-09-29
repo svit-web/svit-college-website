@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion, type PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, Calendar, Image as ImageIcon } from "lucide-react";
+import { circleIconButton } from "./site-styles";
 
 export interface EventSlide {
   id: string;
@@ -18,7 +19,7 @@ export interface EventSlide {
 function Card({ slide }: { slide: EventSlide }) {
   const content = (
     <>
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-secondary/60">
+      <div className="relative aspect-video w-full overflow-hidden bg-paper-deep">
         {slide.imageUrl ? (
           <Image
             src={slide.imageUrl}
@@ -28,18 +29,18 @@ function Card({ slide }: { slide: EventSlide }) {
             className="object-cover"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+          <div className="flex h-full w-full items-center justify-center text-ink-mute">
             <ImageIcon className="h-10 w-10" aria-hidden />
           </div>
         )}
       </div>
       <div className="mt-4">
-        <div className="text-xs font-bold uppercase tracking-widest text-crimson">{slide.tag}</div>
-        <h3 className="mt-1 font-display text-lg font-bold leading-snug text-navy line-clamp-2">
+        <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">{slide.tag}</div>
+        <h3 className="mt-1.5 line-clamp-2 font-display text-lg font-medium leading-snug text-navy">
           {slide.title}
         </h3>
         {slide.date && (
-          <div className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <div className="mt-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-ink-mute">
             <Calendar className="h-3.5 w-3.5" /> {slide.date}
           </div>
         )}
@@ -47,7 +48,9 @@ function Card({ slide }: { slide: EventSlide }) {
     </>
   );
 
-  const className = "block h-full w-full rounded-2xl border border-border bg-white p-4 shadow-sm";
+  const className = `group block h-full w-full border border-line bg-surface p-4 ${
+    slide.slug ? "transition-colors duration-300 hover:border-navy hover:bg-paper-deep" : ""
+  }`;
 
   return slide.slug ? (
     <Link href={`/campus-life/events/${slide.slug}`} className={className}>
@@ -71,7 +74,7 @@ export function EventsNewsSlider({ items }: { items: EventSlide[] }) {
 
   if (count === 0) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-2xl border border-border bg-white text-sm text-muted-foreground">
+      <div className="flex h-64 items-center justify-center border border-line bg-surface text-sm text-ink-soft">
         No events or news published yet.
       </div>
     );
@@ -148,27 +151,35 @@ export function EventsNewsSlider({ items }: { items: EventSlide[] }) {
         <>
           <button
             onClick={() => go(-1)}
-            className="absolute left-0 top-1/2 z-20 hidden -translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-white p-2 text-navy shadow-sm hover:bg-secondary active:scale-90 transition-[background-color,transform] duration-100 md:flex"
+            className={`absolute left-0 top-1/2 z-20 -translate-x-1/2 -translate-y-1/2 bg-paper max-md:hidden ${circleIconButton}`}
             aria-label="Previous"
           >
             <ChevronLeft className="h-5 w-5" />
           </button>
           <button
             onClick={() => go(1)}
-            className="absolute right-0 top-1/2 z-20 hidden translate-x-1/2 -translate-y-1/2 rounded-full border border-border bg-white p-2 text-navy shadow-sm hover:bg-secondary active:scale-90 transition-[background-color,transform] duration-100 md:flex"
+            className={`absolute right-0 top-1/2 z-20 translate-x-1/2 -translate-y-1/2 bg-paper max-md:hidden ${circleIconButton}`}
             aria-label="Next"
           >
             <ChevronRight className="h-5 w-5" />
           </button>
 
-          <div className="mt-6 flex justify-center gap-2">
+          <div className="mt-4 flex flex-wrap justify-center">
             {items.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={() => setIndex(i)}
                 aria-label={`Go to slide ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all ${i === index ? "w-8 bg-crimson" : "w-3 bg-navy/15 hover:bg-navy/30"}`}
-              />
+                aria-current={i === index}
+                className="group/dot flex h-11 items-center px-1"
+              >
+                <span
+                  className={`block h-1.5 rounded-full transition-all ${
+                    i === index ? "w-8 bg-navy" : "w-3 bg-line-strong group-hover/dot:bg-ink-mute"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         </>

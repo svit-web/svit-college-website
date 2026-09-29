@@ -58,14 +58,14 @@ export function EventsBrowser({ items }: { items: EventBrowserItem[] }) {
                 aria-pressed={active}
                 onClick={() => setFilter(chip.key)}
                 className={cn(
-                  "rounded-full border-2 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-[border-color,background-color,color] duration-150",
+                  "inline-flex min-h-11 items-center rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors",
                   active
-                    ? "border-gold bg-navy text-white shadow-sm"
-                    : "border-navy/15 bg-white text-navy hover:border-navy/40",
+                    ? "border-ink bg-ink text-cream"
+                    : "border-line-strong text-ink hover:border-ink",
                 )}
               >
                 {chip.label}
-                <span className={cn("ml-1.5", active ? "text-gold" : "text-navy/50")}>
+                <span className={cn("ml-1.5", active ? "text-cream/60" : "text-ink-mute")}>
                   {counts[chip.key] ?? 0}
                 </span>
               </button>
@@ -75,7 +75,7 @@ export function EventsBrowser({ items }: { items: EventBrowserItem[] }) {
       )}
 
       {visible.length === 0 ? (
-        <p className="mt-6 text-sm text-muted-foreground">No events yet — check back soon.</p>
+        <p className="mt-6 text-sm text-ink-soft">No events yet — check back soon.</p>
       ) : (
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visible.map((it, i) => (

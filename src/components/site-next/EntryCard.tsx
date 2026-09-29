@@ -6,7 +6,7 @@
 // rather than rendering a dead button.
 import Image from "next/image";
 import Link from "next/link";
-import { ImageIcon } from "lucide-react";
+import { ArrowRight, ImageIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { entryHasMoreToShow, type EntryCardData } from "@/lib/entry";
 
@@ -18,17 +18,18 @@ import { entryHasMoreToShow, type EntryCardData } from "@/lib/entry";
 export function EntryCardPlaceholder({ size = "sm" }: { size?: "sm" | "lg" }) {
   const large = size === "lg";
   return (
-    <div aria-hidden className="absolute inset-0 overflow-hidden bg-navy">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,color-mix(in_oklab,var(--gold)_18%,transparent),transparent_50%),radial-gradient(circle_at_80%_80%,color-mix(in_oklab,var(--crimson)_20%,transparent),transparent_55%)]" />
+    <div aria-hidden className="absolute inset-0 overflow-hidden bg-paper-deep">
+      {/* The campus-life mosaic's "dots" texture. */}
       <div
-        className={`absolute rounded-full bg-gold/20 blur-3xl ${large ? "-top-24 -right-24 h-72 w-72" : "-top-12 -right-12 h-36 w-36"}`}
-      />
-      <div
-        className={`absolute rounded-full bg-crimson/20 blur-3xl ${large ? "-bottom-24 -left-24 h-72 w-72" : "-bottom-12 -left-12 h-36 w-36"}`}
+        className="absolute inset-0"
+        style={{
+          backgroundImage: "radial-gradient(rgba(43,47,94,0.16) 1.1px, transparent 1.6px)",
+          backgroundSize: "15px 15px",
+        }}
       />
       <div className="absolute inset-0 flex items-center justify-center">
         <div
-          className={`flex items-center justify-center rounded-full border border-gold/30 bg-white/5 text-gold/70 ${large ? "h-24 w-24" : "h-14 w-14"}`}
+          className={`flex items-center justify-center rounded-full border border-line-strong bg-paper text-navy/50 ${large ? "h-24 w-24" : "h-14 w-14"}`}
         >
           <ImageIcon className={large ? "h-10 w-10" : "h-6 w-6"} strokeWidth={1.5} />
         </div>
@@ -49,10 +50,9 @@ type EntryCardProps = {
   sizes?: string;
 };
 
-const SHELL =
-  "flex h-full w-full flex-col overflow-hidden rounded-2xl border-2 border-navy/15 bg-white text-left";
+const SHELL = "flex h-full w-full flex-col overflow-hidden border border-line bg-surface text-left";
 const INTERACTIVE =
-  "card-lift group cursor-pointer hover:border-gold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2";
+  "group cursor-pointer transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-paper";
 
 export function EntryCard({
   entry,
@@ -63,9 +63,10 @@ export function EntryCard({
 }: EntryCardProps) {
   const eyebrowText = eyebrow ?? entry.subtitle;
 
-  const body: ReactNode = (
+  // Always-visible affordance so tapping works without discovering a hover.
+  const body = (action?: string): ReactNode => (
     <>
-      <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-navy">
+      <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-paper-deep">
         {entry.cardPhotoUrl ? (
           <Image
             src={entry.cardPhotoUrl}
@@ -78,18 +79,28 @@ export function EntryCard({
           <EntryCardPlaceholder />
         )}
       </div>
-      <div className="flex-1 p-5">
+      <div className="flex flex-1 flex-col p-5">
         {eyebrowText && (
           <div
-            className="text-xs font-bold uppercase tracking-widest text-crimson"
+            className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson"
             style={accentColor ? { color: accentColor } : undefined}
           >
             {eyebrowText}
           </div>
         )}
-        <h4 className="mt-1 font-display font-bold text-navy">{entry.title}</h4>
+        <h4 className="mt-1.5 font-display text-lg font-medium leading-tight text-navy">
+          {entry.title}
+        </h4>
         {entry.description && (
-          <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{entry.description}</p>
+          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
+            {entry.description}
+          </p>
+        )}
+        {action && (
+          <span className="mt-auto flex items-center gap-1 pt-4 text-xs font-semibold text-navy transition-colors group-hover:text-crimson">
+            {action}
+            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+          </span>
         )}
       </div>
     </>
@@ -98,7 +109,7 @@ export function EntryCard({
   if (entry.hasDetailPage && entry.detailHref) {
     return (
       <Link href={entry.detailHref} className={`${SHELL} ${INTERACTIVE}`}>
-        {body}
+        {body("Read more")}
       </Link>
     );
   }
@@ -108,19 +119,19 @@ export function EntryCard({
     // covered by a stretched button instead (same click target, valid HTML).
     return (
       <div
-        className={`relative ${SHELL} ${INTERACTIVE} focus-within:ring-2 focus-within:ring-gold focus-within:ring-offset-2`}
+        className={`relative ${SHELL} ${INTERACTIVE} focus-within:ring-2 focus-within:ring-navy focus-within:ring-offset-2 focus-within:ring-offset-paper`}
       >
-        {body}
+        {body("View")}
         <button
           type="button"
           onClick={() => onOpenViewer(entry)}
           aria-haspopup="dialog"
           aria-label={`View ${entry.title}`}
-          className="absolute inset-0 z-10 cursor-pointer rounded-2xl focus-visible:outline-none"
+          className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-none"
         />
       </div>
     );
   }
 
-  return <div className={SHELL}>{body}</div>;
+  return <div className={SHELL}>{body()}</div>;
 }

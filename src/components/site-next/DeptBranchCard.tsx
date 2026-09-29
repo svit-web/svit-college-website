@@ -12,55 +12,61 @@ interface Props {
 }
 
 /**
- * Square card for departments / branches.
- * Default: logo fills the card.
- * Hover: logo blurs + scales, dark overlay fades in with department name + CTA.
+ * Department / branch card: logo on a white panel with the name and the
+ * "View department" affordance always visible below it (nothing depends on
+ * hover, so it reads the same on touch screens). Hover/tap fills paper-deep.
  */
 export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, href }: Props) {
-  const Wrapper = href ? Link : "div";
-  const wrapperProps = href ? { href } : {};
-
-  return (
-    <Wrapper
-      {...(wrapperProps as any)}
-      className={cn("group block aspect-square", href && "cursor-pointer")}
-    >
-      <div className="relative h-full w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-white transition-[border-color,box-shadow] duration-200 group-hover:border-gold group-hover:shadow-lg group-active:scale-[0.97] group-active:transition-[transform] group-active:duration-75">
-        {/* Logo / initials — always visible, blurs + scales on hover */}
-        <div className="absolute inset-0 flex items-center justify-center p-2 transition-[filter] duration-200 group-hover:blur-[3px]">
-          {iconUrl ? (
-            <Image
-              src={iconUrl}
-              alt={name}
-              fill
-              sizes="(max-width: 640px) 50vw, 25vw"
-              className="object-contain"
-            />
-          ) : (
-            <div
-              className={cn(
-                "flex h-full w-full items-center justify-center rounded-xl text-4xl font-bold",
-                fallbackColor ??
-                  "border-2 border-dashed border-navy/25 bg-secondary text-muted-foreground",
-              )}
-            >
-              {fallbackLabel}
-            </div>
-          )}
-        </div>
-
-        {/* Hover overlay — text on dark backdrop */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-navy/75 p-6 text-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <h4 className="font-display text-xl font-bold leading-snug text-white">{name}</h4>
-          {href ? (
-            <div className="flex items-center gap-1.5 rounded-full border border-gold/50 bg-gold/15 px-3 py-1 text-xs font-semibold text-gold">
-              View department <ArrowRight className="h-3 w-3" />
-            </div>
-          ) : (
-            <div className="text-xs text-white/55">Details coming soon</div>
-          )}
-        </div>
+  const body = (
+    <>
+      <div className="relative h-20 w-20 shrink-0 border-r border-line bg-surface md:aspect-[4/3] md:h-auto md:w-full md:border-r-0 md:border-b">
+        {iconUrl ? (
+          <Image
+            src={iconUrl}
+            alt=""
+            fill
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            className="object-contain p-2 md:p-6"
+          />
+        ) : (
+          <div
+            className={cn(
+              "absolute inset-2 flex items-center justify-center font-display text-xl font-medium md:inset-4 md:text-4xl",
+              fallbackColor ??
+                "border border-dashed border-line-strong bg-paper-deep text-ink-mute",
+            )}
+          >
+            {fallbackLabel}
+          </div>
+        )}
       </div>
-    </Wrapper>
+      <div className="flex min-w-0 flex-1 flex-col p-4 md:p-5">
+        <h4 className="font-display text-lg font-medium leading-tight text-navy">{name}</h4>
+        {href ? (
+          <span className="mt-auto flex items-center gap-1 pt-3 text-xs font-semibold text-navy transition-colors group-hover:text-crimson">
+            View department
+            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
+          </span>
+        ) : (
+          <span className="mt-auto pt-4 text-xs text-ink-mute">Details coming soon</span>
+        )}
+      </div>
+    </>
+  );
+
+  // Phones: logo beside the text to keep the list short; md+: logo on top.
+  const shell = "group flex h-full overflow-hidden border border-line bg-surface md:flex-col";
+  return href ? (
+    <Link
+      href={href}
+      className={cn(
+        shell,
+        "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep",
+      )}
+    >
+      {body}
+    </Link>
+  ) : (
+    <div className={shell}>{body}</div>
   );
 }

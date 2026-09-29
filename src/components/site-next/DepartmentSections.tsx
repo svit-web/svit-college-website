@@ -43,7 +43,7 @@ function AvatarPlaceholder({ name, size = "md" }: { name: string; size?: "sm" | 
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-navy via-navy-light to-crimson font-display font-bold text-white ring-2 ring-white shadow-sm",
+        "flex shrink-0 items-center justify-center rounded-full border border-line bg-paper-deep font-display font-medium text-navy",
         dim,
       )}
       aria-hidden
@@ -91,18 +91,18 @@ export function DeptAboutView({ department, courses = [] }: Props) {
             </p>
           </Reveal>
           {(vision || missionLines.length > 0) && (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid border-t border-l border-line sm:grid-cols-2">
               {vision && (
-                <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
-                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                <div className="border-r border-b border-line bg-paper-deep/60 p-5 md:p-6">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
                     Vision
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-ink">{vision}</p>
                 </div>
               )}
               {missionLines.length > 0 && (
-                <div className="rounded-2xl border-2 border-navy/15 bg-secondary/40 p-5">
-                  <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                <div className="border-r border-b border-line bg-paper-deep/60 p-5 md:p-6">
+                  <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
                     Mission
                   </div>
                   {missionLines.length === 1 ? (
@@ -119,23 +119,23 @@ export function DeptAboutView({ department, courses = [] }: Props) {
             </div>
           )}
           {(m.intake_ug || m.intake_pg || m.established) && (
-            <div className="flex flex-wrap gap-4">
+            <div className="grid auto-cols-fr grid-flow-col divide-x divide-line border-y border-line">
               {m.intake_ug && (
-                <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
-                  <div className="font-display text-2xl font-bold text-navy">{m.intake_ug}</div>
-                  <div className="text-xs text-muted-foreground">UG Intake</div>
+                <div className="px-3 py-5 text-center">
+                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{m.intake_ug}</div>
+                  <div className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">UG Intake</div>
                 </div>
               )}
               {m.intake_pg && (
-                <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
-                  <div className="font-display text-2xl font-bold text-navy">{m.intake_pg}</div>
-                  <div className="text-xs text-muted-foreground">PG Intake</div>
+                <div className="px-3 py-5 text-center">
+                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{m.intake_pg}</div>
+                  <div className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">PG Intake</div>
                 </div>
               )}
               {m.established && (
-                <div className="rounded-xl border border-navy/15 bg-white px-4 py-3 text-center">
-                  <div className="font-display text-2xl font-bold text-navy">{m.established}</div>
-                  <div className="text-xs text-muted-foreground">Established</div>
+                <div className="px-3 py-5 text-center">
+                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{m.established}</div>
+                  <div className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Established</div>
                 </div>
               )}
             </div>
@@ -150,41 +150,41 @@ export function DeptAboutView({ department, courses = [] }: Props) {
             <Reveal key={c.id} delay={i * 0.04}>
               <Link
                 href={`/programs/${c.id}`}
-                className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
+                className="group flex h-full flex-col border border-line bg-surface p-6 transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
               >
                 <div className="flex items-center gap-2">
-                  <span className="rounded-full bg-navy px-3 py-1 text-xs font-bold uppercase tracking-widest text-white">
+                  <span className="rounded-full border border-navy/30 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.16em] text-navy">
                     {DEGREE_LABEL[c.degree_level] ?? c.degree_level}
                   </span>
                   {c.year_started && (
-                    <span className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-ink-soft">
                       Since {c.year_started}
                     </span>
                   )}
                 </div>
-                <h3 className="mt-3 font-display text-lg font-bold text-navy leading-snug">
+                <h3 className="mt-3 font-display text-lg font-medium leading-snug text-navy">
                   {c.short_name ?? c.name}
                 </h3>
                 <dl className="mt-4 grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <dt className="text-muted-foreground">Intake</dt>
-                    <dd className="font-bold text-navy">{c.intake ?? "—"}</dd>
+                    <dt className="text-ink-soft">Intake</dt>
+                    <dd className="font-semibold text-navy">{c.intake ?? "—"}</dd>
                   </div>
                   <div>
-                    <dt className="text-muted-foreground">Duration</dt>
-                    <dd className="font-bold text-navy">
+                    <dt className="text-ink-soft">Duration</dt>
+                    <dd className="font-semibold text-navy">
                       {c.duration_years ? `${c.duration_years} yrs` : "—"}
                     </dd>
                   </div>
                 </dl>
-                <div className="mt-4 text-xs font-semibold text-gold-strong opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="mt-auto pt-4 text-xs font-semibold text-navy transition-colors group-hover:text-crimson">
                   View program →
                 </div>
               </Link>
             </Reveal>
           ))}
           {courses.length === 0 && (
-            <p className="text-sm text-muted-foreground col-span-full">
+            <p className="text-sm text-ink-soft col-span-full">
               Program details will be published soon.
             </p>
           )}
@@ -196,11 +196,14 @@ export function DeptAboutView({ department, courses = [] }: Props) {
 
 // -------- Staff --------
 function StaffCard({ member, featured = false }: { member: DeptStaffMember; featured?: boolean }) {
+  const linked = !!member.employeeCode;
   const cardClass = cn(
-    "group flex gap-5 rounded-2xl border-2 bg-white transition-all",
+    "group flex gap-5 border",
     featured
-      ? "border-gold/30 bg-gradient-to-br from-navy/5 via-white to-white p-6 items-center shadow-sm"
-      : "border-navy/10 p-4 items-start hover:border-gold hover:shadow-md",
+      ? "items-center border-line-strong bg-paper-deep p-6"
+      : "items-start border-line bg-surface p-4",
+    linked &&
+      "transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep",
   );
 
   const inner = (
@@ -209,20 +212,20 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
       <div className="shrink-0">
         {member.avatarUrl ? (
           <div
-            className={cn("relative rounded-xl shadow-sm", featured ? "h-36 w-28" : "h-28 w-22")}
+            className={cn("relative border border-line", featured ? "h-36 w-28" : "h-28 w-22")}
           >
             <NextImage
               src={member.avatarUrl}
               alt={member.name}
               fill
               sizes="150px"
-              className="rounded-xl object-cover object-top"
+              className="object-cover object-top"
             />
           </div>
         ) : (
           <div
             className={cn(
-              "flex items-center justify-center rounded-xl bg-gradient-to-br from-navy to-navy-deep font-display font-bold text-white shadow-sm",
+              "flex items-center justify-center border border-line bg-paper-deep font-display font-medium text-navy",
               featured ? "h-36 w-28 text-3xl" : "h-28 w-22 text-2xl",
             )}
           >
@@ -234,13 +237,13 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
       {/* Details */}
       <div className="min-w-0 flex-1 py-1">
         {featured && (
-          <div className="mb-2 inline-flex items-center rounded-full bg-gold/20 px-3 py-0.5 text-xs font-bold uppercase tracking-widest text-gold-strong">
+          <div className="mb-2 inline-flex items-center rounded-full border border-crimson/30 px-3 py-0.5 text-[11px] font-bold uppercase tracking-[0.16em] text-crimson">
             Head of Department
           </div>
         )}
         <h3
           className={cn(
-            "font-display font-bold text-navy leading-tight",
+            "font-display font-medium leading-tight text-navy",
             featured ? "text-xl" : "text-base",
           )}
         >
@@ -253,19 +256,19 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
               (member.pastExperienceYears ?? 0) +
               (member.joiningYear ? new Date().getFullYear() - member.joiningYear : 0);
             return totalExp > 0 ? (
-              <div className="mt-2 text-xs text-muted-foreground">
+              <div className="mt-2 text-xs text-ink-soft">
                 <span className="font-semibold text-navy">{totalExp}</span> yrs experience
               </div>
             ) : null;
           })()}
         {member.email && (
-          <div className="mt-3 flex items-center gap-1.5 text-xs text-muted-foreground">
-            <Mail className="h-3.5 w-3.5 shrink-0 text-navy/40" />
+          <div className="mt-3 flex items-center gap-1.5 text-xs text-ink-soft">
+            <Mail className="h-3.5 w-3.5 shrink-0 text-ink-mute" />
             <span className="truncate">{member.email}</span>
           </div>
         )}
         {member.employeeCode && (
-          <div className="mt-3 text-xs font-semibold text-navy/40 transition-colors group-hover:text-gold-strong">
+          <div className="mt-3 text-xs font-semibold text-navy transition-colors group-hover:text-crimson">
             View full profile →
           </div>
         )}
@@ -304,10 +307,11 @@ export function DeptStaffView({ staff = [] }: Props) {
 
       {faculty.length > 0 && (
         <div className="mt-10">
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
+          <h3 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
             Faculty ({faculty.length})
           </h3>
-          <div className="grid gap-4 sm:grid-cols-2">
+          {/* minmax(0,1fr): truncated emails must not widen the track past the screen. */}
+          <div className="grid grid-cols-[minmax(0,1fr)] gap-4 sm:grid-cols-2">
             {faculty.map((m, i) => (
               <Reveal key={m.id} delay={i * 0.03}>
                 <StaffCard member={m} />
@@ -319,19 +323,19 @@ export function DeptStaffView({ staff = [] }: Props) {
 
       {support.length > 0 && (
         <div className="mt-12">
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+          <h3 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-ink-mute">
             Support Staff ({support.length})
           </h3>
-          <ul className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid grid-cols-[minmax(0,1fr)] gap-2 sm:grid-cols-2 xl:grid-cols-3">
             {support.map((m) => (
               <li
                 key={m.id}
-                className="flex items-center gap-3 rounded-lg border border-navy/10 bg-secondary/30 p-3"
+                className="flex items-center gap-3 border border-line bg-surface p-3"
               >
                 <AvatarPlaceholder name={m.name} size="sm" />
                 <div className="min-w-0 flex-1">
                   <div className="truncate text-sm font-semibold text-navy">{m.name}</div>
-                  <div className="truncate text-xs text-muted-foreground">{m.designation}</div>
+                  <div className="truncate text-xs text-ink-soft">{m.designation}</div>
                 </div>
               </li>
             ))}
@@ -340,7 +344,7 @@ export function DeptStaffView({ staff = [] }: Props) {
       )}
 
       {staff.length === 0 && (
-        <p className="mt-10 text-center text-muted-foreground">
+        <p className="mt-10 text-center text-ink-soft">
           Staff information will be published soon.
         </p>
       )}
@@ -369,33 +373,33 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
     <div>
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2">
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
+          <h3 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
             Achievements
           </h3>
           {sorted.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No achievements published yet.</p>
+            <p className="text-sm text-ink-soft">No achievements published yet.</p>
           ) : (
             <AchievementsGrid entries={sorted.map(toAchievementCard)} />
           )}
         </div>
 
         <div>
-          <h3 className="mb-4 text-xs font-bold uppercase tracking-widest text-crimson">
+          <h3 className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
             Clubs
           </h3>
           {clubs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No clubs listed yet.</p>
+            <p className="text-sm text-ink-soft">No clubs listed yet.</p>
           ) : (
             <ul className="space-y-3">
               {clubs.map((c) => (
                 <li key={c.id}>
                   <Link
                     href={`/campus-life/clubs/${c.slug}`}
-                    className="card-lift block rounded-2xl border-2 border-navy/15 bg-white p-4 hover:border-gold"
+                    className="group block border border-line bg-surface p-4 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
                   >
                     <div className="flex items-center gap-3">
                       {c.logoUrl ? (
-                        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-secondary/40 p-1">
+                        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border border-line bg-surface p-1">
                           <NextImage
                             src={c.logoUrl}
                             alt=""
@@ -405,14 +409,14 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                           />
                         </div>
                       ) : (
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-navy/5 text-navy">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center border border-line bg-paper-deep text-navy">
                           <GraduationCap className="h-5 w-5" />
                         </div>
                       )}
-                      <div className="font-display font-bold text-navy">{c.name}</div>
+                      <div className="font-display font-medium text-navy">{c.name}</div>
                     </div>
                     {c.description && (
-                      <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
+                      <p className="mt-2 text-xs text-ink-soft leading-relaxed">
                         {c.description}
                       </p>
                     )}
@@ -447,7 +451,7 @@ export function DeptLabsView({ department, labs = [], labAlbums }: Props) {
     return (
       <div>
         <SectionHeading eyebrow="Labs & Facilities" title="Our Laboratories" />
-        <p className="mt-10 text-center text-muted-foreground">
+        <p className="mt-10 text-center text-ink-soft">
           Lab information will be published soon.
         </p>
       </div>

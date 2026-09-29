@@ -120,23 +120,30 @@ case-insensitive (`/departments/ca` vs `CA`)._
 
 The components reused across campus life, news, departments, COE, student corner.
 
-- [ ] `EntryCard.tsx` (r2 lift1 navy2 gold1): square card, `border-line`, hover `bg-paper-deep`, no lift;
+- [x] `EntryCard.tsx` (r2 lift1 navy2 gold1): square card, `border-line`, hover `bg-paper-deep`, no lift;
       image square-cornered with fixed aspect; date/meta `ink-mute`; always-visible "Read more".
-- [ ] `DetailPageLayout.tsx` (r1 navy1): paper sections, hairline separators, editorial headings.
-- [ ] `PhotoSlider.tsx` (r1 navy1 grey3): square frame `border-line bg-paper-deep`; controls = circle icon
+      _Placeholder is now paper-deep + dots texture; interactive cards show "Read more" / "View"._
+- [x] `DetailPageLayout.tsx` (r1 navy1): paper sections, hairline separators, editorial headings.
+- [x] `PhotoSlider.tsx` (r1 navy1 grey3): square frame `border-line bg-paper-deep`; controls = circle icon
       buttons + navy/line-strong dots (match `Carousel.tsx`).
-- [ ] `EventsNewsSlider.tsx` (r3 navy1 grey3): same slider vocabulary; cards per EntryCard.
-- [ ] `EventsBrowser.tsx` (navy1 gold1): filters as pills; no gold text.
+- [x] `EventsNewsSlider.tsx` (r3 navy1 grey3): same slider vocabulary; cards per EntryCard.
+- [x] `EventsBrowser.tsx` (navy1 gold1): filters as pills; no gold text.
 - [x] `DepartmentLayout.tsx` (r3 navy1 grey2 shadow1): sidebar/tabs to pill + hairline style, no shadow.
       _(done in Phase 2 via `SectionSideNav`; hero slot restyled in Phase 1)_
-- [ ] `DepartmentSections.tsx` (r11 lift2 navy2 grey4 shadow1 gold3): biggest shared file — joined grids
+- [x] `DepartmentSections.tsx` (r11 lift2 navy2 grey4 shadow1 gold3): biggest shared file — joined grids
       for info blocks, square staff/lab cards, navy figures instead of gold, remove grey panels.
-- [ ] `DeptActivitiesView.tsx` (r1 lift1 navy1): per EntryCard.
-- [ ] `DeptBranchCard.tsx` (r2 navy1 grey1 shadow1 gold1): joined-grid link cell (like homepage Our Institutes).
-- [ ] `CommitteeMembers.tsx` (navy1 gold2): table/list with hairlines; roles in crimson eyebrow, not gold.
-- [ ] `SportsSection.tsx` (r2 navy2 gold3): paper/paper-deep, square cards.
-- [ ] `GalleryAlbumView.tsx` (r2 navy1 gold1): square thumbnails, hairline grid.
-- [ ] `HeroCardSlider.tsx` (r2 shadow2 gold2): check where it's still used; restyle or delete if unused.
+      _"View program →" / "View full profile →" now always visible (were hover-only / near-invisible).
+      Staff grids use `grid-cols-[minmax(0,1fr)]` — truncated emails overflowed 360px phones by 46px._
+- [x] `DeptActivitiesView.tsx` (r1 lift1 navy1): per EntryCard.
+- [x] `DeptBranchCard.tsx` (r2 navy1 grey1 shadow1 gold1): name was hover-only (invisible on phones) →
+      logo + always-visible name and "View department →"; phones put the logo beside the text.
+      The joined grid around it belongs to `CollegeLandingPage` (Phase 6).
+- [x] `CommitteeMembers.tsx` (navy1 gold2): table/list with hairlines; roles in crimson eyebrow, not gold.
+- [x] `SportsSection.tsx` (r2 navy2 gold3): paper/paper-deep, square cards.
+- [x] `GalleryAlbumView.tsx` (r2 navy1 gold1): square thumbnails, hairline grid. _Header now `PageHero`._
+- [x] `HeroCardSlider.tsx` (r2 shadow2 gold2): unused → deleted.
+
+_Done 2026-09-29._
 
 ## Phase 4 — Pop-ups and lightboxes
 
@@ -166,11 +173,17 @@ Keep the dark backdrop (right for photo viewing); the panels match the site.
 - [ ] `CollegeLandingPage.tsx` body (r3 lift2 navy3 grey1 gold5); also dedupe trust badges by title
       ("AICTE Approved" appears twice → React duplicate-key error), as the homepage `TrustBand` does: sections per design system; program/
       department cards via `DeptBranchCard`; stats per numbers strip; closing CTA uses `CTABanner`.
+      Fix the `DeptBranchCard` fallback label: "B.Sc. (IT)" renders as "B(" (initials taken from raw words).
 
 ## Phase 7 — Page by page
 
 For each page: before/after screenshots, apply the cheat sheet (design doc §9) to anything page-local,
 confirm mobile rules (§8), tick it off. Dynamic routes: check at least two real instances.
+
+Detail ("leaf") pages share a page-local pattern to fix consistently: a "← All events"-style back link
+(20px tall — make it ≥24px, e.g. a `PillLink`-style pill or padded link) and a rounded-2xl facts panel
+(`grid … rounded-2xl border-2 border-navy/15 bg-white p-6`) → joined hairline grid on paper-deep.
+Seen on `campus-life/events/[slug]`; check facilities, clubs, labs, student-corner, news, achievements.
 
 **About** (shared: about/layout, AboutNav)
 - [ ] `/about`

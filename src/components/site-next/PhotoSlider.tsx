@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { circleIconButton } from "./site-styles";
 
 export interface SliderPhoto {
   id: string;
@@ -52,7 +53,7 @@ export function PhotoSlider({
       aria-label={ariaLabel}
     >
       <div
-        className="relative w-full overflow-hidden rounded-2xl border-2 border-navy/15 bg-secondary/60"
+        className="relative w-full overflow-hidden border border-line bg-paper-deep"
         style={{ aspectRatio }}
       >
         {photos.map((photo, i) => (
@@ -83,7 +84,7 @@ export function PhotoSlider({
                 onClick={() => onPhotoClick(i)}
                 tabIndex={i === index ? 0 : -1}
                 aria-label={`View photo ${i + 1} full screen`}
-                className="absolute inset-0 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-gold"
+                className="absolute inset-0 cursor-zoom-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-navy"
               />
             )}
           </div>
@@ -91,32 +92,40 @@ export function PhotoSlider({
       </div>
 
       {count > 1 && (
-        <div className="mt-4 flex items-center justify-between">
-          <div className="flex gap-1.5">
+        <div className="mt-3 flex items-center justify-between gap-4">
+          <div className="flex flex-wrap">
             {photos.map((photo, i) => (
               <button
                 key={photo.id}
+                type="button"
                 onClick={() => setIndex(i)}
                 aria-label={`Show photo ${i + 1}`}
                 aria-current={i === index}
-                className={`h-1.5 rounded-full transition-all ${
-                  i === index ? "w-8 bg-gold" : "w-3 bg-navy/20 hover:bg-navy/40"
-                }`}
-              />
+                className="group/dot flex h-11 items-center px-1"
+              >
+                {/* Thin visible bar inside a 44px-tall tap target. */}
+                <span
+                  className={`block h-1.5 rounded-full transition-all ${
+                    i === index ? "w-8 bg-navy" : "w-3 bg-line-strong group-hover/dot:bg-ink-mute"
+                  }`}
+                />
+              </button>
             ))}
           </div>
-          <div className="flex gap-2">
+          <div className="flex shrink-0 gap-2">
             <button
+              type="button"
               onClick={() => setIndex((i) => (i - 1 + count) % count)}
               aria-label="Previous photo"
-              className="rounded-full border border-navy/15 bg-white p-2 text-navy transition-[background-color,transform] duration-100 hover:bg-secondary active:scale-90"
+              className={circleIconButton}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
             <button
+              type="button"
               onClick={() => setIndex((i) => (i + 1) % count)}
               aria-label="Next photo"
-              className="rounded-full border border-navy/15 bg-white p-2 text-navy transition-[background-color,transform] duration-100 hover:bg-secondary active:scale-90"
+              className={circleIconButton}
             >
               <ChevronRight className="h-4 w-4" />
             </button>

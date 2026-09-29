@@ -3,6 +3,7 @@
 // Client component: the sports grid owns the Entry viewer state (CONTEXT.md:
 // Entry viewer), so one viewer serves every sport Card on the page.
 import { useState } from "react";
+import { eyebrow, sectionH2, sectionSpacing } from "./site-styles";
 import { SectionHeading } from "./SectionHeading";
 import { Reveal } from "./Reveal";
 import { EntryCard } from "./EntryCard";
@@ -73,15 +74,15 @@ function SportsStats({
   indoorCount: number;
 }) {
   return (
-    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+    <div className="grid grid-cols-3 divide-x divide-line border-y border-line">
       {[
         { value: `${sports.length}+`, label: "Sports Offered" },
         { value: `${outdoorCount}`, label: "Outdoor Disciplines" },
         { value: `${indoorCount}`, label: "Indoor Disciplines" },
       ].map((s) => (
-        <div key={s.label} className="rounded-xl border border-white/10 bg-white/5 p-6 text-center">
-          <div className="font-display text-4xl font-bold text-gold">{s.value}</div>
-          <div className="mt-1 text-xs font-semibold uppercase tracking-widest text-white/60">
+        <div key={s.label} className="px-2 py-6 text-center">
+          <div className="font-display text-3xl font-medium text-navy md:text-4xl">{s.value}</div>
+          <div className="mt-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
             {s.label}
           </div>
         </div>
@@ -138,14 +139,10 @@ export function SportsSection({
   if (variant === "embedded") {
     return (
       <div className="space-y-12">
-        <section className="rounded-2xl bg-navy p-8 text-white md:p-10">
-          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-            Sports & Athletics
-          </div>
-          <h2 className="font-display text-2xl md:text-3xl font-bold text-white">
-            Champions On and Off the Field
-          </h2>
-          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-white/70 md:text-base">
+        <section className="border border-line bg-paper-deep p-6 md:p-10">
+          <div className={`mb-3 ${eyebrow}`}>Sports & Athletics</div>
+          <h2 className={sectionH2}>Champions On and Off the Field</h2>
+          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-ink-soft md:text-base">
             SVIT believes sports build character as much as academics. Our state-of-the-art
             grounds and courts have produced university, state, and national-level athletes.
           </p>
@@ -168,16 +165,12 @@ export function SportsSection({
 
   return (
     <>
-      <section className="bg-navy text-white py-20">
+      <section className={`border-y border-line bg-paper-deep ${sectionSpacing}`}>
         <div className="container-page">
           <div>
-            <div className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-gold">
-              Sports & Athletics
-            </div>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-white">
-              Champions On and Off the Field
-            </h2>
-            <p className="mt-4 text-base md:text-lg text-white/70 leading-relaxed max-w-3xl">
+            <div className={`mb-3 ${eyebrow}`}>Sports & Athletics</div>
+            <h2 className={sectionH2}>Champions On and Off the Field</h2>
+            <p className="mt-4 max-w-3xl text-base leading-relaxed text-ink-soft md:text-lg">
               SVIT believes sports build character as much as academics. Our state-of-the-art
               grounds and courts have produced university, state, and national-level athletes.
             </p>
@@ -190,7 +183,7 @@ export function SportsSection({
       </section>
 
       {sports.length > 0 && (
-        <section className="container-page py-20">
+        <section className={`container-page ${sectionSpacing}`}>
           <SectionHeading center eyebrow="Our Sports" title="Disciplines We Offer" />
           <div className="mt-12">
             <SportsGrid sports={sports} albums={albums} />
