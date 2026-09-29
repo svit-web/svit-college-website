@@ -263,6 +263,13 @@ Admin controls (`app_settings.hero_appearance`, edited in Admin → Homepage →
 
 Hero text uses `text-[var(--hero-text)]` (or `var(--hero-text,var(--navy))`), never a hardcoded colour.
 
+### Section navigation
+- **`SectionSideNav`** — sidebar beside inner-page content (About, Campus Life, Department). Crimson
+  eyebrow title; lg+: vertical list, active item `border-ink bg-ink text-cream` pill, others `ink-soft`
+  with `hover:bg-paper-deep`; below lg: one sideways-scrolling row of outline pills (hidden scrollbar,
+  bleeds to the screen edge), active pill centred on load.
+- **`PillTabs`** — horizontal sub-section tabs above content; same pills, wraps on lg, scrolls below lg.
+
 ### Header
 Already on theme: floating cream bar, `text-ink-soft hover:text-crimson`. Mega panels use `bg-white`
 logo chips with `rounded-md` — minor cleanup candidate.

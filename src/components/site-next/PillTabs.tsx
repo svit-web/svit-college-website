@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -10,24 +10,29 @@ export interface PillTabItem {
 }
 
 /**
- * Reusable vertical pill-tab navigation for Campus Life sub-sections.
- * On desktop the pills scroll horizontally; on mobile they wrap.
+ * Horizontal pill tabs for sub-sections (clubs, student groups, student
+ * corner). Same pill vocabulary as SectionSideNav: active = ink pill. One
+ * row that scrolls sideways on narrow screens instead of wrapping.
  */
 export function PillTabs({ items, ariaLabel }: { items: PillTabItem[]; ariaLabel: string }) {
   const pathname = usePathname();
   return (
-    <nav aria-label={ariaLabel} className="mb-6 flex flex-wrap gap-2">
+    <nav
+      aria-label={ariaLabel}
+      className="-mx-5 mb-6 flex gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:-mx-8 md:px-8 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0 [&::-webkit-scrollbar]:hidden"
+    >
       {items.map((it) => {
         const active = pathname === it.to || pathname?.startsWith(it.to + "/");
         return (
           <Link
             key={it.to}
             href={it.to}
+            aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-full border-2 px-4 py-2 text-xs font-bold uppercase tracking-wider transition-[border-color,background-color,color,box-shadow] duration-150 active:scale-95 active:transition-transform active:duration-75",
+              "shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors active:scale-[0.98]",
               active
-                ? "border-gold bg-navy text-white shadow-sm"
-                : "border-navy/15 bg-white text-navy hover:border-navy/40"
+                ? "border-ink bg-ink text-cream"
+                : "border-line-strong text-ink hover:border-ink",
             )}
           >
             {it.label}

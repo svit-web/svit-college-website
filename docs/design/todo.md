@@ -94,11 +94,16 @@ college photo is blurred at the saved Background Blur (5px) — admins can lower
 
 Tabs that sit under banners on About and Campus Life.
 
-- [ ] `about/AboutNav.tsx` (r2 navy1 grey1): pill tabs — active `bg-ink text-cream`, inactive
+- [x] `about/AboutNav.tsx` (r2 navy1 grey1): pill tabs — active `bg-ink text-cream`, inactive
       `border border-line-strong text-ink hover:border-ink`; container no grey panel.
-- [ ] `CampusLifeNav.tsx` (r2 navy1 grey1): same pill vocabulary.
-- [ ] `PillTabs.tsx` (navy1): align active state with the above.
-- [ ] Mobile: tabs scroll horizontally in one row (no wrap into a tall block); active tab scrolled into view.
+- [x] `CampusLifeNav.tsx` (r2 navy1 grey1): same pill vocabulary.
+- [x] `PillTabs.tsx` (navy1): align active state with the above.
+- [x] Mobile: tabs scroll horizontally in one row (no wrap into a tall block); active tab scrolled into view.
+
+_Done 2026-09-29. The three sidebars (About, Campus Life, Department) now share `SectionSideNav.tsx`
+(vertical list on lg, active = ink pill; one sideways-scrolling pill row below lg, active pill centred).
+Their layout wrappers moved from `bg-secondary/30` to `bg-paper`. Department tab matching is now
+case-insensitive (`/departments/ca` vs `CA`)._
 
 ## Phase 3 — Shared cards and layouts
 
@@ -111,7 +116,8 @@ The components reused across campus life, news, departments, COE, student corner
       buttons + navy/line-strong dots (match `Carousel.tsx`).
 - [ ] `EventsNewsSlider.tsx` (r3 navy1 grey3): same slider vocabulary; cards per EntryCard.
 - [ ] `EventsBrowser.tsx` (navy1 gold1): filters as pills; no gold text.
-- [ ] `DepartmentLayout.tsx` (r3 navy1 grey2 shadow1): sidebar/tabs to pill + hairline style, no shadow.
+- [x] `DepartmentLayout.tsx` (r3 navy1 grey2 shadow1): sidebar/tabs to pill + hairline style, no shadow.
+      _(done in Phase 2 via `SectionSideNav`; hero slot restyled in Phase 1)_
 - [ ] `DepartmentSections.tsx` (r11 lift2 navy2 grey4 shadow1 gold3): biggest shared file — joined grids
       for info blocks, square staff/lab cards, navy figures instead of gold, remove grey panels.
 - [ ] `DeptActivitiesView.tsx` (r1 lift1 navy1): per EntryCard.

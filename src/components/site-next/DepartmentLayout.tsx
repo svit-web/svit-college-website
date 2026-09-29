@@ -1,14 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
 import { PageHero } from "./PageHero";
+import { SectionSideNav } from "./SectionSideNav";
 import { CollegeLogo } from "./CollegeLogo";
 import type { Department } from "@/lib/departments.functions";
 import type { CollegeRow } from "@/lib/homepage";
-import { cn } from "@/lib/utils";
 
 interface Props {
   department: Department;
@@ -80,43 +79,29 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
         )}
       </PageHero>
 
-      <div className="bg-secondary/30">
+      <div className="bg-paper">
         <div className="container-page py-10">
           <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
             <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-              <nav
-                aria-label="Department sections"
-                className="rounded-2xl border-2 border-navy/15 bg-white p-3 shadow-sm"
-              >
-                <div className="px-3 pb-2 pt-1 text-xs font-bold uppercase tracking-widest text-crimson">
-                  In this department
-                </div>
-                <ul className="flex flex-col gap-1">
-                  {NAV.map((item) => {
-                    const href = `${base}${item.href}`;
-                    const isActive = item.exact
-                      ? pathname === href
-                      : pathname === href || pathname?.startsWith(href + "/");
-                    const Icon = item.icon;
-                    return (
-                      <li key={item.href}>
-                        <Link
-                          href={href}
-                          className={cn(
-                            "flex items-center gap-2.5 rounded-xl border-2 px-3 py-2.5 text-sm font-semibold transition-all",
-                            isActive
-                              ? "border-gold bg-navy text-white shadow-sm"
-                              : "border-transparent text-navy hover:border-navy/15 hover:bg-secondary/60",
-                          )}
-                        >
-                          <Icon className="h-4 w-4 shrink-0" />
-                          <span>{item.label}</span>
-                        </Link>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </nav>
+              <SectionSideNav
+                title="In this department"
+                ariaLabel="Department sections"
+                items={NAV.map((item) => {
+                  const href = `${base}${item.href}`;
+                  // Department routes resolve case-insensitively (/departments/ca
+                  // and /departments/CA), so match the active tab the same way.
+                  const path = pathname?.toLowerCase() ?? "";
+                  const target = href.toLowerCase();
+                  return {
+                    href,
+                    label: item.label,
+                    icon: item.icon,
+                    active: item.exact
+                      ? path === target
+                      : path === target || path.startsWith(target + "/"),
+                  };
+                })}
+              />
             </aside>
 
             <div className="min-w-0">{children}</div>
