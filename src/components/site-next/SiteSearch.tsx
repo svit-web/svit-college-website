@@ -97,7 +97,7 @@ export function SiteSearch({ className, iconClassName }: { className?: string; i
           </DialogDescription>
           <Command
             shouldFilter={false}
-            className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-2.5"
+            className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-wide [&_[cmdk-group-heading]]:text-ink-soft [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-2.5"
           >
             <CommandInput
               value={query}
@@ -106,7 +106,7 @@ export function SiteSearch({ className, iconClassName }: { className?: string; i
             />
             <CommandList className="max-h-[70vh]">
               {trimmedQuery.length > 0 && trimmedQuery.length < 2 && (
-                <div className="px-4 py-6 text-center text-sm text-muted-foreground">
+                <div className="px-4 py-6 text-center text-sm text-ink-soft">
                   Keep typing…
                 </div>
               )}
@@ -124,10 +124,10 @@ export function SiteSearch({ className, iconClassName }: { className?: string; i
                     >
                       <span className="font-medium text-navy">{item.title}</span>
                       {item.college && (
-                        <span className="text-xs text-muted-foreground">{item.college}</span>
+                        <span className="text-xs text-ink-soft">{item.college}</span>
                       )}
                       {item.description && (
-                        <span className="line-clamp-1 text-xs text-muted-foreground/80">
+                        <span className="line-clamp-1 text-xs text-ink-soft/80">
                           {item.description}
                         </span>
                       )}

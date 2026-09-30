@@ -16,7 +16,7 @@ export function SmoothScrollToggle({ className }: { className?: string }) {
       title={enabled ? "Smooth scrolling: on" : "Smooth scrolling: off"}
       className={cn(
         "inline-flex items-center justify-center rounded-full p-1 leading-none opacity-70 transition hover:opacity-100",
-        enabled && "text-gold opacity-100",
+        enabled && "text-crimson opacity-100",
         className,
       )}
     >

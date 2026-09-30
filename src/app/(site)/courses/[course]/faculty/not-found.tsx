@@ -1,7 +1,7 @@
+import { NotFoundPanel } from "@/components/site-next/NotFoundPanel";
+
 export default function CourseFacultyNotFound() {
   return (
-    <div className="container-page py-32 text-center">
-      <h1 className="font-display text-4xl font-bold text-navy">Page not found</h1>
-    </div>
+    <NotFoundPanel title="Page not found" section={{ href: "/courses", label: "All courses" }} />
   );
 }

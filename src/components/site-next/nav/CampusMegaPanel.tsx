@@ -128,7 +128,7 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
 
   return (
     <div className="grid min-h-[300px] grid-cols-[260px_minmax(0,1fr)] gap-x-10 py-6">
-      <ul className="border-r border-border pr-6" role="menu">
+      <ul className="border-r border-line pr-6" role="menu">
         {categories.map((c) => {
           const isActive = c.key === activeKey;
           const Icon = c.icon;
@@ -142,8 +142,8 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
                 onClick={() => setActiveKey(c.key)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm font-semibold transition-colors",
-                  isActive ? "bg-secondary/70 text-crimson" : "text-navy hover:bg-secondary/40",
+                  "flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm font-semibold transition-colors",
+                  isActive ? "bg-paper-deep text-crimson" : "text-navy hover:bg-paper-deep/60",
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />
@@ -170,7 +170,7 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
           >
             <Link
               href={active.allTo}
-              className="group mb-4 inline-flex items-center gap-2 border-b border-border pb-2 text-sm font-bold text-navy hover:text-crimson"
+              className="group mb-4 inline-flex items-center gap-2 border-b border-line pb-2 text-sm font-bold text-navy hover:text-crimson"
             >
               {active.allLabel}
               <span className="flex items-center gap-1 text-xs font-semibold text-crimson">
@@ -182,7 +182,7 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
                 <li key={it.to}>
                   <Link
                     href={it.to}
-                    className="block rounded-md py-1.5 text-[14px] text-ink/85 transition-colors hover:text-crimson"
+                    className="block py-1.5 text-[14px] text-ink/85 transition-colors hover:text-crimson"
                   >
                     {it.label}
                   </Link>

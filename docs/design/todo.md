@@ -286,18 +286,25 @@ Not in scope (redirect only): `/placement/[college]`, `/courses/[course]/faculty
 
 ## Phase 8 — Leftovers
 
-- [ ] Not-found pages: `campus-life/clubs/not-found.tsx`, `campus-life/events/[slug]/not-found.tsx`,
+- [x] Not-found pages: `campus-life/clubs/not-found.tsx`, `campus-life/events/[slug]/not-found.tsx`,
       `campus-life/facilities/[...slug]/not-found.tsx`, `student-corner/[slug]/not-found.tsx`, plus any
       other `not-found.tsx` under `src/app/(site)` — pill buttons, editorial heading, no rounded panels.
-- [ ] Header mega panels (`nav/CollegesMegaPanel.tsx`, `nav/CampusMegaPanel.tsx`): `rounded-md bg-white`
+- [x] Header mega panels (`nav/CollegesMegaPanel.tsx`, `nav/CampusMegaPanel.tsx`): `rounded-md bg-white`
       logo chips → square `border-line bg-surface`; `bg-secondary` hovers → `bg-paper-deep`.
-- [ ] `nav/DesktopNavItem.tsx` shadow on dropdown → hairline border (keep a subtle shadow only if the
+- [x] `nav/DesktopNavItem.tsx` shadow on dropdown → hairline border (keep a subtle shadow only if the
       panel needs separation from the photo hero).
-- [ ] `SmoothScrollToggle.tsx` gold text → navy.
+- [x] `SmoothScrollToggle.tsx` gold text → navy.
 - [ ] Remaining prettier drift in files we touched (`page.tsx`, `CTABanner.tsx`) — format in a separate commit.
+
+_Done 2026-09-30. All 14 `not-found.tsx` pages now render the shared `NotFoundPanel` (crimson
+eyebrow, section link + "Back to home" pills; `embedded` inside the Campus Life column). Mega-panel items
+are square with paper-deep active/hover; the dropdown has hairlines and a soft shadow (it opens over the
+photo hero); SiteSearch muted text → ink-soft; smooth-scroll toggle active = crimson._
 
 ## Phase 9 — QA and release
 
+- [ ] Pre-existing, not design: 404 pages log "Encountered a script tag while rendering React component"
+      (an inline script rendered by a component, likely the font-scale init in `src/app/layout.tsx`). Investigate.
 - [ ] Re-run the audit; remaining hits must be justified (pills, popup, gold icons, tile hover):
       ```sh
       grep -rlE "rounded-(xl|2xl|3xl)|card-lift|bg-navy|bg-secondary|shadow-(md|lg|xl|2xl)|text-gold" \

@@ -30,7 +30,7 @@ export function CollegesMegaPanel({
   return (
     <div className="grid min-h-[330px] grid-cols-[300px_1fr] gap-x-10 py-6">
       {/* Colleges */}
-      <ul className="border-r border-border pr-6">
+      <ul className="border-r border-line pr-6">
         {colleges.map((c) => {
           const isActive = c.id === active.id;
           return (
@@ -41,14 +41,14 @@ export function CollegesMegaPanel({
                 onFocus={() => setActiveId(c.id)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "group flex items-center gap-3 rounded-md px-3 py-2.5 transition-colors",
-                  isActive ? "bg-secondary/70 text-crimson" : "text-navy hover:bg-secondary/40",
+                  "group flex items-center gap-3 px-3 py-2.5 transition-colors",
+                  isActive ? "bg-paper-deep text-crimson" : "text-navy hover:bg-paper-deep/60",
                 )}
               >
                 <CollegeLogo
                   shortCode={c.shortCode}
                   src={c.logo}
-                  className="h-8 w-8 shrink-0 rounded-md border border-border bg-white p-0.5 text-navy"
+                  className="h-8 w-8 shrink-0 border border-line bg-surface p-0.5 text-navy"
                 />
                 <span className="min-w-0 flex-1">
                   <span className="block text-xs font-bold uppercase tracking-[0.14em]">
@@ -72,7 +72,7 @@ export function CollegesMegaPanel({
       <div key={active.id} className="min-w-0 animate-in fade-in duration-150">
         <Link
           href={`/colleges/${active.id}`}
-          className="group mb-4 inline-flex items-center gap-2 border-b border-border pb-2"
+          className="group mb-4 inline-flex items-center gap-2 border-b border-line pb-2"
         >
           <span className="text-sm font-bold text-navy group-hover:text-crimson">
             {active.name}
@@ -89,13 +89,13 @@ export function CollegesMegaPanel({
               <li key={d.id}>
                 <Link
                   href={`/departments/${d.code}`}
-                  className="flex items-center gap-2.5 rounded-md py-1.5 text-[14px] text-ink/85 transition-colors hover:text-crimson"
+                  className="flex items-center gap-2.5 py-1.5 text-[14px] text-ink/85 transition-colors hover:text-crimson"
                 >
                   {d.logo_url ? (
                     <img
                       src={d.logo_url}
                       alt=""
-                      className="h-5 w-5 shrink-0 rounded object-contain"
+                      className="h-5 w-5 shrink-0 object-contain"
                     />
                   ) : (
                     <span className="h-5 w-5 shrink-0" aria-hidden />
@@ -106,7 +106,7 @@ export function CollegesMegaPanel({
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-muted-foreground">No departments listed yet.</p>
+          <p className="text-sm text-ink-soft">No departments listed yet.</p>
         )}
       </div>
     </div>
