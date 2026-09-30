@@ -127,6 +127,14 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
 
       <div className="container-page pb-16">
         {dept && (
+          <Link
+            href={`/departments/${dept.code}/staff`}
+            className="mb-4 inline-block py-1.5 text-xs font-semibold text-navy transition-colors hover:text-crimson"
+          >
+            ← Back to {dept.name} Staff
+          </Link>
+        )}
+        {dept && (
           <div className="mb-8 border-b border-line pb-4">
             <div className="mb-1 text-xs font-bold uppercase tracking-widest text-crimson">
               Department
@@ -139,7 +147,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
           {/* LEFT — identity & contact */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             {profile.photoUrl ? (
-              <div className="relative aspect-3/4 w-40 overflow-hidden sm:w-48 md:w-full">
+              <div className="relative aspect-3/4 w-full overflow-hidden">
                 <Image
                   src={profile.photoUrl}
                   alt={profile.name}
@@ -150,7 +158,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                 />
               </div>
             ) : (
-              <div className="flex aspect-3/4 w-40 items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy sm:w-48 md:w-full md:text-5xl">
+              <div className="flex h-40 w-full items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy md:aspect-3/4 md:h-auto md:text-5xl">
                 {initials(profile.name)}
               </div>
             )}
@@ -166,6 +174,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
             {profile.designation && (
               <p className="mt-1 text-sm font-bold text-crimson">{profile.designation}</p>
             )}
+            {dept && <p className="mt-1 text-sm text-ink-soft">{dept.name}</p>}
             {topQualification && (
               <p className="mt-1 text-sm font-semibold text-ink">{topQualification.title}</p>
             )}
@@ -174,10 +183,10 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
               <div className="mt-4.5 flex flex-col gap-2">
                 <a
                   href={`mailto:${profile.email}`}
-                  className="flex items-center gap-2 text-xs font-semibold text-navy transition-colors hover:text-crimson"
+                  className="flex items-start gap-2 py-1 text-xs font-semibold text-navy transition-colors hover:text-crimson"
                 >
-                  <Mail className="h-3.5 w-3.5 shrink-0" />
-                  <span className="truncate">{profile.email}</span>
+                  <Mail className="mt-px h-3.5 w-3.5 shrink-0" />
+                  <span className="min-w-0 [overflow-wrap:anywhere]">{profile.email}</span>
                 </a>
               </div>
             )}
@@ -232,17 +241,6 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                     </li>
                   ))}
                 </ul>
-              </div>
-            )}
-
-            {dept && (
-              <div className="mt-4.5 border-t border-line pt-4.5">
-                <Link
-                  href={`/departments/${dept.code}/staff`}
-                  className="inline-block py-1.5 text-xs font-semibold text-navy transition-colors hover:text-crimson"
-                >
-                  ← Back to {dept.name} Staff
-                </Link>
               </div>
             )}
           </aside>
