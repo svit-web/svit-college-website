@@ -10,9 +10,16 @@ import {
   Lightbulb,
   Trees,
   Users,
+  type LucideIcon,
 } from "lucide-react";
-import { heroFadeStyles, heroOverlayStyles, heroTextVars, DEFAULT_HERO_APPEARANCE, type HeroAppearance } from "@/lib/theme";
-import { pillOutline, pillPrimary } from "@/components/site-next/site-styles";
+import {
+  heroFadeStyles,
+  heroOverlayStyles,
+  heroTextVars,
+  DEFAULT_HERO_APPEARANCE,
+  type HeroAppearance,
+} from "@/lib/theme";
+import { pillOutline, pillPrimary, sectionSpacing } from "@/components/site-next/site-styles";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
@@ -45,7 +52,7 @@ export interface College {
 
 const events: { title: string; tag: string; date: string }[] = [];
 
-const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+const iconMap: Record<string, LucideIcon> = {
   BadgeCheck,
   GraduationCap,
   Briefcase,
@@ -76,7 +83,11 @@ export function CollegeLandingPage({
 
   return (
     <>
-      <Hero college={college} appearance={appearance ?? DEFAULT_HERO_APPEARANCE} ctaLabel={ctaLabel} />
+      <Hero
+        college={college}
+        appearance={appearance ?? DEFAULT_HERO_APPEARANCE}
+        ctaLabel={ctaLabel}
+      />
       <StatsStrip data={displayStats} />
       <ProgramsSection college={college} />
       <WhySection college={college} data={displayWhy} />
@@ -167,15 +178,27 @@ function Hero({
 }
 
 function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
+  if (data.length === 0) return null;
   return (
-    <section className="bg-navy text-white">
-      <div className="container-page grid grid-cols-2 gap-6 py-10 sm:grid-cols-3 lg:grid-cols-6">
-        {data.map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="font-display text-3xl md:text-4xl font-bold text-gold">{s.value}</div>
-            <div className="mt-1 text-xs uppercase tracking-widest text-white/70">{s.label}</div>
-          </div>
-        ))}
+    <section className="border-b border-line bg-paper py-10 md:py-14">
+      {/* Homepage numbers strip: hairlines via gap-px over bg-line; odd last figure
+          spans the row on phones; one divided row from lg. */}
+      <div className="container-page">
+        <div className="grid grid-cols-2 gap-px bg-line lg:flex lg:gap-0 lg:divide-x lg:divide-line lg:bg-transparent">
+          {data.map((s) => (
+            <div
+              key={s.label}
+              className="bg-paper px-3 py-6 text-center last:odd:col-span-2 lg:flex-1 lg:px-2 lg:py-2"
+            >
+              <div className="font-display text-3xl font-medium text-navy md:text-4xl lg:text-3xl 2xl:text-4xl">
+                {s.value}
+              </div>
+              <div className="mt-2 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
+                {s.label}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -184,17 +207,19 @@ function StatsStrip({ data }: { data: { value: string; label: string }[] }) {
 function ProgramsSection({ college }: { college: College }) {
   const allDepts = college.departments;
   return (
-    <section id="programmes" className="container-page py-20">
+    <section id="programmes" className={`container-page scroll-mt-24 ${sectionSpacing}`}>
       <SectionHeading
         center
         eyebrow="What We Offer"
         title={`Programmes at ${college.shortCode}`}
         subtitle={`Programmes offered under ${college.shortCode} — built with rigour, mentorship, and industry alignment.`}
       />
-      <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {/* Joined hairline grid like the homepage's Our Institutes. */}
+      <div className="mt-12 grid border-t border-l border-line md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {allDepts.map((dept, i) => (
-          <Reveal key={dept.id} delay={i * 0.05}>
+          <Reveal key={dept.id} delay={i * 0.05} className="border-r border-b border-line">
             <DeptBranchCard
+              variant="cell"
               name={dept.name}
               iconUrl={dept.logo_url}
               fallbackLabel={initials(dept.name)}
@@ -207,12 +232,14 @@ function ProgramsSection({ college }: { college: College }) {
   );
 }
 
+// First letter of the first two words, skipping punctuation ("B.Sc. (IT)" → "BI").
 function initials(name: string): string {
   return name
     .split(/\s+/)
+    .map((w) => w.replace(/[^\p{L}\p{N}]/gu, ""))
     .filter(Boolean)
     .slice(0, 2)
-    .map((w) => w[0]?.toUpperCase() ?? "")
+    .map((w) => w[0].toUpperCase())
     .join("");
 }
 
@@ -223,8 +250,9 @@ function WhySection({
   college: College;
   data: { title: string; desc: string; icon: string }[];
 }) {
+  if (data.length === 0) return null;
   return (
-    <section className="bg-secondary/50 py-20">
+    <section className={`border-y border-line bg-paper-deep ${sectionSpacing}`}>
       <div className="container-page">
         <SectionHeading
           center
@@ -232,17 +260,15 @@ function WhySection({
           title="A Place to Grow, Not Just Study"
           subtitle={`What sets ${college.shortCode} apart — from faculty and infrastructure to research culture and industry linkages.`}
         />
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-12 grid border-t border-l border-line md:grid-cols-2 lg:grid-cols-3">
           {data.map((w, i) => {
             const Icon = iconMap[w.icon] ?? BadgeCheck;
             return (
-              <Reveal key={w.title} delay={i * 0.05}>
-                <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-md bg-navy/5 text-navy">
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <h3 className="mt-4 font-display text-lg font-bold text-navy">{w.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{w.desc}</p>
+              <Reveal key={w.title} delay={i * 0.05} className="border-r border-b border-line">
+                <div className="h-full p-6 md:p-8">
+                  <Icon className="h-6 w-6 text-navy" strokeWidth={1.5} />
+                  <h3 className="mt-5 font-display text-xl font-medium text-navy">{w.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{w.desc}</p>
                 </div>
               </Reveal>
             );
@@ -254,16 +280,23 @@ function WhySection({
 }
 
 function TrustBand({ items }: { items: { label: string; icon: string }[] }) {
-  if (items.length === 0) return null;
+  // Admin data can repeat a badge; dedupe by label (also keeps React keys unique).
+  const unique = items.filter((item, i) => items.findIndex((x) => x.label === item.label) === i);
+  if (unique.length === 0) return null;
   return (
     <section className="container-page py-14">
-      <div className="grid grid-cols-2 gap-6 rounded-2xl border border-border bg-white p-8 md:grid-cols-4">
-        {items.map((item) => {
+      <div className="grid grid-cols-2 gap-x-4 gap-y-5 border-y border-line py-7 md:grid-cols-4 md:gap-y-6">
+        {unique.map((item) => {
           const Icon = iconMap[item.icon] ?? BadgeCheck;
           return (
-            <div key={item.label} className="flex items-center justify-center gap-2 text-navy">
-              <Icon className="h-5 w-5 text-gold" />
-              <span className="text-sm font-semibold uppercase tracking-wider">{item.label}</span>
+            <div
+              key={item.label}
+              className="flex items-center justify-center gap-2 text-center text-navy"
+            >
+              <Icon className="h-5 w-5 shrink-0 text-gold" />
+              <span className="text-xs font-semibold uppercase tracking-wider md:text-sm">
+                {item.label}
+              </span>
             </div>
           );
         })}
@@ -272,18 +305,21 @@ function TrustBand({ items }: { items: { label: string; icon: string }[] }) {
   );
 }
 
+// `events` is a static placeholder (always empty today) — render nothing rather
+// than an "Events & News" heading over a blank list.
 function Events() {
+  if (events.length === 0) return null;
   return (
-    <section className="container-page py-20">
+    <section className={`container-page ${sectionSpacing}`}>
       <SectionHeading eyebrow="Latest" title="Events & News" variant="eyebrow" />
-      <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {events.map((e) => (
-          <li key={e.title} className="card-lift rounded-2xl border border-border bg-white p-5">
-            <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+          <li key={e.title} className="border border-line bg-surface p-5">
+            <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
               {e.tag}
             </div>
-            <div className="mt-1 font-display text-base font-bold text-navy">{e.title}</div>
-            <div className="mt-1 text-xs text-muted-foreground">{e.date}</div>
+            <div className="mt-1.5 font-display text-base font-medium text-navy">{e.title}</div>
+            <div className="mt-1 text-xs text-ink-mute">{e.date}</div>
           </li>
         ))}
       </ul>
@@ -296,7 +332,7 @@ function RecruitersStrip({ data }: { data: RecruiterRow[] }) {
   return (
     <section className="container-page pb-20">
       <Reveal>
-        <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        <div className="text-center text-xs font-semibold uppercase tracking-widest text-ink-mute">
           Our Recruiters
         </div>
         <RecruitersMarquee recruiters={data} />

@@ -180,13 +180,20 @@ _Done 2026-09-30. `fieldInput` is 44px tall with 16px text below md (iOS zooms i
 
 ## Phase 6 — Big page templates
 
-- [ ] `PlacementPage.tsx` (r17 lift2 navy13 grey6 shadow1 gold7): the heaviest file — stat strips per
+- [x] `PlacementPage.tsx` (r17 lift2 navy13 grey6 shadow1 gold7): the heaviest file — stat strips per
       homepage numbers strip, recruiter/company grids as joined grids, navy bands → paper/paper-deep,
       charts/tables hairline-styled, one gold-soft CTA max. Consider splitting into sub-components while here.
-- [ ] `CollegeLandingPage.tsx` body (r3 lift2 navy3 grey1 gold5); also dedupe trust badges by title
+- [x] `CollegeLandingPage.tsx` body (r3 lift2 navy3 grey1 gold5); also dedupe trust badges by title
       ("AICTE Approved" appears twice → React duplicate-key error), as the homepage `TrustBand` does: sections per design system; program/
       department cards via `DeptBranchCard`; stats per numbers strip; closing CTA uses `CTABanner`.
       Fix the `DeptBranchCard` fallback label: "B.Sc. (IT)" renders as "B(" (initials taken from raw words).
+
+_Done 2026-09-30. PlacementPage: metric strip = homepage numbers strip; highlights as a hairline list;
+navy chart bars (year labels in their own row); recruiter wall as a joined grid; square student cards;
+show-more/less and officer contacts as pills; empty trend data shows a note instead of an "N/A / 0" chart.
+CollegeLandingPage: stats strip, joined-grid programmes (`DeptBranchCard variant="cell"`), Why band and
+trust band match the homepage; trust badges deduped (duplicate-key error gone); initials skip punctuation
+("B.Sc. (IT)" → "BI"); the static, always-empty "Events & News" section no longer renders a blank heading._
 
 ## Phase 7 — Page by page
 

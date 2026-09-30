@@ -9,6 +9,8 @@ interface Props {
   fallbackLabel: string;
   fallbackColor?: string | null;
   href?: string;
+  /** "cell": no border of its own — for joined hairline grids whose cells draw the lines. */
+  variant?: "card" | "cell";
 }
 
 /**
@@ -16,7 +18,14 @@ interface Props {
  * "View department" affordance always visible below it (nothing depends on
  * hover, so it reads the same on touch screens). Hover/tap fills paper-deep.
  */
-export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, href }: Props) {
+export function DeptBranchCard({
+  name,
+  iconUrl,
+  fallbackLabel,
+  fallbackColor,
+  href,
+  variant = "card",
+}: Props) {
   const body = (
     <>
       <div className="relative h-20 w-20 shrink-0 border-r border-line bg-surface md:aspect-[4/3] md:h-auto md:w-full md:border-r-0 md:border-b">
@@ -55,13 +64,17 @@ export function DeptBranchCard({ name, iconUrl, fallbackLabel, fallbackColor, hr
   );
 
   // Phones: logo beside the text to keep the list short; md+: logo on top.
-  const shell = "group flex h-full overflow-hidden border border-line bg-surface md:flex-col";
+  const shell = cn(
+    "group flex h-full overflow-hidden md:flex-col",
+    variant === "card" ? "border border-line bg-surface" : "bg-transparent",
+  );
   return href ? (
     <Link
       href={href}
       className={cn(
         shell,
-        "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep",
+        "transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-paper-deep active:bg-paper-deep",
+        variant === "card" && "hover:border-navy active:border-navy",
       )}
     >
       {body}
