@@ -96,7 +96,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
       {/* Breadcrumb */}
       <nav
         aria-label="Breadcrumb"
-        className="container-page flex flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
+        className="container-page hidden flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] md:flex text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
       >
         <Link href="/" className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
           Home
@@ -125,7 +125,8 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
         </span>
       </nav>
 
-      <div className="container-page pb-16">
+      {/* Phones: breadcrumbs hidden (the back link covers it), so clear the fixed header here. */}
+      <div className="container-page pb-16 pt-20 md:pt-0">
         {dept && (
           <Link
             href={`/departments/${dept.code}/staff`}
@@ -147,18 +148,18 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
           {/* LEFT — identity & contact */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             {profile.photoUrl ? (
-              <div className="relative aspect-3/4 w-full overflow-hidden">
+              <div className="relative aspect-3/4 w-44 overflow-hidden md:w-full">
                 <Image
                   src={profile.photoUrl}
                   alt={profile.name}
                   fill
-                  sizes="(max-width: 1024px) 100vw, 280px"
+                  sizes="(max-width: 767px) 176px, (max-width: 1024px) 100vw, 280px"
                   priority
                   className="object-cover object-top"
                 />
               </div>
             ) : (
-              <div className="flex h-40 w-full items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy md:aspect-3/4 md:h-auto md:text-5xl">
+              <div className="flex aspect-3/4 w-44 items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy md:w-full md:text-5xl">
                 {initials(profile.name)}
               </div>
             )}
