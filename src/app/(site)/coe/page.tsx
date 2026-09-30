@@ -58,14 +58,14 @@ export default async function CoePage() {
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 {highlights.map((h, i) => (
                   <Reveal key={h.title} delay={i * 0.04}>
-                    <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
+                    <div className="h-full border border-line bg-surface p-5">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy/10 text-xs font-bold text-navy">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-paper-deep text-xs font-bold text-navy">
                           {i + 1}
                         </div>
                         <div>
-                          <div className="font-display font-bold text-navy">{h.title}</div>
-                          <p className="mt-1 text-sm text-muted-foreground">{h.description}</p>
+                          <div className="font-display font-medium text-navy">{h.title}</div>
+                          <p className="mt-1 text-sm text-ink-soft">{h.description}</p>
                         </div>
                       </div>
                     </div>

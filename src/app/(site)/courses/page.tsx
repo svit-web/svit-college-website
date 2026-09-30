@@ -24,25 +24,27 @@ export default async function CoursesIndex() {
             <Reveal key={c.code} delay={i * 0.05}>
               <Link
                 href={`/courses/${c.code}`}
-                className="card-lift group flex h-full flex-col rounded-2xl border-2 border-navy/15 bg-white p-7 hover:border-gold"
+                className="group flex h-full flex-col border border-line bg-surface p-7 hover:border-navy"
               >
                 <div className="flex items-center gap-4">
-                  <div className={cn("flex h-14 w-14 items-center justify-center rounded-md text-white font-display font-bold text-sm", c.color)}>
+                  {/* Admin theme colour as an accent bar — white text on e.g. bg-gold is unreadable. */}
+                  <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden border border-line bg-paper-deep font-display text-sm font-medium text-navy">
+                    <span aria-hidden className={cn("absolute inset-x-0 top-0 h-1", c.color)} />
                     {c.short_name}
                   </div>
                   <div>
-                    <h3 className="font-display text-xl font-bold text-navy">{c.name}</h3>
+                    <h3 className="font-display text-xl font-medium text-navy">{c.name}</h3>
                     <div className="text-xs font-semibold uppercase tracking-wider text-crimson">{c.tagline}</div>
                   </div>
                 </div>
-                <div className="mt-4 text-sm text-muted-foreground">{c.full_name}</div>
-                <p className="mt-3 text-sm text-muted-foreground line-clamp-3">{c.description}</p>
-                <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-border pt-4 text-xs">
-                  <div><dt className="text-muted-foreground">Duration</dt><dd className="font-semibold text-navy">{c.duration}</dd></div>
-                  <div><dt className="text-muted-foreground">Intake</dt><dd className="font-semibold text-navy">{String(c.intake ?? "—")}</dd></div>
-                  <div><dt className="text-muted-foreground">Eligibility</dt><dd className="font-semibold text-navy text-xs leading-tight">{c.eligibility}</dd></div>
+                <div className="mt-4 text-sm text-ink-soft">{c.full_name}</div>
+                <p className="mt-3 text-sm text-ink-soft line-clamp-3">{c.description}</p>
+                <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-line pt-4 text-xs">
+                  <div><dt className="text-ink-soft">Duration</dt><dd className="font-semibold text-navy">{c.duration}</dd></div>
+                  <div><dt className="text-ink-soft">Intake</dt><dd className="font-semibold text-navy">{String(c.intake ?? "—")}</dd></div>
+                  <div><dt className="text-ink-soft">Eligibility</dt><dd className="font-semibold text-navy text-xs leading-tight">{c.eligibility}</dd></div>
                 </dl>
-                <div className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-gold">
+                <div className="mt-5 inline-flex items-center gap-1 text-xs font-semibold text-navy group-hover:text-crimson">
                   View Details <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>

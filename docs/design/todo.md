@@ -222,12 +222,17 @@ Seen on `campus-life/events/[slug]`; check facilities, clubs, labs, student-corn
 - [x] `/admissions/inquiry`
 
 **Colleges & academics**
-- [ ] `/colleges` (lift1 grey1 gold1)
-- [ ] `/colleges/[college]` — check all 6 colleges
-- [ ] `/courses` (lift1 gold1)
-- [ ] `/courses/[course]` (r2 gold5)
-- [ ] `/programs/[program]` (gold1)
-- [ ] `/coe` (lift1 navy1)
+- [x] `/colleges` (lift1 grey1 gold1)
+- [x] `/colleges/[college]` — check all 6 colleges
+- [x] `/courses` (lift1 gold1)
+- [x] `/courses/[course]` (r2 gold5)
+- [x] `/programs/[program]` (gold1)
+- [x] `/coe` (lift1 navy1)
+
+_Open question for the user: `/courses/[course]` "Where our graduates go" renders 200+ recruiter names
+as a text wall (~11,000px tall on phones). Options: homepage-style `RecruitersMarquee`, or a collapsed
+list with "Show all". Course tiles now use the programme's admin `theme_color` as an accent bar only
+(white text on `bg-gold` was unreadable)._
 
 **Departments** (check ≥2 departments each)
 - [ ] `/departments/[dept]`

@@ -41,21 +41,21 @@ export default async function CollegesIndex() {
             <Reveal key={c.id} delay={i * 0.05}>
               <Link
                 href={`/colleges/${c.slug}`}
-                className="card-lift group flex h-full flex-col rounded-2xl border border-border bg-white p-8"
+                className="group flex h-full flex-col border border-line bg-surface p-8"
               >
                 <div className="flex items-start gap-5">
                   <CollegeLogo
                     shortCode={c.code}
                     src={c.logo_url ?? undefined}
-                    className="h-20 w-20 shrink-0 rounded-md border border-border bg-secondary/50 p-2 text-navy"
+                    className="h-20 w-20 shrink-0 border border-line bg-paper-deep p-2 text-navy"
                   />
                   <div className="min-w-0">
                     <div className="text-xs font-bold uppercase tracking-widest text-crimson">{c.code}</div>
-                    <h3 className="mt-1 font-display text-xl font-bold text-navy leading-tight">{c.name}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground italic">{c.tagline}</p>
+                    <h3 className="mt-1 font-display text-xl font-medium text-navy leading-tight">{c.name}</h3>
+                    <p className="mt-2 text-sm text-ink-soft italic">{c.tagline}</p>
                   </div>
                 </div>
-                <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-navy group-hover:text-gold">
+                <div className="mt-6 inline-flex items-center gap-1 text-sm font-semibold text-navy group-hover:text-crimson">
                   Explore {c.code} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </Link>

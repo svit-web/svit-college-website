@@ -51,20 +51,20 @@ export default async function ProgramPage({
             { k: "Intake", v: course.intake ? String(course.intake) : "—" },
             { k: "Duration", v: course.duration_years ? `${course.duration_years} years` : "—" },
           ].map((s) => (
-            <div key={s.k} className="rounded-2xl border-2 border-navy/15 bg-white p-5">
+            <div key={s.k} className="border border-line bg-surface p-5">
               <div className="text-xs font-bold uppercase tracking-widest text-crimson">{s.k}</div>
-              <div className="mt-2 font-display text-2xl font-bold text-navy">{s.v}</div>
+              <div className="mt-2 font-display text-2xl font-medium text-navy">{s.v}</div>
             </div>
           ))}
         </div>
-        <p className="mt-10 text-sm text-muted-foreground">
+        <p className="mt-10 text-sm text-ink-soft">
           Full program details — curriculum, eligibility, fees, career pathways and admission process — will be
           published here.
         </p>
         {dept && (
           <Link
             href={`/departments/${dept.code}`}
-            className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-navy hover:text-gold-strong"
+            className="mt-5 inline-flex items-center gap-2 py-1.5 text-sm font-semibold text-navy hover:text-crimson"
           >
             <ArrowLeft className="h-4 w-4" /> Back to {dept.name}
           </Link>
