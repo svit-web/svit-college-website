@@ -235,15 +235,15 @@ list with "Show all". Course tiles now use the programme's admin `theme_color` a
 (white text on `bg-gold` was unreadable)._
 
 **Departments** (check ≥2 departments each)
-- [ ] `/departments/[dept]`
-- [ ] `/departments/[dept]/staff`
-- [ ] `/departments/[dept]/labs`
-- [ ] `/departments/[dept]/labs/[slug]` (lift1 navy1)
-- [ ] `/departments/[dept]/achievements`
-- [ ] `/departments/[dept]/activities`
+- [x] `/departments/[dept]`
+- [x] `/departments/[dept]/staff`
+- [x] `/departments/[dept]/labs`
+- [x] `/departments/[dept]/labs/[slug]` (lift1 navy1)
+- [x] `/departments/[dept]/achievements`
+- [x] `/departments/[dept]/activities`
 
 **People**
-- [ ] `/staff/[staff]` (r2 navy1 shadow2 gold1) — faculty profile; see `docs/design/faculty-profile-mockup.html`
+- [x] `/staff/[staff]` (r2 navy1 shadow2 gold1) — faculty profile; see `docs/design/faculty-profile-mockup.html`
 
 **Campus life** (shared: campus-life/layout, CampusLifeNav)
 - [ ] `/campus-life` (r4 lift4 navy1)

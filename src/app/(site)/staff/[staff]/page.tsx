@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, ExternalLink, Linkedin, BookOpen, ChevronDown } from "lucide-react";
+import { Mail, ExternalLink, Linkedin, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { getStaffByEmployeeCode } from "@/lib/staff.functions";
 
 function initials(name: string) {
@@ -79,7 +79,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
             <li key={a.id} className="text-sm leading-relaxed text-ink">
               <span className="font-semibold text-navy">{a.title}</span>
               {(a.year || a.description) && (
-                <span className="text-muted-foreground">
+                <span className="text-ink-soft">
                   {a.year && ` (${a.year})`}
                   {a.description && ` — ${a.description}`}
                 </span>
@@ -92,38 +92,46 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
   }
 
   return (
-    <div className="bg-white">
+    <div className="bg-paper">
       {/* Breadcrumb */}
-      <div className="container-page flex items-center gap-1.5 pb-2 pt-[clamp(150px,18vh,200px)] text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-navy transition-colors">
+      <nav
+        aria-label="Breadcrumb"
+        className="container-page flex flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
+      >
+        <Link href="/" className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
           Home
         </Link>
         {dept && (
           <>
-            <span>/</span>
-            <Link href={`/departments/${dept.code}`} className="hover:text-navy transition-colors">
+            <ChevronRight aria-hidden className="h-3 w-3" />
+            <Link
+              href={`/departments/${dept.code}`}
+              className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson"
+            >
               {dept.name}
             </Link>
-            <span>/</span>
+            <ChevronRight aria-hidden className="h-3 w-3" />
             <Link
               href={`/departments/${dept.code}/staff`}
-              className="hover:text-navy transition-colors"
+              className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson"
             >
               Staff
             </Link>
           </>
         )}
-        <span>/</span>
-        <span className="text-navy font-medium truncate">{profile.name}</span>
-      </div>
+        <ChevronRight aria-hidden className="h-3 w-3" />
+        <span aria-current="page" className="truncate text-ink-soft">
+          {profile.name}
+        </span>
+      </nav>
 
       <div className="container-page pb-16">
         {dept && (
-          <div className="mb-8 border-b border-navy/10 pb-4">
+          <div className="mb-8 border-b border-line pb-4">
             <div className="mb-1 text-xs font-bold uppercase tracking-widest text-crimson">
               Department
             </div>
-            <h1 className="font-display text-3xl font-bold text-navy md:text-4xl">{dept.name}</h1>
+            <h1 className="font-display text-3xl font-medium text-navy md:text-4xl">{dept.name}</h1>
           </div>
         )}
 
@@ -131,7 +139,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
           {/* LEFT — identity & contact */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             {profile.photoUrl ? (
-              <div className="relative aspect-3/4 w-full rounded-2xl shadow-md overflow-hidden">
+              <div className="relative aspect-3/4 w-40 overflow-hidden sm:w-48 md:w-full">
                 <Image
                   src={profile.photoUrl}
                   alt={profile.name}
@@ -142,17 +150,17 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                 />
               </div>
             ) : (
-              <div className="flex aspect-3/4 w-full items-center justify-center rounded-2xl bg-navy/10 font-display text-5xl font-bold text-navy shadow-md">
+              <div className="flex aspect-3/4 w-40 items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy sm:w-48 md:w-full md:text-5xl">
                 {initials(profile.name)}
               </div>
             )}
 
             {profile.rankGroup === "HOD" && (
-              <div className="mt-4.5 mb-1 inline-flex items-center rounded-full bg-gold/20 px-2.5 py-0.5 text-xs font-bold uppercase tracking-widest text-gold-strong">
+              <div className="mt-4.5 mb-1 inline-flex items-center rounded-full border border-crimson/30 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-[0.16em] text-crimson">
                 Head of Department
               </div>
             )}
-            <h2 className="mt-3.5 font-display text-xl font-bold leading-tight text-navy">
+            <h2 className="mt-3.5 font-display text-xl font-medium leading-tight text-navy">
               {profile.name}
             </h2>
             {profile.designation && (
@@ -178,13 +186,13 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
               (profile.socialLinks.linkedin ||
                 profile.socialLinks.googleScholar ||
                 profile.socialLinks.orcid) && (
-                <div className="mt-4.5 flex flex-wrap gap-4 border-t border-navy/10 pt-4.5">
+                <div className="mt-4.5 flex flex-wrap gap-4 border-t border-line pt-4.5">
                   {profile.socialLinks.linkedin && (
                     <a
                       href={profile.socialLinks.linkedin}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-ink-soft transition-colors hover:text-navy"
                     >
                       <Linkedin className="h-3.5 w-3.5" /> LinkedIn
                     </a>
@@ -194,7 +202,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                       href={profile.socialLinks.googleScholar}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-ink-soft transition-colors hover:text-navy"
                     >
                       <BookOpen className="h-3.5 w-3.5" /> Scholar
                     </a>
@@ -204,7 +212,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                       href={profile.socialLinks.orcid}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:text-navy"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-ink-soft transition-colors hover:text-navy"
                     >
                       <ExternalLink className="h-3.5 w-3.5" /> ORCID
                     </a>
@@ -213,7 +221,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
               )}
 
             {profile.officeHours && profile.officeHours.length > 0 && (
-              <div className="mt-4.5 border-t border-navy/10 pt-4.5">
+              <div className="mt-4.5 border-t border-line pt-4.5">
                 <div className="mb-2 text-xs font-bold uppercase tracking-widest text-crimson">
                   Office Hours
                 </div>
@@ -228,10 +236,10 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
             )}
 
             {dept && (
-              <div className="mt-4.5 border-t border-navy/10 pt-4.5">
+              <div className="mt-4.5 border-t border-line pt-4.5">
                 <Link
                   href={`/departments/${dept.code}/staff`}
-                  className="text-xs font-semibold text-navy/50 transition-colors hover:text-navy"
+                  className="inline-block py-1.5 text-xs font-semibold text-navy transition-colors hover:text-crimson"
                 >
                   ← Back to {dept.name} Staff
                 </Link>
@@ -249,15 +257,17 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
             )}
 
             {sections.length > 0 ? (
-              <div className="border-y border-navy/10">
+              <div className="border-y border-line">
                 {sections.map((section, i) => (
                   <details
                     key={section.key}
                     open={i === 0}
-                    className="group border-b border-navy/10 py-4.5 last:border-b-0"
+                    className="group border-b border-line py-4.5 last:border-b-0"
                   >
                     <summary className="flex cursor-pointer list-none items-center justify-between gap-4">
-                      <h3 className="font-display text-lg font-bold text-navy">{section.title}</h3>
+                      <h3 className="font-display text-lg font-medium text-navy">
+                        {section.title}
+                      </h3>
                       <ChevronDown className="h-4 w-4 shrink-0 text-crimson transition-transform group-open:rotate-180" />
                     </summary>
                     <div className="pt-3">{section.body}</div>
@@ -265,9 +275,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                 ))}
               </div>
             ) : (
-              <p className="text-sm italic text-muted-foreground">
-                No additional details listed yet.
-              </p>
+              <p className="text-sm italic text-ink-soft">No additional details listed yet.</p>
             )}
           </div>
         </div>

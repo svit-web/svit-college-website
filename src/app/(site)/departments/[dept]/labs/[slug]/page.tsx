@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getDepartmentByCode } from "@/lib/departments.functions";
 import { getLabBySlug } from "@/lib/facilities.functions";
+import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 
 // Per-request dedupe between generateMetadata and the page.
@@ -46,28 +47,33 @@ export default async function LabDetailPage({
   const highlights = lab.metadata?.highlights ?? [];
 
   return (
-    <div className="bg-white">
-      <div className="container-page flex items-center gap-1.5 pb-2 pt-[clamp(150px,18vh,200px)] text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-navy transition-colors">
+    <div className="bg-paper">
+      <nav
+        aria-label="Breadcrumb"
+        className="container-page flex flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
+      >
+        <Link href="/" className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
           Home
         </Link>
-        <span>/</span>
+        <ChevronRight aria-hidden className="h-3 w-3" />
         <Link
           href={`/departments/${department.code}`}
-          className="hover:text-navy transition-colors"
+          className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson"
         >
           {department.name}
         </Link>
-        <span>/</span>
+        <ChevronRight aria-hidden className="h-3 w-3" />
         <Link
           href={`/departments/${department.code}/labs`}
-          className="hover:text-navy transition-colors"
+          className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson"
         >
           Labs
         </Link>
-        <span>/</span>
-        <span className="text-navy font-medium truncate">{lab.name}</span>
-      </div>
+        <ChevronRight aria-hidden className="h-3 w-3" />
+        <span aria-current="page" className="truncate text-ink-soft">
+          {lab.name}
+        </span>
+      </nav>
 
       <div className="container-page max-w-4xl pb-16 pt-6">
         <DetailPageLayout
@@ -82,18 +88,22 @@ export default async function LabDetailPage({
         >
           {highlights.length > 0 && (
             <div>
-              <SectionHeading eyebrow="Highlights" title="What makes it special" variant="eyebrow" />
+              <SectionHeading
+                eyebrow="Highlights"
+                title="What makes it special"
+                variant="eyebrow"
+              />
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
                 {highlights.map((h, i) => (
                   <Reveal key={h.title} delay={i * 0.04}>
-                    <div className="card-lift h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold transition-colors">
+                    <div className="h-full border border-line bg-surface p-5">
                       <div className="flex items-start gap-3">
-                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-navy/10 text-xs font-bold text-navy">
+                        <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-paper-deep text-xs font-bold text-navy">
                           {i + 1}
                         </div>
                         <div>
-                          <div className="font-display font-bold text-navy">{h.title}</div>
-                          <p className="mt-1 text-sm text-muted-foreground">{h.description}</p>
+                          <div className="font-display font-medium text-navy">{h.title}</div>
+                          <p className="mt-1 text-sm text-ink-soft">{h.description}</p>
                         </div>
                       </div>
                     </div>
