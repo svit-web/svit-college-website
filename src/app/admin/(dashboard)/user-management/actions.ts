@@ -54,10 +54,14 @@ async function assertGlobalAdmin() {
   return admin;
 }
 
-function assertRoleScopeSane(roleCode: string, scopeType: string) {
-  if (roleCode === 'admin' && scopeType !== 'global') {
-    throw new Error('The "Administrator" role can only be granted at Global scope.');
-  }
+// Next.js masks messages thrown from server actions in production builds (the
+// client only sees a generic React #441 error), so expected, user-fixable
+// failures are returned as { error } instead of thrown.
+type ActionResult<T> = ({ error?: undefined } & T) | { error: string };
+
+function roleAssignError(err: { code?: string; message: string }) {
+  if (err.code === '23505') return 'This user already has that role at that scope.';
+  return err.message;
 }
 
 export async function listPortalUsers(): Promise<PortalUser[]> {
@@ -222,17 +226,19 @@ interface CreatePortalUserInput {
   departmentId?: string | null;
 }
 
-export async function createPortalUser(input: CreatePortalUserInput) {
+export async function createPortalUser(input: CreatePortalUserInput): Promise<ActionResult<{ userId: string }>> {
   const admin = await assertGlobalAdmin();
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
 
   if (!input.email || !input.password || !input.roleCode || !input.scopeType) {
-    throw new Error('Email, password, role, and scope are required.');
+    return { error: 'Email, password, role, and scope are required.' };
   }
   if (input.password.length < 8) {
-    throw new Error('Password must be at least 8 characters.');
+    return { error: 'Password must be at least 8 characters.' };
   }
-  assertRoleScopeSane(input.roleCode, input.scopeType);
+  if (input.roleCode === 'admin' && input.scopeType !== 'global') {
+    return { error: 'The "Administrator" role can only be granted at Global scope.' };
+  }
 
   const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
     email: input.email,
@@ -240,7 +246,12 @@ export async function createPortalUser(input: CreatePortalUserInput) {
     email_confirm: true,
     user_metadata: { first_name: input.firstName, last_name: input.lastName },
   });
-  if (createErr) throw new Error(createErr.message);
+  if (createErr) {
+    if (createErr.code === 'email_exists') {
+      return { error: `An account for ${input.email} already exists. Use "Manage roles" on that user to grant access instead.` };
+    }
+    return { error: createErr.message };
+  }
 
   const newUserId = created.user?.id;
   if (!newUserId) throw new Error('User creation did not return an id.');
@@ -259,7 +270,7 @@ export async function createPortalUser(input: CreatePortalUserInput) {
     status: 'published',
     created_by: admin.id,
   });
-  if (assignErr) throw new Error(assignErr.message);
+  if (assignErr) return { error: `Account created, but assigning the role failed: ${roleAssignError(assignErr)}` };
 
   return { userId: newUserId };
 }
@@ -273,10 +284,12 @@ interface AssignRoleInput {
   departmentId?: string | null;
 }
 
-export async function assignPortalUserRole(input: AssignRoleInput) {
+export async function assignPortalUserRole(input: AssignRoleInput): Promise<ActionResult<{ ok: true }>> {
   const admin = await assertGlobalAdmin();
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-  assertRoleScopeSane(input.roleCode, input.scopeType);
+  if (input.roleCode === 'admin' && input.scopeType !== 'global') {
+    return { error: 'The "Administrator" role can only be granted at Global scope.' };
+  }
 
   const { data: role, error: roleErr } = await supabaseAdmin.from('roles').select('id').eq('code', input.roleCode).maybeSingle();
   if (roleErr) throw new Error(roleErr.message);
@@ -292,7 +305,7 @@ export async function assignPortalUserRole(input: AssignRoleInput) {
     status: 'published',
     created_by: admin.id,
   });
-  if (assignErr) throw new Error(assignErr.message);
+  if (assignErr) return { error: roleAssignError(assignErr) };
 
   return { ok: true };
 }

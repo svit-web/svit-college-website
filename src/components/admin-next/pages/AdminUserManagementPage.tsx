@@ -295,7 +295,7 @@ function CreateUserModal({
     }
     setSaving(true);
     try {
-      await createPortalUser({
+      const result = await createPortalUser({
         email,
         password,
         firstName,
@@ -306,6 +306,7 @@ function CreateUserModal({
         collegeId: scopeType === 'college' ? scopeId : null,
         departmentId: scopeType === 'department' ? scopeId : null,
       });
+      if (result.error) throw new Error(result.error);
       toast.success(`Created account for ${email}`);
       onCreated();
     } catch (err: any) {
@@ -497,7 +498,7 @@ function ManageRolesModal({
     }
     setSaving(true);
     try {
-      await assignPortalUserRole({
+      const result = await assignPortalUserRole({
         userId: user.id,
         roleCode,
         scopeType,
@@ -505,6 +506,7 @@ function ManageRolesModal({
         collegeId: scopeType === 'college' ? scopeId : null,
         departmentId: scopeType === 'department' ? scopeId : null,
       });
+      if (result.error) throw new Error(result.error);
       toast.success('Access granted.');
       await onChanged();
       onClose();
