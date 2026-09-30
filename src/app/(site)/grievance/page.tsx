@@ -14,9 +14,9 @@ export default function Grievance() {
       <section className="container-page py-20">
         <div className="grid gap-8 lg:grid-cols-[1.5fr_1fr]">
           <GrievanceForm />
-          <aside className="rounded-2xl bg-secondary/50 p-6">
-            <h4 className="font-display font-bold text-navy">What happens next</h4>
-            <ol className="mt-4 space-y-3 text-sm text-muted-foreground list-decimal list-inside">
+          <aside className="border border-line bg-paper-deep p-6">
+            <h4 className="font-display font-medium text-navy">What happens next</h4>
+            <ol className="mt-4 space-y-3 text-sm text-ink-soft list-decimal list-inside">
               <li>You'll receive a reference number.</li>
               <li>The committee reviews within 48 hours.</li>
               <li>A resolution or update is sent within 5 working days.</li>

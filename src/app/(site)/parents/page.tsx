@@ -3,6 +3,7 @@ import Link from "next/link";
 import { PageHero } from "@/components/site-next/PageHero";
 import { Reveal } from "@/components/site-next/Reveal";
 import { CalendarCheck, MessageCircle, Shield, TrendingUp } from "lucide-react";
+import { pillOutline, pillPrimary } from "@/components/site-next/site-styles";
 import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const metadata: Metadata = {
@@ -25,10 +26,10 @@ export default async function Parents() {
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {feats.map((f, i) => (
             <Reveal key={f.t} delay={i * 0.05}>
-              <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy"><f.icon className="h-5 w-5" /></div>
-                <h4 className="mt-4 font-display font-bold text-navy">{f.t}</h4>
-                <p className="mt-2 text-sm text-muted-foreground">{f.d}</p>
+              <div className="h-full border border-line bg-surface p-6">
+                <div className="flex h-10 w-10 items-center justify-center bg-paper-deep text-navy"><f.icon className="h-5 w-5" /></div>
+                <h4 className="mt-4 font-display font-medium text-navy">{f.t}</h4>
+                <p className="mt-2 text-sm text-ink-soft">{f.d}</p>
               </div>
             </Reveal>
           ))}
@@ -36,12 +37,12 @@ export default async function Parents() {
       </section>
 
       <section className="container-page pb-10">
-        <div className="rounded-2xl bg-secondary/50 p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="border border-line bg-paper-deep p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h3 className="font-display text-xl font-bold text-navy">Parent Relations Cell</h3>
-            <p className="mt-1 text-sm text-muted-foreground">Have a concern or feedback? Reach out to the Parent Relations team.</p>
+            <h3 className="font-display text-xl font-medium text-navy">Parent Relations Cell</h3>
+            <p className="mt-1 text-sm text-ink-soft">Have a concern or feedback? Reach out to the Parent Relations team.</p>
           </div>
-          <Link href="/admissions/inquiry" className="rounded-md bg-navy px-5 py-3 text-xs font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light">Get in Touch</Link>
+          <Link href="/admissions/inquiry" className={`shrink-0 ${pillPrimary}`}>Get in Touch</Link>
         </div>
       </section>
     </>

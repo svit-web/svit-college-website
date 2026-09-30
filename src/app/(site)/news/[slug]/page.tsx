@@ -5,6 +5,7 @@ import Link from "next/link";
 import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { formatDate } from "@/components/site-next/DepartmentSections";
 import { getPostBySlug } from "@/lib/posts.functions";
+import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 
 // Per-request dedupe between generateMetadata and the page.
@@ -41,18 +42,21 @@ export default async function NewsDetailPage({
   const { post, album } = loaded;
 
   return (
-    <div className="bg-white">
-      <div className="container-page flex items-center gap-1.5 pb-2 pt-[clamp(150px,18vh,200px)] text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-navy transition-colors">
+    <div className="bg-paper">
+      <nav
+        aria-label="Breadcrumb"
+        className="container-page flex flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
+      >
+        <Link href="/" className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
           Home
         </Link>
-        <span>/</span>
-        <Link href="/news" className="hover:text-navy transition-colors">
+        <ChevronRight aria-hidden className="h-3 w-3" />
+        <Link href="/news" className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
           News
         </Link>
-        <span>/</span>
-        <span className="text-navy font-medium truncate">{post.title}</span>
-      </div>
+        <ChevronRight aria-hidden className="h-3 w-3" />
+        <span aria-current="page" className="truncate text-ink-soft">{post.title}</span>
+      </nav>
 
       <div className="container-page max-w-4xl pb-16 pt-6">
         <DetailPageLayout

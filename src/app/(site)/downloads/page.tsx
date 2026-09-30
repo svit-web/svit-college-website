@@ -20,9 +20,9 @@ export default async function Downloads() {
           {downloads.map((f, i) => (
             <Reveal key={f.id} delay={i * 0.03}>
               <li>
-                <a href={f.file_url} className="card-lift flex items-center justify-between gap-4 rounded-2xl border border-border bg-white p-5">
+                <a href={f.file_url} className="group flex items-center justify-between gap-4 border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy"><FileText className="h-5 w-5" /></div>
+                    <div className="flex h-10 w-10 items-center justify-center bg-paper-deep text-navy"><FileText className="h-5 w-5" /></div>
                     <span className="font-semibold text-navy">{f.title}</span>
                   </div>
                   <Download className="h-5 w-5 text-navy" />

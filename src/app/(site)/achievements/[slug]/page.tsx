@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { formatDate } from "@/components/site-next/DepartmentSections";
+import { ChevronRight } from "lucide-react";
 import {
   achievementCategoryLabel,
   getAchievementDetailBySlug,
@@ -40,29 +41,32 @@ export default async function AchievementDetailPage({
   const dept = item.department;
 
   return (
-    <div className="bg-white">
-      <div className="container-page flex items-center gap-1.5 pb-2 pt-[clamp(150px,18vh,200px)] text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-navy transition-colors">
+    <div className="bg-paper">
+      <nav
+        aria-label="Breadcrumb"
+        className="container-page flex flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
+      >
+        <Link href="/" className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
           Home
         </Link>
         {dept && (
           <>
-            <span>/</span>
-            <Link href={`/departments/${dept.code}`} className="hover:text-navy transition-colors">
+            <ChevronRight aria-hidden className="h-3 w-3" />
+            <Link href={`/departments/${dept.code}`} className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
               {dept.name}
             </Link>
-            <span>/</span>
+            <ChevronRight aria-hidden className="h-3 w-3" />
             <Link
               href={`/departments/${dept.code}/achievements`}
-              className="hover:text-navy transition-colors"
+              className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson"
             >
               Achievements
             </Link>
           </>
         )}
-        <span>/</span>
-        <span className="text-navy font-medium truncate">{item.title}</span>
-      </div>
+        <ChevronRight aria-hidden className="h-3 w-3" />
+        <span aria-current="page" className="truncate text-ink-soft">{item.title}</span>
+      </nav>
 
       <div className="container-page max-w-4xl pb-16 pt-6">
         <DetailPageLayout

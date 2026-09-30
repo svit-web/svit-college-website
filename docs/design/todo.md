@@ -257,29 +257,29 @@ list with "Show all". Course tiles now use the programme's admin `theme_color` a
 - [x] `/campus-life/nss-ncc` (lift1 navy1)
 - [x] `/campus-life/sports-and-athletics`
 
-_Campus life: all pages pass the mobile audit at 360/390 except `clubs/[slug]` and later widths, which
-weren't reached — the dev server was stopped by the background time limit mid-audit. Re-run:
-`node scripts/mobile-audit.mjs /campus-life/clubs/3d-printing-club /campus-life/clubs/3d-printing-club/events
-/campus-life/student-groups /campus-life/nss-ncc /campus-life/sports-and-athletics`._
+_Campus life: club pages re-checked later — pass at 360/390/768._
 
 **News, gallery, achievements**
-- [ ] `/news`
-- [ ] `/news/[slug]`
-- [ ] `/gallery` (gold2)
-- [ ] `/gallery/[albumId]`
-- [ ] `/achievements/[slug]`
+- [x] `/news`
+- [x] `/news/[slug]`
+- [x] `/gallery` (gold2)
+- [x] `/gallery/[albumId]`
+- [x] `/achievements/[slug]`
 
 **Placement**
-- [ ] `/placement`
+- [x] `/placement`
 
 **Other**
-- [ ] `/careers` (r2 lift1 navy1 grey1 gold1)
-- [ ] `/downloads` (lift1 navy1)
-- [ ] `/parents` (r2 lift1 navy2 grey1)
-- [ ] `/grievance` (grey1)
-- [ ] `/anti-ragging` (r2 navy1 gold2)
-- [ ] `/student-login`
-- [ ] `/student-corner/[slug]` (lift1 navy1)
+- [x] `/careers` (r2 lift1 navy1 grey1 gold1)
+- [x] `/downloads` (lift1 navy1)
+- [x] `/parents` (r2 lift1 navy2 grey1)
+- [x] `/grievance` (grey1)
+- [x] `/anti-ragging` (r2 navy1 gold2)
+- [x] `/student-login`
+- [x] `/student-corner/[slug]` (lift1 navy1)
+
+_Phase 7 done 2026-09-30: every page above passes the mobile audit at 360/390/768 (Campus life
+club pages re-checked after the earlier server interruption)._
 
 Not in scope (redirect only): `/placement/[college]`, `/courses/[course]/faculty`,
 `/courses/engineering/[dept]`, `/courses/engineering/[dept]/faculty`.

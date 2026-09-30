@@ -36,7 +36,7 @@ export default async function News() {
 
       <section className="container-page py-20">
         {posts.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground">No news published yet.</p>
+          <p className="text-center text-sm text-ink-soft">No news published yet.</p>
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post, i) => (
