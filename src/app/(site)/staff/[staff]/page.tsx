@@ -136,7 +136,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
           </Link>
         )}
         {dept && (
-          <div className="mb-8 border-b border-line pb-4">
+          <div className="mb-5 border-b border-line pb-4 md:mb-8">
             <div className="mb-1 text-xs font-bold uppercase tracking-widest text-crimson">
               Department
             </div>
