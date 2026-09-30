@@ -75,7 +75,7 @@ export default async function ClubLeaf({ params }: { params: Promise<{ slug: str
             <div className="mt-6 text-center">
               <Link
                 href={`/campus-life/clubs/${item.slug}/events`}
-                className="inline-flex items-center gap-2 rounded-full border-2 border-navy/15 bg-white px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-navy transition-all hover:border-gold"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-navy transition-all hover:border-navy"
               >
                 View more events →
               </Link>

@@ -40,7 +40,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
     <div>
       <Link
         href="/campus-life/events"
-        className="mb-6 inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-navy"
+        className="mb-6 inline-flex items-center gap-2 py-1.5 text-sm font-semibold text-ink-soft hover:text-crimson"
       >
         <ArrowLeft className="h-4 w-4" /> All events
       </Link>
@@ -55,11 +55,11 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
           album,
         }}
       >
-        <div className="grid gap-4 rounded-2xl border-2 border-navy/15 bg-white p-6 sm:grid-cols-2">
+        <div className="grid gap-5 border border-line bg-paper-deep/60 p-6 sm:grid-cols-2">
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-crimson" />
             <div>
-              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
                 Date
               </div>
               <div className="font-semibold text-navy">
@@ -72,7 +72,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
             <div className="flex items-start gap-3">
               <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-crimson" />
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
                   Location
                 </div>
                 <div className="font-semibold text-navy">
@@ -92,14 +92,14 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
             <div className="flex items-start gap-3">
               <Ticket className="mt-0.5 h-5 w-5 shrink-0 text-crimson" />
               <div>
-                <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
                   Registration
                 </div>
                 <a
                   href={event.registration_link}
                   target="_blank"
                   rel="noreferrer"
-                  className="font-semibold text-crimson hover:underline"
+                  className="inline-block py-1 font-semibold text-crimson hover:underline"
                 >
                   Register now
                 </a>
@@ -109,13 +109,13 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
 
           {event.club && (
             <div>
-              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
                 Organised by
               </div>
               {event.club.has_detail_page ? (
                 <Link
                   href={`/campus-life/clubs/${event.club.slug}`}
-                  className="font-semibold text-crimson hover:underline"
+                  className="inline-block py-1 font-semibold text-crimson hover:underline"
                 >
                   {event.club.name}
                 </Link>
@@ -127,7 +127,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
 
           {!event.club && event.department && (
             <div>
-              <div className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              <div className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">
                 Department
               </div>
               <span className="font-semibold text-navy">{event.department.name}</span>

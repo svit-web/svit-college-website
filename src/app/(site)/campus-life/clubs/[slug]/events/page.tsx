@@ -53,14 +53,14 @@ export default async function ClubEventsPage({ params }: { params: Promise<{ slu
     <div>
       <Link
         href={`/campus-life/clubs/${club.slug}`}
-        className="mb-6 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-crimson hover:text-navy"
+        className="mb-6 inline-flex items-center gap-1.5 py-1.5 text-xs font-bold uppercase tracking-wider text-crimson hover:text-navy"
       >
         ← Back to {club.name}
       </Link>
       <SectionHeading eyebrow={club.name} title="All Events" />
 
       {entries.length === 0 ? (
-        <p className="mt-6 text-sm text-muted-foreground">No events yet — check back soon.</p>
+        <p className="mt-6 text-sm text-ink-soft">No events yet — check back soon.</p>
       ) : (
         <EntryEventsGrid entries={entries} />
       )}

@@ -246,16 +246,21 @@ list with "Show all". Course tiles now use the programme's admin `theme_color` a
 - [x] `/staff/[staff]` (r2 navy1 shadow2 gold1) — faculty profile; see `docs/design/faculty-profile-mockup.html`
 
 **Campus life** (shared: campus-life/layout, CampusLifeNav)
-- [ ] `/campus-life` (r4 lift4 navy1)
-- [ ] `/campus-life/facilities`
-- [ ] `/campus-life/facilities/[...slug]` (lift1 navy1)
-- [ ] `/campus-life/events`
-- [ ] `/campus-life/events/[slug]`
-- [ ] `/campus-life/clubs/[slug]`
-- [ ] `/campus-life/clubs/[slug]/events`
-- [ ] `/campus-life/student-groups` (r2 lift2)
-- [ ] `/campus-life/nss-ncc` (lift1 navy1)
-- [ ] `/campus-life/sports-and-athletics`
+- [x] `/campus-life` (r4 lift4 navy1)
+- [x] `/campus-life/facilities`
+- [x] `/campus-life/facilities/[...slug]` (lift1 navy1)
+- [x] `/campus-life/events`
+- [x] `/campus-life/events/[slug]`
+- [x] `/campus-life/clubs/[slug]`
+- [x] `/campus-life/clubs/[slug]/events`
+- [x] `/campus-life/student-groups` (r2 lift2)
+- [x] `/campus-life/nss-ncc` (lift1 navy1)
+- [x] `/campus-life/sports-and-athletics`
+
+_Campus life: all pages pass the mobile audit at 360/390 except `clubs/[slug]` and later widths, which
+weren't reached — the dev server was stopped by the background time limit mid-audit. Re-run:
+`node scripts/mobile-audit.mjs /campus-life/clubs/3d-printing-club /campus-life/clubs/3d-printing-club/events
+/campus-life/student-groups /campus-life/nss-ncc /campus-life/sports-and-athletics`._
 
 **News, gallery, achievements**
 - [ ] `/news`

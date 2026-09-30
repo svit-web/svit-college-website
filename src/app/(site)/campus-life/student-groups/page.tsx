@@ -31,19 +31,19 @@ export default async function StudentGroupsIndex() {
             <Reveal key={c.slug} delay={i * 0.03}>
               <Link
                 href={`/campus-life/clubs/${c.slug}`}
-                className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
+                className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
               >
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">
                   {c.accent_color || "Club"}
                 </div>
-                <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>
+                <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
                 {c.departmentName && (
                   <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-navy/60">
                     <Building2 className="h-3 w-3 shrink-0" />
                     <span className="truncate">{c.departmentName}</span>
                   </div>
                 )}
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-ink-soft">
                   {c.subtitle || c.description}
                 </p>
               </Link>
@@ -63,13 +63,13 @@ export default async function StudentGroupsIndex() {
             <Reveal key={c.slug} delay={i * 0.03}>
               <Link
                 href={`/student-corner/${c.slug}`}
-                className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
+                className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
               >
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">
                   {c.accent_color || "Centre"}
                 </div>
-                <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>
-                <p className="mt-2 text-sm text-muted-foreground">
+                <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
+                <p className="mt-2 text-sm text-ink-soft">
                   {c.subtitle || ""}
                 </p>
               </Link>

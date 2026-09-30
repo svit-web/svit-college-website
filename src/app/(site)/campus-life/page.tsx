@@ -34,12 +34,12 @@ export default async function CampusLifeOverview() {
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {SUMMARY.map((s, i) => (
             <Reveal key={s.label} delay={i * 0.05}>
-              <Link href={s.to} className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold">
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-navy/5 text-navy">
+              <Link href={s.to} className="block h-full border border-line bg-surface p-6 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep">
+                <div className="flex h-10 w-10 items-center justify-center bg-paper-deep text-navy">
                   <s.icon className="h-5 w-5" />
                 </div>
-                <div className="mt-4 font-display text-3xl font-bold text-navy">{s.count}+</div>
-                <div className="mt-1 text-sm font-semibold text-muted-foreground">{s.label}</div>
+                <div className="mt-4 font-display text-3xl font-medium text-navy">{s.count}+</div>
+                <div className="mt-1 text-sm font-semibold text-ink-soft">{s.label}</div>
                 <div className="mt-3 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-crimson">
                   Explore <ArrowRight className="h-3 w-3" />
                 </div>
@@ -56,11 +56,11 @@ export default async function CampusLifeOverview() {
             <Reveal key={e.slug} delay={i * 0.04}>
               <Link
                 href={`/campus-life/events/${e.slug}`}
-                className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold"
+                className="block h-full border border-line bg-surface p-6 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
               >
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">{e.accent_color ?? e.tag}</div>
-                <h3 className="mt-2 font-display text-xl font-bold text-navy">{e.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{e.subtitle ?? e.description}</p>
+                <h3 className="mt-2 font-display text-xl font-medium text-navy">{e.title}</h3>
+                <p className="mt-2 text-sm text-ink-soft">{e.subtitle ?? e.description}</p>
               </Link>
             </Reveal>
           ))}
@@ -74,10 +74,10 @@ export default async function CampusLifeOverview() {
             <Reveal key={c.slug} delay={i * 0.04}>
               <Link
                 href={`/campus-life/clubs/${c.slug}`}
-                className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
+                className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
               >
-                <h4 className="font-display font-bold text-navy">{c.name}</h4>
-                <p className="mt-2 text-sm text-muted-foreground">{c.subtitle ?? c.description}</p>
+                <h4 className="font-display font-medium text-navy">{c.name}</h4>
+                <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
               </Link>
             </Reveal>
           ))}
@@ -91,13 +91,13 @@ export default async function CampusLifeOverview() {
             <Reveal key={c.slug} delay={i * 0.04}>
               <Link
                 href={`/student-corner/${c.slug}`}
-                className="card-lift block h-full rounded-2xl border-2 border-navy/15 bg-white p-5 hover:border-gold"
+                className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
               >
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">
                   {c.accent_color ?? "Centre"}
                 </div>
-                <h4 className="mt-1 font-display font-bold text-navy">{c.name}</h4>
-                <p className="mt-2 text-sm text-muted-foreground">{c.subtitle ?? ""}</p>
+                <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
+                <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? ""}</p>
               </Link>
             </Reveal>
           ))}
