@@ -29,9 +29,10 @@ export const editorialH2 =
 export const sectionH2 =
   "font-display text-[clamp(1.85rem,3.2vw,2.6rem)] font-medium leading-[1.15] tracking-[-0.01em] text-navy";
 
-// Form fields: square, hairline, navy focus.
+// Form fields: square, hairline, navy focus. 16px text on phones — smaller
+// inputs make iOS Safari zoom the page on focus.
 export const fieldInput =
-  "w-full border border-line bg-surface px-3.5 py-2.5 text-sm text-ink placeholder:text-ink-mute transition-colors focus:border-navy focus:outline-none focus:ring-0 disabled:opacity-60";
+  "min-h-11 w-full border border-line bg-surface px-3.5 py-2.5 text-base text-ink placeholder:text-ink-mute transition-colors focus:border-navy focus:outline-none focus:ring-1 focus:ring-navy disabled:opacity-60 md:text-sm";
 
 export const fieldLabel =
   "mb-1.5 block text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-soft";

@@ -270,6 +270,12 @@ Hero text uses `text-[var(--hero-text)]` (or `var(--hero-text,var(--navy))`), ne
   bleeds to the screen edge), active pill centred on load.
 - **`PillTabs`** — horizontal sub-section tabs above content; same pills, wraps on lg, scrolls below lg.
 
+### Forms
+Fields use `fieldInput` (square hairline box, `min-h-11`, navy focus ring, **16px text below md** so iOS
+Safari doesn't zoom on focus) and labels `fieldLabel` (small uppercase `ink-soft`). Fields without a
+visible label need an `aria-label`. Submit = `pillPrimary` full-width; checkboxes `accent-navy` inside a
+padded `<label>`. Form panels: `border border-line bg-surface p-6 md:p-8`; side panels `bg-paper-deep`.
+
 ### Header
 Already on theme: floating cream bar, `text-ink-soft hover:text-crimson`. Mega panels use `bg-white`
 logo chips with `rounded-md` — minor cleanup candidate.

@@ -1,9 +1,10 @@
-'use client';
+"use client";
 
 import { useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { submitForm } from "@/lib/submissions-next";
+import { fieldInput, pillPrimary } from "./site-styles";
 
 export function GrievanceForm() {
   const [sent, setSent] = useState(false);
@@ -35,32 +36,59 @@ export function GrievanceForm() {
   }
 
   return (
-    <div className="rounded-2xl border border-border bg-white p-8">
+    <div className="border border-line bg-surface p-6 md:p-8">
       {sent ? (
         <div className="text-center py-8">
           <CheckCircle2 className="mx-auto h-14 w-14 text-gold" />
-          <h3 className="mt-4 font-display text-2xl font-bold text-navy">Grievance submitted</h3>
-          <p className="mt-2 text-sm text-muted-foreground">Reference: <span className="font-mono font-semibold text-navy">{refNumber}</span></p>
+          <h3 className="mt-4 font-display text-2xl font-medium text-navy">Grievance submitted</h3>
+          <p className="mt-2 text-sm text-ink-soft">
+            Reference: <span className="font-mono font-semibold text-navy">{refNumber}</span>
+          </p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input name="name" required placeholder="Full Name" className="input" />
-          <input name="enrollment_no" required placeholder="Enrollment / Employee No." className="input" />
-          <input name="email" required type="email" placeholder="Email" className="input" />
-          <select name="category" required className="input">
+          <input
+            name="name"
+            required
+            placeholder="Full Name"
+            aria-label="Full name"
+            className={fieldInput}
+          />
+          <input
+            name="enrollment_no"
+            required
+            placeholder="Enrollment / Employee No."
+            aria-label="Enrollment or employee number"
+            className={fieldInput}
+          />
+          <input
+            name="email"
+            required
+            type="email"
+            placeholder="Email"
+            aria-label="Email"
+            className={fieldInput}
+          />
+          <select name="category" required aria-label="Category" className={fieldInput}>
             <option value="">Category</option>
             <option value="Academic">Academic</option>
             <option value="Hostel">Hostel</option>
             <option value="Administrative">Administrative</option>
             <option value="Other">Other</option>
           </select>
-          <textarea name="description" required rows={5} placeholder="Describe your grievance" className="input" />
-          <button disabled={submitting} className="w-full rounded-md bg-navy px-6 py-3.5 text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-navy-light disabled:opacity-60">
-            {submitting ? <Loader2 className="mx-auto h-5 w-5 animate-spin" /> : "Submit"}
+          <textarea
+            name="description"
+            required
+            rows={5}
+            placeholder="Describe your grievance"
+            aria-label="Describe your grievance"
+            className={fieldInput}
+          />
+          <button disabled={submitting} className={`w-full disabled:opacity-60 ${pillPrimary}`}>
+            {submitting ? <Loader2 className="h-5 w-5 animate-spin" /> : "Submit"}
           </button>
         </form>
       )}
-      <style>{`.input{width:100%;border-radius:0.375rem;border:1px solid var(--input);background:transparent;padding:0.625rem 0.75rem;font-size:0.875rem}.input:focus{outline:none;box-shadow:0 0 0 2px var(--ring)}`}</style>
     </div>
   );
 }

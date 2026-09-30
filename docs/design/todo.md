@@ -163,13 +163,20 @@ like HomePopup. Backdrops use `ink`; round controls are 44px light-on-dark outli
 
 ## Phase 5 — Forms
 
-- [ ] `EnquiryForm.tsx` (r1 navy1 grey1): fields → `fieldInput`/`fieldLabel`; submit → `pillPrimary`
+- [x] `EnquiryForm.tsx` (r1 navy1 grey1): fields → `fieldInput`/`fieldLabel`; submit → `pillPrimary`
       (full-width on phones); panel square on paper-deep or hairline-framed.
-- [ ] `InquiryForm.tsx` (r3 navy1 gold3): same; no gold text.
-- [ ] `GrievanceForm.tsx` (r1 navy1 gold1): same.
-- [ ] `StudentLoginForm.tsx` (r1 navy2 gold1): same.
-- [ ] Error/success states: crimson text + hairline, not red filled boxes; check validation messages.
-- [ ] Submit each form once against the dev server to confirm behaviour unchanged.
+- [x] `InquiryForm.tsx` (r3 navy1 gold3): same; no gold text.
+- [x] `GrievanceForm.tsx` (r1 navy1 gold1): same.
+- [x] `StudentLoginForm.tsx` (r1 navy2 gold1): same.
+- [x] Error/success states: errors are toasts (sonner) + native `required` validation, no inline error boxes;
+      success panels restyled (medium heading, `ink-soft` text, gold check icon as decoration).
+- [ ] Submit each form once against the dev server to confirm behaviour unchanged. _Not done: real
+      submissions write to the live DB and the user hasn't approved test rows. Submit handlers weren't
+      touched (class changes only); empty submits verified blocked by `required` with writes intercepted._
+
+_Done 2026-09-30. `fieldInput` is 44px tall with 16px text below md (iOS zooms inputs under 16px) and
+14px from md. Placeholder-only fields got `aria-label`s; login fields got `autoComplete`. The per-form
+`<style>.input{…}</style>` blocks are gone. `EnquiryForm` is currently unused (no page renders it)._
 
 ## Phase 6 — Big page templates
 
