@@ -148,18 +148,18 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
           {/* LEFT — identity & contact */}
           <aside className="lg:sticky lg:top-24 lg:self-start">
             {profile.photoUrl ? (
-              <div className="relative aspect-3/4 w-44 overflow-hidden md:w-full">
+              <div className="relative aspect-3/4 w-full overflow-hidden">
                 <Image
                   src={profile.photoUrl}
                   alt={profile.name}
                   fill
-                  sizes="(max-width: 767px) 176px, (max-width: 1024px) 100vw, 280px"
+                  sizes="(max-width: 1024px) 100vw, 280px"
                   priority
                   className="object-cover object-top"
                 />
               </div>
             ) : (
-              <div className="flex aspect-3/4 w-44 items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy md:w-full md:text-5xl">
+              <div className="flex h-40 w-full items-center justify-center border border-line bg-paper-deep font-display text-4xl font-medium text-navy md:aspect-3/4 md:h-auto md:text-5xl">
                 {initials(profile.name)}
               </div>
             )}
