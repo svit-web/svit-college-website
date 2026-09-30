@@ -53,22 +53,22 @@ export default async function Admissions() {
         <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {steps.map((s, i) => (
             <Reveal key={s.n} delay={i * 0.05}>
-              <div className="card-lift h-full rounded-2xl border border-border bg-white p-6">
-                <div className="font-display text-4xl font-bold text-gold">{s.n}</div>
-                <h3 className="mt-3 font-display font-bold text-navy">{s.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+              <div className="h-full border border-line bg-surface p-6">
+                <div className="font-display text-4xl font-medium text-crimson">{s.n}</div>
+                <h3 className="mt-3 font-display font-medium text-navy">{s.title}</h3>
+                <p className="mt-2 text-sm text-ink-soft">{s.desc}</p>
               </div>
             </Reveal>
           ))}
         </div>
       </section>
 
-      <section className="bg-secondary/50 py-20">
+      <section className="bg-paper-deep py-20">
         <div className="container-page">
           <SectionHeading center eyebrow="Eligibility" title="Programme Requirements" />
-          <div className="mt-10 overflow-hidden rounded-2xl border border-border bg-white">
+          <div className="mt-10 overflow-hidden border border-line bg-surface">
             <table className="w-full text-sm">
-              <thead className="bg-navy text-white text-xs uppercase tracking-wider">
+              <thead className="border-b border-line bg-paper-deep text-[11px] uppercase tracking-[0.12em] text-navy">
                 <tr>
                   <th className="p-4 text-left">Programme</th>
                   <th className="p-4 text-left">Duration</th>
@@ -78,11 +78,11 @@ export default async function Admissions() {
               </thead>
               <tbody>
                 {programmes.map((c) => (
-                  <tr key={c.code} className="border-t border-border">
+                  <tr key={c.code} className="border-t border-line">
                     <td className="p-4 font-semibold text-navy">{c.name}</td>
-                    <td className="p-4 text-muted-foreground">{c.duration}</td>
-                    <td className="p-4 text-muted-foreground">{c.eligibility}</td>
-                    <td className="p-4 text-muted-foreground">{String(c.intake ?? "—")}</td>
+                    <td className="p-4 text-ink-soft">{c.duration}</td>
+                    <td className="p-4 text-ink-soft">{c.eligibility}</td>
+                    <td className="p-4 text-ink-soft">{String(c.intake ?? "—")}</td>
                   </tr>
                 ))}
               </tbody>
@@ -93,22 +93,22 @@ export default async function Admissions() {
 
       <section className="container-page py-20">
         <div className="grid gap-8 lg:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-white p-8">
-            <h3 className="font-display text-2xl font-bold text-navy">Fees</h3>
-            <p className="mt-2 text-sm text-muted-foreground">Programme-wise fee structure is available in the Downloads section. Fees are payable annually or per semester.</p>
-            <Link href="/downloads" className="mt-4 inline-block text-sm font-semibold text-navy hover:text-gold link-underline">Download fee structure →</Link>
+          <div className="border border-line bg-surface p-8">
+            <h3 className="font-display text-2xl font-medium text-navy">Fees</h3>
+            <p className="mt-2 text-sm text-ink-soft">Programme-wise fee structure is available in the Downloads section. Fees are payable annually or per semester.</p>
+            <Link href="/downloads" className="mt-3 inline-block py-1.5 text-sm font-semibold text-navy hover:text-crimson link-underline">Download fee structure →</Link>
           </div>
-          <div className="rounded-2xl border border-border bg-gradient-to-br from-gold-soft to-white p-8">
-            <h3 className="font-display text-2xl font-bold text-navy">Scholarships</h3>
-            <p className="mt-2 text-sm text-muted-foreground">Merit, need-based, government (SC/ST/OBC/EBC), and sports scholarships are available. Up to 100% tuition waiver for top rankers.</p>
+          <div className="border border-line bg-gold-soft p-8">
+            <h3 className="font-display text-2xl font-medium text-navy">Scholarships</h3>
+            <p className="mt-2 text-sm text-ink-soft">Merit, need-based, government (SC/ST/OBC/EBC), and sports scholarships are available. Up to 100% tuition waiver for top rankers.</p>
           </div>
         </div>
       </section>
 
-      <section className="bg-secondary/50 py-20">
+      <section className="bg-paper-deep py-20">
         <div className="container-page max-w-3xl">
           <SectionHeading center eyebrow="FAQ" title="Frequently Asked Questions" />
-          <div className="mt-10 space-y-3">
+          <div className="mt-10 border-t border-line">
             {faqs.map((f, i) => <FaqItem key={i} q={f.q} a={f.a} />)}
           </div>
         </div>

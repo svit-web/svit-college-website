@@ -114,7 +114,7 @@ case-insensitive (`/departments/ca` vs `CA`)._
 - [x] Breadcrumb links, footer phone/email ≥24px; footer socials, mobile header search/menu 44px.
 - [x] HomePopup pills `min-h-11`, minimise button 44px.
 - [x] HomePopup 43px was the entrance animation (scale 0.94→1): passes with `WAIT=3500`.
-- [ ] `/admissions` "Download fee structure →" link is 20px → fix in Phase 7 (page-local).
+- [x] `/admissions` "Download fee structure →" link is 20px → fixed in Phase 7.
 
 ## Phase 3 — Shared cards and layouts
 
@@ -216,10 +216,10 @@ Seen on `campus-life/events/[slug]`; check facilities, clubs, labs, student-corn
 - [x] `/about/media` (r2 gold2)
 
 **Admissions**
-- [ ] `/admissions` (r4 lift1 navy1 grey2 gold2)
-- [ ] `/admissions/intake-fees` (navy1 grey2) — tables with hairlines
-- [ ] `/admissions/scholarships` (lift1 navy2 grey1 gold1)
-- [ ] `/admissions/inquiry`
+- [x] `/admissions` (r4 lift1 navy1 grey2 gold2)
+- [x] `/admissions/intake-fees` (navy1 grey2) — tables with hairlines
+- [x] `/admissions/scholarships` (lift1 navy2 grey1 gold1)
+- [x] `/admissions/inquiry`
 
 **Colleges & academics**
 - [ ] `/colleges` (lift1 grey1 gold1)
