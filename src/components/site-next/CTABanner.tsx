@@ -26,8 +26,13 @@ export function CTABanner({
   secondaryActionLabel = "Download Brochure",
   secondaryActionTo = "/downloads",
 }: CTABannerProps) {
-  const resolvedEyebrow = eyebrow ?? (misc?.admission_year ? `Admissions Open ${misc.admission_year}` : undefined);
-  const resolvedSubtitle = subtitle ?? (misc?.recruiter_count ? `Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and ${misc.recruiter_count}+ active recruiting partners.` : undefined);
+  const resolvedEyebrow =
+    eyebrow ?? (misc?.admission_year ? `Admissions Open ${misc.admission_year}` : undefined);
+  const resolvedSubtitle =
+    subtitle ??
+    (misc?.recruiter_count
+      ? `Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and ${misc.recruiter_count}+ active recruiting partners.`
+      : undefined);
   return (
     <section className={`border-t border-line bg-gold-soft ${sectionSpacing}`}>
       <div className="container-page text-center">

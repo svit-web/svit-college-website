@@ -19,7 +19,6 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { CollegeLogo } from "@/components/site-next/CollegeLogo";
 import { NewsEventsSection } from "@/components/site-next/NewsEventsSection";
 import { RecruitersMarquee } from "@/components/site-next/RecruitersMarquee";
-import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
 import { HeroNew } from "@/components/site-next/HeroNew";
 import {
   byType,
@@ -37,7 +36,7 @@ import {
   getLatestEvents,
 } from "@/lib/homepage.functions";
 import { getFeaturedPosts } from "@/lib/posts.functions";
-import { getHeroAppearance, DEFAULT_HERO_APPEARANCE, HOMEPAGE_ROTATE_MS, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
+import { getHeroAppearance, DEFAULT_HERO_APPEARANCE } from "@/lib/theme.functions";
 import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
 import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
 import { getHomePopup } from "@/lib/home-popup.functions";
@@ -45,21 +44,30 @@ import { HomePopup } from "@/components/site-next/HomePopup";
 import { sectionSpacing } from "@/components/site-next/site-styles";
 
 const iconMap: Record<string, LucideIcon> = {
-  BadgeCheck, GraduationCap, Briefcase, Building2, Users, Lightbulb, Award, Trees, ShieldCheck,
+  BadgeCheck,
+  GraduationCap,
+  Briefcase,
+  Building2,
+  Users,
+  Lightbulb,
+  Award,
+  Trees,
+  ShieldCheck,
 };
 
 export default async function Home() {
-  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats, popup] = await Promise.all([
-    getGlobalHomepageItems().catch(() => []),
-    getCollegesGrid().catch(() => []),
-    getRecruiterLogos().catch(() => []),
-    getLatestEvents().catch(() => []),
-    getFeaturedPosts().catch(() => []),
-    getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
-    getMiscSettings().catch(() => null),
-    getLiveStats().catch(() => null),
-    getHomePopup().catch(() => null),
-  ]);
+  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats, popup] =
+    await Promise.all([
+      getGlobalHomepageItems().catch(() => []),
+      getCollegesGrid().catch(() => []),
+      getRecruiterLogos().catch(() => []),
+      getLatestEvents().catch(() => []),
+      getFeaturedPosts().catch(() => []),
+      getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
+      getMiscSettings().catch(() => null),
+      getLiveStats().catch(() => null),
+      getHomePopup().catch(() => null),
+    ]);
 
   return (
     <>
@@ -82,15 +90,31 @@ function StatsStrip({ items, liveStats }: { items: HomepageItem[]; liveStats: Li
   const find = (subtitle: string) => curated.find((s) => s.subtitle === subtitle);
 
   const stats = [
-    liveStats && { id: "live-years", title: `${liveStats.yearsOfExcellence}`, subtitle: "Years of Excellence" },
+    liveStats && {
+      id: "live-years",
+      title: `${liveStats.yearsOfExcellence}`,
+      subtitle: "Years of Excellence",
+    },
     find("Students"),
     find("Acre Green Campus"),
     find("Placement Record"),
-    liveStats && { id: "live-recruiters", title: `${liveStats.recruitersCount}+`, subtitle: "Recruiting Partners" },
-    liveStats && { id: "live-placed", title: `${liveStats.placedStudentsCount}+`, subtitle: "Students Placed" },
+    liveStats && {
+      id: "live-recruiters",
+      title: `${liveStats.recruitersCount}+`,
+      subtitle: "Recruiting Partners",
+    },
+    liveStats && {
+      id: "live-placed",
+      title: `${liveStats.placedStudentsCount}+`,
+      subtitle: "Students Placed",
+    },
     find("Alumni"),
     liveStats && { id: "live-faculty", title: `${liveStats.facultyCount}+`, subtitle: "Faculty" },
-    liveStats && { id: "live-programmes", title: `${liveStats.programmesCount}`, subtitle: "Programmes" },
+    liveStats && {
+      id: "live-programmes",
+      title: `${liveStats.programmesCount}`,
+      subtitle: "Programmes",
+    },
   ].filter((s): s is { id: string; title: string; subtitle: string } => Boolean(s));
 
   return (
@@ -100,7 +124,10 @@ function StatsStrip({ items, liveStats }: { items: HomepageItem[]; liveStats: Li
       <div className="container-page">
         <div className="grid grid-cols-2 gap-px bg-line lg:flex lg:gap-0 lg:divide-x lg:divide-line lg:bg-transparent">
           {stats.map((s) => (
-            <div key={s.id} className="bg-paper px-3 py-6 text-center last:odd:col-span-2 lg:flex-1 lg:px-2 lg:py-2">
+            <div
+              key={s.id}
+              className="bg-paper px-3 py-6 text-center last:odd:col-span-2 lg:flex-1 lg:px-2 lg:py-2"
+            >
               <div className="font-display text-3xl font-medium text-navy md:text-4xl lg:text-3xl 2xl:text-4xl">
                 {s.title}
               </div>
@@ -126,7 +153,13 @@ function collegeGridCols(count: number): string {
   return "md:grid-cols-2 lg:grid-cols-3";
 }
 
-function CollegesSection({ colleges, misc }: { colleges: CollegeRow[]; misc: MiscSettings | null }) {
+function CollegesSection({
+  colleges,
+  misc,
+}: {
+  colleges: CollegeRow[];
+  misc: MiscSettings | null;
+}) {
   const collegesLabel = misc?.colleges_label || "Colleges";
   const rows =
     colleges && colleges.length > 0
@@ -292,7 +325,11 @@ function CampusLifeSection({ items }: { items: HomepageItem[] }) {
 
 function WhySection({ items }: { items: HomepageItem[] }) {
   const cards = byType(items, "why_choose");
-  const rows = cards.map((c) => ({ title: c.title, desc: c.body ?? "", icon: c.icon_name ?? "BadgeCheck" }));
+  const rows = cards.map((c) => ({
+    title: c.title,
+    desc: c.body ?? "",
+    icon: c.icon_name ?? "BadgeCheck",
+  }));
   return (
     <section className={`border-y border-line bg-paper-deep ${sectionSpacing}`}>
       <div className="container-page">
@@ -337,7 +374,9 @@ function TrustBand({ items }: { items: HomepageItem[] }) {
         {uniqueBadges.map((b) => (
           <div key={b.id} className="flex items-center justify-center gap-2 text-center text-navy">
             <BadgeCheck className="h-5 w-5 shrink-0 text-gold" />
-            <span className="text-xs font-semibold uppercase tracking-wider md:text-sm">{b.title}</span>
+            <span className="text-xs font-semibold uppercase tracking-wider md:text-sm">
+              {b.title}
+            </span>
           </div>
         ))}
       </div>
@@ -361,7 +400,15 @@ function CTABannerSection({ items, misc }: { items: HomepageItem[]; misc: MiscSe
   );
 }
 
-function EventsAndEnquiry({ events, posts, recruiters }: { events: EventRow[]; posts: PostRow[]; recruiters: RecruiterRow[] }) {
+function EventsAndEnquiry({
+  events,
+  posts,
+  recruiters,
+}: {
+  events: EventRow[];
+  posts: PostRow[];
+  recruiters: RecruiterRow[];
+}) {
   return (
     <>
       <NewsEventsSection events={events} posts={posts} />
