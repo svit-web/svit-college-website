@@ -16,7 +16,7 @@ export default async function ChairmanMessagePage() {
       <SectionHeading eyebrow="Guiding SVIT" title="Chairman's Message" variant="eyebrow" />
 
       <div className="mt-10 max-w-3xl">
-        <div className="rounded-2xl border-2 border-navy/15 bg-white p-8">
+        <div className="border border-line bg-surface p-8">
           <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
             <Quote className="h-4 w-4" /> Chairman&rsquo;s Message
           </div>
@@ -26,14 +26,14 @@ export default async function ChairmanMessagePage() {
           <div className="mt-4 text-sm font-semibold text-navy">
             {c?.leadership?.chairman?.name}
           </div>
-          <div className="text-xs text-muted-foreground">{c?.leadership?.chairman?.title}</div>
+          <div className="text-xs text-ink-soft">{c?.leadership?.chairman?.title}</div>
 
           {c?.leadership?.chairman?.strategicPlanText && (
-            <div className="mt-6 border-t border-border pt-6">
+            <div className="mt-6 border-t border-line pt-6">
               <div className="text-xs font-semibold uppercase tracking-wider text-navy">
                 Strategic Plan
               </div>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
                 {c.leadership.chairman.strategicPlanText}
               </p>
             </div>
@@ -47,7 +47,7 @@ export default async function ChairmanMessagePage() {
                 </div>
                 <ul className="mt-3 space-y-2">
                   {c.leadership.chairman.corePrinciples.map((p, i) => (
-                    <li key={i} className="flex gap-2 text-sm text-muted-foreground">
+                    <li key={i} className="flex gap-2 text-sm text-ink-soft">
                       <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                       {p}
                     </li>

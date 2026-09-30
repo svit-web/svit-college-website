@@ -206,14 +206,14 @@ Detail ("leaf") pages share a page-local pattern to fix consistently: a "← All
 Seen on `campus-life/events/[slug]`; check facilities, clubs, labs, student-corner, news, achievements.
 
 **About** (shared: about/layout, AboutNav)
-- [ ] `/about`
-- [ ] `/about/accreditation` (r6 navy2 grey2 gold3)
-- [ ] `/about/history-vision-mission` (r4 navy1 grey1 gold3)
-- [ ] `/about/board-of-management`
-- [ ] `/about/chairman-message`
-- [ ] `/about/principal-message`
-- [ ] `/about/committees`
-- [ ] `/about/media` (r2 gold2)
+- [x] `/about`
+- [x] `/about/accreditation` (r6 navy2 grey2 gold3)
+- [x] `/about/history-vision-mission` (r4 navy1 grey1 gold3)
+- [x] `/about/board-of-management`
+- [x] `/about/chairman-message`
+- [x] `/about/principal-message`
+- [x] `/about/committees`
+- [x] `/about/media` (r2 gold2)
 
 **Admissions**
 - [ ] `/admissions` (r4 lift1 navy1 grey2 gold2)

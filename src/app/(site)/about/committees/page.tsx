@@ -19,19 +19,19 @@ export default async function CommitteesPage() {
       <div className="mt-10 space-y-6">
         {committees.map((cm, i) => (
           <Reveal key={cm.id} delay={i * 0.05}>
-            <div className="rounded-2xl border-2 border-navy/15 bg-white p-6 hover:border-gold transition-colors">
-              <h3 className="font-display text-lg font-bold text-navy">{cm.name}</h3>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+            <div className="border border-line bg-surface p-6">
+              <h3 className="font-display text-lg font-medium text-navy">{cm.name}</h3>
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
                 {cm.metadata?.description}
               </p>
               {cm.metadata?.vision && (
-                <p className="mt-3 text-sm text-muted-foreground">
+                <p className="mt-3 text-sm text-ink-soft">
                   <span className="font-semibold text-navy">Vision: </span>
                   {cm.metadata.vision}
                 </p>
               )}
               {cm.metadata?.mission && (
-                <p className="mt-2 text-sm text-muted-foreground">
+                <p className="mt-2 text-sm text-ink-soft">
                   <span className="font-semibold text-navy">Mission: </span>
                   {cm.metadata.mission}
                 </p>
@@ -43,7 +43,7 @@ export default async function CommitteesPage() {
                   </div>
                   <ul className="mt-2 space-y-1.5">
                     {cm.metadata.keyActivities.map((a, j) => (
-                      <li key={j} className="flex gap-2 text-sm text-muted-foreground">
+                      <li key={j} className="flex gap-2 text-sm text-ink-soft">
                         <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
                         {a}
                       </li>

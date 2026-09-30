@@ -21,7 +21,7 @@ export default async function AccreditationPage() {
 
   return (
     <>
-      <section className="bg-secondary/50 py-16 md:py-20">
+      <section className="bg-paper-deep py-16 md:py-20">
         <div className="container-page">
           <SectionHeading
             eyebrow="Standards & Compliance"
@@ -30,18 +30,18 @@ export default async function AccreditationPage() {
           />
 
           <div className="mt-10 grid gap-6 lg:grid-cols-2">
-            <div className="rounded-xl border-2 border-navy/15 bg-white overflow-hidden">
-              <div className="px-5 py-3 bg-navy text-white text-xs font-semibold uppercase tracking-wider flex items-center gap-2">
+            <div className="border border-line bg-surface overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-line bg-paper-deep px-5 py-3 text-[11px] font-bold uppercase tracking-[0.16em] text-navy">
                 <ShieldCheck className="h-4 w-4" /> Recognitions
               </div>
               <table className="w-full text-sm">
                 <tbody>
                   {accreditations.map((acc) => (
-                    <tr key={acc.id} className="border-t border-border first:border-t-0">
+                    <tr key={acc.id} className="border-t border-line first:border-t-0">
                       <td className="px-4 py-3 text-navy">
                         {acc.accreditation_body || `${acc.organization} (${acc.value})`}
                       </td>
-                      <td className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-gold">
+                      <td className="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-crimson">
                         {acc.value}
                       </td>
                     </tr>
@@ -55,11 +55,11 @@ export default async function AccreditationPage() {
                 .filter((acc) => acc.description)
                 .slice(0, 3)
                 .map((acc) => (
-                  <div key={acc.id} className="rounded-xl border-2 border-navy/15 bg-white p-5">
+                  <div key={acc.id} className="border border-line bg-surface p-5">
                     <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                       {acc.organization}
                     </div>
-                    <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                    <p className="mt-2 text-sm text-ink-soft leading-relaxed">
                       {acc.description}
                     </p>
                   </div>
@@ -68,11 +68,11 @@ export default async function AccreditationPage() {
           </div>
 
           <div className="mt-6 grid gap-6 lg:grid-cols-2">
-            <div className="rounded-xl border-2 border-navy/15 bg-white p-6">
+            <div className="border border-line bg-surface p-6">
               <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                 Academic Regulations (GTU)
               </div>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
                 {c?.accreditation?.academicRegulationsText}
               </p>
               <ul className="mt-4 space-y-2">
@@ -84,11 +84,11 @@ export default async function AccreditationPage() {
                 ))}
               </ul>
             </div>
-            <div className="rounded-xl border-2 border-navy/15 bg-white p-6">
+            <div className="border border-line bg-surface p-6">
               <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                 Mandatory Disclosure &amp; Code of Conduct
               </div>
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
                 {c?.accreditation?.mandatoryDisclosureText}
               </p>
               <ul className="mt-4 space-y-2">
@@ -112,13 +112,13 @@ export default async function AccreditationPage() {
                 <li key={d.label}>
                   <a
                     href={d.fileUrl}
-                    className="group flex items-center justify-between gap-3 rounded-xl border-2 border-navy/15 bg-white p-4 hover:border-gold transition-colors"
+                    className="group flex items-center justify-between gap-3 border border-line bg-surface p-4 hover:border-navy transition-colors"
                   >
                     <span className="flex items-center gap-3 text-sm font-medium text-navy">
                       <FileText className="h-4 w-4 text-gold" />
                       {d.label}
                     </span>
-                    <ExternalLink className="h-4 w-4 text-muted-foreground group-hover:text-gold" />
+                    <ExternalLink className="h-4 w-4 text-ink-soft group-hover:text-crimson" />
                   </a>
                 </li>
               ))}
@@ -131,12 +131,12 @@ export default async function AccreditationPage() {
       <section className="py-16 md:py-20">
         <div className="container-page">
           <SectionHeading eyebrow="Industry Partnerships" title="Memoranda of Understanding" variant="eyebrow" />
-          <p className="mt-4 max-w-3xl text-muted-foreground">
+          <p className="mt-4 max-w-3xl text-ink-soft">
             SVIT has signed MOUs with leading industries and organizations to provide students with internships, expert lectures, and hands-on training opportunities.
           </p>
-          <div className="mt-8 overflow-hidden rounded-xl border-2 border-navy/15 bg-white">
+          <div className="mt-8 overflow-hidden border border-line bg-surface">
             <table className="w-full text-sm">
-              <thead className="bg-navy text-white">
+              <thead className="border-b border-line bg-paper-deep text-[11px] uppercase tracking-[0.12em] text-navy">
                 <tr>
                   <th className="px-4 py-3 text-left">Organization</th>
                   <th className="px-4 py-3 text-left hidden sm:table-cell">Purpose</th>
@@ -146,13 +146,13 @@ export default async function AccreditationPage() {
               </thead>
               <tbody>
                 {mous.map((mou: MOU, i: number) => (
-                  <tr key={mou.id} className={`border-t border-border ${i % 2 === 0 ? "" : "bg-secondary/30"}`}>
+                  <tr key={mou.id} className={`border-t border-line ${i % 2 === 0 ? "" : "bg-paper-deep"}`}>
                     <td className="px-4 py-3 font-medium text-navy">{mou.partner_organization}</td>
-                    <td className="px-4 py-3 text-muted-foreground hidden sm:table-cell">{mou.purpose}</td>
-                    <td className="px-4 py-3 text-muted-foreground hidden md:table-cell">
+                    <td className="px-4 py-3 text-ink-soft hidden sm:table-cell">{mou.purpose}</td>
+                    <td className="px-4 py-3 text-ink-soft hidden md:table-cell">
                       {mou.department_name ?? "—"}
                     </td>
-                    <td className="px-4 py-3 text-muted-foreground hidden lg:table-cell">
+                    <td className="px-4 py-3 text-ink-soft hidden lg:table-cell">
                       {mou.signed_date ? new Date(mou.signed_date).toLocaleDateString("en-IN", { year: "numeric", month: "short" }) : "—"}
                     </td>
                   </tr>
@@ -160,7 +160,7 @@ export default async function AccreditationPage() {
               </tbody>
             </table>
           </div>
-          <div className="mt-4 text-right text-xs text-muted-foreground">
+          <div className="mt-4 text-right text-xs text-ink-soft">
             {mous.length} active MOUs
           </div>
         </div>
