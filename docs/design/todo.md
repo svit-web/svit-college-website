@@ -294,7 +294,7 @@ Not in scope (redirect only): `/placement/[college]`, `/courses/[course]/faculty
 - [x] `nav/DesktopNavItem.tsx` shadow on dropdown → hairline border (keep a subtle shadow only if the
       panel needs separation from the photo hero).
 - [x] `SmoothScrollToggle.tsx` gold text → navy.
-- [ ] Remaining prettier drift in files we touched (`page.tsx`, `CTABanner.tsx`) — format in a separate commit.
+- [x] Remaining prettier drift in files we touched (`page.tsx`, `CTABanner.tsx`) — format in a separate commit.
 
 _Done 2026-09-30. All 14 `not-found.tsx` pages now render the shared `NotFoundPanel` (crimson
 eyebrow, section link + "Back to home" pills; `embedded` inside the Campus Life column). Mega-panel items
