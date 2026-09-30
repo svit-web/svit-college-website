@@ -154,20 +154,6 @@
   }
 }
 
-/* Deprecated (beige redesign): no lift/shadow hovers. Remove once unused — see docs/design/todo.md Phase 9. */
-@utility card-lift {
-  transition: transform 250ms ease, box-shadow 250ms ease, border-color 250ms ease;
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 40px -20px color-mix(in oklab, var(--navy) 30%, transparent);
-  }
-  &:active {
-    transform: scale(0.98);
-    box-shadow: none;
-    transition-duration: 80ms;
-  }
-}
-
 /* ─── Admin Theme (Matches Main SVIT Design) ──────────────────────────── */
 @layer utilities {
   .admin-bg { background-color: oklch(0.97 0.008 260); }

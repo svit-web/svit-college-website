@@ -95,7 +95,7 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                     <CurtainImage
                       src={item.card_photo_url}
                       alt={item.title}
-                      className="group aspect-video w-full rounded-xl"
+                      className="group aspect-video w-full"
                     />
                   )}
                 </div>
@@ -116,7 +116,7 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                 <CurtainImage
                   src={featured.card_photo_url ?? ""}
                   alt={featured.title}
-                  className="group aspect-[4/3] w-full rounded-xl [&_img]:object-top"
+                  className="group aspect-[4/3] w-full [&_img]:object-top"
                 />
                 <h4 className="font-display text-[1.08rem] font-bold leading-[1.3] tracking-[-0.01em] text-navy">
                   {featured.title}

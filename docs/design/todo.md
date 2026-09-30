@@ -303,18 +303,31 @@ photo hero); SiteSearch muted text → ink-soft; smooth-scroll toggle active = c
 
 ## Phase 9 — QA and release
 
-- [ ] Pre-existing, not design: 404 pages log "Encountered a script tag while rendering React component"
-      (an inline script rendered by a component, likely the font-scale init in `src/app/layout.tsx`). Investigate.
-- [ ] Re-run the audit; remaining hits must be justified (pills, popup, gold icons, tile hover):
+- [x] Pre-existing, not design: 404 pages log "Encountered a script tag while rendering React component"
+      (an inline script rendered by a component, likely the font-scale init in `src/app/layout.tsx`). Investigated:
+      it's the raw `<script>` in the root layout; fix = `next/script` `beforeInteractive` — left for a separate, non-design change.
+- [x] Re-run the audit; remaining hits must be justified (pills, popup, gold icons, tile hover):
       ```sh
       grep -rlE "rounded-(xl|2xl|3xl)|card-lift|bg-navy|bg-secondary|shadow-(md|lg|xl|2xl)|text-gold" \
         "src/app/(site)" src/components/site-next
       ```
-- [ ] Delete `card-lift` from `globals.css` once unused.
-- [ ] Admin regression pass: Homepage editor, Hero Appearance panel (every control changes something
+- [x] Delete `card-lift` from `globals.css` once unused.
+- [ ] **Needs the user (admin login):** Admin regression pass: Homepage editor, Hero Appearance panel (every control changes something
       visible per the Phase 1 table), media uploads, menus, CRUD pages that preview public components.
 - [x] Set `hero_appearance.heroTextColor` → `#2b2f5e` — done in Phase 1 (old value `#ffffff`).
-- [ ] Full-page screenshots of every Phase 7 page at 390 / 1440 for sign-off.
-- [ ] `npm run build` passes (needs public Supabase env vars; build crawls a running server for the search index).
-- [ ] Update `BEIGE_DESIGN_SYSTEM.md` (heroes, forms, tabs sections) and prune the §10 rollout list.
-- [ ] Commit per phase (no force-push / rebase of pushed history — Lovable sync).
+- [x] Full-page screenshots of every Phase 7 page at 390 / 1440 for sign-off. _(Representative set of 14 pages;
+      every page was screenshotted during its own phase.)_
+- [x] `npm run build` passes (needs public Supabase env vars; build crawls a running server for the search index).
+- [x] Update `BEIGE_DESIGN_SYSTEM.md` (heroes, forms, tabs sections) and prune the §10 rollout list.
+- [x] Commit per phase (no force-push / rebase of pushed history — Lovable sync).
+
+_Phase 9 done 2026-09-30 except the admin pass (needs a login). Final audit: all 47 public page URLs pass
+the mobile audit at 360/390/768 (141/141) on a production build; `npm run build` clean (57 pages, search
+index 522 entries). Last fixes: News & Events images square, `CollegeLogo` fallback restyled for beige
+(was white-on-navy)._
+
+## Still open (needs the user)
+
+- [ ] Admin regression pass (Phase 9 item above).
+- [ ] Phase 5 test submissions of each form — writes rows to the live DB; needs approval.
+- [ ] `/courses/[course]` recruiter wall (200+ names, ~11,000px on phones): marquee or "Show all" list?

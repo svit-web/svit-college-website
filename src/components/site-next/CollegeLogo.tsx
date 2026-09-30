@@ -23,7 +23,7 @@ export function CollegeLogo({ shortCode, src, alt, className }: Props) {
     return (
       <div
         className={cn(
-          "flex items-center justify-center rounded-md border-2 border-dashed border-white/40 bg-white/5 text-white/80 font-display font-bold uppercase tracking-widest",
+          "flex items-center justify-center border border-dashed border-line-strong bg-paper-deep text-ink-mute font-display font-medium uppercase tracking-widest",
           className,
         )}
         aria-label={alt ?? `${shortCode} logo placeholder`}

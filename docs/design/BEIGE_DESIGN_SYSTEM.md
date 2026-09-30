@@ -342,46 +342,35 @@ logo chips with `rounded-md` — minor cleanup candidate.
 
 ---
 
-## 10. Rollout plan
+## 10. Status and maintenance
 
-### Highest-leverage shared components (do first — each fixes many pages)
+**The site-wide rollout is complete (2026-09-30).** Every public page and shared component is on this
+system; the phase-by-phase record is in [`todo.md`](./todo.md). `card-lift` has been removed from
+`globals.css` — don't reintroduce lift/shadow hovers.
 
-| Component | Used by | Issue |
-|---|---|---|
-| `PageHero.tsx` | ~21 inner pages | Navy Overlay hero with blur orbs, gold eyebrow. **Open decision:** convert to a paper hero (text-only on paper, optional split photo) — this interacts with the admin-editable `HeroAppearance` overlay settings (`heroOverlayColor`, etc.), which would become unused for Overlay heroes or need a paper default. Decide before editing. |
-| `SectionHeading.tsx` | ~29 files | `font-bold` h2 → editorial `font-medium` clamp size. |
-| `DetailPageLayout.tsx`, `DepartmentLayout.tsx`, `DepartmentSections.tsx` | departments, labs, detail pages | Rounded panels, `bg-secondary`, navy fills. |
-| `CollegeLandingPage.tsx` | every `/colleges/[college]` | Rounded cards, card-lift, navy sections, gold text. |
-| `PlacementPage.tsx` | `/placement`, college placement | Heaviest: 17 rounded, 13 navy, 7 gold. |
-| `EntryCard.tsx`, `EntryViewer.tsx`, `EventsNewsSlider.tsx`, `PhotoSlider.tsx`, `GalleryAlbumView.tsx` | campus life, gallery, events | Rounded cards, card-lift, `bg-secondary`. |
-| `PillTabs.tsx`, `CampusLifeNav.tsx`, `about/AboutNav.tsx` | section navs | Navy active state / rounded containers — check against pill vocabulary. |
-| Forms: `EnquiryForm`, `InquiryForm`, `GrievanceForm`, `StudentLoginForm` | admissions, grievance | Rounded panels, navy buttons, gold text. Inputs: square, `border-line`, `bg-surface`, focus `border-navy`. |
+Shared building blocks to reach for first (all in `src/components/site-next/`):
+`site-styles.ts` (class strings), `PageHero` (page banner), `SectionHeading`, `SectionSideNav`,
+`PillTabs`, `PillLink`, `EntryCard`, `DeptBranchCard` (`variant="cell"` inside joined grids),
+`PhotoSlider`, `FaqItem`, `NotFoundPanel`, `useDialogFocus` (custom dialogs).
 
-### Page files with direct old-style usage (audit 2026-09-29)
+### Checking a change
 
-about/{accreditation, history-vision-mission, media, board-of-management, chairman-message,
-principal-message, committees, layout}, admissions/{page, intake-fees, scholarships}, anti-ragging,
-campus-life/{page, nss-ncc, student-groups, facilities/[...slug], events/[slug], layout}, careers, coe,
-colleges, courses/{page, [course]}, departments/[dept]/labs/[slug], downloads, gallery, grievance,
-parents, programs/[program], staff/[staff], student-corner/[slug], and the `not-found.tsx` pages.
+1. Screenshot at **360 / 390 / 768 / 1024 / 1440**.
+2. Run the mobile audit against a running dev or production server:
+   ```sh
+   CHROME_PATH=/usr/bin/google-chrome node scripts/mobile-audit.mjs /path/one /path/two
+   ```
+   (no horizontal overflow; controls ≥44px, inline links ≥24px; `WAIT=3500` lets entrance animations settle).
+3. Re-run the old-style audit; every remaining hit must be one of the allowed exceptions below:
+   ```sh
+   grep -rnE "(^|[\" ])(rounded-(md|lg|xl|2xl|3xl)|bg-navy(-deep|-light)?|bg-secondary|shadow-(md|lg|xl|2xl)|text-gold|bg-gold)([\" ]|$)" \
+     "src/app/(site)" src/components/site-next
+   ```
+   Allowed: gold check/success icons and bullet dots, navy active slider dots and chart bars, the
+   HomePopup's rounded media frame, and pills (`rounded-full`, not matched above).
 
-Re-run the audit any time:
-
-```sh
-grep -rlE "rounded-(xl|2xl|3xl)|card-lift|bg-navy|bg-secondary|shadow-(md|lg|xl|2xl)|text-gold" \
-  "src/app/(site)" src/components/site-next
-```
-(Expect some legitimate hits: `hover:bg-navy` on pills/tiles, `text-gold` on navy tile hover and on
-check icons, `rounded-*` on pills/popup.)
-
-### Per-page checklist
-
-1. Screenshot before at 390 / 1024 / 1440 (Playwright with system Chrome:
-   `chromium.launch({ executablePath: "/usr/bin/google-chrome" })`).
-2. Map section backgrounds to the §2 sequence; remove dark bands.
-3. Apply §9 replacements; import `pillPrimary`/`pillOutline`/`sectionSpacing`.
-4. Check every text colour against §2 contrast rules (no gold text on light).
-5. Check mobile rules §8 — nothing hover-only, buttons stack, odd grids handled.
-6. Don't hardcode content the admin edits (CLAUDE.md) — style only.
-7. Screenshot after at the same widths; compare against the homepage for consistency.
-8. `npx tsc --noEmit` and `npx eslint <changed files>`.
+### Known follow-ups (not design)
+- 404 pages log "Encountered a script tag while rendering React component": the font-scale init is a raw
+  `<script>` in `src/app/layout.tsx`; the idiomatic fix is `next/script` with `strategy="beforeInteractive"`.
+- `src/styles.css` is a legacy stylesheet referenced only by `components.json` (shadcn CLI); it isn't
+  imported by the app.
