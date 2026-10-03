@@ -100,7 +100,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         .from('staff_profiles')
         .select(
           `
-          id, title, first_name, last_name, email, status, expertise, metadata, muster_number,
+          id, title, first_name, last_name, email, status, expertise, metadata, muster_number, photo_url,
           staff_department_assignments(
             is_primary,
             post_ids,
@@ -116,7 +116,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       setStaffList(data || []);
     } catch {
       try {
-        const { data } = await supabase.from('staff_profiles').select('id, title, first_name, last_name, email, status, expertise, metadata, muster_number').is('deleted_at', null).order('first_name');
+        const { data } = await supabase.from('staff_profiles').select('id, title, first_name, last_name, email, status, expertise, metadata, muster_number, photo_url').is('deleted_at', null).order('first_name');
         setStaffList(data || []);
       } catch (err) {
         // Both the full and the reduced query failed — leave the list as-is,
@@ -241,7 +241,8 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           joining_year: generalForm.joining_year ? Number(generalForm.joining_year) : null,
           past_experience_years: generalForm.past_experience_years ? Number(generalForm.past_experience_years) : null,
           muster_number: musterNumber,
-          metadata: { ...currentMeta, photoUrl: generalForm._photoUrl ?? currentMeta.photoUrl ?? null },
+          photo_url: generalForm._photoUrl ?? generalForm.photo_url ?? null,
+          metadata: currentMeta,
           status: generalForm.status || 'published',
           updated_by: admin.id,
         })
@@ -534,8 +535,8 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                 )}
               >
                 <div className="flex items-start gap-3">
-                  {(staff.metadata as any)?.photoUrl ? (
-                    <img src={(staff.metadata as any).photoUrl} alt="" className="h-11 w-11 rounded-full object-cover border border-slate-200 shrink-0" />
+                  {staff.photo_url ? (
+                    <img src={staff.photo_url} alt="" className="h-11 w-11 rounded-full object-cover border border-slate-200 shrink-0" />
                   ) : (
                     <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-crimson/10 text-sm font-bold text-crimson border border-crimson/20">{initials || '?'}</div>
                   )}
@@ -736,7 +737,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
                       <div className="space-y-1">
                         <label className="field-label">Profile Photo</label>
-                        <MediaUploader value={generalForm._photoUrl ?? (generalForm.metadata as any)?.photoUrl ?? ''} onChange={(url) => setGeneralForm((p) => ({ ...p, _photoUrl: url }))} type="image" />
+                        <MediaUploader value={generalForm._photoUrl ?? generalForm.photo_url ?? ''} onChange={(url) => setGeneralForm((p) => ({ ...p, _photoUrl: url }))} type="image" />
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
