@@ -3,6 +3,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, MapPin, Ticket } from "lucide-react";
 import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
+import { Reveal } from "@/components/site-next/Reveal";
 import { getEventBySlug } from "@/lib/events.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 import { eventTypeLabel, formatEventDates } from "@/lib/event-types";
@@ -41,6 +43,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
 
   const { event, album } = result;
   const typeLabel = eventTypeLabel(event.event_type);
+  const highlights = event.metadata?.highlights ?? [];
 
   return (
     <div>
@@ -140,6 +143,29 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
             </div>
           )}
         </div>
+
+        {highlights.length > 0 && (
+          <div>
+            <SectionHeading eyebrow="Highlights" title="What makes it special" variant="eyebrow" />
+            <div className="mt-6 grid gap-4 sm:grid-cols-2">
+              {highlights.map((h, i) => (
+                <Reveal key={h.title} delay={i * 0.04}>
+                  <div className="h-full border border-line bg-surface p-5">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-paper-deep text-xs font-bold text-navy">
+                        {i + 1}
+                      </div>
+                      <div>
+                        <div className="font-display font-medium text-navy">{h.title}</div>
+                        <p className="mt-1 text-sm text-ink-soft">{h.description}</p>
+                      </div>
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        )}
       </DetailPageLayout>
     </div>
   );

@@ -371,7 +371,7 @@ async function buildContentEntries(): Promise<SearchEntry[]> {
   }
   for (const a of albums) {
     entries.push({
-      url: `/gallery/${a.id}`,
+      url: `/gallery/${a.slug}`,
       type: "Gallery",
       college: null,
       title: a.title,

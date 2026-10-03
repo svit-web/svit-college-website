@@ -35,7 +35,7 @@ export default async function GalleryIndex() {
             {albums.map((album: GalleryAlbum, i: number) => (
               <Reveal key={album.id} delay={i * 0.05}>
                 <Link
-                  href={`/gallery/${album.id}`}
+                  href={`/gallery/${album.slug}`}
                   className="group block overflow-hidden border border-line bg-surface transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
                 >
                   <div className="relative aspect-video w-full overflow-hidden bg-paper-deep">

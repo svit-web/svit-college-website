@@ -4,7 +4,7 @@ import type { EntryAlbum } from '@/lib/entry';
 export interface GalleryMedia {
   id: string;
   album_id: string;
-  media_type: 'image' | 'video';
+  media_type: 'image';
   url: string;
   caption: string | null;
   sort_order: number;
@@ -14,6 +14,7 @@ export interface GalleryMedia {
 
 export interface GalleryAlbum {
   id: string;
+  slug: string;
   title: string;
   description: string | null;
   cover_image_url: string | null;
@@ -40,12 +41,12 @@ export async function getAllGalleryAlbums() {
   return data as unknown as GalleryAlbum[];
 }
 
-export async function getGalleryAlbumWithMedia(albumId: string) {
+export async function getGalleryAlbumWithMedia(slug: string) {
   const supabase = publicSupabase();
   const { data: album, error: albumError } = await supabase
     .from('gallery_albums')
     .select('*')
-    .eq('id', albumId)
+    .eq('slug', slug)
     .eq('status', 'published')
     .eq('show_in_public_gallery', true)
     .is('deleted_at', null)
@@ -57,7 +58,7 @@ export async function getGalleryAlbumWithMedia(albumId: string) {
   const { data: media, error: mediaError } = await supabase
     .from('gallery_media')
     .select('*')
-    .eq('album_id', albumId)
+    .eq('album_id', album.id)
     .eq('status', 'published')
     .is('deleted_at', null)
     .order('sort_order', { ascending: true });

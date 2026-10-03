@@ -6,7 +6,13 @@ export interface CampusEvent {
   id: string;
   title: string;
   slug: string;
-  /** Deprecated free-text tag (superseded by `event_type`); still read by /news. */
+  /**
+   * Free-text tag that predates `event_type`. Still the primary subtitle/accent
+   * source for most live rows (8 of 11 as of this writing vs. 3 with `event_type`
+   * set) — read as a fallback on the events list, the event detail page,
+   * `CollegeLandingPage` and `EventsNewsSlider`. Not actually deprecated until
+   * those rows are backfilled with `event_type`/`subtitle`.
+   */
   tag: string | null;
   description: string | null;
   start_date: string;

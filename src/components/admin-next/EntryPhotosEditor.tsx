@@ -25,6 +25,7 @@ interface AlbumPhoto {
   id: string;
   url: string;
   sort_order: number;
+  caption: string | null;
 }
 
 interface EntryPhotosEditorProps {
@@ -91,7 +92,7 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
       const [mediaResult, albumResult] = await Promise.all([
         supabase
           .from('gallery_media')
-          .select('id, url, sort_order')
+          .select('id, url, sort_order, caption')
           .eq('album_id', albumId)
           .is('deleted_at', null)
           .order('sort_order', { ascending: true }),
@@ -180,7 +181,7 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
           const { data, error } = await supabase
             .from('gallery_media')
             .insert({ album_id: targetAlbumId, media_type: 'image', url: publicUrl, sort_order: nextOrder, status: 'published' })
-            .select('id, url, sort_order')
+            .select('id, url, sort_order, caption')
             .single();
           if (error) throw error;
           nextOrder += 1;
@@ -198,6 +199,16 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
       setUploadingCount((n) => n - accepted.length);
     } finally {
       if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const updateCaption = async (photo: AlbumPhoto, caption: string) => {
+    const trimmed = caption.trim() || null;
+    setPhotos((prev) => prev.map((p) => (p.id === photo.id ? { ...p, caption: trimmed } : p)));
+    const { error } = await supabase.from('gallery_media').update({ caption: trimmed }).eq('id', photo.id);
+    if (error) {
+      toast.error(`Could not save caption: ${error.message}`);
+      setPhotos((prev) => prev.map((p) => (p.id === photo.id ? { ...p, caption: photo.caption } : p)));
     }
   };
 
@@ -319,39 +330,53 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
                         setDragIndex(null);
                         setOverIndex(null);
                       }}
-                      className={`group relative aspect-square cursor-grab overflow-hidden rounded border bg-white active:cursor-grabbing ${
-                        overIndex === index && dragIndex !== index ? 'border-crimson ring-2 ring-crimson/40' : 'border-slate-200'
-                      } ${dragIndex === index ? 'opacity-40' : ''}`}
+                      className={`group space-y-1 ${dragIndex === index ? 'opacity-40' : ''}`}
                     >
-                      <img src={photo.url} alt={`Photo ${index + 1}`} className="h-full w-full object-cover" draggable={false} />
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(photo)}
-                        title="Remove photo"
-                        className="absolute top-1 right-1 rounded-full bg-white/90 p-1 text-slate-600 shadow hover:bg-red-50 hover:text-red-500"
+                      <div
+                        className={`relative aspect-square cursor-grab overflow-hidden rounded border bg-white active:cursor-grabbing ${
+                          overIndex === index && dragIndex !== index ? 'border-crimson ring-2 ring-crimson/40' : 'border-slate-200'
+                        }`}
                       >
-                        <X className="h-3.5 w-3.5" />
-                      </button>
-                      <div className="absolute inset-x-1 bottom-1 flex justify-between opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+                        <img src={photo.url} alt={photo.caption || `Photo ${index + 1}`} className="h-full w-full object-cover" draggable={false} />
                         <button
                           type="button"
-                          onClick={() => move(index, index - 1)}
-                          disabled={index === 0}
-                          title="Move earlier"
-                          className="rounded bg-white/90 p-1 text-slate-600 shadow hover:text-navy disabled:invisible"
+                          onClick={() => removePhoto(photo)}
+                          title="Remove photo"
+                          className="absolute top-1 right-1 rounded-full bg-white/90 p-1 text-slate-600 shadow hover:bg-red-50 hover:text-red-500"
                         >
-                          <ArrowLeft className="h-3 w-3" />
+                          <X className="h-3.5 w-3.5" />
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => move(index, index + 1)}
-                          disabled={index === photos.length - 1}
-                          title="Move later"
-                          className="rounded bg-white/90 p-1 text-slate-600 shadow hover:text-navy disabled:invisible"
-                        >
-                          <ArrowRight className="h-3 w-3" />
-                        </button>
+                        <div className="absolute inset-x-1 bottom-1 flex justify-between opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100">
+                          <button
+                            type="button"
+                            onClick={() => move(index, index - 1)}
+                            disabled={index === 0}
+                            title="Move earlier"
+                            className="rounded bg-white/90 p-1 text-slate-600 shadow hover:text-navy disabled:invisible"
+                          >
+                            <ArrowLeft className="h-3 w-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => move(index, index + 1)}
+                            disabled={index === photos.length - 1}
+                            title="Move later"
+                            className="rounded bg-white/90 p-1 text-slate-600 shadow hover:text-navy disabled:invisible"
+                          >
+                            <ArrowRight className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
+                      <input
+                        type="text"
+                        defaultValue={photo.caption || ''}
+                        onBlur={(e) => {
+                          if (e.target.value.trim() !== (photo.caption || '')) updateCaption(photo, e.target.value);
+                        }}
+                        placeholder="Caption / alt text"
+                        title="Caption / alt text"
+                        className="w-full rounded border border-slate-200 bg-white px-1.5 py-1 text-[11px] text-slate-700 placeholder:text-slate-400 focus:border-crimson focus:outline-none"
+                      />
                     </li>
                   ))}
                 </ul>
