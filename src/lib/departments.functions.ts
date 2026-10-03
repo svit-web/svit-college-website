@@ -8,13 +8,12 @@ export interface Department {
   name: string;
   slug: string;
   code: string;
-  static_id: string; // maps DB code → legacy static dept ID for content/staff/programs lookup
   head_of_department_id: string | null;
   logo_url: string | null;
   status: 'draft' | 'published' | 'archived';
   about: string | null;
   vision: string | null;
-  mission: string | string[] | null;
+  mission: string | null;
   intake_ug: number | null;
   intake_pg: number | null;
   established_year: number | null;
@@ -32,37 +31,11 @@ export interface Department {
   updated_at: string;
 }
 
-// Maps DB department code → legacy static department ID used in departmentContent.ts, academics.ts, staff.ts
-const CODE_TO_STATIC_ID: Record<string, string> = {
-  // Other colleges
-  CA:   'dept-svica-ca',
-  GN:   'dept-svion-gn',
-  ARCH: 'dept-coa-arch',
-  // SVIT Degree
-  AE:   'dept-svit-be-aeronautical',
-  CE:   'dept-svit-be-computer',
-  CIV:  'dept-svit-be-civil',
-  CSD:  'dept-svit-be-csd',
-  EC:   'dept-svit-be-ec',
-  EE:   'dept-svit-be-electrical',
-  IT:   'dept-svit-be-it',
-  MBA:  'dept-svit-mba',
-  MCA:  'dept-svit-mca',
-  ME:   'dept-svit-be-mechanical',
-  // SVIT Diploma
-  'DP-CE':  'dept-svit-dip-computer',
-  'DP-CIV': 'dept-svit-dip-civil',
-  'DP-EE':  'dept-svit-dip-electrical',
-  'DP-IT':  'dept-svit-dip-it',
-  'DP-ME':  'dept-svit-dip-mechanical',
-};
-
 function mapRow(row: any): Department {
   const college = Array.isArray(row.colleges) ? row.colleges[0] : row.colleges;
   return {
     ...row,
     college_slug: college?.slug ?? '',
-    static_id: CODE_TO_STATIC_ID[row.code] ?? row.code,
     colleges: undefined, // strip the joined sub-object
   };
 }

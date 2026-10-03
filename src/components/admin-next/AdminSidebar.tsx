@@ -9,6 +9,7 @@ import {
   Users,
   Globe,
   Trophy,
+  GraduationCap,
   Settings,
   ChevronDown,
   LogOut,
@@ -53,8 +54,12 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Courses', to: '/admin/tables/courses' },
       { label: 'Facilities', to: '/admin/tables/facilities' },
       { label: 'Labs', to: '/admin/labs' },
-      { label: 'Scholarships', to: '/admin/scholarships' },
     ],
+  },
+  {
+    label: 'Admissions',
+    icon: GraduationCap,
+    items: [{ label: 'Scholarships', to: '/admin/scholarships' }],
   },
   {
     label: 'Staff & Faculty',
@@ -77,6 +82,10 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'News Categories', to: '/admin/tables/content_categories' },
       { label: 'T&P Master Hub', to: '/admin/tnp-hub' },
       { label: 'Recruiters', to: '/admin/recruiters' },
+      // T&P Master Hub's "Placed Students" tab only covers name/company/batch/photo;
+      // department and package (LPA) live on this generic table route, which had no
+      // sidebar link until now.
+      { label: 'Placed Students (dept. & package)', to: '/admin/tables/placed_students' },
       { label: 'Board of Management', to: '/admin/tables/board_members' },
       { label: 'Committees', to: '/admin/tables/committees' },
       { label: 'Accreditations', to: '/admin/tables/accreditations' },

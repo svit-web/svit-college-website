@@ -13,7 +13,7 @@ import { parseFacultyCsv, importFacultyCsv, buildFacultyTemplateCsv, type Facult
 import { compareByMuster } from '@/lib/staff-order';
 import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
 import { PICKER_DESIGNATION_CATEGORIES, STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds, type StaffPost } from '@/lib/staff-posts';
-import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/achievements-import';
+import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/staff-achievements-import';
 
 type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience' | 'activity';
 
@@ -250,10 +250,17 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           email: generalForm.email,
           phone: generalForm.phone,
           bio: generalForm.bio,
+          qualification: generalForm.qualification || null,
           joining_year: generalForm.joining_year ? Number(generalForm.joining_year) : null,
           past_experience_years: generalForm.past_experience_years ? Number(generalForm.past_experience_years) : null,
           muster_number: musterNumber,
           photo_url: generalForm._photoUrl ?? generalForm.photo_url ?? null,
+          office_hours: (generalForm.office_hours || []).filter((oh: any) => oh?.day?.trim() && oh?.time?.trim()),
+          social_links: Object.fromEntries(
+            Object.entries(generalForm.social_links || {}).filter(
+              (entry): entry is [string, string] => typeof entry[1] === 'string' && entry[1].trim() !== ''
+            )
+          ),
           metadata: currentMeta,
           status: generalForm.status || 'published',
           updated_by: admin.id,
@@ -788,7 +795,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
                       <div className="space-y-1">
                         <label className="field-label">Profile Photo</label>
-                        <MediaUploader value={generalForm._photoUrl ?? generalForm.photo_url ?? ''} onChange={(url) => setGeneralForm((p) => ({ ...p, _photoUrl: url }))} type="image" />
+                        <MediaUploader value={generalForm._photoUrl ?? generalForm.photo_url ?? ''} onChange={(url) => setGeneralForm((p) => ({ ...p, _photoUrl: url }))} type="image" bucketName="staff-photos" />
                       </div>
 
                       <div className="grid grid-cols-2 gap-3">
@@ -821,6 +828,100 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                       <div className="space-y-1">
                         <label className="field-label">Bio</label>
                         <textarea rows={4} value={generalForm.bio || ''} onChange={(e) => setGeneralForm((p) => ({ ...p, bio: e.target.value }))} className="field-input resize-none" />
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="field-label">Qualification</label>
+                        <input
+                          type="text"
+                          value={generalForm.qualification || ''}
+                          onChange={(e) => setGeneralForm((p) => ({ ...p, qualification: e.target.value }))}
+                          placeholder="e.g. M.Tech, Ph.D."
+                          className="field-input"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="field-label">Office Hours</label>
+                        {(generalForm.office_hours || []).map((oh: { day: string; time: string }, i: number) => (
+                          <div key={i} className="flex gap-2">
+                            <input
+                              type="text"
+                              value={oh.day || ''}
+                              onChange={(e) => {
+                                const list = [...(generalForm.office_hours || [])];
+                                list[i] = { ...list[i], day: e.target.value };
+                                setGeneralForm((p) => ({ ...p, office_hours: list }));
+                              }}
+                              placeholder="Day, e.g. Monday"
+                              className="field-input flex-1"
+                            />
+                            <input
+                              type="text"
+                              value={oh.time || ''}
+                              onChange={(e) => {
+                                const list = [...(generalForm.office_hours || [])];
+                                list[i] = { ...list[i], time: e.target.value };
+                                setGeneralForm((p) => ({ ...p, office_hours: list }));
+                              }}
+                              placeholder="Time, e.g. 10am - 12pm"
+                              className="field-input flex-1"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const list = (generalForm.office_hours || []).filter((_: unknown, idx: number) => idx !== i);
+                                setGeneralForm((p) => ({ ...p, office_hours: list }));
+                              }}
+                              className="rounded-lg border border-zinc-800 px-2 text-zinc-400 hover:text-red-400"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setGeneralForm((p) => ({ ...p, office_hours: [...(p.office_hours || []), { day: '', time: '' }] }))
+                          }
+                          className="flex items-center gap-1 text-xs font-medium text-crimson hover:text-crimson/80"
+                        >
+                          <Plus className="h-3 w-3" /> Add office hours row
+                        </button>
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="field-label">Social / Profile Links</label>
+                        <input
+                          type="url"
+                          value={generalForm.social_links?.linkedin || ''}
+                          onChange={(e) =>
+                            setGeneralForm((p) => ({ ...p, social_links: { ...(p.social_links || {}), linkedin: e.target.value } }))
+                          }
+                          placeholder="LinkedIn URL"
+                          className="field-input"
+                        />
+                        <input
+                          type="url"
+                          value={generalForm.social_links?.googleScholar || ''}
+                          onChange={(e) =>
+                            setGeneralForm((p) => ({
+                              ...p,
+                              social_links: { ...(p.social_links || {}), googleScholar: e.target.value },
+                            }))
+                          }
+                          placeholder="Google Scholar URL"
+                          className="field-input"
+                        />
+                        <input
+                          type="url"
+                          value={generalForm.social_links?.orcid || ''}
+                          onChange={(e) =>
+                            setGeneralForm((p) => ({ ...p, social_links: { ...(p.social_links || {}), orcid: e.target.value } }))
+                          }
+                          placeholder="ORCID URL"
+                          className="field-input"
+                        />
                       </div>
 
                       <div className="space-y-1">

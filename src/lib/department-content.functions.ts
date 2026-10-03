@@ -34,7 +34,9 @@ export async function getStaffByDepartmentId(departmentId: string) {
       `)
       .eq('department_id', departmentId)
       .eq('status', 'published')
-      .is('deleted_at', null),
+      .is('deleted_at', null)
+      .eq('designations.status', 'published')
+      .is('designations.deleted_at', null),
     supabase.from('staff_posts').select(STAFF_POST_COLUMNS).eq('status', 'published').is('deleted_at', null),
   ]);
 

@@ -55,21 +55,6 @@ export async function getAllFacilities() {
 }
 
 /**
- * Fetch facilities by type (campus, building, laboratory)
- */
-export async function getFacilitiesByType(type: "campus" | "building" | "laboratory") {
-  const supabase = publicSupabase();
-  const result = await supabase
-    .from("facilities")
-    .select("*")
-    .eq("status", "published")
-    .eq("facility_type", type)
-    .order("name", { ascending: true });
-
-  return unwrap<Facility[]>(result as any, "facilities by type");
-}
-
-/**
  * Fetch a single facility by slug. Excludes lab rows (`department_id IS NOT
  * NULL`) — labs have their own resolver (`getLabBySlug`) and their own URL
  * (`/departments/[dept]/labs/[slug]`); the campus/building facility slug

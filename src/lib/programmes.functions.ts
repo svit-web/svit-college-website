@@ -7,7 +7,6 @@ export interface Programme {
   name: string;
   status: "draft" | "published" | "archived";
   is_programme: boolean;
-  programme_slug: string;
   tagline: string;
   short_name: string;
   full_name: string;

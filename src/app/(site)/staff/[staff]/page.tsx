@@ -178,6 +178,9 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
               <p className="mt-1 text-sm font-bold text-crimson">{profile.designation}</p>
             )}
             {dept && <p className="mt-1 text-sm text-ink-soft">{dept.name}</p>}
+            {profile.qualification && (
+              <p className="mt-1 text-sm font-semibold text-ink">{profile.qualification}</p>
+            )}
             {topQualification && (
               <p className="mt-1 text-sm font-semibold text-ink">{topQualification.title}</p>
             )}
