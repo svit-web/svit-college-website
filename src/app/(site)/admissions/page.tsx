@@ -8,6 +8,7 @@ import { Reveal } from "@/components/site-next/Reveal";
 import { FaqItem } from "@/components/site-next/FaqItem";
 import { getAllProgrammes } from "@/lib/programmes.functions";
 import { getMiscSettings } from "@/lib/site-settings.functions";
+import { getAdmissionsPage, type AdmissionsPageData } from "@/lib/pages.functions";
 
 export async function generateMetadata(): Promise<Metadata> {
   const misc = await getMiscSettings().catch(() => null);
@@ -18,26 +19,35 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-const steps = [
-  { n: "01", title: "Fill Inquiry Form", desc: "Submit online enquiry with your programme preference." },
-  { n: "02", title: "Eligibility Check", desc: "Our team verifies eligibility as per AICTE norms." },
-  { n: "03", title: "Document Submission", desc: "Upload marksheets, ID and category certificates." },
-  { n: "04", title: "Admission Confirmation", desc: "Fee payment and seat confirmation." },
-];
-
-export default async function Admissions() {
-  const [programmes, misc] = await Promise.all([
-    getAllProgrammes().catch(() => []),
-    getMiscSettings().catch(() => null),
-  ]);
-  const yr = misc?.admission_year;
-
-  const faqs = [
-    { q: `When do admissions for ${yr} open?`, a: "Applications open in January. Merit lists are declared as per GTU / ACPC schedule." },
+// Fallback used only if the `pages` row (slug: "admissions") is missing or the query fails —
+// content otherwise comes from Supabase so it stays editable without a code change.
+const fallbackContent: AdmissionsPageData = {
+  steps: [
+    { n: "01", title: "Fill Inquiry Form", desc: "Submit online enquiry with your programme preference." },
+    { n: "02", title: "Eligibility Check", desc: "Our team verifies eligibility as per AICTE norms." },
+    { n: "03", title: "Document Submission", desc: "Upload marksheets, ID and category certificates." },
+    { n: "04", title: "Admission Confirmation", desc: "Fee payment and seat confirmation." },
+  ],
+  faqs: [
+    { q: "When do admissions for {year} open?", a: "Applications open in January. Merit lists are declared as per GTU / ACPC schedule." },
     { q: "Are scholarships available?", a: "Yes — merit-based, need-based, and government scholarships (SC/ST/OBC/EBC) are offered." },
     { q: "Is hostel accommodation available?", a: "Separate boys' and girls' hostels with mess, Wi-Fi and 24×7 security." },
     { q: "How do I get a fee breakdown?", a: "Contact the admissions office or download the fee structure from Downloads." },
-  ];
+  ],
+};
+
+export default async function Admissions() {
+  const [programmes, misc, page] = await Promise.all([
+    getAllProgrammes().catch(() => []),
+    getMiscSettings().catch(() => null),
+    getAdmissionsPage().catch(() => null),
+  ]);
+  const yr = misc?.admission_year;
+  const steps = page?.steps ?? fallbackContent.steps;
+  const faqs = (page?.faqs ?? fallbackContent.faqs).map((f) => ({
+    ...f,
+    q: f.q.replace("{year}", yr ? `${yr}` : "the upcoming"),
+  }));
 
   return (
     <>

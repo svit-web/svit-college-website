@@ -33,67 +33,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Structured editor for the departments.metadata JSONB field
-function DepartmentMetaEditor({ value, onChange }: { value: any; onChange: (val: any) => void }) {
-  const meta: Record<string, any> = (() => {
-    if (!value) return {};
-    if (typeof value === 'object') return value;
-    try {
-      return JSON.parse(value);
-    } catch {
-      return {};
-    }
-  })();
-  const set = (key: string, val: any) => onChange({ ...meta, [key]: val === '' ? undefined : val });
-  return (
-    <div className="space-y-3 rounded-lg border border-slate-200 bg-slate-50/60 p-4">
-      <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Department Profile Fields</p>
-      <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold text-slate-600 uppercase">About</label>
-        <textarea
-          rows={4}
-          value={meta.about || ''}
-          onChange={(e) => set('about', e.target.value)}
-          placeholder="Brief description of the department..."
-          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-slate-600 uppercase">Vision</label>
-          <textarea
-            rows={3}
-            value={meta.vision || ''}
-            onChange={(e) => set('vision', e.target.value)}
-            placeholder="Department vision..."
-            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-          />
-        </div>
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-semibold text-slate-600 uppercase">Mission</label>
-          <textarea
-            rows={3}
-            value={meta.mission || ''}
-            onChange={(e) => set('mission', e.target.value)}
-            placeholder="Department mission..."
-            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-          />
-        </div>
-      </div>
-      <div className="space-y-1.5">
-        <label className="text-[11px] font-semibold text-slate-600 uppercase">Intake (seats per year)</label>
-        <input
-          type="number"
-          value={meta.intake ?? ''}
-          onChange={(e) => set('intake', e.target.value ? Number(e.target.value) : '')}
-          placeholder="e.g. 60"
-          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-        />
-      </div>
-    </div>
-  );
-}
-
 function formatLabel(str: string): string {
   return str
     .replace(/_id$/, '')
@@ -131,7 +70,6 @@ const FK_LABEL_COLUMNS: Record<string, string> = {
   designations: 'title',
   staff_posts: 'title',
   gallery_albums: 'title',
-  homepage_sections: 'title',
   inquiry_forms: 'form_name',
   menu_items: 'title',
   pages: 'title',
@@ -150,7 +88,7 @@ interface TableFieldConfig {
   // New-record default: prefill with the acting admin's own scope level.
   defaultsToScopeLevel?: boolean;
   // Custom field renderer, dispatched by name in the edit form below.
-  render?: 'department-meta' | 'entry-photos';
+  render?: 'entry-photos';
   // Enum fields only: human-readable option labels keyed by enum value
   // (falls back to formatLabel for any value not listed).
   optionLabels?: Record<string, string>;
@@ -199,9 +137,6 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     writePermissions: {
       resolve: (level) => (level === 'department' ? { insert: false, update: true, delete: false } : undefined),
     },
-    fields: {
-      metadata: { render: 'department-meta' },
-    },
   },
   events: {
     scope: { collegeScopeExtra: { column: 'scope_type', value: 'college' } },
@@ -243,11 +178,46 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
 interface AdminCrudManagerProps {
   tableId: string;
   admin: AdminUser;
+  // The actual mounted route, for tables whose list page lives at a custom
+  // path (e.g. recruiters at /admin/recruiters) rather than the generic
+  // /admin/tables/:tableId. Must match the key used in ROUTE_SECTION_MAP /
+  // the page's own isRouteAllowedForUser check, or a section-grant user who
+  // the page already let in gets zero write permission here even though
+  // RLS (can_write_section) allows the write.
+  routePath?: string;
 }
 
-export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
+// The `pages` row with slug "about" is the only consumer of the AboutPageData
+// shape (see src/lib/pages.functions.ts); it's hand-edited here as raw JSON
+// with no form, so a typo or a renamed key silently drops content from the
+// public About page instead of failing loudly. This checks the top-level
+// shape (and the couple of sub-shapes that have previously gone stale, like
+// leadership.principal/chairman) before the save round-trips to Supabase.
+function validateAboutPageMetadata(value: any): string | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return 'metadata must be a JSON object';
+  }
+  const requiredObjectKeys = ['hero', 'history', 'vision', 'mission', 'leadership', 'accreditation', 'facilities', 'media', 'contact'];
+  for (const key of requiredObjectKeys) {
+    if (typeof value[key] !== 'object' || value[key] === null || Array.isArray(value[key])) {
+      return `metadata.${key} must be an object`;
+    }
+  }
+  if (!Array.isArray(value.quickFacts)) return 'metadata.quickFacts must be an array';
+  if (!Array.isArray(value.coreValues)) return 'metadata.coreValues must be an array';
+  const leadership = value.leadership;
+  for (const person of ['chairman', 'principal']) {
+    const entry = leadership?.[person];
+    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
+      return `metadata.leadership.${person} must be a single object, not an array`;
+    }
+  }
+  return null;
+}
+
+export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManagerProps) {
   const supabase = useMemo(() => createClient(), []);
-  const supabaseAdmin = supabase as any;
+  const supabaseClient = supabase as any;
 
   const [schemaLoading, setSchemaLoading] = useState(true);
   const [dataLoading, setDataLoading] = useState(false);
@@ -285,7 +255,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     async function loadSchema() {
       setSchemaLoading(true);
       try {
-        const { data, error } = await supabaseAdmin.rpc('get_table_schema_info', {
+        const { data, error } = await supabaseClient.rpc('get_table_schema_info', {
           target_table: tableId,
         });
 
@@ -321,7 +291,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
             const isNameSplit = FK_NAME_SPLIT_TABLES.has(fk.foreign_table);
             const labelCol = isNameSplit ? 'first_name' : (FK_LABEL_COLUMNS[fk.foreign_table] ?? 'name');
 
-            let query = supabaseAdmin.from(fk.foreign_table).select(isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`);
+            let query = supabaseClient.from(fk.foreign_table).select(isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`);
             query = query.order(labelCol, { ascending: true });
 
             const { data, error } = await query;
@@ -357,7 +327,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     setDataLoading(true);
 
     try {
-      let query = supabaseAdmin.from(tableId).select('*', { count: 'exact' });
+      let query = supabaseClient.from(tableId).select('*', { count: 'exact' });
 
       const cols = schema.columns.map((c: any) => c.name);
 
@@ -525,6 +495,13 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
         }
       });
 
+      if (tableId === 'pages' && (payload.slug ?? editingRecord?.slug) === 'about') {
+        const validationError = validateAboutPageMetadata(payload.metadata);
+        if (validationError) {
+          throw new Error(`Invalid About page content — ${validationError}`);
+        }
+      }
+
       if (editingRecord) {
         const pkVal = editingRecord[schema.primary_key];
 
@@ -532,7 +509,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
           payload.updated_by = admin.id;
         }
 
-        const { error } = await supabaseAdmin.from(tableId).update(payload).eq(schema.primary_key, pkVal);
+        const { error } = await supabaseClient.from(tableId).update(payload).eq(schema.primary_key, pkVal);
         if (error) throw error;
 
         await logAuditAction('UPDATE', pkVal, editingRecord, payload);
@@ -541,7 +518,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
           payload.created_by = admin.id;
         }
 
-        const { data: insertedData, error } = await supabaseAdmin.from(tableId).insert(payload).select().single();
+        const { data: insertedData, error } = await supabaseClient.from(tableId).insert(payload).select().single();
         if (error) throw error;
 
         if (insertedData) {
@@ -575,7 +552,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     setDataLoading(true);
     try {
       if (isSoftDelete) {
-        const { error } = await supabaseAdmin
+        const { error } = await supabaseClient
           .from(tableId)
           .update({
             deleted_at: new Date().toISOString(),
@@ -588,7 +565,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
 
         await logAuditAction('DELETE', pkVal, record, { deleted_at: new Date().toISOString() });
       } else {
-        const { error } = await supabaseAdmin.from(tableId).delete().eq(schema.primary_key, pkVal);
+        const { error } = await supabaseClient.from(tableId).delete().eq(schema.primary_key, pkVal);
         if (error) throw error;
 
         await logAuditAction('DELETE', pkVal, record, null);
@@ -633,7 +610,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     // table that would otherwise be global-only, mirroring the RLS carve-outs in
     // supabase/migrations/*_admin_section_*.sql — this is UI convenience only,
     // RLS is the real backstop either way.
-    const routeSection = getRouteSection(`/admin/tables/${tableId}`);
+    const routeSection = getRouteSection(routePath ?? `/admin/tables/${tableId}`);
     const hasSectionGrant = !!routeSection && admin.sections.some((s) => s.code === routeSection);
     if (hasSectionGrant) return { insert: true, update: true, delete: true };
 
@@ -655,7 +632,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
     }
 
     return none;
-  }, [userScope, schema, tableId, admin]);
+  }, [userScope, schema, tableId, admin, routePath]);
 
   const hasWritePermission = writePermissions.insert || writePermissions.update || writePermissions.delete;
   const canShowRowActions = writePermissions.update || writePermissions.delete;
@@ -1055,8 +1032,6 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                         required={!col.is_nullable}
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
                       />
-                    ) : TABLE_CONFIGS[tableId]?.fields?.[col.name]?.render === 'department-meta' ? (
-                      <DepartmentMetaEditor value={formValues[col.name]} onChange={(val) => handleFieldChange(col.name, val)} />
                     ) : col.name === 'metadata' || col.type === 'jsonb' ? (
                       <textarea
                         value={typeof formValues[col.name] === 'object' ? JSON.stringify(formValues[col.name], null, 2) : formValues[col.name] || '{}'}
@@ -1118,7 +1093,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                     if (selectedIds.length === 0) return;
                     setDataLoading(true);
                     try {
-                      const { error } = await supabaseAdmin.from(tableId).update({ status: 'published', updated_by: admin.id }).in(schema.primary_key, selectedIds);
+                      const { error } = await supabaseClient.from(tableId).update({ status: 'published', updated_by: admin.id }).in(schema.primary_key, selectedIds);
                       if (error) throw error;
                       toast.success(`Successfully published ${selectedIds.length} records!`);
                       const auditRows = selectedRows.map((row: any) => ({
@@ -1156,7 +1131,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                     if (selectedIds.length === 0) return;
                     setDataLoading(true);
                     try {
-                      const { error } = await supabaseAdmin.from(tableId).update({ status: 'draft', updated_by: admin.id }).in(schema.primary_key, selectedIds);
+                      const { error } = await supabaseClient.from(tableId).update({ status: 'draft', updated_by: admin.id }).in(schema.primary_key, selectedIds);
                       if (error) throw error;
                       toast.success(`Successfully set ${selectedIds.length} records to Draft!`);
                       const auditRows = selectedRows.map((row: any) => ({
@@ -1205,7 +1180,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                   setDataLoading(true);
                   try {
                     if (isSoftDelete) {
-                      const { error } = await supabaseAdmin
+                      const { error } = await supabaseClient
                         .from(tableId)
                         .update({
                           deleted_at: new Date().toISOString(),
@@ -1232,7 +1207,7 @@ export function AdminCrudManager({ tableId, admin }: AdminCrudManagerProps) {
                         console.error('Failed to write audit log', err);
                       }
                     } else {
-                      const { error } = await supabaseAdmin.from(tableId).delete().in(schema.primary_key, selectedIds);
+                      const { error } = await supabaseClient.from(tableId).delete().in(schema.primary_key, selectedIds);
                       if (error) throw error;
                       toast.success(`Successfully permanently deleted ${selectedIds.length} records!`);
                       const auditRows = selectedRows.map((row: any) => ({

@@ -91,7 +91,6 @@ const EMPTY_FORM = {
   subtitle: '',
   body: '',
   icon_name: '',
-  pretitle: '',
   eyebrow: '',
   title_accent: '',
   image_url: '',
@@ -176,7 +175,6 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
       subtitle: item.subtitle || '',
       body: item.body || '',
       icon_name: item.icon_name || '',
-      pretitle: item.pretitle || '',
       eyebrow: item.eyebrow || '',
       title_accent: item.title_accent || '',
       image_url: item.image_url || '',
@@ -334,17 +332,6 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </select>
               </div>
 
-              {form.item_type === 'hero' && (
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold uppercase text-slate-600">Pretitle (line above the eyebrow badge)</label>
-                  <input
-                    value={form.pretitle}
-                    onChange={(e) => f('pretitle', e.target.value)}
-                    placeholder='e.g. "Sardar Vallabhbhai Patel Institute of Technology"'
-                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
-                  />
-                </div>
-              )}
 
               {['hero', 'carousel_slide', 'promo_card', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
                 <div className="space-y-1.5">

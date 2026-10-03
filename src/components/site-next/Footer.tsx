@@ -10,17 +10,21 @@ import {
   Mail,
   MapPin,
   Phone,
+  Twitter,
   Youtube,
   ChevronDown,
 } from "lucide-react";
 import { Logo } from "./Logo";
 import type { MiscSettings, ContactInfo } from "@/lib/site-settings.functions";
 
+// Keep this in sync with the platform list in AdminSettingsPage's social
+// links form (Facebook, Instagram, LinkedIn, Twitter, Youtube) — a platform
+// missing here silently drops the admin's saved link instead of rendering it.
 const socialIconMap: Record<string, typeof Facebook> = {
   Facebook,
   Instagram,
   LinkedIn: Linkedin,
-
+  Twitter,
   Youtube,
 };
 
@@ -40,6 +44,10 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
 
   const socialLinks = contactInfo?.social_links ?? {};
 
+  // Intentionally static, not CMS-driven: these are top-level site sections
+  // (not admin content), the same set `main_navigation` carries, so there's
+  // no `footer_navigation` menu code to wire up. Keep in sync with
+  // `main_navigation`'s top-level items by hand if that menu's routes change.
   const quick = [
     { label: "About Us", to: "/about" },
     { label: "Admissions", to: "/admissions" },

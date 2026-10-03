@@ -27,7 +27,14 @@ export interface AdminUser {
   sections: AdminSectionGrant[];
 }
 
-// Allowed admin-level role codes — only these grant portal access
+// Allowed admin-level role codes — only these grant portal access.
+// Only 'admin' and 'editor' rows currently exist in `roles`; in practice every
+// scoped admin (college/department/institute/trust) is granted the 'editor'
+// code with a scoped user_roles row (see getScopeConstraints below, which
+// reads scope_type, not the role code). 'department_admin' and 'college_admin'
+// are reserved for a possible future split of permissions by role rather than
+// scope and are not currently assignable — don't assume a role row with
+// either code exists.
 const AUTHORIZED_ROLE_CODES = ['admin', 'editor', 'department_admin', 'college_admin'] as const;
 
 /**

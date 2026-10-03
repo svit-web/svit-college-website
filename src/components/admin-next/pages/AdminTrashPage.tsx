@@ -15,8 +15,6 @@ const SOFT_DELETE_TABLES = [
   'staff_achievements',
   'menus',
   'menu_items',
-  'homepage_sections',
-  'homepage_widgets',
   'homepage_items',
   'designations',
   'staff_posts',
@@ -46,7 +44,6 @@ const SOFT_DELETE_TABLES = [
   'user_roles',
   'user_section_grants',
   'roles',
-  'permissions',
   'admin_sections',
 ];
 

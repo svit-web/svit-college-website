@@ -41,7 +41,6 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
     title: '',
     url: '',
     link_type: 'external',
-    icon: '',
     sort_order: 0,
     parent_id: '' as string | null,
   });
@@ -149,7 +148,6 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
         title: itemFormValues.title,
         link_type: itemFormValues.link_type,
         url: itemFormValues.url || null,
-        icon: itemFormValues.icon || null,
         sort_order: Number(itemFormValues.sort_order),
         parent_id: itemFormValues.parent_id || null,
         status: 'published',
@@ -179,7 +177,6 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
       title: '',
       url: '',
       link_type: 'external',
-      icon: '',
       sort_order: menuItems.length * 10,
       parent_id: parentId,
     });
@@ -192,7 +189,6 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
       title: item.title,
       url: item.url || '',
       link_type: item.link_type,
-      icon: item.icon || '',
       sort_order: item.sort_order,
       parent_id: item.parent_id,
     });
@@ -495,17 +491,6 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
                   placeholder="e.g. /admissions or https://external.com"
                   value={itemFormValues.url}
                   onChange={(e) => setItemFormValues((p) => ({ ...p, url: e.target.value }))}
-                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
-                />
-              </div>
-
-              <div className="space-y-1">
-                <label className="text-[11px] font-semibold text-slate-500 uppercase">Icon Class (optional)</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Home, Settings, User"
-                  value={itemFormValues.icon}
-                  onChange={(e) => setItemFormValues((p) => ({ ...p, icon: e.target.value }))}
                   className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>

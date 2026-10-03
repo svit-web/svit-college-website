@@ -74,3 +74,25 @@ export async function getAboutPage() {
   return data?.metadata as AboutPageData | null;
 }
 
+export interface AdmissionsPageData {
+  steps: { n: string; title: string; desc: string }[];
+  faqs: { q: string; a: string }[];
+}
+
+/**
+ * Fetch the admissions page content (process steps + FAQs) from the pages table.
+ */
+export async function getAdmissionsPage() {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('pages')
+    .select('metadata')
+    .eq('slug', 'admissions')
+    .eq('status', 'published')
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return data?.metadata as AdmissionsPageData | null;
+}
+

@@ -1,7 +1,7 @@
 // Classifies admin routes as either "global-only" (only scope_type ===
 // "global" users may see or write to them — covers the Website CMS, Campus
-// Life, and System sidebar groups in full, plus the Scholarships item that
-// lives in the otherwise scope-following Academics group) or
+// Life, and System sidebar groups in full, plus the Admissions group's
+// Scholarships item) or
 // "scope-following" (a college/department-scoped user gets a filtered view
 // of the same section). Mirrors the RLS classification applied in
 // supabase/migrations/*_scope_aware_*_rls.sql and *_global_only_write_rls.sql
@@ -17,7 +17,6 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tnp-hub",
   "/admin/recruiters",
   "/admin/tables/board_members",
-  "/admin/tables/committees",
   "/admin/tables/accreditations",
   "/admin/tables/downloads",
   "/admin/media",
@@ -85,7 +84,6 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "menu_items",
   "content_categories",
   "board_members",
-  "committees",
   "accreditations",
   "downloads",
   "achievements",
@@ -123,6 +121,7 @@ export const ROUTE_SECTION_MAP: Record<string, string> = {
   "/admin/tables/committees": "about_us",
   "/admin/tables/accreditations": "about_us",
   "/admin/sports": "campus_life",
+  "/admin/tables/achievements": "campus_life",
   "/admin/tables/gallery_albums": "campus_life",
   "/admin/tables/gallery_media": "campus_life",
   "/admin/tables/student_clubs": "campus_life",
@@ -141,11 +140,13 @@ export function getRouteSection(pathname: string): string | null {
   return bestMatch ? ROUTE_SECTION_MAP[bestMatch] : null;
 }
 
-// Combined route guard: section grants are checked first (they can unlock a
-// route that would otherwise be global-only), then falls back to the
-// existing scope-tier logic unchanged. Takes primitive scope level + section
-// codes (not an AdminUser) so this stays importable from client components
-// without pulling in server-only auth code.
+// Combined route guard: a section grant can unlock a route that would
+// otherwise be global-only, but it never takes away access the ordinary
+// scope-tier logic already grants (e.g. a college_admin reaching a
+// scope-aware table like committees without needing an explicit grant).
+// Takes primitive scope level + section codes (not an AdminUser) so this
+// stays importable from client components without pulling in server-only
+// auth code.
 export function isRouteAllowedForUser(
   pathname: string,
   level: string,
@@ -154,7 +155,7 @@ export function isRouteAllowedForUser(
   if (level === "global") return true;
 
   const section = getRouteSection(pathname);
-  if (section) return sectionCodes.includes(section);
+  if (section && sectionCodes.includes(section)) return true;
 
   return isRouteAllowedForScope(pathname, level);
 }
