@@ -48,6 +48,7 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
     )
     .eq("status", "published")
     .eq("employee_code", code)
+    .is("deleted_at", null)
     .maybeSingle();
 
   if (error) throw error;

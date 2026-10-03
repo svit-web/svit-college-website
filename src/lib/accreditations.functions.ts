@@ -25,6 +25,7 @@ export async function getAllAccreditations() {
     .from("accreditations")
     .select("*")
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("organization", { ascending: true });
 
   return unwrap<Accreditation[]>(result as any, "accreditations");
@@ -40,6 +41,7 @@ export async function getAccreditationByOrg(org: string) {
     .select("*")
     .eq("organization", org)
     .eq("status", "published")
+    .is("deleted_at", null)
     .single();
 
   return unwrap<Accreditation>(result as any, "accreditation");

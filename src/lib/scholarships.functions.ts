@@ -24,6 +24,7 @@ export async function getAllScholarships() {
     .from("scholarships")
     .select("*")
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 
@@ -35,6 +36,7 @@ export async function getAllScholarshipsAdmin() {
   const result = await supabase
     .from("scholarships")
     .select("*")
+    .is("deleted_at", null)
     .order("sort_order", { ascending: true })
     .order("created_at", { ascending: true });
 

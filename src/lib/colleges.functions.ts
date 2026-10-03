@@ -43,6 +43,8 @@ export async function getDepartmentsByCollegeSlug(slug: string) {
     .from("colleges")
     .select("id")
     .eq("slug", slug)
+    .eq("status", "published")
+    .is("deleted_at", null)
     .maybeSingle();
   if (cErr || !college)
     return [] as {
@@ -59,6 +61,7 @@ export async function getDepartmentsByCollegeSlug(slug: string) {
     .select("id, name, slug, code, logo_url, metadata")
     .eq("college_id", college.id)
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("name");
   if (error) return [] as { id: string; name: string; slug: string; code: string; metadata: any }[];
 

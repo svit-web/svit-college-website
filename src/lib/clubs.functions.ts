@@ -46,6 +46,7 @@ export async function getAllStudentClubs() {
     .from('student_clubs')
     .select(CLUB_SELECT_WITH_DEPARTMENT)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('name', { ascending: true });
 
   if (error) {
@@ -66,6 +67,7 @@ export async function getFeaturedStudentClubs() {
     .select(CLUB_SELECT_WITH_DEPARTMENT)
     .eq('status', 'published')
     .eq('featured' as any, true)
+    .is('deleted_at', null)
     .order('name', { ascending: true });
 
   if (error) {
@@ -86,6 +88,7 @@ export async function getStudentClubBySlug(slug: string) {
     .select(CLUB_SELECT_WITH_DEPARTMENT)
     .eq('slug', slug)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) throw error;

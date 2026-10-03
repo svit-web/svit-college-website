@@ -30,10 +30,11 @@ export async function getStaffByDepartmentId(departmentId: string) {
         is_primary,
         post_ids,
         designations ( title, category ),
-        staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, employee_code, muster_number, photo_url )
+        staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, deleted_at, employee_code, muster_number, photo_url )
       `)
       .eq('department_id', departmentId)
-      .eq('status', 'published'),
+      .eq('status', 'published')
+      .is('deleted_at', null),
     supabase.from('staff_posts').select(STAFF_POST_COLUMNS).eq('status', 'published').is('deleted_at', null),
   ]);
 
@@ -43,7 +44,7 @@ export async function getStaffByDepartmentId(departmentId: string) {
   }
 
   const members = (data ?? [])
-    .filter((a: any) => a.staff_profiles?.status === 'published')
+    .filter((a: any) => a.staff_profiles?.status === 'published' && !a.staff_profiles?.deleted_at)
     .map((a: any): DeptStaffMember => {
       const s = a.staff_profiles;
       const designationTitle = a.designations?.title ?? 'Faculty';
@@ -138,6 +139,7 @@ export async function getClubsByDepartmentId(departmentId: string) {
     .select('id, name, slug, description, logo_url')
     .eq('department_id', departmentId)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('name', { ascending: true });
 
   if (error) {

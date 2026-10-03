@@ -171,6 +171,7 @@ export async function getPlacementContent(): Promise<FullPlacementData> {
         .from("placed_students")
         .select("id, student_name, company_name, batch_year, photo_url, colleges(slug)")
         .eq("status", "published")
+        .is("deleted_at", null)
         .order("batch_year", { ascending: false })
         .order("student_name", { ascending: true }),
       sb
@@ -266,6 +267,9 @@ export async function getPlacementColleges(): Promise<CollegeOption[]> {
  */
 export async function savePlacementContent(data: FullPlacementData): Promise<void> {
   const sb = createNextBrowserClient() as any;
+  const {
+    data: { user },
+  } = await sb.auth.getUser();
 
   // 1 ── overview row: hero, about, officer, and everything JSON-shaped
   const { error: cellError } = await sb.from("placement_cells").upsert(
@@ -304,7 +308,8 @@ export async function savePlacementContent(data: FullPlacementData): Promise<voi
   // 3 ── placed_students: update existing, insert new, delete removed
   const { data: existingStudents, error: studentReadError } = await sb
     .from("placed_students")
-    .select("id");
+    .select("id")
+    .is("deleted_at", null);
   if (studentReadError) throw new Error(`Placed students: ${studentReadError.message}`);
 
   const keptStudentIds = new Set(
@@ -342,7 +347,10 @@ export async function savePlacementContent(data: FullPlacementData): Promise<voi
   }
 
   if (removedStudentIds.length) {
-    const { error } = await sb.from("placed_students").delete().in("id", removedStudentIds);
+    const { error } = await sb
+      .from("placed_students")
+      .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null })
+      .in("id", removedStudentIds);
     if (error) throw new Error(`Placed students: ${error.message}`);
   }
 

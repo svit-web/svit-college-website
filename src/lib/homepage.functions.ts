@@ -34,6 +34,8 @@ export async function getRecruiterLogos() {
   const { data, error } = await supabase
     .from("recruiters")
     .select("company_name, logo_url, sort_order")
+    .eq("status", "published")
+    .is("deleted_at", null)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return data ?? [];

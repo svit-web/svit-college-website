@@ -24,6 +24,12 @@ export async function upsertScholarship(input: Partial<Scholarship> & { name: st
 
 export async function deleteScholarship(id: string): Promise<void> {
   const supabase = createClient();
-  const { error } = await supabase.from('scholarships').delete().eq('id', id);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  const { error } = await supabase
+    .from('scholarships')
+    .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null } as any)
+    .eq('id', id);
   if (error) throw error;
 }

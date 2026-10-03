@@ -328,7 +328,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
   async function handleDeleteAssignment(id: string) {
     try {
-      await supabase.from('staff_department_assignments').delete().eq('id', id);
+      await supabase
+        .from('staff_department_assignments')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: admin.id })
+        .eq('id', id);
       toast.success('Removed.');
       loadDetails(selectedId!);
     } catch (err: any) {
@@ -358,7 +361,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
   async function handleDeleteAchievement(id: string) {
     try {
-      await (supabase as any).from('staff_achievements').delete().eq('id', id);
+      await (supabase as any)
+        .from('staff_achievements')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: admin.id })
+        .eq('id', id);
       toast.success('Removed.');
       loadDetails(selectedId!);
     } catch (err: any) {

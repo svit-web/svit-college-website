@@ -76,6 +76,7 @@ export async function getAllDepartments() {
     .from('departments')
     .select('*, colleges(slug)')
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('name', { ascending: true });
 
   if (error) {
@@ -96,6 +97,7 @@ export async function getDepartmentsByCollege(collegeId: string) {
     .select('*, colleges(slug)')
     .eq('college_id', collegeId)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('name', { ascending: true });
 
   if (error) {
@@ -116,6 +118,7 @@ export async function getDepartmentBySlug(slug: string) {
     .select('*, colleges(slug)')
     .eq('slug', slug)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) {
@@ -136,6 +139,7 @@ export async function getDepartmentByCode(code: string) {
     .select('*, colleges(slug)')
     .eq('code', code)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) {
@@ -168,6 +172,7 @@ export async function getCoursesByDepartmentId(departmentId: string) {
     .select('id, name, code, degree_level, metadata, short_name, year_started, duration_years, intake')
     .eq('department_id', departmentId)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('degree_level', { ascending: true });
 
   if (error) throw error;
@@ -184,6 +189,7 @@ export async function getCourseById(id: string) {
     .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake')
     .eq('id', id)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) throw error;
@@ -200,6 +206,7 @@ export async function getCourseWithDept(id: string) {
     .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake, departments(id, name, code, slug)')
     .eq('id', id)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (error) throw error;

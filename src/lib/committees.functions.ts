@@ -34,6 +34,7 @@ export async function getCommitteesByCollege(collegeId: string) {
     .select("*")
     .eq("college_id", collegeId)
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("name", { ascending: true });
 
   return unwrap<Committee[]>(result as any, "committees");
@@ -48,6 +49,7 @@ export async function getAllCommittees() {
     .from("committees")
     .select("*")
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("name", { ascending: true });
 
   return unwrap<Committee[]>(result as any, "committees");
@@ -63,6 +65,7 @@ export async function getCommitteeBySlug(slug: string) {
     .select("*")
     .eq("slug", slug)
     .eq("status", "published")
+    .is("deleted_at", null)
     .single();
 
   return unwrap<Committee>(result as any, "committee");

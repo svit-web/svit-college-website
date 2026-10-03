@@ -19,6 +19,7 @@ export async function getAllMOUs() {
     .from('mous')
     .select('*')
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('signed_date', { ascending: false });
 
   if (error) throw error;

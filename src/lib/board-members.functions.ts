@@ -20,6 +20,7 @@ export async function getAllBoardMembers() {
     .from("board_members")
     .select("*")
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("sort_order", { ascending: true });
 
   return unwrap<BoardMember[]>(result, "board members");
