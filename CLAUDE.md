@@ -24,7 +24,8 @@ Split hero, HeroAppearance, Navbar wordmark, Colleges mega panel…), `docs/READ
 ## Commands
 
 `npm run dev` (`next dev --webpack`) · `npm run build` (`next build` then `tsx scripts/build-search-index.ts`,
-which crawls a *running* server into `public/search-index.json`) · `npm run lint` · `npm run format`.
+which builds the index directly from Supabase content — not a live-server crawl — into
+`public/search-index.json`) · `npm run lint` · `npm run format`.
 No test suite exists. Node 24 (`.nvmrc`). Env (no `.env` committed): `NEXT_PUBLIC_SUPABASE_URL`,
 `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_SUPABASE_PROJECT_ID`, `NEXT_PUBLIC_GA4_ID` (optional),
 plus a service-role key read by `src/integrations/supabase/client.server.ts`. Some pages hit Supabase at
