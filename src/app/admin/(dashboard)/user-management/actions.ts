@@ -22,6 +22,7 @@ export interface PortalUserSectionGrant {
   userSectionGrantId: string;
   sectionCode: string;
   sectionName: string;
+  scopeLabel: string;
 }
 
 export interface PortalUser {
@@ -72,7 +73,10 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
     supabaseAdmin.auth.admin.listUsers({ perPage: 1000 }),
     supabaseAdmin.from('user_profiles').select('id, first_name, last_name'),
     supabaseAdmin.from('user_roles').select('id, user_id, scope_type, trust_id, college_id, department_id, role:role_id(code, name)').eq('status', 'published'),
-    supabaseAdmin.from('user_section_grants').select('id, user_id, section:section_id(code, name)').eq('status', 'published'),
+    supabaseAdmin
+      .from('user_section_grants')
+      .select('id, user_id, scope_type, trust_id, college_id, department_id, section:section_id(code, name)')
+      .eq('status', 'published'),
     supabaseAdmin.from('trusts').select('id, name'),
     supabaseAdmin.from('colleges').select('id, name'),
     supabaseAdmin.from('departments').select('id, name'),
@@ -118,6 +122,7 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
       userSectionGrantId: sg.id,
       sectionCode: sg.section?.code ?? '',
       sectionName: sg.section?.name ?? '',
+      scopeLabel: scopeLabel(sg),
     });
     sectionsByUser.set(sg.user_id, list);
   }
@@ -154,26 +159,23 @@ export async function listSectionOptions(): Promise<SectionOption[]> {
 interface AssignSectionInput {
   userId: string;
   sectionId: string;
+  scopeType: string;
+  trustId?: string | null;
+  collegeId?: string | null;
+  departmentId?: string | null;
 }
 
 export async function assignPortalUserSection(input: AssignSectionInput) {
   const admin = await assertGlobalAdmin();
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
 
-  const { data: institute, error: instituteErr } = await supabaseAdmin
-    .from('institutes')
-    .select('id')
-    .is('deleted_at', null)
-    .limit(1)
-    .maybeSingle();
-  if (instituteErr) throw new Error(instituteErr.message);
-  if (!institute) throw new Error('No institute found to scope this grant to.');
-
   const { error: assignErr } = await supabaseAdmin.from('user_section_grants').insert({
     user_id: input.userId,
     section_id: input.sectionId,
-    scope_type: 'institute',
-    institute_id: institute.id,
+    scope_type: input.scopeType as 'global' | 'trust' | 'college' | 'department',
+    trust_id: input.scopeType === 'trust' ? input.trustId : null,
+    college_id: input.scopeType === 'college' ? input.collegeId : null,
+    department_id: input.scopeType === 'department' ? input.departmentId : null,
     status: 'published',
     created_by: admin.id,
   });

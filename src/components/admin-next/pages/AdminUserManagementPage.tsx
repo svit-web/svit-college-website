@@ -448,9 +448,14 @@ function ManageRolesModal({
 
   const [currentSections, setCurrentSections] = useState(user.sections);
   const [sectionId, setSectionId] = useState('');
+  const [sectionScopeType, setSectionScopeType] = useState('global');
+  const [sectionScopeId, setSectionScopeId] = useState('');
   const availableSections = sectionOptions.filter(
     (s) => !currentSections.some((cs) => cs.sectionCode === s.code)
   );
+  const sectionEntityLabel = scopeEntityLabel(sectionScopeType);
+  const sectionEntityOptions =
+    sectionScopeType === 'trust' ? options.trusts : sectionScopeType === 'college' ? options.colleges : sectionScopeType === 'department' ? options.departments : [];
 
   const handleAddSection = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -458,9 +463,20 @@ function ManageRolesModal({
       toast.error('Select a section.');
       return;
     }
+    if (sectionScopeType !== 'global' && !sectionScopeId) {
+      toast.error(`Select a ${sectionEntityLabel?.toLowerCase()}.`);
+      return;
+    }
     setSaving(true);
     try {
-      await assignPortalUserSection({ userId: user.id, sectionId });
+      await assignPortalUserSection({
+        userId: user.id,
+        sectionId,
+        scopeType: sectionScopeType,
+        trustId: sectionScopeType === 'trust' ? sectionScopeId : null,
+        collegeId: sectionScopeType === 'college' ? sectionScopeId : null,
+        departmentId: sectionScopeType === 'department' ? sectionScopeId : null,
+      });
       toast.success('Section access granted.');
       await onChanged();
       onClose();
@@ -567,7 +583,9 @@ function ManageRolesModal({
           {currentSections.length === 0 && <p className="text-sm text-slate-400">No section access assigned.</p>}
           {currentSections.map((s) => (
             <div key={s.userSectionGrantId} className="flex items-center justify-between rounded border border-slate-200 bg-slate-50 px-3 py-2">
-              <span className="text-sm font-semibold text-navy">{s.sectionName}</span>
+              <span className="text-sm font-semibold text-navy">
+                {s.sectionName} <span className="text-slate-500 font-normal">· {s.scopeLabel}</span>
+              </span>
               <button onClick={() => handleRemoveSection(s.userSectionGrantId)} disabled={saving} className="text-slate-500 hover:text-crimson disabled:opacity-50">
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -576,6 +594,33 @@ function ManageRolesModal({
         </div>
 
         <form onSubmit={handleAddSection} className="space-y-3">
+          <select
+            value={sectionScopeType}
+            onChange={(e) => {
+              setSectionScopeType(e.target.value);
+              setSectionScopeId('');
+            }}
+            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-crimson/30"
+          >
+            <option value="global">Global (entire website)</option>
+            <option value="trust">Trust</option>
+            <option value="college">College</option>
+            <option value="department">Department</option>
+          </select>
+          {sectionEntityLabel && (
+            <select
+              value={sectionScopeId}
+              onChange={(e) => setSectionScopeId(e.target.value)}
+              className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-crimson/30"
+            >
+              <option value="">Select {sectionEntityLabel.toLowerCase()}…</option>
+              {sectionEntityOptions.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+          )}
           <select
             value={sectionId}
             onChange={(e) => setSectionId(e.target.value)}

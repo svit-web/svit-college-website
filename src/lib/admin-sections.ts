@@ -39,6 +39,7 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/placed_students",
   "/admin/tables/designations",
   "/admin/tables/staff_posts",
+  "/admin/tables/trusts",
 ] as const;
 
 export function isGlobalOnlyRoute(pathname: string): boolean {
@@ -99,6 +100,7 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "recruiters",
   "designations",
   "staff_posts",
+  "trusts",
 ]);
 
 // Maps a route (still gated global-only by the checks above) to the
@@ -124,6 +126,7 @@ export const ROUTE_SECTION_MAP: Record<string, string> = {
   "/admin/tables/gallery_albums": "campus_life",
   "/admin/tables/gallery_media": "campus_life",
   "/admin/tables/student_clubs": "campus_life",
+  "/admin/tables/downloads": "library",
 };
 
 // Longest-prefix match so a route like "/admin/tables/board_members/new"

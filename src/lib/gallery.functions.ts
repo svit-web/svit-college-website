@@ -32,6 +32,8 @@ export async function getAllGalleryAlbums() {
     .from('gallery_albums')
     .select('*')
     .eq('status', 'published')
+    .eq('show_in_public_gallery', true)
+    .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -45,6 +47,8 @@ export async function getGalleryAlbumWithMedia(albumId: string) {
     .select('*')
     .eq('id', albumId)
     .eq('status', 'published')
+    .eq('show_in_public_gallery', true)
+    .is('deleted_at', null)
     .maybeSingle();
 
   if (albumError) throw albumError;
@@ -55,6 +59,7 @@ export async function getGalleryAlbumWithMedia(albumId: string) {
     .select('*')
     .eq('album_id', albumId)
     .eq('status', 'published')
+    .is('deleted_at', null)
     .order('sort_order', { ascending: true });
 
   if (mediaError) throw mediaError;

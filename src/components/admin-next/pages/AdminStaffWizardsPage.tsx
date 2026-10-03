@@ -15,7 +15,7 @@ import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
 import { PICKER_DESIGNATION_CATEGORIES, STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds, type StaffPost } from '@/lib/staff-posts';
 import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/achievements-import';
 
-type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience';
+type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience' | 'activity';
 
 const ACHIEVEMENT_TYPES: { value: AchievementType; label: string }[] = [
   { value: 'qualification', label: 'Qualification / Degree' },
@@ -24,6 +24,7 @@ const ACHIEVEMENT_TYPES: { value: AchievementType; label: string }[] = [
   { value: 'patent', label: 'Patent' },
   { value: 'publication', label: 'Publication' },
   { value: 'research', label: 'Research Project' },
+  { value: 'activity', label: 'Activity' },
 ];
 
 type Tab = 'general' | 'department' | 'achievements' | 'expertise';

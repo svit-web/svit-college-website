@@ -46,6 +46,8 @@ const NAV_GROUPS: NavGroup[] = [
     label: 'Academics',
     icon: School,
     items: [
+      { label: 'Trusts', to: '/admin/tables/trusts' },
+      { label: 'Institutes', to: '/admin/tables/institutes' },
       { label: 'Colleges', to: '/admin/colleges' },
       { label: 'Departments', to: '/admin/tables/departments' },
       { label: 'Courses', to: '/admin/tables/courses' },

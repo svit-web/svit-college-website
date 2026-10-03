@@ -40,7 +40,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
   const [itemFormValues, setItemFormValues] = useState({
     title: '',
     url: '',
-    link_type: 'custom',
+    link_type: 'external',
     icon: '',
     sort_order: 0,
     parent_id: '' as string | null,
@@ -178,7 +178,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
     setItemFormValues({
       title: '',
       url: '',
-      link_type: 'custom',
+      link_type: 'external',
       icon: '',
       sort_order: menuItems.length * 10,
       parent_id: parentId,
@@ -466,8 +466,13 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
                     onChange={(e) => setItemFormValues((p) => ({ ...p, link_type: e.target.value }))}
                     className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   >
-                    <option value="custom">Custom URL</option>
-                    <option value="page">Inner Page</option>
+                    {/* The menu_items.link_type enum is internal/external, not
+                        custom/page. "internal" would need a page_id picker and
+                        the public nav has no code to resolve a page_id into a
+                        link, so only "external" (a URL, which covers every
+                        live row today, including site-relative paths like
+                        /admissions) is offered until that's built. */}
+                    <option value="external">Link (URL or site path)</option>
                   </select>
                 </div>
 

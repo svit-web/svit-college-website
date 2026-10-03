@@ -9,7 +9,7 @@ export const ACHIEVEMENT_CSV_HEADERS = ['email', 'type', 'title', 'year', 'descr
 export type AchievementCsvColumn = (typeof ACHIEVEMENT_CSV_HEADERS)[number];
 export type AchievementCsvRow = Record<AchievementCsvColumn, string>;
 
-const VALID_ACHIEVEMENT_TYPES = ['award', 'patent', 'publication', 'research', 'qualification', 'experience'] as const;
+const VALID_ACHIEVEMENT_TYPES = ['award', 'patent', 'publication', 'research', 'qualification', 'experience', 'activity'] as const;
 
 export interface AchievementImportSummary {
   totalRows: number;

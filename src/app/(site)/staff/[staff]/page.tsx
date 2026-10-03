@@ -19,6 +19,7 @@ const ACHIEVEMENT_LABELS: Record<string, string> = {
   patent: "Patents",
   award: "Awards & Honors",
   experience: "Experience",
+  activity: "Activities",
 };
 
 // Order the accordion sections appear in, after the bio-driven "Profile" card
@@ -29,6 +30,7 @@ const ACHIEVEMENT_ORDER = [
   "patent",
   "award",
   "experience",
+  "activity",
 ];
 
 export async function generateMetadata({
