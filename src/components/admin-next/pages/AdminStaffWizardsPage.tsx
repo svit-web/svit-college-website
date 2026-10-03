@@ -74,7 +74,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     description: '',
   });
   const [newTag, setNewTag] = useState('');
-  const [newStaffForm, setNewStaffForm] = useState({ title: 'Dr.', first_name: '', last_name: '', email: '', phone: '' });
+  const [newStaffForm, setNewStaffForm] = useState({ title: 'Dr.', first_name: '', last_name: '', employee_code: '', email: '', phone: '' });
   const [createLoading, setCreateLoading] = useState(false);
 
   const [importFacultyOpen, setImportFacultyOpen] = useState(false);
@@ -173,7 +173,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     setSelectedId(null);
     setIsNewMode(true);
     setActiveTab('general');
-    setNewStaffForm({ title: 'Dr.', first_name: '', last_name: '', email: '', phone: '' });
+    setNewStaffForm({ title: 'Dr.', first_name: '', last_name: '', employee_code: '', email: '', phone: '' });
     setPanelOpen(true);
   }
 
@@ -184,11 +184,16 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
+    const employeeCode = newStaffForm.employee_code.trim();
+    if (!/^\d{3}-[A-Za-z]{2,6}$/.test(employeeCode)) {
+      toast.error('Employee code is required, format: 3-digit number + hyphen + initials, e.g. 265-NIC.');
+      return;
+    }
     setCreateLoading(true);
     try {
       const { data, error } = await supabase
         .from('staff_profiles')
-        .insert({ ...newStaffForm, status: 'published', created_by: admin.id })
+        .insert({ ...newStaffForm, employee_code: employeeCode, status: 'published', created_by: admin.id })
         .select()
         .single();
       if (error) throw error;
@@ -198,7 +203,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       setIsNewMode(false);
       setActiveTab('general');
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.code === '23505' ? `Employee code ${employeeCode} is already used by another staff member.` : err.message);
     } finally {
       setCreateLoading(false);
     }
@@ -210,6 +215,11 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     setGeneralSaving(true);
     try {
       const currentMeta = (generalForm.metadata as Record<string, any>) ?? {};
+      const employeeCode = (generalForm.employee_code || '').trim();
+      if (!/^\d{3}-[A-Za-z]{2,6}$/.test(employeeCode)) {
+        toast.error('Employee code is required, format: 3-digit number + hyphen + initials, e.g. 265-NIC.');
+        return;
+      }
       const musterNumber = parseMusterNumber(generalForm.muster_number);
       if (musterNumber === undefined) {
         toast.error('Muster number must be a whole number (0 or higher).');
@@ -235,6 +245,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           title: generalForm.title,
           first_name: generalForm.first_name,
           last_name: generalForm.last_name,
+          employee_code: employeeCode,
           email: generalForm.email,
           phone: generalForm.phone,
           bio: generalForm.bio,
@@ -251,7 +262,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       toast.success('Profile saved!');
       loadStaffList();
     } catch (err: any) {
-      toast.error(err.message);
+      toast.error(err.code === '23505' ? `Employee code ${generalForm.employee_code} is already used by another staff member.` : err.message);
     } finally {
       setGeneralSaving(false);
     }
@@ -635,6 +646,22 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                   />
                 </div>
                 <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Employee Code</label>
+                  <input
+                    required
+                    type="text"
+                    pattern="^\d{3}-[A-Za-z]{2,6}$"
+                    title="Format: 3-digit number, hyphen, initials — e.g. 265-NIC"
+                    placeholder="e.g. 265-NIC"
+                    value={newStaffForm.employee_code}
+                    onChange={(e) => setNewStaffForm((p) => ({ ...p, employee_code: e.target.value }))}
+                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-white placeholder-zinc-600 focus:border-crimson focus:outline-none"
+                  />
+                  <p className="text-[11px] text-zinc-500">
+                    3-digit number + hyphen + initials, e.g. <span className="font-mono">265-NIC</span>. Used to build the faculty's public profile link.
+                  </p>
+                </div>
+                <div className="space-y-1">
                   <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Email</label>
                   <input
                     required
@@ -723,6 +750,23 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                           <label className="field-label">Last Name</label>
                           <input type="text" required value={generalForm.last_name || ''} onChange={(e) => setGeneralForm((p) => ({ ...p, last_name: e.target.value }))} className="field-input" />
                         </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="field-label">Employee Code</label>
+                        <input
+                          type="text"
+                          required
+                          pattern="^\d{3}-[A-Za-z]{2,6}$"
+                          title="Format: 3-digit number, hyphen, initials — e.g. 265-NIC"
+                          placeholder="e.g. 265-NIC"
+                          value={generalForm.employee_code || ''}
+                          onChange={(e) => setGeneralForm((p) => ({ ...p, employee_code: e.target.value }))}
+                          className="field-input"
+                        />
+                        <p className="text-[11px] text-slate-400">
+                          3-digit number + hyphen + initials, e.g. <span className="font-mono">265-NIC</span>. Used to build the faculty's public profile link.
+                        </p>
                       </div>
 
                       <div className="space-y-1">
