@@ -17,14 +17,18 @@ export function GrievanceForm() {
     try {
       const fd = new FormData(e.currentTarget);
       const ref = "GRV-" + Date.now().toString(36).toUpperCase();
-      await submitForm("grievance", {
-        name: fd.get("name"),
-        enrollment_no: fd.get("enrollment_no"),
-        email: fd.get("email"),
-        category: fd.get("category"),
-        description: fd.get("description"),
-        reference_number: ref,
-      });
+      await submitForm(
+        "grievance",
+        {
+          name: fd.get("name"),
+          enrollment_no: fd.get("enrollment_no"),
+          email: fd.get("email"),
+          category: fd.get("category"),
+          description: fd.get("description"),
+          reference_number: ref,
+        },
+        String(fd.get("website_url") ?? "")
+      );
       setRefNumber(ref);
       setSent(true);
       toast.success("Grievance registered");
@@ -47,6 +51,16 @@ export function GrievanceForm() {
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Honeypot: hidden from real visitors, a bot that fills every
+              field trips it. */}
+          <input
+            type="text"
+            name="website_url"
+            tabIndex={-1}
+            autoComplete="off"
+            className="sr-only"
+            aria-hidden="true"
+          />
           <input
             name="name"
             required

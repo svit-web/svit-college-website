@@ -24,9 +24,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const loaded = await loadPost(slug);
   if (!loaded) return { title: "News not found — SVIT Vasad", robots: { index: false } };
+  const seo = loaded.post.seo;
   return {
-    title: `${loaded.post.title} — News — SVIT Vasad`,
-    description: loaded.post.summary?.slice(0, 155) ?? undefined,
+    title: seo?.meta_title || `${loaded.post.title} — News — SVIT Vasad`,
+    description: seo?.meta_description || loaded.post.summary?.slice(0, 155) || undefined,
+    openGraph: {
+      title: seo?.og_title || seo?.meta_title || loaded.post.title,
+      description: seo?.og_description || seo?.meta_description || loaded.post.summary || undefined,
+      images: seo?.og_image_url ? [seo.og_image_url] : undefined,
+    },
   };
 }
 

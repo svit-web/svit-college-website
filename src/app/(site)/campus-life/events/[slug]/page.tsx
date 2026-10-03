@@ -22,9 +22,15 @@ export async function generateMetadata({
   const { slug } = await params;
   const result = await loadEvent(slug);
   if (!result) return { title: "Event — SVIT Vasad", robots: { index: false } };
+  const seo = result.event.seo;
   return {
-    title: `${result.event.title} — Events — SVIT Vasad`,
-    description: result.event.description?.slice(0, 155),
+    title: seo?.meta_title || `${result.event.title} — Events — SVIT Vasad`,
+    description: seo?.meta_description || result.event.description?.slice(0, 155) || undefined,
+    openGraph: {
+      title: seo?.og_title || seo?.meta_title || result.event.title,
+      description: seo?.og_description || seo?.meta_description || result.event.description || undefined,
+      images: seo?.og_image_url ? [seo.og_image_url] : undefined,
+    },
   };
 }
 

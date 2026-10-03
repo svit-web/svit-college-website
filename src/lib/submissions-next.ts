@@ -33,8 +33,14 @@ async function getFormId(slug: string): Promise<string> {
 
 export async function submitForm(
   formSlug: string,
-  submittedData: Record<string, unknown>
+  submittedData: Record<string, unknown>,
+  honeypot?: string
 ): Promise<void> {
+  // Honeypot: a hidden field real visitors never see or fill. A bot that
+  // blindly fills every input trips it — pretend success without writing
+  // anything, so the bot has no signal to adapt against.
+  if (honeypot) return;
+
   const formId = await getFormId(formSlug);
 
   const supabase = createClient();
@@ -42,5 +48,5 @@ export async function submitForm(
     .from('inquiry_submissions')
     .insert({ form_id: formId, submitted_data: submittedData } as any);
 
-  if (error) throw new Error('Submission failed. Please try again.');
+  if (error) throw new Error(error.message?.includes('Too many') || error.message?.includes('too many') ? error.message : 'Submission failed. Please try again.');
 }

@@ -27,17 +27,21 @@ export function InquiryForm({
     setSubmitting(true);
     try {
       const fd = new FormData(e.currentTarget);
-      await submitForm("admission-inquiry", {
-        first_name: fd.get("first_name"),
-        last_name: fd.get("last_name"),
-        email: fd.get("email"),
-        mobile: fd.get("mobile"),
-        city: fd.get("city"),
-        state: fd.get("state"),
-        programme: fd.get("programme"),
-        year: fd.get("year"),
-        message: fd.get("message"),
-      });
+      await submitForm(
+        "admission-inquiry",
+        {
+          first_name: fd.get("first_name"),
+          last_name: fd.get("last_name"),
+          email: fd.get("email"),
+          mobile: fd.get("mobile"),
+          city: fd.get("city"),
+          state: fd.get("state"),
+          programme: fd.get("programme"),
+          year: fd.get("year"),
+          message: fd.get("message"),
+        },
+        String(fd.get("website_url") ?? "")
+      );
       setSent(true);
       toast.success("Inquiry submitted!");
     } catch (err: any) {
@@ -61,6 +65,17 @@ export function InquiryForm({
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Honeypot: hidden from real visitors, a bot that fills every
+                  field trips it. Not a visible label/Field — those are for
+                  humans. */}
+              <input
+                type="text"
+                name="website_url"
+                tabIndex={-1}
+                autoComplete="off"
+                className="sr-only"
+                aria-hidden="true"
+              />
               <div className="grid gap-4 sm:grid-cols-2">
                 <Field label="First Name *">
                   <input name="first_name" required className={fieldInput} />

@@ -32,6 +32,7 @@ export interface CampusEvent {
     highlights?: Array<{ title: string; description: string }>;
     [key: string]: any;
   };
+  seo: { meta_title: string | null; meta_description: string | null; og_title: string | null; og_description: string | null; og_image_url: string | null } | null;
   created_at: string;
   updated_at: string;
 }
@@ -42,6 +43,7 @@ const EVENT_WITH_SCOPE_SELECT = [
   'sort_order, status, scope_type, is_featured, subtitle, accent_color, metadata, created_at, updated_at',
   'college:colleges(name, slug), department:departments(name, slug)',
   'club:student_clubs(name, slug, has_detail_page)',
+  'seo:seo_metadata(meta_title, meta_description, og_title, og_description, og_image_url)',
 ].join(', ');
 
 /**

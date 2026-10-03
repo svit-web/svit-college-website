@@ -267,129 +267,24 @@ export async function getPlacementColleges(): Promise<CollegeOption[]> {
  */
 export async function savePlacementContent(data: FullPlacementData): Promise<void> {
   const sb = createNextBrowserClient() as any;
-  const {
-    data: { user },
-  } = await sb.auth.getUser();
 
-  // 1 ── overview row: hero, about, officer, and everything JSON-shaped
-  const { error: cellError } = await sb.from("placement_cells").upsert(
-    {
-      college_code: OVERVIEW_CODE,
-      hero_title: data.heroTitle,
-      hero_subtitle: data.heroSubtitle,
-      about_text: data.aboutText,
-      officer_name: data.officer.name,
-      officer_designation: data.officer.designation,
-      officer_phone: data.officer.phone,
-      officer_email: data.officer.email,
-      officer_photo_url: data.officer.photo,
-      status: "published",
-      metadata: {
-        highestPackage: data.highestPackage,
-        averagePackage: data.averagePackage,
-        sectionConfig: data.sectionConfig,
-        graphicalData: data.graphicalData,
-      },
+  // Runs as one Postgres function (save_placement_content) so the overview
+  // row, student cards, and recruiter list all commit or all roll back
+  // together — previously these were ~10 sequential unguarded calls with no
+  // transaction, so a failure partway through left the hub half-saved.
+  const { error } = await sb.rpc("save_placement_content", {
+    p_cell: {
+      heroTitle: data.heroTitle,
+      heroSubtitle: data.heroSubtitle,
+      aboutText: data.aboutText,
+      officer: data.officer,
+      highestPackage: data.highestPackage,
+      averagePackage: data.averagePackage,
+      sectionConfig: data.sectionConfig,
+      graphicalData: data.graphicalData,
     },
-    { onConflict: "college_code" },
-  );
-  if (cellError) throw new Error(`Placement cell: ${cellError.message}`);
-
-  // 2 ── resolve college slugs → ids for the student cards
-  const { data: colleges, error: collegeError } = await sb
-    .from("colleges")
-    .select("id, slug")
-    .is("deleted_at", null);
-  if (collegeError) throw new Error(`Colleges: ${collegeError.message}`);
-  const collegeIdBySlug = new Map<string, string>(
-    (colleges ?? []).map((c: any) => [c.slug, c.id]),
-  );
-
-  // 3 ── placed_students: update existing, insert new, delete removed
-  const { data: existingStudents, error: studentReadError } = await sb
-    .from("placed_students")
-    .select("id")
-    .is("deleted_at", null);
-  if (studentReadError) throw new Error(`Placed students: ${studentReadError.message}`);
-
-  const keptStudentIds = new Set(
-    data.placedStudents.filter((s) => isPersistedId(s.id)).map((s) => s.id),
-  );
-  const removedStudentIds = (existingStudents ?? [])
-    .map((s: any) => s.id)
-    .filter((id: string) => !keptStudentIds.has(id));
-
-  for (const student of data.placedStudents) {
-    const collegeId = collegeIdBySlug.get(student.collegeId);
-    if (!collegeId) {
-      throw new Error(
-        `"${student.studentName}" is tagged to an unknown college (${student.collegeId || "none"}).`,
-      );
-    }
-    // Only the fields this screen owns — package_lpa / department_id set
-    // elsewhere are left untouched.
-    const row = {
-      college_id: collegeId,
-      student_name: student.studentName,
-      company_name: student.companyName,
-      batch_year: student.batchYear || null,
-      photo_url: student.photo,
-      status: "published",
-    };
-
-    if (isPersistedId(student.id)) {
-      const { error } = await sb.from("placed_students").update(row).eq("id", student.id);
-      if (error) throw new Error(`Placed students: ${error.message}`);
-    } else {
-      const { error } = await sb.from("placed_students").insert(row);
-      if (error) throw new Error(`Placed students: ${error.message}`);
-    }
-  }
-
-  if (removedStudentIds.length) {
-    const { error } = await sb
-      .from("placed_students")
-      .update({ deleted_at: new Date().toISOString(), deleted_by: user?.id ?? null })
-      .in("id", removedStudentIds);
-    if (error) throw new Error(`Placed students: ${error.message}`);
-  }
-
-  // 4 ── recruiters: same update / insert / soft-delete cycle
-  const { data: existingRecruiters, error: recruiterReadError } = await sb
-    .from("recruiters")
-    .select("id")
-    .is("deleted_at", null);
-  if (recruiterReadError) throw new Error(`Recruiters: ${recruiterReadError.message}`);
-
-  const keptRecruiterIds = new Set(
-    data.recruiters.filter((r) => isPersistedId(r.id)).map((r) => r.id),
-  );
-  const removedRecruiterIds = (existingRecruiters ?? [])
-    .map((r: any) => r.id)
-    .filter((id: string) => !keptRecruiterIds.has(id));
-
-  for (const [index, recruiter] of data.recruiters.entries()) {
-    const row = {
-      company_name: recruiter.companyName,
-      logo_url: recruiter.logo,
-      sort_order: index,
-      status: "published",
-    };
-
-    if (isPersistedId(recruiter.id)) {
-      const { error } = await sb.from("recruiters").update(row).eq("id", recruiter.id);
-      if (error) throw new Error(`Recruiters: ${error.message}`);
-    } else {
-      const { error } = await sb.from("recruiters").insert(row);
-      if (error) throw new Error(`Recruiters: ${error.message}`);
-    }
-  }
-
-  if (removedRecruiterIds.length) {
-    const { error } = await sb
-      .from("recruiters")
-      .update({ deleted_at: new Date().toISOString() })
-      .in("id", removedRecruiterIds);
-    if (error) throw new Error(`Recruiters: ${error.message}`);
-  }
+    p_students: data.placedStudents,
+    p_recruiters: data.recruiters,
+  });
+  if (error) throw new Error(error.message);
 }
