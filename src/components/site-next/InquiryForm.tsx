@@ -105,10 +105,9 @@ export function InquiryForm({
                     ))}
                   </select>
                 </Field>
-                <Field label="Year *">
-                  <select name="year" required className={fieldInput}>
-                    <option value={yr}>{yr}</option>
-                  </select>
+                <Field label="Admission Year">
+                  <input type="hidden" name="year" value={yr} />
+                  <div className={`${fieldInput} flex items-center text-ink-soft`}>{yr}</div>
                 </Field>
               </div>
               <Field label="Message">

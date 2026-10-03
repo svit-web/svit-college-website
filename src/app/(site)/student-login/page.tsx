@@ -12,7 +12,7 @@ export default async function StudentLogin() {
   const itEmail = misc?.it_support_email ?? "itsupport@svitvasad.ac.in";
   return (
     <>
-      <PageHero title="Student Login" accent="Portal Access" subtitle="Log in to access marks, attendance, fees and notices." crumbs={[{ label: "Home", to: "/" }, { label: "Student Login" }]} />
+      <PageHero title="Student Login" accent="Portal Access" subtitle="Student portal access — integration in progress." crumbs={[{ label: "Home", to: "/" }, { label: "Student Login" }]} />
 
       <section className="container-page py-20">
         <StudentLoginForm itEmail={itEmail} />

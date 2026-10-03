@@ -18,6 +18,7 @@ interface SubmissionNode {
   id: string;
   form_id: string;
   submitted_data: any;
+  status: string;
   notes: string | null;
   created_at: string;
 }
@@ -138,7 +139,9 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
   };
 
   const handleDeleteForm = async (form: InquiryFormNode) => {
-    const confirmed = window.confirm('Are you sure you want to delete this form template? Submissions will remain archived.');
+    const confirmed = window.confirm(
+      'Are you sure you want to delete this form template? All submissions received through it will be permanently deleted too.'
+    );
     if (!confirmed) return;
 
     try {
@@ -170,6 +173,16 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
       loadSubmissions(selectedFormId);
     } catch (err: any) {
       toast.error(err.message);
+    }
+  };
+
+  const handleUpdateSubmission = async (id: string, patch: { status?: string; notes?: string }) => {
+    try {
+      const { error } = await supabase.from('inquiry_submissions').update(patch as any).eq('id', id);
+      if (error) throw error;
+      setSubmissions((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
+    } catch (err: any) {
+      toast.error(`Could not save: ${err.message}`);
     }
   };
 
@@ -332,6 +345,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
                             {key.replace(/_/g, ' ')}
                           </th>
                         ))}
+                        <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Status</th>
                         <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Staff Notes</th>
                         <th className="px-6 py-4 text-right text-xs font-bold uppercase text-slate-500">Actions</th>
                       </tr>
@@ -350,7 +364,30 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
                               {sub.submitted_data?.[key] ? String(sub.submitted_data[key]) : <span className="text-slate-500">-</span>}
                             </td>
                           ))}
-                          <td className="px-6 py-4 text-xs text-slate-500 italic">{sub.notes || '(No notes added)'}</td>
+                          <td className="px-6 py-4 text-xs">
+                            <select
+                              value={sub.status || 'unread'}
+                              onChange={(e) => handleUpdateSubmission(sub.id, { status: e.target.value })}
+                              className="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-800 focus:outline-none"
+                            >
+                              <option value="unread">Unread</option>
+                              <option value="read">Read</option>
+                              <option value="replied">Replied</option>
+                            </select>
+                          </td>
+                          <td className="px-6 py-4 text-xs text-slate-500">
+                            <input
+                              type="text"
+                              defaultValue={sub.notes || ''}
+                              placeholder="(No notes added)"
+                              aria-label="Staff notes"
+                              onBlur={(e) => {
+                                const value = e.target.value;
+                                if (value !== (sub.notes || '')) handleUpdateSubmission(sub.id, { notes: value });
+                              }}
+                              className="w-full min-w-[10rem] rounded border border-transparent bg-transparent px-1 py-0.5 italic focus:border-slate-200 focus:bg-white focus:not-italic focus:outline-none"
+                            />
+                          </td>
                           <td className="px-6 py-4 text-right">
                             <button onClick={() => handleDeleteSubmission(sub.id)} className="rounded p-1.5 text-slate-500 hover:bg-rose-500/10 hover:text-rose-450 transition">
                               <Trash2 className="h-4 w-4" />
