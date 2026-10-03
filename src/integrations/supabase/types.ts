@@ -413,59 +413,6 @@ export type Database = {
           },
         ]
       }
-      cells: {
-        Row: {
-          college_id: string
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          metadata: Json
-          name: string
-          slug: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          college_id: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          name: string
-          slug: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          college_id?: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          name?: string
-          slug?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cells_college_id_fkey"
-            columns: ["college_id"]
-            isOneToOne: false
-            referencedRelation: "colleges"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       centers: {
         Row: {
           accent_color: string | null
@@ -798,7 +745,6 @@ export type Database = {
           is_programme: boolean | null
           metadata: Json
           name: string
-          programme_slug: string | null
           short_name: string | null
           status: Database["public"]["Enums"]["content_status"]
           tagline: string | null
@@ -828,7 +774,6 @@ export type Database = {
           is_programme?: boolean | null
           metadata?: Json
           name: string
-          programme_slug?: string | null
           short_name?: string | null
           status?: Database["public"]["Enums"]["content_status"]
           tagline?: string | null
@@ -858,7 +803,6 @@ export type Database = {
           is_programme?: boolean | null
           metadata?: Json
           name?: string
-          programme_slug?: string | null
           short_name?: string | null
           status?: Database["public"]["Enums"]["content_status"]
           tagline?: string | null
@@ -868,10 +812,31 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "courses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "courses_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
             referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -1763,172 +1728,6 @@ export type Database = {
           },
         ]
       }
-      homepage_sections: {
-        Row: {
-          config: Json
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          department_id: string | null
-          id: string
-          is_active: boolean
-          metadata: Json
-          scope_type: Database["public"]["Enums"]["scope_level"]
-          section_type: string
-          sort_order: number
-          status: Database["public"]["Enums"]["content_status"]
-          title: string | null
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          config?: Json
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          department_id?: string | null
-          id?: string
-          is_active?: boolean
-          metadata?: Json
-          scope_type?: Database["public"]["Enums"]["scope_level"]
-          section_type: string
-          sort_order?: number
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          config?: Json
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          department_id?: string | null
-          id?: string
-          is_active?: boolean
-          metadata?: Json
-          scope_type?: Database["public"]["Enums"]["scope_level"]
-          section_type?: string
-          sort_order?: number
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string | null
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "homepage_sections_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homepage_sections_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homepage_sections_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homepage_sections_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      homepage_widgets: {
-        Row: {
-          config: Json
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          metadata: Json
-          section_id: string
-          sort_order: number
-          status: Database["public"]["Enums"]["content_status"]
-          title: string | null
-          updated_at: string
-          updated_by: string | null
-          widget_type: string
-        }
-        Insert: {
-          config?: Json
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          section_id: string
-          sort_order?: number
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string | null
-          updated_at?: string
-          updated_by?: string | null
-          widget_type: string
-        }
-        Update: {
-          config?: Json
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          section_id?: string
-          sort_order?: number
-          status?: Database["public"]["Enums"]["content_status"]
-          title?: string | null
-          updated_at?: string
-          updated_by?: string | null
-          widget_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "homepage_widgets_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homepage_widgets_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homepage_widgets_section_id_fkey"
-            columns: ["section_id"]
-            isOneToOne: false
-            referencedRelation: "homepage_sections"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "homepage_widgets_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       inquiry_forms: {
         Row: {
           created_at: string
@@ -2006,6 +1805,7 @@ export type Database = {
           id: string
           metadata: Json
           notes: string | null
+          reference_number: string | null
           status: Database["public"]["Enums"]["submission_status"]
           submitted_data: Json
           updated_at: string
@@ -2020,6 +1820,7 @@ export type Database = {
           id?: string
           metadata?: Json
           notes?: string | null
+          reference_number?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           submitted_data: Json
           updated_at?: string
@@ -2034,6 +1835,7 @@ export type Database = {
           id?: string
           metadata?: Json
           notes?: string | null
+          reference_number?: string | null
           status?: Database["public"]["Enums"]["submission_status"]
           submitted_data?: Json
           updated_at?: string
@@ -2693,76 +2495,14 @@ export type Database = {
           },
         ]
       }
-      permissions: {
-        Row: {
-          code: string
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          metadata: Json
-          name: string
-          status: Database["public"]["Enums"]["content_status"]
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          code: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          name: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          code?: string
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          name?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "permissions_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "permissions_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "permissions_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       placed_students: {
         Row: {
           batch_year: string | null
           college_id: string
           company_name: string
           created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
           department_id: string | null
           id: string
           package_lpa: number | null
@@ -2776,6 +2516,8 @@ export type Database = {
           college_id: string
           company_name: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           department_id?: string | null
           id?: string
           package_lpa?: number | null
@@ -2789,6 +2531,8 @@ export type Database = {
           college_id?: string
           company_name?: string
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
           department_id?: string | null
           id?: string
           package_lpa?: number | null
@@ -2806,6 +2550,13 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
+            foreignKeyName: "placed_students_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "placed_students_department_id_fkey"
             columns: ["department_id"]
             isOneToOne: false
@@ -2820,7 +2571,6 @@ export type Database = {
           college_code: string
           created_at: string
           created_by: string | null
-          default_student_placeholder_url: string | null
           deleted_at: string | null
           deleted_by: string | null
           hero_subtitle: string | null
@@ -2841,7 +2591,6 @@ export type Database = {
           college_code: string
           created_at?: string
           created_by?: string | null
-          default_student_placeholder_url?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           hero_subtitle?: string | null
@@ -2862,7 +2611,6 @@ export type Database = {
           college_code?: string
           created_at?: string
           created_by?: string | null
-          default_student_placeholder_url?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
           hero_subtitle?: string | null
@@ -3017,13 +2765,11 @@ export type Database = {
       }
       recruiters: {
         Row: {
-          college_codes: string[] | null
           company_name: string
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
-          department_id: string | null
           id: string
           logo_url: string | null
           metadata: Json
@@ -3034,13 +2780,11 @@ export type Database = {
           website_url: string | null
         }
         Insert: {
-          college_codes?: string[] | null
           company_name: string
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
-          department_id?: string | null
           id?: string
           logo_url?: string | null
           metadata?: Json
@@ -3051,13 +2795,11 @@ export type Database = {
           website_url?: string | null
         }
         Update: {
-          college_codes?: string[] | null
           company_name?: string
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
-          department_id?: string | null
           id?: string
           logo_url?: string | null
           metadata?: Json
@@ -3083,114 +2825,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "recruiters_department_id_fkey"
-            columns: ["department_id"]
-            isOneToOne: false
-            referencedRelation: "departments"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "recruiters_updated_by_fkey"
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      redirects: {
-        Row: {
-          created_at: string
-          created_by: string | null
-          deleted_at: string | null
-          deleted_by: string | null
-          id: string
-          metadata: Json
-          source_path: string
-          status: Database["public"]["Enums"]["content_status"]
-          status_code: number
-          target_path: string
-          updated_at: string
-          updated_by: string | null
-        }
-        Insert: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          source_path: string
-          status?: Database["public"]["Enums"]["content_status"]
-          status_code?: number
-          target_path: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Update: {
-          created_at?: string
-          created_by?: string | null
-          deleted_at?: string | null
-          deleted_by?: string | null
-          id?: string
-          metadata?: Json
-          source_path?: string
-          status?: Database["public"]["Enums"]["content_status"]
-          status_code?: number
-          target_path?: string
-          updated_at?: string
-          updated_by?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "redirects_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "redirects_deleted_by_fkey"
-            columns: ["deleted_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "redirects_updated_by_fkey"
-            columns: ["updated_by"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      role_permissions: {
-        Row: {
-          permission_id: string
-          role_id: string
-        }
-        Insert: {
-          permission_id: string
-          role_id: string
-        }
-        Update: {
-          permission_id?: string
-          role_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "role_permissions_permission_id_fkey"
-            columns: ["permission_id"]
-            isOneToOne: false
-            referencedRelation: "permissions"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "role_permissions_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
@@ -3264,6 +2902,8 @@ export type Database = {
           amount: string | null
           created_at: string | null
           created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           description: string | null
           eligibility: string | null
           id: string
@@ -3279,6 +2919,8 @@ export type Database = {
           amount?: string | null
           created_at?: string | null
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           eligibility?: string | null
           id?: string
@@ -3294,6 +2936,8 @@ export type Database = {
           amount?: string | null
           created_at?: string | null
           created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           description?: string | null
           eligibility?: string | null
           id?: string
@@ -3305,7 +2949,15 @@ export type Database = {
           updated_at?: string | null
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "scholarships_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       seo_metadata: {
         Row: {
@@ -3508,10 +3160,10 @@ export type Database = {
           extra: Json | null
           id: string
           staff_id: string
-          status: string
           title: string
           type: string
           updated_at: string
+          updated_by: string | null
           year: number | null
         }
         Insert: {
@@ -3522,10 +3174,10 @@ export type Database = {
           extra?: Json | null
           id?: string
           staff_id: string
-          status?: string
           title: string
           type: string
           updated_at?: string
+          updated_by?: string | null
           year?: number | null
         }
         Update: {
@@ -3536,18 +3188,32 @@ export type Database = {
           extra?: Json | null
           id?: string
           staff_id?: string
-          status?: string
           title?: string
           type?: string
           updated_at?: string
+          updated_by?: string | null
           year?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "staff_achievements_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "staff_achievements_staff_id_fkey"
             columns: ["staff_id"]
             isOneToOne: false
             referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_achievements_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -3695,7 +3361,29 @@ export type Database = {
           updated_at?: string
           updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "staff_posts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_posts_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_posts_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       staff_profiles: {
         Row: {
@@ -4279,18 +3967,22 @@ export type Database = {
         }
         Returns: boolean
       }
-      current_user_is_dept_admin_for: {
-        Args: { target_dept_id: string }
-        Returns: boolean
-      }
       get_table_schema_info: { Args: { target_table: string }; Returns: Json }
       is_any_admin: { Args: never; Returns: boolean }
       is_global_admin: { Args: never; Returns: boolean }
+      save_placement_content: {
+        Args: { p_cell: Json; p_recruiters: Json; p_students: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       content_status: "draft" | "published" | "archived"
-      designation_category: "teaching" | "technical" | "administrative" | "support"
       degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
+      designation_category:
+        | "teaching"
+        | "technical"
+        | "administrative"
+        | "support"
       event_status: "draft" | "published" | "cancelled" | "archived"
       event_type_enum:
         | "fest"
@@ -4310,7 +4002,6 @@ export type Database = {
       scope_level: "global" | "trust" | "institute" | "college" | "department"
       staff_type: "faculty" | "office_staff"
       submission_status: "unread" | "read" | "replied"
-      user_role_enum: "super_admin" | "college_admin" | "dept_coordinator"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4439,8 +4130,13 @@ export const Constants = {
   public: {
     Enums: {
       content_status: ["draft", "published", "archived"],
-      designation_category: ["teaching", "technical", "administrative", "support"],
       degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
+      designation_category: [
+        "teaching",
+        "technical",
+        "administrative",
+        "support",
+      ],
       event_status: ["draft", "published", "cancelled", "archived"],
       event_type_enum: [
         "fest",
@@ -4461,7 +4157,6 @@ export const Constants = {
       scope_level: ["global", "trust", "institute", "college", "department"],
       staff_type: ["faculty", "office_staff"],
       submission_status: ["unread", "read", "replied"],
-      user_role_enum: ["super_admin", "college_admin", "dept_coordinator"],
     },
   },
 } as const
