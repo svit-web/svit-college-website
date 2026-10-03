@@ -11,5 +11,5 @@ export default async function AdminRecruitersPage() {
     redirect('/admin');
   }
 
-  return <AdminCrudManager tableId="recruiters" admin={admin} />;
+  return <AdminCrudManager tableId="recruiters" admin={admin} routePath="/admin/recruiters" />;
 }

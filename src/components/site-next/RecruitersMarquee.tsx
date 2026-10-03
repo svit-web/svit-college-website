@@ -11,17 +11,33 @@ if (typeof window !== "undefined") {
 }
 
 function RecruiterItem({ recruiter }: { recruiter: RecruiterRow }) {
+  const content = recruiter.logo_url ? (
+    // eslint-disable-next-line @next/next/no-img-element -- decorative marquee logo, arbitrary aspect ratio
+    <img
+      src={recruiter.logo_url}
+      alt={recruiter.company_name}
+      className="h-8 w-auto object-contain grayscale"
+    />
+  ) : (
+    recruiter.company_name
+  );
+
+  // website_url was collected in the admin form but never rendered anywhere
+  // — wire it up as the logo/name's link target when present, instead of
+  // leaving it dead.
   return (
     <span className="inline-flex items-center whitespace-nowrap text-[1.05rem] font-semibold text-navy opacity-[0.42] transition-opacity hover:opacity-100 after:mx-[1.9rem] after:inline-block after:h-[5px] after:w-[5px] after:shrink-0 after:rounded-full after:bg-border after:align-middle">
-      {recruiter.logo_url ? (
-        // eslint-disable-next-line @next/next/no-img-element -- decorative marquee logo, arbitrary aspect ratio
-        <img
-          src={recruiter.logo_url}
-          alt={recruiter.company_name}
-          className="h-8 w-auto object-contain grayscale"
-        />
+      {recruiter.website_url ? (
+        <a
+          href={recruiter.website_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center"
+        >
+          {content}
+        </a>
       ) : (
-        recruiter.company_name
+        content
       )}
     </span>
   );

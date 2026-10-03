@@ -50,7 +50,15 @@ export interface PlacedStudent {
   companyName: string;
   batchYear: string;
   photo: string | null;
-  /** colleges.slug — resolved to colleges.id on write */
+  /**
+   * colleges.slug — resolved to colleges.id on write. Required because
+   * placed_students.college_id is NOT NULL (every row needs an owning
+   * college for RLS/scoping), but the unified /placement page intentionally
+   * never surfaces which college a student came from — that distinction
+   * was deliberately dropped when the per-college pages were merged into
+   * one hub. Not a bug: keep the field for the write path, don't add UI
+   * to display it.
+   */
   collegeId: string;
 }
 
@@ -264,6 +272,18 @@ export async function getPlacementColleges(): Promise<CollegeOption[]> {
  * Persists the whole hub in one pass. Runs in the browser so the admin's
  * Supabase session supplies the `authenticated` role that RLS requires.
  * Throws on failure — callers surface the message rather than swallowing it.
+ *
+ * Note on the recruiters table specifically: it's also reachable directly
+ * at /admin/recruiters (a generic AdminCrudManager table editor exposing
+ * every column, including website_url, which this hub's recruiters tab
+ * does not). This is an intentional split, not duplication to merge —
+ * /admin/tnp-hub's "Recruiting Partners" tab is the quick logo-wall curator
+ * (name + logo, reordered by drag position) that most admins want, while
+ * /admin/recruiters is the full-schema fallback for fields the hub doesn't
+ * surface. Both write the same `recruiters` table; this RPC reads the full
+ * table and writes back the full array each save, so edits made via
+ * /admin/recruiters survive a later hub save (sort_order is the one field
+ * the hub save always overwrites, from array position).
  */
 export async function savePlacementContent(data: FullPlacementData): Promise<void> {
   const sb = createNextBrowserClient() as any;
