@@ -14,13 +14,9 @@ export async function generateMetadata({
   if (!department) {
     return { title: "Department not found", robots: { index: false } };
   }
-  const title = `${department.name} — SVIT Group`;
-  const description = `Programs, faculty, achievements and industry activities at the Department of ${department.name}.`;
   return {
-    title,
-    description,
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary_large_image" },
+    title: `${department.name} — SVIT Group`,
+    description: `Programs, faculty, achievements and industry activities at the Department of ${department.name}.`,
   };
 }
 

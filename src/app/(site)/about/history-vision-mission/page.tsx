@@ -6,6 +6,7 @@ import { getAboutPage } from "@/lib/pages.functions";
 export const metadata: Metadata = {
   title: "History, Vision & Mission — SVIT Vasad",
   description: "SVIT Vasad's history and milestones since 1997, our vision, mission and core values.",
+  alternates: { canonical: "/about/history-vision-mission" },
 };
 
 export default async function HistoryVisionMissionPage() {

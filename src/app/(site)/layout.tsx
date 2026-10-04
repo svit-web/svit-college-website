@@ -11,6 +11,8 @@ import { getVisibleCenters } from "@/lib/centers.functions";
 import { getMainNavigation, getTopUtilityNavigation } from "@/lib/menus.functions";
 import { getHeroAppearance } from "@/lib/theme.functions";
 import { DEFAULT_HERO_APPEARANCE, heroTextVars } from "@/lib/theme";
+import { organizationJsonLd } from "@/lib/seo";
+import { JsonLd } from "@/components/site-next/JsonLd";
 
 export default async function SiteLayout({
   children,
@@ -66,6 +68,15 @@ export default async function SiteLayout({
       />
       <main className="flex-1">{children}</main>
       <Footer contactInfo={contactInfo} misc={misc} logoUrl={logoUrl} />
+      <JsonLd
+        data={organizationJsonLd({
+          phone: contactInfo?.phone ?? null,
+          email: contactInfo?.email ?? null,
+          address: contactInfo?.address ?? null,
+          socialLinks: contactInfo?.social_links ?? {},
+          logoUrl,
+        })}
+      />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { getAboutPage } from "@/lib/pages.functions";
 export const metadata: Metadata = {
   title: "Chairman's Message — SVIT Vasad",
   description: "Message from the Chairman of SVIT Vasad.",
+  alternates: { canonical: "/about/chairman-message" },
 };
 
 export default async function ChairmanMessagePage() {

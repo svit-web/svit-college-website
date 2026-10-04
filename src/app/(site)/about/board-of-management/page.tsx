@@ -9,6 +9,7 @@ import type { BoardMember } from "@/lib/board-members.functions";
 export const metadata: Metadata = {
   title: "Board of Management — SVIT Vasad",
   description: "The trustees guiding SVIT Vasad's Board of Management.",
+  alternates: { canonical: "/about/board-of-management" },
 };
 
 function trusteeInitials(name: string): string {

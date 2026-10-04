@@ -6,6 +6,8 @@ import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const metadata: Metadata = {
   title: "Anti-Ragging — SVIT Vasad",
+  description: "SVIT Vasad maintains a strict anti-ragging policy in compliance with UGC regulations.",
+  alternates: { canonical: "/anti-ragging" },
 };
 
 export default async function AntiRagging() {

@@ -9,10 +9,6 @@ export const metadata: Metadata = {
   title: "About SVIT Vasad — Legacy, Vision, Leadership & Campus",
   description:
     "Established 1997 by NEST — SVIT Vasad's story, history, vision, leadership, accreditation, committees and campus facilities.",
-  openGraph: {
-    title: "About SVIT Vasad",
-    description: "Legacy, vision, mission and campus of SVIT Vasad.",
-  },
 };
 
 export default async function AboutLayout({ children }: { children: React.ReactNode }) {

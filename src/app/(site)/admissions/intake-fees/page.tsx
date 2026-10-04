@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: yr ? `Intake & Fees ${yr} — SVIT Vasad` : "Intake & Fees — SVIT Vasad",
     description:
       "Programme-wise annual intake and tuition fees per semester across all colleges at SVIT Vasad.",
+    alternates: { canonical: "/admissions/intake-fees" },
   };
 }
 

@@ -9,6 +9,7 @@ import { getDepartmentByCode } from "@/lib/departments.functions";
 import { getLabBySlug } from "@/lib/facilities.functions";
 import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { metaDescription } from "@/lib/seo";
 
 // Per-request dedupe between generateMetadata and the page.
 const loadLab = cache(async (deptCode: string, slug: string) => {
@@ -30,7 +31,8 @@ export async function generateMetadata({
   if (!result) return { title: "Lab — SVIT Vasad", robots: { index: false } };
   return {
     title: `${result.lab.name} — Labs — SVIT Vasad`,
-    description: result.lab.description?.slice(0, 155) ?? undefined,
+    description: metaDescription(result.lab.description),
+    alternates: { canonical: `/departments/${result.department.code}/labs/${result.lab.slug}` },
   };
 }
 

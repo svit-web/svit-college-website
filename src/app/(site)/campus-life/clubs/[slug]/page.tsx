@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { EventsNewsSlider, type EventSlide } from "@/components/site-next/EventsNewsSlider";
 import { getStudentClubBySlug, getClubEvents } from "@/lib/clubs.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { metaDescription } from "@/lib/seo";
 
 async function loadClub(slug: string) {
   const item = await getStudentClubBySlug(slug);
@@ -27,7 +28,8 @@ export async function generateMetadata({
   if (!result?.item) return { title: "Club — SVIT Vasad", robots: { index: false } };
   return {
     title: `${result.item.name} — Clubs — SVIT Vasad`,
-    description: (result.item.description || "").slice(0, 155),
+    description: metaDescription(result.item.description),
+    alternates: { canonical: `/campus-life/clubs/${result.item.slug}` },
   };
 }
 

@@ -12,11 +12,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const label = misc?.colleges_label ?? "Colleges";
   return {
     title: `Our ${label} — SVIT Group`,
-    description: "Explore the four constituent colleges of the SVIT Group — SVIT, SVICA, SVION, and SVIT COA.",
-    openGraph: {
-      title: `Our ${label} — SVIT Group`,
-      description: "Explore the four constituent colleges of the SVIT Group.",
-    },
+    description: `Explore the constituent ${label.toLowerCase()} of the SVIT Group on its 15-acre campus in Vasad, Gujarat.`,
+    alternates: { canonical: "/colleges" },
   };
 }
 

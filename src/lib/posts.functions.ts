@@ -3,6 +3,7 @@
 // itself something to attend" — kept separate from Events. Mirrors
 // events.functions.ts's conventions.
 import { publicSupabase } from '@/lib/supabase-public';
+import { SEO_OVERRIDE_SELECT, type SeoOverride } from '@/lib/seo';
 
 export interface Post {
   id: string;
@@ -20,7 +21,7 @@ export interface Post {
   college: { name: string; slug: string } | null;
   department: { name: string; slug: string } | null;
   metadata: Record<string, any>;
-  seo: { meta_title: string | null; meta_description: string | null; og_title: string | null; og_description: string | null; og_image_url: string | null } | null;
+  seo: SeoOverride | null;
   created_at: string;
   updated_at: string;
 }
@@ -30,7 +31,7 @@ const POST_SELECT = [
   'scope_type, published_at, expires_at, metadata, created_at, updated_at',
   'category:content_categories(name, slug)',
   'college:colleges(name, slug), department:departments(name, slug)',
-  'seo:seo_metadata(meta_title, meta_description, og_title, og_description, og_image_url)',
+  SEO_OVERRIDE_SELECT,
 ].join(', ');
 
 /**

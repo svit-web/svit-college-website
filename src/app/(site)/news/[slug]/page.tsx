@@ -7,6 +7,8 @@ import { formatDate } from "@/components/site-next/DepartmentSections";
 import { getPostBySlug } from "@/lib/posts.functions";
 import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { metaDescription, newsArticleJsonLd, parseRobots, siteOpenGraph } from "@/lib/seo";
+import { JsonLd } from "@/components/site-next/JsonLd";
 
 // Per-request dedupe between generateMetadata and the page.
 const loadPost = cache(async (slug: string) => {
@@ -24,14 +26,24 @@ export async function generateMetadata({
   const { slug } = await params;
   const loaded = await loadPost(slug);
   if (!loaded) return { title: "News not found — SVIT Vasad", robots: { index: false } };
-  const seo = loaded.post.seo;
+  const { post } = loaded;
+  const seo = post.seo;
+  const description = seo?.meta_description || metaDescription(post.summary ?? post.content);
+  const image = seo?.og_image_url || post.card_photo_url;
+  const base = await siteOpenGraph();
   return {
-    title: seo?.meta_title || `${loaded.post.title} — News — SVIT Vasad`,
-    description: seo?.meta_description || loaded.post.summary?.slice(0, 155) || undefined,
+    title: seo?.meta_title || `${post.title} — News — SVIT Vasad`,
+    description,
+    alternates: { canonical: seo?.canonical_url || `/news/${post.slug}` },
+    robots: parseRobots(seo?.robots_directives),
     openGraph: {
-      title: seo?.og_title || seo?.meta_title || loaded.post.title,
-      description: seo?.og_description || seo?.meta_description || loaded.post.summary || undefined,
-      images: seo?.og_image_url ? [seo.og_image_url] : undefined,
+      ...base,
+      type: "article",
+      title: seo?.og_title || seo?.meta_title || post.title,
+      description: seo?.og_description || description,
+      ...(image && { images: [image] }),
+      ...(post.published_at && { publishedTime: post.published_at }),
+      modifiedTime: post.updated_at,
     },
   };
 }
@@ -49,6 +61,16 @@ export default async function NewsDetailPage({
 
   return (
     <div className="bg-paper">
+      <JsonLd
+        data={newsArticleJsonLd({
+          title: post.title,
+          url: `/news/${post.slug}`,
+          description: metaDescription(post.summary ?? post.content),
+          image: post.card_photo_url,
+          publishedAt: post.published_at,
+          updatedAt: post.updated_at,
+        })}
+      />
       <nav
         aria-label="Breadcrumb"
         className="container-page flex flex-wrap items-center gap-1.5 pb-6 pt-[clamp(112px,16vh,180px)] text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"

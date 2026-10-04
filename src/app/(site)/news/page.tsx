@@ -7,6 +7,8 @@ import type { EntryCardData } from "@/lib/entry";
 
 export const metadata: Metadata = {
   title: "News — SVIT Vasad",
+  description: "Latest news and announcements from SVIT Vasad and its colleges.",
+  alternates: { canonical: "/news" },
 };
 
 function toNewsCard(post: Post): EntryCardData {

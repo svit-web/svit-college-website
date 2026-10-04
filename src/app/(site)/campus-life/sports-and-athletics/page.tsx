@@ -7,6 +7,7 @@ import { SportsSection } from "@/components/site-next/SportsSection";
 export const metadata: Metadata = {
   title: "Sports & Athletics — Campus Life — SVIT Vasad",
   description: "Sports disciplines, grounds and courts at SVIT Vasad.",
+  alternates: { canonical: "/campus-life/sports-and-athletics" },
 };
 
 export default async function SportsAndAthleticsPage() {

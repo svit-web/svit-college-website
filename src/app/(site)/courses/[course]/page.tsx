@@ -8,6 +8,7 @@ import { getAllRecruiters, type Recruiter } from "@/lib/placement.functions";
 import { DEFAULT_MISC, getMiscSettings } from "@/lib/site-settings.functions";
 import { pillPrimary } from "@/components/site-next/site-styles";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
+import { metaDescription } from "@/lib/seo";
 
 async function loadCourse(slug: string) {
   const programme = await getProgrammeBySlug(slug);
@@ -33,7 +34,9 @@ export async function generateMetadata({
   if (!result) return { title: "Course — SVIT Vasad" };
   return {
     title: `${result.course.name} — SVIT Vasad`,
-    description: result.course.description ?? "Course details",
+    description:
+      metaDescription(result.course.description) ?? `${result.course.name} at SVIT Vasad.`,
+    alternates: { canonical: `/courses/${result.course.code}` },
   };
 }
 

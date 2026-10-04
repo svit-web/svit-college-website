@@ -23,7 +23,11 @@ export async function generateMetadata({
   const { slug } = await params;
   const result = await loadClubEvents(slug);
   if (!result) return { title: "Club Events — SVIT Vasad", robots: { index: false } };
-  return { title: `${result.club.name} — Events — SVIT Vasad` };
+  return {
+    title: `${result.club.name} — Events — SVIT Vasad`,
+    description: `Events organised by ${result.club.name} at SVIT Vasad.`,
+    alternates: { canonical: `/campus-life/clubs/${result.club.slug}/events` },
+  };
 }
 
 export default async function ClubEventsPage({ params }: { params: Promise<{ slug: string }> }) {

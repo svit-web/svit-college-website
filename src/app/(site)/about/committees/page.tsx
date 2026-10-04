@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "SVIT Committees — SVIT Vasad",
   description:
     "Governance committees at SVIT Vasad: Women Development Cell, Grievance Redressal, IQAC and more.",
+  alternates: { canonical: "/about/committees" },
 };
 
 export default async function CommitteesPage() {

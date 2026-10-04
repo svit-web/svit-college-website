@@ -9,6 +9,7 @@ import type { EntryCardData } from "@/lib/entry";
 export const metadata: Metadata = {
   title: "Events — SVIT Vasad",
   description: "TEDx, Prakarsh, Spandan, Malhar and other flagship events at SVIT Vasad.",
+  alternates: { canonical: "/campus-life/events" },
 };
 
 function categoriesFor(event: CampusEvent): EventCategory[] {

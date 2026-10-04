@@ -9,6 +9,7 @@ import type { MOU } from "@/lib/mous.functions";
 export const metadata: Metadata = {
   title: "Accreditation & Compliance — SVIT Vasad",
   description: "SVIT Vasad's accreditations, approvals, academic regulations, mandatory disclosures and industry MOUs.",
+  alternates: { canonical: "/about/accreditation" },
 };
 
 export default async function AccreditationPage() {

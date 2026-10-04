@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DeptAboutView } from "@/components/site-next/DepartmentSections";
 import { getDepartmentByCode, getCoursesByDepartmentId } from "@/lib/departments.functions";
+import { metaDescription } from "@/lib/seo";
 
 export async function generateMetadata({
   params,
@@ -14,8 +15,9 @@ export async function generateMetadata({
   return {
     title: `Department of ${department.name} — SVIT Vasad`,
     description:
-      department.about ??
+      metaDescription(department.about) ??
       `Programs, faculty, achievements and industry engagement at the Department of ${department.name}, SVIT Vasad.`,
+    alternates: { canonical: `/departments/${department.code}` },
   };
 }
 

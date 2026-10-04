@@ -9,6 +9,7 @@ import {
   achievementCategoryLabel,
   getAchievementDetailBySlug,
 } from "@/lib/achievements.functions";
+import { metaDescription } from "@/lib/seo";
 
 // Per-request dedupe between generateMetadata and the page.
 const loadAchievement = cache((slug: string) =>
@@ -25,7 +26,8 @@ export async function generateMetadata({
   if (!item) return { title: "Achievement not found — SVIT Vasad", robots: { index: false } };
   return {
     title: `${item.title} — Achievements — SVIT Vasad`,
-    description: item.description?.slice(0, 155) ?? undefined,
+    description: metaDescription(item.description),
+    alternates: { canonical: `/achievements/${item.slug}` },
   };
 }
 

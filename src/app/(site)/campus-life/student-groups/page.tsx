@@ -10,6 +10,7 @@ import { getVisibleCenters } from "@/lib/centers.functions";
 export const metadata: Metadata = {
   title: "Student Groups — Campus Life — SVIT Vasad",
   description: "Student clubs, societies and centres at SVIT Vasad.",
+  alternates: { canonical: "/campus-life/student-groups" },
 };
 
 export default async function StudentGroupsIndex() {

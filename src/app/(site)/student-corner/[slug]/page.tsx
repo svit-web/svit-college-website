@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getVisibleCenters, getCenterBySlug } from "@/lib/centers.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { metaDescription } from "@/lib/seo";
 
 async function loadCentre(slug: string) {
   const [item, allCenters] = await Promise.all([getCenterBySlug(slug), getVisibleCenters()]);
@@ -25,7 +26,8 @@ export async function generateMetadata({
   if (!result) return { title: "Societies — SVIT Vasad", robots: { index: false } };
   return {
     title: `${result.item.name} — Societies — SVIT Vasad`,
-    description: (result.item.description || "").slice(0, 155),
+    description: metaDescription(result.item.description),
+    alternates: { canonical: `/student-corner/${result.item.slug}` },
   };
 }
 

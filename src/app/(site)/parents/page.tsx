@@ -8,6 +8,8 @@ import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const metadata: Metadata = {
   title: "For Parents — SVIT Vasad",
+  description: "How SVIT Vasad keeps parents informed and involved in their child's growth.",
+  alternates: { canonical: "/parents" },
 };
 
 export default async function Parents() {

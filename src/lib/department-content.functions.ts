@@ -168,7 +168,7 @@ export type DeptActivityType =
   | 'sttp'
   | 'fdp';
 
-const ACTIVITY_EVENT_TYPES: DeptActivityType[] = [
+export const ACTIVITY_EVENT_TYPES: DeptActivityType[] = [
   'expert_session',
   'industrial_visit',
   'seminar',

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -37,11 +38,12 @@ import {
 } from "@/lib/homepage.functions";
 import { getFeaturedPosts } from "@/lib/posts.functions";
 import { getHeroAppearance, DEFAULT_HERO_APPEARANCE } from "@/lib/theme.functions";
-import { getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
+import { DEFAULT_MISC, getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
 import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
 import { getHomePopup } from "@/lib/home-popup.functions";
 import { HomePopup } from "@/components/site-next/HomePopup";
 import { sectionSpacing } from "@/components/site-next/site-styles";
+import { siteOpenGraph } from "@/lib/seo";
 
 const iconMap: Record<string, LucideIcon> = {
   BadgeCheck,
@@ -54,6 +56,20 @@ const iconMap: Record<string, LucideIcon> = {
   Trees,
   ShieldCheck,
 };
+
+// Title/description come from the root layout; the home page adds the
+// admin-set social description (Settings → OG / Social Description).
+export async function generateMetadata(): Promise<Metadata> {
+  const misc = await getMiscSettings().catch(() => DEFAULT_MISC);
+  return {
+    alternates: { canonical: "/" },
+    openGraph: {
+      ...(await siteOpenGraph(misc)),
+      url: "/",
+      ...(misc.og_description && { description: misc.og_description }),
+    },
+  };
+}
 
 export default async function Home() {
   const [items, colleges, recruiters, events, posts, appearance, misc, liveStats, popup] =

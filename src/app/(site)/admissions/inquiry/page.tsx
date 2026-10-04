@@ -10,6 +10,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "Admission Inquiry — SVIT Vasad",
     description: yr ? `Submit an admission enquiry for ${yr} at SVIT Vasad.` : "Submit an admission enquiry at SVIT Vasad.",
+    alternates: { canonical: "/admissions/inquiry" },
   };
 }
 

@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Our Courses — SVIT Vasad",
   description: "Explore engineering, MBA, MCA, BBA, B.Sc, architecture and diploma programmes at SVIT Vasad.",
+  alternates: { canonical: "/courses" },
 };
 
 export default async function CoursesIndex() {

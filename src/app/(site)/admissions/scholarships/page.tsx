@@ -10,6 +10,7 @@ import { GraduationCap, Heart, Building2, Trophy, HelpCircle } from "lucide-reac
 export const metadata: Metadata = {
   title: "Scholarships — SVIT Vasad",
   description: "Merit, need-based, government and sports scholarships available at SVIT Vasad.",
+  alternates: { canonical: "/admissions/scholarships" },
 };
 
 const TYPE_META: Record<string, { label: string; icon: typeof GraduationCap; color: string }> = {

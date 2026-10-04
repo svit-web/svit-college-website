@@ -8,6 +8,8 @@ import { Briefcase, MapPin } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Careers at SVIT Vasad",
+  description: "Teach, research and grow at SVIT Vasad — current openings and how to apply.",
+  alternates: { canonical: "/careers" },
 };
 
 export default async function Careers() {

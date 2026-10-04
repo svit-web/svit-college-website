@@ -16,6 +16,7 @@ export async function generateMetadata({
   return {
     title: `Labs & Facilities — Department of ${department.name} — SVIT Vasad`,
     description: `Laboratories and facilities in the Department of ${department.name} at SVIT Vasad.`,
+    alternates: { canonical: `/departments/${department.code}/labs` },
   };
 }
 

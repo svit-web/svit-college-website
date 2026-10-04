@@ -5,6 +5,8 @@ import { getMiscSettings } from "@/lib/site-settings.functions";
 
 export const metadata: Metadata = {
   title: "Student Login — SVIT Vasad",
+  robots: { index: false, follow: true },
+  alternates: { canonical: "/student-login" },
 };
 
 export default async function StudentLogin() {

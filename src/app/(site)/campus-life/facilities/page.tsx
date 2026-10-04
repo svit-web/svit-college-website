@@ -9,6 +9,7 @@ import type { EntryCardData } from "@/lib/entry";
 export const metadata: Metadata = {
   title: "Facilities — Campus Life — SVIT Vasad",
   description: "Academic and sports facilities across the SVIT Vasad campus.",
+  alternates: { canonical: "/campus-life/facilities" },
 };
 
 function pathFor(category: "academic" | "amenities", slug: string) {

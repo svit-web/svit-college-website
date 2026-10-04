@@ -4,6 +4,8 @@ import { GrievanceForm } from "@/components/site-next/GrievanceForm";
 
 export const metadata: Metadata = {
   title: "Grievance Redressal — SVIT Vasad",
+  description: "Raise your concerns confidentially with SVIT Vasad's grievance committee, which reviews every submission.",
+  alternates: { canonical: "/grievance" },
 };
 
 export default function Grievance() {

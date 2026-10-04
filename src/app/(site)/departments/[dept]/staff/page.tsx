@@ -15,6 +15,7 @@ export async function generateMetadata({
   return {
     title: `Faculty — Department of ${department.name} — SVIT Vasad`,
     description: `Meet the faculty of the Department of ${department.name} at SVIT Vasad.`,
+    alternates: { canonical: `/departments/${department.code}/staff` },
   };
 }
 

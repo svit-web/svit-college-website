@@ -18,6 +18,7 @@ export async function generateMetadata({
   return {
     title: `Achievements & Clubs — Department of ${department.name} — SVIT Vasad`,
     description: `Student achievements and clubs from the Department of ${department.name} at SVIT Vasad.`,
+    alternates: { canonical: `/departments/${department.code}/achievements` },
   };
 }
 

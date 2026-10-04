@@ -10,6 +10,8 @@ import {
 import { getHeroAppearance } from "@/lib/theme.functions";
 import { DEFAULT_HERO_APPEARANCE } from "@/lib/theme";
 import { DEFAULT_MISC, getMiscSettings } from "@/lib/site-settings.functions";
+import { ORGANIZATION_ID, SITE_URL, absoluteUrl, metaDescription } from "@/lib/seo";
+import { JsonLd } from "@/components/site-next/JsonLd";
 
 type HomepageItems = Awaited<ReturnType<typeof getGlobalHomepageItems>>;
 
@@ -82,12 +84,10 @@ export async function generateMetadata({
   }
   const { college } = result;
   const title = `${college.name} (${college.shortCode}) — SVIT Group`;
-  const description = `${college.shortCode} — ${college.tagline}. ${college.hero.subhead}`;
   return {
     title,
-    description,
-    openGraph: { title, description, type: "website" },
-    twitter: { card: "summary_large_image" },
+    description: metaDescription(`${college.shortCode} — ${college.tagline}. ${college.hero.subhead}`),
+    alternates: { canonical: `/colleges/${slug}` },
   };
 }
 
@@ -96,5 +96,22 @@ export default async function CollegePage({ params }: { params: Promise<{ colleg
   const result = await loadCollege(slug);
   if (!result) notFound();
 
-  return <CollegeLandingPage college={result.college} appearance={result.appearance} ctaLabel={result.ctaLabel} />;
+  const { college } = result;
+  return (
+    <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "CollegeOrUniversity",
+          name: college.name,
+          alternateName: college.shortCode,
+          url: `${SITE_URL}/colleges/${slug}`,
+          ...(college.logo && { logo: absoluteUrl(college.logo) }),
+          description: metaDescription(`${college.tagline}. ${college.hero.subhead}`),
+          parentOrganization: { "@id": ORGANIZATION_ID },
+        }}
+      />
+      <CollegeLandingPage college={college} appearance={result.appearance} ctaLabel={result.ctaLabel} />
+    </>
+  );
 }

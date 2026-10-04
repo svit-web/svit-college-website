@@ -11,6 +11,7 @@ import { Images } from "lucide-react";
 export const metadata: Metadata = {
   title: "Gallery — SVIT Vasad",
   description: "Photo gallery of SVIT Vasad campus, events, and student work.",
+  alternates: { canonical: "/gallery" },
 };
 
 export default async function GalleryIndex() {

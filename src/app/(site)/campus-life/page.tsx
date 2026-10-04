@@ -11,6 +11,7 @@ import { getVisibleCenters } from "@/lib/centers.functions";
 export const metadata: Metadata = {
   title: "Campus Life Overview — SVIT Vasad",
   description: "An overview of facilities, clubs and flagship events at SVIT Vasad.",
+  alternates: { canonical: "/campus-life" },
 };
 
 export default async function CampusLifeOverview() {

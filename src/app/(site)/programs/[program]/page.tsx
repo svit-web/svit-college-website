@@ -18,8 +18,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { program } = await params;
   const course = await getCourseWithDept(program).catch(() => null);
-  if (!course) return { title: "Program" };
-  return { title: `${course.name} — SVIT Group` };
+  if (!course) return { title: "Program", robots: { index: false } };
+  const level = course.degree_level ? DEGREE_LABEL[course.degree_level] : null;
+  return {
+    title: `${course.name} — SVIT Group`,
+    description: [
+      `${course.name}${level ? ` — ${level}` : ""}`,
+      course.dept ? ` offered by the Department of ${course.dept.name}` : "",
+      " at SVIT Vasad.",
+    ].join(""),
+    alternates: { canonical: `/programs/${course.id}` },
+  };
 }
 
 export default async function ProgramPage({

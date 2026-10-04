@@ -6,6 +6,8 @@ import { Download, FileText } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Downloads — SVIT Vasad",
+  description: "Prospectus, forms, fee structure and other important documents from SVIT Vasad.",
+  alternates: { canonical: "/downloads" },
 };
 
 export default async function Downloads() {

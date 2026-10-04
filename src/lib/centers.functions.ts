@@ -48,7 +48,7 @@ export async function getAllCenters() {
 
 // Centers with their own top-level nav entry/page are excluded from the
 // generic Student Groups listings so they aren't shown in two places.
-const CENTERS_WITH_OWN_PAGE = new Set(["coe", "nss-ncc"]);
+export const CENTERS_WITH_OWN_PAGE = new Set(["coe", "nss-ncc"]);
 
 /**
  * Fetch published centers meant for the generic Student Groups listings

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Mail, ExternalLink, Linkedin, BookOpen, ChevronDown, ChevronRight } from "lucide-react";
 import { getStaffByEmployeeCode } from "@/lib/staff.functions";
+import { metaDescription } from "@/lib/seo";
 
 function initials(name: string) {
   const clean = name.replace(/^(dr\.?|mr\.?|mrs\.?|ms\.?)\s+/i, "").trim();
@@ -40,8 +41,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { staff } = await params;
   const profile = await getStaffByEmployeeCode(staff).catch(() => null);
-  if (!profile) return { title: "Staff profile not found" };
-  return { title: `${profile.name} — SVIT Vasad` };
+  if (!profile) return { title: "Staff profile not found", robots: { index: false } };
+  const role = [profile.designation, profile.department?.name].filter(Boolean).join(", ");
+  return {
+    title: `${profile.name} — SVIT Vasad`,
+    description:
+      metaDescription(profile.bio) ?? `${profile.name}${role ? `, ${role}` : ""} at SVIT Vasad.`,
+    alternates: { canonical: `/staff/${encodeURIComponent(profile.employeeCode)}` },
+  };
 }
 
 export default async function StaffProfilePage({ params }: { params: Promise<{ staff: string }> }) {

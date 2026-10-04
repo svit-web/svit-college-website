@@ -5,6 +5,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getCenterBySlug } from "@/lib/centers.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { metaDescription } from "@/lib/seo";
 
 // NSS/NCC has its own dedicated top-level route (not reached via a Card), so
 // it always renders regardless of has_detail_page.
@@ -20,7 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!result) return { title: "NSS / NCC — SVIT Vasad", robots: { index: false } };
   return {
     title: `${result.center.name} — Campus Life — SVIT Vasad`,
-    description: (result.center.description || "").slice(0, 155),
+    description: metaDescription(result.center.description),
+    alternates: { canonical: "/campus-life/nss-ncc" },
   };
 }
 

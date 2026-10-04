@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Training & Placement Cell — SVIT Group of Institutions",
   description:
     "Placement outcomes, recruiting partners, year-on-year trends, and student achievements across SVIT engineering, architecture, computer applications, and nursing.",
+  alternates: { canonical: "/placement" },
 };
 
 export default async function PlacementIndexPage() {

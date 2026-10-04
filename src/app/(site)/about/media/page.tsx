@@ -19,6 +19,7 @@ export const metadata: Metadata = {
   title: "SVIT Media — SVIT Vasad",
   description:
     "SVIT Vasad in the news, our publications, campus gallery and social media channels.",
+  alternates: { canonical: "/about/media" },
 };
 
 export default async function MediaPage() {

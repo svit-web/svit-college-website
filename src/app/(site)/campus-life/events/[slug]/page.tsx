@@ -1,3 +1,4 @@
+import { cache } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,13 +9,16 @@ import { Reveal } from "@/components/site-next/Reveal";
 import { getEventBySlug } from "@/lib/events.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 import { eventTypeLabel, formatEventDates } from "@/lib/event-types";
+import { eventJsonLd, metaDescription, parseRobots, siteOpenGraph } from "@/lib/seo";
+import { JsonLd } from "@/components/site-next/JsonLd";
 
-async function loadEvent(slug: string) {
+// Per-request dedupe between generateMetadata and the page.
+const loadEvent = cache(async (slug: string) => {
   const event = await getEventBySlug(slug);
   if (!event || !event.has_detail_page) return null;
   const album = await getEntryAlbum(event.album_id);
   return { event, album };
-}
+});
 
 export async function generateMetadata({
   params,
@@ -24,14 +28,21 @@ export async function generateMetadata({
   const { slug } = await params;
   const result = await loadEvent(slug);
   if (!result) return { title: "Event — SVIT Vasad", robots: { index: false } };
-  const seo = result.event.seo;
+  const { event } = result;
+  const seo = event.seo;
+  const description = seo?.meta_description || metaDescription(event.description);
+  const image = seo?.og_image_url || event.card_photo_url;
+  const base = await siteOpenGraph();
   return {
-    title: seo?.meta_title || `${result.event.title} — Events — SVIT Vasad`,
-    description: seo?.meta_description || result.event.description?.slice(0, 155) || undefined,
+    title: seo?.meta_title || `${event.title} — Events — SVIT Vasad`,
+    description,
+    alternates: { canonical: seo?.canonical_url || `/campus-life/events/${event.slug}` },
+    robots: parseRobots(seo?.robots_directives),
     openGraph: {
-      title: seo?.og_title || seo?.meta_title || result.event.title,
-      description: seo?.og_description || seo?.meta_description || result.event.description || undefined,
-      images: seo?.og_image_url ? [seo.og_image_url] : undefined,
+      ...base,
+      title: seo?.og_title || seo?.meta_title || event.title,
+      description: seo?.og_description || description,
+      ...(image && { images: [image] }),
     },
   };
 }
@@ -47,6 +58,19 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
 
   return (
     <div>
+      {event.start_date && (
+        <JsonLd
+          data={eventJsonLd({
+            title: event.title,
+            url: `/campus-life/events/${event.slug}`,
+            startDate: event.start_date,
+            endDate: event.end_date,
+            description: metaDescription(event.description),
+            image: event.card_photo_url,
+            location: event.location,
+          })}
+        />
+      )}
       <Link
         href="/campus-life/events"
         className="mb-6 inline-flex items-center gap-2 py-1.5 text-sm font-semibold text-ink-soft hover:text-crimson"

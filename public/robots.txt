@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://svitvasad.ac.in/sitemap.xml

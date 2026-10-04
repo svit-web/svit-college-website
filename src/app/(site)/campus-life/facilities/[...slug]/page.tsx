@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getFacilityBySlug } from "@/lib/facilities.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { metaDescription } from "@/lib/seo";
 
 // Per-request dedupe between generateMetadata and the page. Handles both
 // /academic/slug and /co-curriculum/slug — the real slug is always the last
@@ -28,7 +29,8 @@ export async function generateMetadata({
   if (!result) return { title: "Facility — SVIT Vasad", robots: { index: false } };
   return {
     title: `${result.facility.name} — Facilities — SVIT Vasad`,
-    description: result.facility.description?.slice(0, 155) ?? undefined,
+    description: metaDescription(result.facility.description),
+    alternates: { canonical: `/campus-life/facilities/${result.facility.category}/${result.facility.slug}` },
   };
 }
 
