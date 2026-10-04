@@ -75,7 +75,9 @@ const NAV_GROUPS: NavGroup[] = [
     icon: Globe,
     items: [
       { label: 'Homepage Layout', to: '/admin/homepage' },
-      { label: 'Pages & Content', to: '/admin/tables/pages' },
+      { label: 'About Page', to: '/admin/page-editors/about' },
+      { label: 'Admissions Page', to: '/admin/page-editors/admissions' },
+      { label: 'Alumni Page', to: '/admin/page-editors/alumni' },
       { label: 'Menus / Nav', to: '/admin/menus' },
       { label: 'Menu Items', to: '/admin/tables/menu_items' },
       { label: 'News', to: '/admin/posts' },

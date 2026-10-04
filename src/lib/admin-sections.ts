@@ -10,6 +10,7 @@
 export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/homepage",
   "/admin/tables/pages",
+  "/admin/page-editors",
   "/admin/menus",
   "/admin/tables/menu_items",
   "/admin/posts",

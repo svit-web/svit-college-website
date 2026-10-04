@@ -37,6 +37,15 @@ function isLongText(value: string): boolean {
   return value.length > 80 || value.includes("\n");
 }
 
+// Optional titled sections for the top level of the form view (used by the
+// dedicated pages-singleton editors, where each metadata key is a section of
+// the public page rather than an "additional" field).
+export interface MetadataEditorGroup {
+  title: string;
+  description?: string;
+  keys: string[];
+}
+
 // A blank value shaped like `sample` (object → object of blanks, else "").
 function blankLike(sample: JsonValue): JsonValue {
   if (isJsonObject(sample)) {
@@ -312,9 +321,13 @@ function ValueEditor({
 export function MetadataEditor({
   value,
   onChange,
+  defaultOpen = false,
+  groups,
 }: {
   value: JsonValue;
   onChange: (next: JsonValue) => void;
+  defaultOpen?: boolean;
+  groups?: MetadataEditorGroup[];
 }) {
   // `value` is an object, except while the user is mid-edit in the JSON view
   // with unparseable text — then it's that raw string, kept so the draft
@@ -328,7 +341,7 @@ export function MetadataEditor({
       ? value
       : {};
 
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [mode, setMode] = useState<"form" | "json">(
     parsedFromString && !parsedFromString.ok ? "json" : "form",
   );
@@ -338,6 +351,31 @@ export function MetadataEditor({
   const [parseError, setParseError] = useState<string | null>(null);
 
   const keyCount = Object.keys(objectValue).length;
+
+  // Renders one titled section for a subset of keys. Removing a key inside
+  // the subset must remove it from the whole object, so the merge deletes
+  // every key of the subset before re-adding what the section now holds.
+  const renderSection = (title: string, description: string | undefined, keys: string[]) => {
+    const subset: JsonObject = {};
+    for (const key of keys) if (key in objectValue) subset[key] = objectValue[key];
+    const mergeSection = (next: JsonObject) => {
+      const merged: JsonObject = {};
+      for (const [k, v] of Object.entries(objectValue)) if (!keys.includes(k)) merged[k] = v;
+      onChange({ ...merged, ...next });
+    };
+    return (
+      <section key={title} className="space-y-2.5 rounded border border-slate-200 bg-white p-3">
+        <div>
+          <h4 className="text-xs font-bold uppercase tracking-wider text-navy">{title}</h4>
+          {description && <p className="mt-0.5 text-[11px] text-slate-500">{description}</p>}
+        </div>
+        <ObjectEditor value={subset} onChange={mergeSection} depth={0} />
+      </section>
+    );
+  };
+
+  const groupedKeys = new Set((groups ?? []).flatMap((g) => g.keys));
+  const ungroupedKeys = Object.keys(objectValue).filter((k) => !groupedKeys.has(k));
 
   const handleRawChange = (text: string) => {
     setRawText(text);
@@ -415,7 +453,15 @@ export function MetadataEditor({
           </div>
 
           {mode === "form" ? (
-            <ObjectEditor value={objectValue} onChange={onChange} depth={0} />
+            groups && groups.length > 0 ? (
+              <div className="space-y-3">
+                {groups.map((g) => renderSection(g.title, g.description, g.keys))}
+                {ungroupedKeys.length > 0 &&
+                  renderSection("Other Fields", undefined, ungroupedKeys)}
+              </div>
+            ) : (
+              <ObjectEditor value={objectValue} onChange={onChange} depth={0} />
+            )
           ) : (
             <div className="space-y-1">
               <textarea

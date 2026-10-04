@@ -10,6 +10,7 @@ import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
 import { EVENT_TYPE_LABELS } from '@/lib/event-types';
+import { validateAboutPageMetadata } from '@/lib/page-metadata-validation';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import {
   useReactTable,
@@ -189,32 +190,9 @@ interface AdminCrudManagerProps {
 }
 
 // The `pages` row with slug "about" is the only consumer of the AboutPageData
-// shape (see src/lib/pages.functions.ts); it's hand-edited here as raw JSON
-// with no form, so a typo or a renamed key silently drops content from the
-// public About page instead of failing loudly. This checks the top-level
-// shape (and the couple of sub-shapes that have previously gone stale, like
-// leadership.principal/chairman) before the save round-trips to Supabase.
-function validateAboutPageMetadata(value: any): string | null {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    return 'metadata must be a JSON object';
-  }
-  const requiredObjectKeys = ['hero', 'history', 'vision', 'mission', 'leadership', 'accreditation', 'facilities', 'media', 'contact'];
-  for (const key of requiredObjectKeys) {
-    if (typeof value[key] !== 'object' || value[key] === null || Array.isArray(value[key])) {
-      return `metadata.${key} must be an object`;
-    }
-  }
-  if (!Array.isArray(value.quickFacts)) return 'metadata.quickFacts must be an array';
-  if (!Array.isArray(value.coreValues)) return 'metadata.coreValues must be an array';
-  const leadership = value.leadership;
-  for (const person of ['chairman', 'principal']) {
-    const entry = leadership?.[person];
-    if (typeof entry !== 'object' || entry === null || Array.isArray(entry)) {
-      return `metadata.leadership.${person} must be a single object, not an array`;
-    }
-  }
-  return null;
-}
+// shape (see src/lib/pages.functions.ts). Its shape check lives in
+// src/lib/page-metadata-validation.ts, shared with the dedicated About page
+// editor (/admin/page-editors/about) so both save paths validate identically.
 
 export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManagerProps) {
   const supabase = useMemo(() => createClient(), []);
