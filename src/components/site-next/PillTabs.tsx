@@ -31,7 +31,7 @@ export function PillTabs({ items, ariaLabel }: { items: PillTabItem[]; ariaLabel
             className={cn(
               "inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors active:scale-[0.98]",
               active
-                ? "border-ink bg-ink text-cream"
+                ? "border-ink bg-ink text-paper"
                 : "border-line-strong text-ink hover:border-ink",
             )}
           >

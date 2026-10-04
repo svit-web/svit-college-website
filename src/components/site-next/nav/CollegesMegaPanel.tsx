@@ -42,7 +42,7 @@ export function CollegesMegaPanel({
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "group flex items-center gap-3 px-3 py-2.5 transition-colors",
-                  isActive ? "bg-paper-deep text-crimson" : "text-navy hover:bg-paper-deep/60",
+                  isActive ? "bg-paper-deep text-crimson" : "text-navy hover:bg-paper-deep",
                 )}
               >
                 <CollegeLogo

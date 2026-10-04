@@ -16,7 +16,7 @@ export function MobileUtilityBar({
   instituteName?: string | null;
 }) {
   return (
-    <div className="flex h-16 items-center justify-between border-b border-line bg-cream px-4 lg:hidden">
+    <div className="flex h-16 items-center justify-between border-b border-line bg-paper px-4 lg:hidden">
       <Logo logoUrl={logoUrl} instituteName={instituteName} />
       <div className="flex items-center gap-1">
         <SiteSearch

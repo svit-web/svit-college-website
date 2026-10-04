@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 const TYPE_META: Record<string, { label: string; icon: typeof GraduationCap; color: string }> = {
-  merit:  { label: "Merit",       icon: GraduationCap, color: "text-navy bg-gold-soft border-gold/40" },
+  merit:  { label: "Merit",       icon: GraduationCap, color: "text-navy bg-paper-deep border-gold/40" },
   need:   { label: "Need-Based",  icon: Heart,         color: "text-crimson bg-crimson/10 border-crimson/20" },
   govt:   { label: "Government",  icon: Building2,     color: "text-navy bg-paper-deep border-navy/20" },
   sports: { label: "Sports",      icon: Trophy,        color: "text-navy bg-paper-deep border-line-strong" },
@@ -104,7 +104,7 @@ export default async function ScholarshipsPage() {
         )}
       </section>
 
-      <section className="mt-8 border-t border-line bg-gold-soft py-[clamp(56px,8vw,96px)]">
+      <section className="mt-8 border-t border-line bg-paper-deep py-[clamp(56px,8vw,96px)]">
         <div className="container-page text-center max-w-2xl">
           <h2 className="font-display text-2xl font-medium text-navy md:text-3xl">Need Help Applying for a Scholarship?</h2>
           <p className="mt-3 text-sm text-ink-soft md:text-base">Our admissions team can guide you through the application and documentation process.</p>

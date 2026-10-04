@@ -93,7 +93,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
           {(vision || missionLines.length > 0) && (
             <div className="grid border-t border-l border-line sm:grid-cols-2">
               {vision && (
-                <div className="border-r border-b border-line bg-paper-deep/60 p-5 md:p-6">
+                <div className="border-r border-b border-line bg-paper-deep p-5 md:p-6">
                   <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
                     Vision
                   </div>
@@ -101,7 +101,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
                 </div>
               )}
               {missionLines.length > 0 && (
-                <div className="border-r border-b border-line bg-paper-deep/60 p-5 md:p-6">
+                <div className="border-r border-b border-line bg-paper-deep p-5 md:p-6">
                   <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
                     Mission
                   </div>

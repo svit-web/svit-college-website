@@ -54,9 +54,10 @@
 :root {
   --radius: 0.875rem;
 
-  --paper: #fbf8f1;
-  --paper-deep: #f3ecdf;
-  --surface: #ffffff;
+  /* Two-tone beige palette: every light background is exactly one of these two. */
+  --paper: #fbf8f1; /* tone 1 — light beige: page, cards, inputs, panels */
+  --paper-deep: #f3ecdf; /* tone 2 — deep beige: alternate sections, hovers, muted fills */
+  --surface: var(--paper);
   --ink: #1d1f2b;
   --ink-soft: #5a5e70;
   --ink-mute: #8d909c;
@@ -67,8 +68,8 @@
   --navy-light: #3e4382;
   --crimson: #c2402f;
   --gold: #e9b84f;
-  --gold-soft: #f5e4bf;
-  --cream: #fbf8f1;
+  --gold-soft: var(--paper-deep);
+  --cream: var(--paper);
 
   --background: var(--paper);
   --foreground: var(--ink);
@@ -78,11 +79,11 @@
   --popover-foreground: var(--ink);
   --primary: var(--navy);
   --primary-foreground: #ffffff;
-  --secondary: #f7f5f2;
+  --secondary: var(--paper-deep);
   --secondary-foreground: var(--navy);
-  --muted: #f7f5f2;
+  --muted: var(--paper-deep);
   --muted-foreground: var(--ink-mute);
-  --accent: var(--gold-soft);
+  --accent: var(--paper-deep);
   --accent-foreground: var(--navy);
   --destructive: var(--crimson);
   --destructive-foreground: #ffffff;

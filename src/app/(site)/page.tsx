@@ -293,7 +293,7 @@ function CampusLifeSection({ items }: { items: HomepageItem[] }) {
   if (tiles.length === 0) return null;
 
   return (
-    <section className="bg-white py-[clamp(84px,11vw,144px)]">
+    <section className="bg-paper py-[clamp(84px,11vw,144px)]">
       <div className="container-page">
         <Reveal>
           <h2 className="mb-[clamp(40px,5vw,64px)] max-w-[16em] font-display text-[clamp(2rem,4.2vw,3.3rem)] font-medium leading-[1.12] tracking-[-0.01em] text-navy">
@@ -305,7 +305,7 @@ function CampusLifeSection({ items }: { items: HomepageItem[] }) {
             const layout = TILE_LAYOUT[i % TILE_LAYOUT.length];
             const pattern = TILE_PATTERNS[layout.pattern];
             const card = (
-              <div className="group relative flex min-h-[172px] flex-col overflow-hidden border border-border bg-white p-[20px_22px] transition-[background-color,border-color] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-navy">
+              <div className="group relative flex min-h-[172px] flex-col overflow-hidden border border-border bg-paper p-[20px_22px] transition-[background-color,border-color] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-navy">
                 <div
                   className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-0"
                   style={pattern}
@@ -313,7 +313,7 @@ function CampusLifeSection({ items }: { items: HomepageItem[] }) {
                 <span className="relative text-[9.5px] font-bold uppercase tracking-[0.2em] text-muted-foreground transition-colors duration-300 group-hover:text-gold">
                   {tile.eyebrow}
                 </span>
-                <span className="relative mt-auto pt-5 font-display text-[clamp(1.15rem,1.6vw,1.45rem)] font-medium leading-[1.2] text-navy transition-colors duration-300 group-hover:text-[#fbf8f1]">
+                <span className="relative mt-auto pt-5 font-display text-[clamp(1.15rem,1.6vw,1.45rem)] font-medium leading-[1.2] text-navy transition-colors duration-300 group-hover:text-paper">
                   {tile.title}
                 </span>
                 <span className="pointer-events-none absolute bottom-[16px] right-[18px] -translate-x-2 translate-y-2 text-base text-gold opacity-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">

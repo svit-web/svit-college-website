@@ -106,7 +106,7 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-line-strong text-navy transition-colors hover:border-ink hover:bg-ink hover:text-cream"
+                    className="flex h-11 w-11 items-center justify-center rounded-full border border-line-strong text-navy transition-colors hover:border-ink hover:bg-ink hover:text-paper"
                     aria-label={platform}
                   >
                     <Icon className="h-4 w-4" />

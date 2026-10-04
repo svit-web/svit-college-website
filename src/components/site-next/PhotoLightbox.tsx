@@ -9,7 +9,7 @@ export type LightboxPhoto = { id?: string; url: string; caption: string | null }
 
 // Light-on-dark round controls, 44px tap targets.
 const DARK_ICON_BUTTON =
-  "flex h-11 w-11 items-center justify-center rounded-full border border-cream/25 text-cream transition-colors duration-150 hover:border-cream hover:bg-cream hover:text-ink active:scale-90 disabled:opacity-20";
+  "flex h-11 w-11 items-center justify-center rounded-full border border-paper/25 text-paper transition-colors duration-150 hover:border-paper hover:bg-paper hover:text-ink active:scale-90 disabled:opacity-20";
 const NAV_BUTTON = `absolute top-1/2 z-20 -translate-y-1/2 ${DARK_ICON_BUTTON}`;
 
 /**
@@ -61,7 +61,7 @@ export function PhotoLightbox({
 
   const counter = (
     <div
-      className={`rounded-full bg-ink/60 px-4 py-1.5 text-sm text-cream/80 ${hasPanel ? "relative z-10" : "absolute bottom-4 left-1/2 z-10 -translate-x-1/2"}`}
+      className={`rounded-full bg-ink/60 px-4 py-1.5 text-sm text-paper/80 ${hasPanel ? "relative z-10" : "absolute bottom-4 left-1/2 z-10 -translate-x-1/2"}`}
     >
       {index + 1} / {images.length}
     </div>

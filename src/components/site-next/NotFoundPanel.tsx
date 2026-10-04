@@ -21,7 +21,7 @@ export function NotFoundPanel({
 }) {
   const Heading = embedded ? "h2" : "h1";
   const panel = (
-    <div className="mx-auto max-w-2xl border border-line bg-paper-deep/60 p-8 text-center md:p-12">
+    <div className="mx-auto max-w-2xl border border-line bg-paper-deep p-8 text-center md:p-12">
       <div className={eyebrow}>Not found</div>
       <Heading className="mt-3 font-display text-3xl font-medium text-navy md:text-4xl">
         {title}

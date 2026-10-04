@@ -248,9 +248,9 @@ export function HomePopupPill({
       aria-label={`Open: ${label}`}
       aria-hidden={hidden || undefined}
       tabIndex={hidden ? -1 : 0}
-      className={`${position} right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-[55] flex items-center gap-2.5 rounded-full border border-ink bg-ink py-1.5 pr-4 pl-1.5 text-left text-cream shadow-[0_10px_28px_-10px_rgba(29,31,43,0.55)] transition-[opacity,transform,background-color,border-color] duration-200 hover:border-crimson hover:bg-crimson active:scale-95 max-[379px]:pr-1.5 ${hidden ? "pointer-events-none translate-y-2 opacity-0" : "opacity-100"}`}
+      className={`${position} right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-[55] flex items-center gap-2.5 rounded-full border border-ink bg-ink py-1.5 pr-4 pl-1.5 text-left text-paper shadow-[0_10px_28px_-10px_rgba(29,31,43,0.55)] transition-[opacity,transform,background-color,border-color] duration-200 hover:border-crimson hover:bg-crimson active:scale-95 max-[379px]:pr-1.5 ${hidden ? "pointer-events-none translate-y-2 opacity-0" : "opacity-100"}`}
     >
-      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-cream text-ink">
+      <span className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-paper text-ink">
         <GraduationCap className="h-[18px] w-[18px]" aria-hidden />
         {pulse && (
           <span className="absolute -top-0.5 -right-0.5 flex h-3 w-3" aria-hidden>
@@ -293,8 +293,8 @@ function PopupLink({
   // Same pills as the homepage hero.
   const className =
     kind === "primary"
-      ? "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-cream transition-colors hover:border-crimson hover:bg-crimson"
-      : "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream";
+      ? "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-ink bg-ink px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-paper transition-colors hover:border-crimson hover:bg-crimson"
+      : "group inline-flex min-h-11 items-center justify-center gap-[0.55rem] whitespace-nowrap rounded-full border border-line-strong px-[1.25rem] py-[0.62rem] text-[0.84rem] font-semibold text-ink transition-colors hover:border-ink hover:bg-ink hover:text-paper";
   const content = (
     <>
       <span>{link.label}</span>
@@ -388,14 +388,14 @@ export function HomePopupCard({
 }) {
   const phone = variant === "phone";
   const shell =
-    "relative flex min-h-0 max-h-full flex-col overflow-hidden rounded-[1.25rem] border border-line bg-cream text-ink shadow-[0_30px_80px_-24px_rgba(29,31,43,0.5)]";
+    "relative flex min-h-0 max-h-full flex-col overflow-hidden rounded-[1.25rem] border border-line bg-paper text-ink shadow-[0_30px_80px_-24px_rgba(29,31,43,0.5)]";
 
   const minimizeButton = onMinimize && (
     <button
       type="button"
       onClick={onMinimize}
       aria-label="Minimize"
-      className="absolute top-2 right-2 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-line-strong bg-cream text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream"
+      className="absolute top-2 right-2 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-line-strong bg-paper text-ink transition-colors hover:border-ink hover:bg-ink hover:text-paper"
     >
       <Minus className="h-4 w-4" aria-hidden />
     </button>

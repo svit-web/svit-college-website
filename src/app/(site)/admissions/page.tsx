@@ -109,7 +109,7 @@ export default async function Admissions() {
             <p className="mt-2 text-sm text-ink-soft">Programme-wise fee structure is available in the Downloads section. Fees are payable annually or per semester.</p>
             <Link href="/downloads" className="mt-3 inline-block py-1.5 text-sm font-semibold text-navy hover:text-crimson link-underline">Download fee structure →</Link>
           </div>
-          <div className="border border-line bg-gold-soft p-8">
+          <div className="border border-line bg-paper-deep p-8">
             <h3 className="font-display text-2xl font-medium text-navy">Scholarships</h3>
             <p className="mt-2 text-sm text-ink-soft">Merit, need-based, government (SC/ST/OBC/EBC), and sports scholarships are available. Up to 100% tuition waiver for top rankers.</p>
           </div>

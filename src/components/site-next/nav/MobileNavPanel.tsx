@@ -140,7 +140,7 @@ export function MobileNavPanel({
   return (
     <nav
       id="mobile-nav-panel"
-      className="fixed inset-x-0 top-16 z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-cream text-ink lg:hidden"
+      className="fixed inset-x-0 top-16 z-40 max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-line bg-paper text-ink lg:hidden"
       aria-label="Mobile"
     >
       <div className="container-page flex flex-col gap-1 py-4">

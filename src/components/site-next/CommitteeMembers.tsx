@@ -20,7 +20,7 @@ export function CommitteeMembers({ members }: { members: CommitteeMember[] }) {
         onClick={() => setOpen(!open)}
         type="button"
         aria-expanded={open}
-        className="flex min-h-11 w-full items-center justify-between gap-4 border border-line bg-paper-deep/60 px-4 text-left transition-colors hover:bg-paper-deep"
+        className="flex min-h-11 w-full items-center justify-between gap-4 border border-line bg-paper px-4 text-left transition-colors hover:bg-paper-deep"
       >
         <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
           View Members ({members.length})

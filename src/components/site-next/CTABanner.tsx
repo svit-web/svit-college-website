@@ -34,7 +34,7 @@ export function CTABanner({
       ? `Join SVIT Vasad and gain access to top industry mentorship, hands-on training, and ${misc.recruiter_count}+ active recruiting partners.`
       : undefined);
   return (
-    <section className={`border-t border-line bg-gold-soft ${sectionSpacing}`}>
+    <section className={`border-t border-line bg-paper-deep ${sectionSpacing}`}>
       <div className="container-page text-center">
         <Reveal>
           {resolvedEyebrow && (

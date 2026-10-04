@@ -116,7 +116,7 @@ function Hero({
 
   return (
     <section
-      className="relative overflow-hidden border-b border-line bg-cream"
+      className="relative overflow-hidden border-b border-line bg-paper"
       style={heroTextVars(appearance)}
     >
       {photo && (
@@ -136,7 +136,7 @@ function Hero({
           <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topBlur} />
           <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topGradient} />
           {/* Phones: text spans the full width, so wash the whole photo. */}
-          <div className="absolute inset-0 bg-cream/75 md:hidden" />
+          <div className="absolute inset-0 bg-paper/75 md:hidden" />
         </div>
       )}
       <div className="container-page relative flex min-h-[560px] flex-col justify-end pb-[clamp(2.5rem,6vw,4.5rem)] pt-[clamp(112px,16vh,180px)] lg:min-h-[86vh]">

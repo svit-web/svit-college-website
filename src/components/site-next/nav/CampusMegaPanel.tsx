@@ -143,7 +143,7 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm font-semibold transition-colors",
-                  isActive ? "bg-paper-deep text-crimson" : "text-navy hover:bg-paper-deep/60",
+                  isActive ? "bg-paper-deep text-crimson" : "text-navy hover:bg-paper-deep",
                 )}
               >
                 <Icon className="h-4 w-4 shrink-0" />

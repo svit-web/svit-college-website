@@ -49,7 +49,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
       style={{ ["--hero-offset" as never]: "clamp(150px,18vh,200px)", ...heroTextVars(appearance) }}
     >
       {/* Full-bleed photo. Backed by cream (not navy) so an unloaded/broken photo reads as blank space, not a broken-looking dark panel; the gradient/blur chrome that assumes a photo underneath only mounts once one has actually loaded. */}
-      <div className="absolute inset-0 bg-cream">
+      <div className="absolute inset-0 bg-paper">
         <HeroPhotoLayer
           photos={photos}
           appearance={appearance}

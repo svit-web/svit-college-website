@@ -51,7 +51,7 @@ export function DesktopNavItem({
           onMouseEnter={onOpen}
           onMouseLeave={onClose}
           className={cn(
-            "absolute inset-x-0 top-full z-40 border-y border-line bg-cream shadow-[0_24px_40px_-28px_rgba(29,31,43,0.35)] transition-all duration-200",
+            "absolute inset-x-0 top-full z-40 border-y border-line bg-paper shadow-[0_24px_40px_-28px_rgba(29,31,43,0.35)] transition-all duration-200",
             isOpen
               ? "visible translate-y-0 opacity-100"
               : "pointer-events-none invisible -translate-y-2 opacity-0",

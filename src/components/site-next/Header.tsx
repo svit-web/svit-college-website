@@ -119,7 +119,7 @@ export function Header({
       <div className="hidden lg:block">
         <div className="relative px-[clamp(32px,6vw,96px)] pt-3">
           <div className="mx-auto w-full max-w-[1240px]">
-            <div className="relative bg-cream">
+            <div className="relative bg-paper">
               <DesktopUtilityBar utilityNav={utilityNav} contactInfo={contactInfo} />
               <div className="relative flex h-[76px] items-center gap-2 px-[clamp(12px,2vw,26px)]">
                 <Logo logoUrl={logoUrl} instituteName={contactInfo?.full_name} />

@@ -88,7 +88,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
           album,
         }}
       >
-        <div className="grid gap-5 border border-line bg-paper-deep/60 p-6 sm:grid-cols-2">
+        <div className="grid gap-5 border border-line bg-paper-deep p-6 sm:grid-cols-2">
           <div className="flex items-start gap-3">
             <Calendar className="mt-0.5 h-5 w-5 shrink-0 text-crimson" />
             <div>
