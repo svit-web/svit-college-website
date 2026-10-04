@@ -72,7 +72,7 @@ An Entry's own URL showing the Entry album as a slideshow, the full description 
 _Avoid_: is_page, inner page, subpage
 
 **Committee member**:
-A person serving on a committee. A **Linked** member is SVIT staff and mirrors their Staff profile (name, designation, photo stay in sync); an **External** member is not staff and is held as free text.
+A person serving on a committee — a row in `committee_members` (committee, name, position, designation, contact, sort order). A **Linked** member carries a `staff_profile_id` (set automatically at migration time when the member's email matched exactly one live Staff profile); an **External** member is not staff and is held as free text only.
 _Avoid_: committee JSON, members array
 
 **Navbar wordmark**:

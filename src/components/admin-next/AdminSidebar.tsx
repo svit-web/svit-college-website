@@ -90,6 +90,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Placed Students (dept. & package)', to: '/admin/tables/placed_students' },
       { label: 'Board of Management', to: '/admin/tables/board_members' },
       { label: 'Committees', to: '/admin/tables/committees' },
+      { label: 'Committee Members', to: '/admin/tables/committee_members' },
       { label: 'Accreditations', to: '/admin/tables/accreditations' },
       { label: 'Downloads / Forms', to: '/admin/tables/downloads' },
       { label: 'Media Library', to: '/admin/media' },

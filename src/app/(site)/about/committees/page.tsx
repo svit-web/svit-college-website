@@ -52,8 +52,8 @@ export default async function CommitteesPage() {
                   </ul>
                 </div>
               )}
-              {cm.metadata.members && cm.metadata.members.length > 0 && (
-                <CommitteeMembers members={cm.metadata.members} />
+              {cm.committee_members && cm.committee_members.length > 0 && (
+                <CommitteeMembers members={cm.committee_members} />
               )}
             </div>
           </Reveal>

@@ -602,6 +602,112 @@ export type Database = {
           },
         ]
       }
+      committee_members: {
+        Row: {
+          college_id: string
+          committee_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          designation: string | null
+          email: string | null
+          id: string
+          metadata: Json
+          name: string
+          phone: string | null
+          position: string | null
+          sort_order: number
+          staff_profile_id: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id: string
+          committee_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string | null
+          email?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          phone?: string | null
+          position?: string | null
+          sort_order?: number
+          staff_profile_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string
+          committee_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string | null
+          email?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          phone?: string | null
+          position?: string | null
+          sort_order?: number
+          staff_profile_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committee_members_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_staff_profile_id_fkey"
+            columns: ["staff_profile_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       committees: {
         Row: {
           college_id: string
@@ -1739,6 +1845,7 @@ export type Database = {
           id: string
           metadata: Json
           recipient_emails: string[]
+          slug: string
           status: Database["public"]["Enums"]["content_status"]
           updated_at: string
           updated_by: string | null
@@ -1753,6 +1860,7 @@ export type Database = {
           id?: string
           metadata?: Json
           recipient_emails?: string[]
+          slug: string
           status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
           updated_by?: string | null
@@ -1767,6 +1875,7 @@ export type Database = {
           id?: string
           metadata?: Json
           recipient_emails?: string[]
+          slug?: string
           status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
           updated_by?: string | null

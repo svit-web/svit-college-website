@@ -9,6 +9,7 @@ import type { AdminUser } from '@/app/lib/auth/admin';
 interface InquiryFormNode {
   id: string;
   form_name: string;
+  slug: string;
   fields_config: any;
   recipient_emails: string[];
   status: string;
@@ -36,6 +37,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
   const [editingForm, setEditingForm] = useState<InquiryFormNode | null>(null);
   const [formConfigFields, setFormConfigFields] = useState({
     form_name: '',
+    slug: '',
     fields_config: '[]',
     recipient_emails: '',
   });
@@ -105,6 +107,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
 
       const payload = {
         form_name: formConfigFields.form_name,
+        slug: formConfigFields.slug.trim().toLowerCase().replace(/\s+/g, '-'),
         fields_config: parsedFields,
         recipient_emails: emailsArray,
         status: 'published',
@@ -132,6 +135,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
     setEditingForm(form);
     setFormConfigFields({
       form_name: form.form_name || '',
+      slug: form.slug || '',
       fields_config: JSON.stringify(form.fields_config || [], null, 2),
       recipient_emails: Array.isArray(form.recipient_emails) ? form.recipient_emails.join(', ') : '',
     });
@@ -252,7 +256,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
         <button
           onClick={() => {
             setEditingForm(null);
-            setFormConfigFields({ form_name: '', fields_config: '[]', recipient_emails: '' });
+            setFormConfigFields({ form_name: '', slug: '', fields_config: '[]', recipient_emails: '' });
             setIsFormModalOpen(true);
           }}
           className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-sm font-semibold text-white hover:bg-crimson/90 shadow transition"
@@ -450,6 +454,18 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
                   placeholder="e.g. Admission Inquiries Form"
                   value={formConfigFields.form_name}
                   onChange={(e) => setFormConfigFields((p) => ({ ...p, form_name: e.target.value }))}
+                  className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">URL Identifier (slug)</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. admission-inquiry — the code public forms submit under"
+                  value={formConfigFields.slug}
+                  onChange={(e) => setFormConfigFields((p) => ({ ...p, slug: e.target.value }))}
                   className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>

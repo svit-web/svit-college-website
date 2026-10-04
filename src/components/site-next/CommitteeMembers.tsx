@@ -5,7 +5,7 @@ import { ChevronDown, Mail, Phone } from "lucide-react";
 
 interface CommitteeMember {
   name: string;
-  role?: string;
+  position?: string;
   designation?: string;
   email?: string;
   phone?: string;
@@ -33,7 +33,7 @@ export function CommitteeMembers({ members }: { members: CommitteeMember[] }) {
             <li key={i} className="flex flex-col gap-1 py-3 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-3">
               <div>
                 <div className="font-semibold text-navy">{m.name}</div>
-                {m.role && <div className="text-xs text-ink-soft">{m.role}</div>}
+                {m.position && <div className="text-xs text-ink-soft">{m.position}</div>}
                 {m.designation && <div className="text-xs text-ink-soft">{m.designation}</div>}
               </div>
               {(m.email || m.phone) && (

@@ -16,19 +16,17 @@ async function getFormId(slug: string): Promise<string> {
   const supabase = createClient();
   const { data, error } = await supabase
     .from('inquiry_forms')
-    .select('id, metadata')
+    .select('id')
+    .eq('slug', slug)
     .eq('status', 'published')
-    .is('deleted_at', null);
+    .is('deleted_at', null)
+    .maybeSingle();
 
   if (error) throw new Error('Could not load form configuration.');
+  if (!data) throw new Error(`Form "${slug}" not found.`);
 
-  const form = (data ?? []).find(
-    (f: any) => (f.metadata as any)?.slug === slug
-  );
-  if (!form) throw new Error(`Form "${slug}" not found.`);
-
-  formIdCache.set(slug, form.id);
-  return form.id;
+  formIdCache.set(slug, data.id);
+  return data.id;
 }
 
 export async function submitForm(

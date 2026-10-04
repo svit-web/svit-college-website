@@ -120,6 +120,7 @@ export const ROUTE_SECTION_MAP: Record<string, string> = {
   "/admin/tables/placed_students": "placement",
   "/admin/tables/board_members": "about_us",
   "/admin/tables/committees": "about_us",
+  "/admin/tables/committee_members": "about_us",
   "/admin/tables/accreditations": "about_us",
   "/admin/sports": "campus_life",
   "/admin/tables/achievements": "campus_life",
