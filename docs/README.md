@@ -1,6 +1,7 @@
 # Docs index
 
 - `architecture/SYSTEM_MAP.md` — full skeleton: every live DB table/column ↔ admin screen ↔ public route, plus a master list of every found gap (broken/misleading/dead/cosmetic)
+- `architecture/SEO.md` — SEO & sitemap: how `sitemap.ts`/`robots.ts`, page metadata, canonicals, admin SEO overrides and JSON-LD work; new-page checklist; owner action items
 - `migration/` — Next.js migration plan, phase progress/completion logs, and `implemented/` (numbered feature-delivery logs)
 - `audits/` — code review, hardcoded-content, and database-normalization audits; `deferred-issues.md` tracks known stale-doc/bug gaps
 - `database/` — Supabase schema reference and data dictionary
