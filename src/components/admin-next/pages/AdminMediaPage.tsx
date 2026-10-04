@@ -196,22 +196,21 @@ export function AdminMediaPage({ admin }: { admin: AdminUser }) {
   };
 
   const handleDeleteFile = async (file: any) => {
-    const confirmed = window.confirm(`Are you sure you want to permanently delete file "${file.filename}"?`);
+    const confirmed = window.confirm(`Move file "${file.filename}" to Trash? It can be restored from there.`);
     if (!confirmed) return;
 
     try {
-      const urlParts = file.file_path.split('/public/media/');
-      const storagePath = urlParts[1];
-
-      if (storagePath) {
-        const { error: storageErr } = await supabase.storage.from('media').remove([storagePath]);
-        if (storageErr) console.warn('Storage deletion warning:', storageErr);
-      }
-
-      const { error: dbErr } = await supabase.from('media_files').delete().eq('id', file.id);
+      // Soft delete only — the underlying Storage object must stay in place
+      // so a restore from /admin/trash (media_files is already registered
+      // there) gets back a working file, not a 404. Mirrors
+      // handleDeleteFolder's existing pattern on this same page.
+      const { error: dbErr } = await supabase
+        .from('media_files')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: userId, status: 'archived' })
+        .eq('id', file.id);
       if (dbErr) throw dbErr;
 
-      toast.success('File deleted successfully!');
+      toast.success('File moved to Trash.');
       setIsFileModalOpen(false);
       loadDirectory();
     } catch (err: any) {
