@@ -5,6 +5,7 @@ import { createClient } from '@/app/lib/supabase/client';
 import { MediaUploader } from './MediaUploader';
 import { SeoEditor } from './SeoEditor';
 import { EntryPhotosEditor } from './EntryPhotosEditor';
+import { MetadataEditor } from './MetadataEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
@@ -487,7 +488,22 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         } else if (col.type.startsWith('integer') || col.type === 'numeric') {
           payload[col.name] = val === '' ? null : Number(val);
         } else if (col.name === 'metadata' || col.type === 'jsonb') {
-          payload[col.name] = val ? (typeof val === 'string' ? JSON.parse(val) : val) : {};
+          if (val === '' || val === null || val === undefined) {
+            payload[col.name] = {};
+          } else if (typeof val === 'string') {
+            // A string here means the MetadataEditor's JSON view has
+            // unparseable text — block the save with a fixable message
+            // instead of JSON.parse's "Unexpected token".
+            try {
+              payload[col.name] = JSON.parse(val);
+            } catch {
+              throw new Error(
+                `${formatLabel(col.name)} contains invalid JSON — open Additional Fields, switch to the JSON view and fix the highlighted error.`
+              );
+            }
+          } else {
+            payload[col.name] = val;
+          }
         } else if (col.type === 'ARRAY') {
           payload[col.name] = typeof val === 'string' ? val.split(',').map((t) => t.trim()).filter(Boolean) : Array.isArray(val) ? val : [];
         } else {
@@ -930,6 +946,18 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 const tableFields = TABLE_CONFIGS[tableId]?.fields;
                 const usesEntryPhotos = !!tableFields && Object.values(tableFields).some((f) => f.render === 'entry-photos');
                 if (usesEntryPhotos && ENTRY_PHOTOS_OWNED_COLUMNS.has(col.name)) return null;
+
+                // jsonb columns (metadata and friends) get the typed key-by-key
+                // editor with a raw-JSON toggle, not a bare textarea.
+                if (col.name === 'metadata' || col.type === 'jsonb') {
+                  return (
+                    <MetadataEditor
+                      key={col.name}
+                      value={formValues[col.name]}
+                      onChange={(v) => handleFieldChange(col.name, v)}
+                    />
+                  );
+                }
                 if (tableFields?.[col.name]?.render === 'entry-photos') {
                   return (
                     <EntryPhotosEditor
@@ -1031,15 +1059,6 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
-                      />
-                    ) : col.name === 'metadata' || col.type === 'jsonb' ? (
-                      <textarea
-                        value={typeof formValues[col.name] === 'object' ? JSON.stringify(formValues[col.name], null, 2) : formValues[col.name] || '{}'}
-                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                        required={!col.is_nullable}
-                        rows={4}
-                        placeholder="{}"
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-crimson focus:outline-none"
                       />
                     ) : (
                       <div className="space-y-1 w-full">
