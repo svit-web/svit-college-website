@@ -43,6 +43,12 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
     link_type: 'external',
     sort_order: 0,
     parent_id: '' as string | null,
+    // Labeled metadata fields (the only two menu_items.metadata keys the site
+    // reads): `group` is the mega-panel column a sub-link sorts into,
+    // `quote` is the italic text shown in the About mega panel.
+    group: '',
+    quote: '',
+    metadata: {} as Record<string, any>,
   });
 
   useEffect(() => {
@@ -143,6 +149,14 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
     if (!selectedMenuId) return;
 
     try {
+      // Keep any other metadata keys untouched; only group/quote are managed
+      // by this form. Empty string removes the key.
+      const nextMetadata: Record<string, any> = { ...(itemFormValues.metadata ?? {}) };
+      if (itemFormValues.group.trim()) nextMetadata.group = itemFormValues.group.trim();
+      else delete nextMetadata.group;
+      if (itemFormValues.quote.trim()) nextMetadata.quote = itemFormValues.quote.trim();
+      else delete nextMetadata.quote;
+
       const payload: Record<string, any> = {
         menu_id: selectedMenuId,
         title: itemFormValues.title,
@@ -151,6 +165,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
         sort_order: Number(itemFormValues.sort_order),
         parent_id: itemFormValues.parent_id || null,
         status: 'published',
+        metadata: nextMetadata,
       };
 
       if (editingItem) {
@@ -179,18 +194,25 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
       link_type: 'external',
       sort_order: menuItems.length * 10,
       parent_id: parentId,
+      group: '',
+      quote: '',
+      metadata: {},
     });
     setIsItemModalOpen(true);
   };
 
   const handleOpenEditItem = (item: MenuItemNode) => {
     setEditingItem(item);
+    const meta = (item as any).metadata ?? {};
     setItemFormValues({
       title: item.title,
       url: item.url || '',
       link_type: item.link_type,
       sort_order: item.sort_order,
       parent_id: item.parent_id,
+      group: typeof meta.group === 'string' ? meta.group : '',
+      quote: typeof meta.quote === 'string' ? meta.quote : '',
+      metadata: meta,
     });
     setIsItemModalOpen(true);
   };
@@ -492,6 +514,29 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
                   value={itemFormValues.url}
                   onChange={(e) => setItemFormValues((p) => ({ ...p, url: e.target.value }))}
                   className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Mega Panel Column</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Academics — links with the same value share a column"
+                  value={itemFormValues.group}
+                  onChange={(e) => setItemFormValues((p) => ({ ...p, group: e.target.value }))}
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:outline-none"
+                />
+                <p className="text-[10px] text-slate-400">Sub-links are grouped into named columns in the desktop dropdown panel. Leave empty for no group.</p>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Quote (About mega panel)</label>
+                <input
+                  type="text"
+                  placeholder="italic text shown next to the About SVIT links"
+                  value={itemFormValues.quote}
+                  onChange={(e) => setItemFormValues((p) => ({ ...p, quote: e.target.value }))}
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>
 

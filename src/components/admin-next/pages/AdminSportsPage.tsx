@@ -6,6 +6,7 @@ import { Plus, Trash2, Edit2, Loader2, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { EntryPhotosEditor } from '@/components/admin-next/EntryPhotosEditor';
+import { MetadataEditor } from '@/components/admin-next/MetadataEditor';
 import type { AdminUser } from '@/app/lib/auth/admin';
 
 export const CATEGORIES = ['outdoor', 'indoor', 'aquatic', 'combat'] as const;
@@ -24,6 +25,9 @@ const EMPTY_SPORT = {
   is_active: true,
   sort_order: 10,
   status: 'published',
+  // The public site reads subtitle, venue_name and highlights from here
+  // (SportsSection) — edited via the typed MetadataEditor, not raw JSON.
+  metadata: {} as Record<string, any>,
 };
 
 function toSlug(name: string) {
@@ -102,6 +106,7 @@ function SportsManager({ userId }: { userId: string | undefined }) {
       is_active: s.is_active ?? true,
       sort_order: s.sort_order ?? 10,
       status: s.status ?? 'published',
+      metadata: s.metadata ?? {},
     });
     setModalOpen(true);
   }
@@ -272,6 +277,8 @@ function SportsManager({ userId }: { userId: string | undefined }) {
                 <label className="text-xs font-semibold uppercase text-slate-600">Coach Photo</label>
                 <MediaUploader value={form.coach_image_url} onChange={(url) => f('coach_image_url', url)} bucketName="media" />
               </div>
+
+              <MetadataEditor value={form.metadata} onChange={(v) => f('metadata', v)} />
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">

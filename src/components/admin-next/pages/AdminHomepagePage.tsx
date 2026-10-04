@@ -5,6 +5,7 @@ import { createClient } from '@/app/lib/supabase/client';
 import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
+import { MetadataEditor } from '@/components/admin-next/MetadataEditor';
 import { HeroAppearancePanel } from '@/components/admin-next/pages/HeroAppearancePanel';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import type { HeroAppearance } from '@/lib/theme';
@@ -101,6 +102,9 @@ const EMPTY_FORM = {
   sort_order: 10,
   is_active: true,
   status: 'published',
+  // slot (e.g. home_cta_banner), textSizes and image_alt live here — edited
+  // via the typed MetadataEditor, not raw JSON.
+  metadata: {} as Record<string, any>,
 };
 
 function HomepageItemsManager({ userId }: { userId: string | undefined }) {
@@ -185,6 +189,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
       sort_order: item.sort_order ?? 10,
       is_active: item.is_active ?? true,
       status: item.status || 'published',
+      metadata: item.metadata ?? {},
     });
     setIsModalOpen(true);
   }
@@ -462,6 +467,8 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                   </div>
                 </div>
               )}
+
+              <MetadataEditor value={form.metadata} onChange={(v) => f('metadata', v)} />
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
