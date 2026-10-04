@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Upload, X, File, ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, File, ImageIcon, Loader2, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadMediaFile } from '@/lib/upload-media-next';
+import { MediaLibraryPicker } from '@/components/admin-next/MediaLibraryPicker';
 
 interface MediaUploaderProps {
   value: string;
@@ -17,6 +18,7 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
   const [dragActive, setDragActive] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url'>('upload');
   const [urlDraft, setUrlDraft] = useState('');
+  const [libraryOpen, setLibraryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const uploadFile = async (file: File) => {
@@ -87,6 +89,12 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
     }
   };
 
+  const handleLibrarySelect = (url: string) => {
+    setLibraryOpen(false);
+    onChange(url);
+    toast.success('Image selected from Library');
+  };
+
   const handleUrlSubmit = (e?: React.SyntheticEvent) => {
     e?.preventDefault();
     const trimmed = urlDraft.trim();
@@ -146,6 +154,16 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
             >
               Paste URL
             </button>
+            {type === 'image' && (
+              <button
+                type="button"
+                onClick={() => setLibraryOpen(true)}
+                className="flex items-center gap-1 rounded-md px-3 py-1 text-slate-500 transition hover:text-slate-700"
+              >
+                <FolderOpen className="h-3.5 w-3.5" />
+                Browse Library
+              </button>
+            )}
           </div>
 
           {mode === 'upload' ? (
@@ -194,6 +212,10 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
             </div>
           )}
         </div>
+      )}
+
+      {type === 'image' && (
+        <MediaLibraryPicker open={libraryOpen} onClose={() => setLibraryOpen(false)} onSelect={handleLibrarySelect} />
       )}
     </div>
   );
