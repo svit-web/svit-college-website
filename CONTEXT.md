@@ -64,12 +64,16 @@ An Entry recording that a student, team or department won or earned something (a
 _Avoid_: award, recognition
 
 **Event type**:
-The fixed category of an Event (Fest, Cultural, Technical, Sports, Workshop, Seminar, Expert Session, STTP, FDP, Industrial Visit, Competition, Other). Chosen from a fixed list, never typed in freely. It says what the Event *is*, while its college, department or club says whose it is.
+The fixed category of an Event (Fest, Cultural, Technical, Sports, Workshop, Seminar, Expert Session, STTP, FDP, Industrial Visit, Competition, Other). Chosen from a fixed list, never typed in freely. It says what the Event _is_, while its college, department or club says whose it is.
 _Avoid_: tag, category
 
 **Detail page**:
 An Entry's own URL showing the Entry album as a slideshow, the full description and type-specific facts. An admin turns it on per Entry, and it is off by default for new Entries.
 _Avoid_: is_page, inner page, subpage
+
+**Committee member**:
+A person serving on a committee. A **Linked** member is SVIT staff and mirrors their Staff profile (name, designation, photo stay in sync); an **External** member is not staff and is held as free text.
+_Avoid_: committee JSON, members array
 
 **Navbar wordmark**:
 The single line of text next to the logo mark in `Logo.tsx`, sourced from `ContactInfo.full_name` (admin-editable via Admin → Settings → Contact Information → "Full Name"). Falls back to "Sardar Vallabhbhai Institute of Technology" if unset. Deliberately just one line — the old two-line "SVIT Vasad" / "Institute of Technology" treatment was dropped in favor of a single dynamic name.
