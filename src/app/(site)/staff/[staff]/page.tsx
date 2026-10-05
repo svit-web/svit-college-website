@@ -19,20 +19,28 @@ const ACHIEVEMENT_LABELS: Record<string, string> = {
   publication: "Publications",
   patent: "Patents",
   award: "Awards & Honors",
-  experience: "Experience",
   activity: "Activities",
 };
 
 // Order the accordion sections appear in, after the bio-driven "Profile" card
-const ACHIEVEMENT_ORDER = [
-  "qualification",
-  "research",
-  "publication",
-  "patent",
-  "award",
-  "experience",
-  "activity",
+// and the Work Experience timeline.
+const ACHIEVEMENT_ORDER = ["qualification", "research", "publication", "patent", "award", "activity"];
+
+const MONTH_LABELS = [
+  "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
 ];
+
+function formatWorkExperienceRange(w: {
+  startMonth: number;
+  startYear: number;
+  endMonth: number | null;
+  endYear: number | null;
+  isCurrent: boolean;
+}) {
+  const start = `${MONTH_LABELS[w.startMonth - 1]} ${w.startYear}`;
+  const end = w.isCurrent ? "Present" : `${MONTH_LABELS[(w.endMonth ?? 1) - 1]} ${w.endYear}`;
+  return `${start} — ${end}`;
+}
 
 export async function generateMetadata({
   params,
@@ -73,6 +81,31 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
       key: "profile",
       title: "Profile",
       body: <p className="text-sm leading-relaxed text-ink">{profile.bio}</p>,
+    });
+  }
+
+  if (profile.workExperience.length > 0) {
+    sections.push({
+      key: "work-experience",
+      title: "Experience",
+      body: (
+        <ol className="space-y-5">
+          {profile.workExperience.map((w) => (
+            <li key={w.id} className="relative border-l-2 border-line pl-4.5">
+              <div className="absolute -left-[5px] top-1 h-2 w-2 rounded-full bg-crimson" aria-hidden />
+              <p className="text-sm font-semibold text-navy">{w.position}</p>
+              <p className="text-sm text-ink">{w.organization}</p>
+              <p className="mt-0.5 text-xs text-ink-soft">
+                {formatWorkExperienceRange(w)}
+                <span className="ml-2 rounded-full border border-line px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-ink-mute">
+                  {w.category === "teaching" ? "Teaching" : "Industry"}
+                </span>
+              </p>
+              {w.description && <p className="mt-1 text-sm leading-relaxed text-ink-soft">{w.description}</p>}
+            </li>
+          ))}
+        </ol>
+      ),
     });
   }
 

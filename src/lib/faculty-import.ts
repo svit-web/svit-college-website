@@ -5,9 +5,11 @@ import type { UserScope } from '@/hooks/useUserScope';
 import { canWriteDepartment } from '@/lib/import-scope';
 import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
 import type { StaffPost } from '@/lib/staff-posts';
+import { normalizePhone } from '@/lib/phone';
 
 export const FACULTY_CSV_HEADERS = [
   'first_name',
+  'middle_name',
   'last_name',
   'email',
   'department',
@@ -16,7 +18,6 @@ export const FACULTY_CSV_HEADERS = [
   'phone',
   'employee_code',
   'muster_number',
-  'joining_year',
   'qualification',
   'rank_group',
   'gender',
@@ -44,6 +45,7 @@ type DesignationLookup = { id: string; title: string };
 export function buildFacultyTemplateCsv(sampleDepartmentCode?: string): string {
   const sample: FacultyCsvRow = {
     first_name: 'Jane',
+    middle_name: '',
     last_name: 'Doe',
     email: 'jane.doe@example.edu',
     department: sampleDepartmentCode || 'CSE',
@@ -52,7 +54,6 @@ export function buildFacultyTemplateCsv(sampleDepartmentCode?: string): string {
     phone: '9876543210',
     employee_code: 'EMP1234',
     muster_number: '0',
-    joining_year: '2020',
     qualification: 'M.Tech',
     rank_group: '',
     gender: '',
@@ -143,14 +144,10 @@ export async function importFacultyCsv(
       ...new Set(postTitles.map((t) => ctx.posts.find((p) => p.title.toLowerCase() === t.toLowerCase())!.id)),
     ];
 
-    let joiningYear: number | null = null;
-    if (raw.joining_year?.trim()) {
-      const n = Number(raw.joining_year.trim());
-      if (!Number.isInteger(n)) {
-        summary.errors.push({ row: rowNum, email, message: `Invalid joining_year "${raw.joining_year}".` });
-        continue;
-      }
-      joiningYear = n;
+    const phone = normalizePhone(raw.phone);
+    if (phone.error) {
+      summary.errors.push({ row: rowNum, email, message: phone.error });
+      continue;
     }
 
     // Blank leaves an existing muster number untouched; 0 is a valid value.
@@ -178,10 +175,10 @@ export async function importFacultyCsv(
       if (existing) {
         staffId = existing.id;
         const updatePayload: Record<string, unknown> = { first_name: firstName, last_name: lastName, updated_by: ctx.adminId };
-        if (raw.phone?.trim()) updatePayload.phone = raw.phone.trim();
+        if (raw.middle_name?.trim()) updatePayload.middle_name = raw.middle_name.trim();
+        if (phone.value) updatePayload.phone = phone.value;
         if (raw.employee_code?.trim()) updatePayload.employee_code = raw.employee_code.trim();
         if (musterNumber !== null) updatePayload.muster_number = musterNumber;
-        if (joiningYear !== null) updatePayload.joining_year = joiningYear;
         if (raw.qualification?.trim()) updatePayload.qualification = raw.qualification.trim();
         if (raw.rank_group?.trim()) updatePayload.rank_group = raw.rank_group.trim();
         if (raw.gender?.trim()) updatePayload.gender = raw.gender.trim();
@@ -193,12 +190,12 @@ export async function importFacultyCsv(
           .from('staff_profiles')
           .insert({
             first_name: firstName,
+            middle_name: raw.middle_name?.trim() || null,
             last_name: lastName,
             email,
-            phone: raw.phone?.trim() || null,
+            phone: phone.value,
             employee_code: raw.employee_code?.trim() || null,
             muster_number: musterNumber,
-            joining_year: joiningYear,
             qualification: raw.qualification?.trim() || null,
             rank_group: raw.rank_group?.trim() || null,
             gender: raw.gender?.trim() || null,

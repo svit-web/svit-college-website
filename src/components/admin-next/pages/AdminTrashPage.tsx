@@ -13,6 +13,7 @@ const SOFT_DELETE_TABLES = [
   'facilities',
   'staff_profiles',
   'staff_achievements',
+  'staff_work_experience',
   'menus',
   'menu_items',
   'homepage_items',

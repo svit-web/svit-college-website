@@ -250,17 +250,20 @@ function StaffCard({ member, featured = false }: { member: DeptStaffMember; feat
           {member.name}
         </h3>
         <div className="mt-1 text-sm font-semibold text-crimson">{member.designation}</div>
-        {(member.joiningYear || member.pastExperienceYears != null) &&
-          (() => {
-            const totalExp =
-              (member.pastExperienceYears ?? 0) +
-              (member.joiningYear ? new Date().getFullYear() - member.joiningYear : 0);
-            return totalExp > 0 ? (
-              <div className="mt-2 text-xs text-ink-soft">
-                <span className="font-semibold text-navy">{totalExp}</span> yrs experience
-              </div>
-            ) : null;
-          })()}
+        {(member.industryYears || member.teachingYears) && (
+          <div className="mt-2 flex flex-wrap gap-x-3 text-xs text-ink-soft">
+            {!!member.industryYears && (
+              <span>
+                <span className="font-semibold text-navy">{member.industryYears}</span> yrs industry
+              </span>
+            )}
+            {!!member.teachingYears && (
+              <span>
+                <span className="font-semibold text-navy">{member.teachingYears}</span> yrs teaching
+              </span>
+            )}
+          </div>
+        )}
         {member.email && (
           <div className="mt-3 flex items-center gap-1.5 text-xs text-ink-soft">
             <Mail className="h-3.5 w-3.5 shrink-0 text-ink-mute" />

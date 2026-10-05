@@ -9,7 +9,9 @@ export const ACHIEVEMENT_CSV_HEADERS = ['email', 'type', 'title', 'year', 'descr
 export type AchievementCsvColumn = (typeof ACHIEVEMENT_CSV_HEADERS)[number];
 export type AchievementCsvRow = Record<AchievementCsvColumn, string>;
 
-const VALID_ACHIEVEMENT_TYPES = ['award', 'patent', 'publication', 'research', 'qualification', 'experience', 'activity'] as const;
+// 'experience' is deliberately excluded — work history is now structured
+// data in staff_work_experience, not a free-text achievement row.
+const VALID_ACHIEVEMENT_TYPES = ['award', 'patent', 'publication', 'research', 'qualification', 'activity'] as const;
 
 export interface AchievementImportSummary {
   totalRows: number;

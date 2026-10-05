@@ -16,9 +16,19 @@ export interface DeptStaffMember {
   email: string | null;
   avatarUrl: string | null;
   employeeCode: string | null;
-  joiningYear: number | null;
-  pastExperienceYears: number | null;
+  industryYears: number | null;
+  teachingYears: number | null;
   musterNumber: number | null;
+}
+
+// A work-experience entry's length in whole years, counted to the current
+// month for a "Currently Working" entry. Entries aren't deduplicated across
+// overlaps — matches how a LinkedIn-style list is totalled.
+function experienceYears(w: { start_month: number; start_year: number; end_month: number | null; end_year: number | null; is_current: boolean }) {
+  const now = new Date();
+  const endMonths = w.is_current ? now.getFullYear() * 12 + now.getMonth() : (w.end_year ?? w.start_year) * 12 + ((w.end_month ?? w.start_month) - 1);
+  const startMonths = w.start_year * 12 + (w.start_month - 1);
+  return Math.max(0, (endMonths - startMonths) / 12);
 }
 
 export async function getStaffByDepartmentId(departmentId: string) {
@@ -30,7 +40,7 @@ export async function getStaffByDepartmentId(departmentId: string) {
         is_primary,
         post_ids,
         designations ( title, category ),
-        staff_profiles ( id, title, first_name, last_name, email, joining_year, past_experience_years, status, deleted_at, employee_code, muster_number, photo_url )
+        staff_profiles ( id, title, first_name, last_name, email, status, deleted_at, employee_code, muster_number, photo_url )
       `)
       .eq('department_id', departmentId)
       .eq('status', 'published')
@@ -43,6 +53,23 @@ export async function getStaffByDepartmentId(departmentId: string) {
   if (error) {
     console.error('Error fetching department staff:', error);
     throw error;
+  }
+
+  const staffIds = [...new Set((data ?? []).map((a: any) => a.staff_profiles?.id).filter(Boolean))];
+  const { data: workExp } = staffIds.length
+    ? await supabase
+        .from('staff_work_experience')
+        .select('staff_id, category, start_month, start_year, end_month, end_year, is_current')
+        .in('staff_id', staffIds)
+        .is('deleted_at', null)
+    : { data: [] as any[] };
+
+  const yearsByStaff = new Map<string, { industry: number | null; teaching: number | null }>();
+  for (const w of workExp ?? []) {
+    const bucket = yearsByStaff.get(w.staff_id) ?? { industry: null, teaching: null };
+    const key = w.category as 'industry' | 'teaching';
+    bucket[key] = (bucket[key] ?? 0) + experienceYears(w);
+    yearsByStaff.set(w.staff_id, bucket);
   }
 
   const members = (data ?? [])
@@ -58,6 +85,7 @@ export async function getStaffByDepartmentId(departmentId: string) {
         : a.designations?.category === 'teaching' || /professor|lecturer|assistant/i.test(designationTitle)
         ? 'Faculty'
         : 'Support';
+      const years = yearsByStaff.get(s.id);
       return {
         id: s.id,
         name: `${s.title ? s.title + ' ' : ''}${s.first_name} ${s.last_name}`.trim(),
@@ -66,8 +94,8 @@ export async function getStaffByDepartmentId(departmentId: string) {
         email: s.email ?? null,
         avatarUrl: s.photo_url ?? null,
         employeeCode: s.employee_code ?? null,
-        joiningYear: s.joining_year ?? null,
-        pastExperienceYears: s.past_experience_years ?? null,
+        industryYears: years?.industry != null ? Math.round(years.industry) : null,
+        teachingYears: years?.teaching != null ? Math.round(years.teaching) : null,
         musterNumber: s.muster_number ?? null,
       };
     });

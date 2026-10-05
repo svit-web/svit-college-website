@@ -15,6 +15,19 @@ export interface StaffAchievement {
   description: string | null;
 }
 
+export interface StaffWorkExperience {
+  id: string;
+  category: "industry" | "teaching";
+  position: string;
+  organization: string;
+  startMonth: number;
+  startYear: number;
+  endMonth: number | null;
+  endYear: number | null;
+  isCurrent: boolean;
+  description: string | null;
+}
+
 export interface StaffMember {
   id: string;
   name: string;
@@ -30,10 +43,9 @@ export interface StaffMember {
   socialLinks?: { linkedin?: string; googleScholar?: string; orcid?: string } | null;
   isHod?: boolean;
   musterNumber?: number | null;
-  joiningYear?: number | null;
-  pastExperienceYears?: number | null;
   department?: { id: string; name: string; code: string } | null;
   achievements: StaffAchievement[];
+  workExperience: StaffWorkExperience[];
 }
 
 /**
@@ -44,7 +56,7 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
   const { data, error } = await supabase
     .from("staff_profiles")
     .select(
-      "id, title, first_name, last_name, email, bio, office_hours, social_links, metadata, expertise, joining_year, past_experience_years, employee_code, photo_url, rank_group, designation, qualification",
+      "id, title, first_name, middle_name, last_name, email, bio, office_hours, social_links, metadata, expertise, employee_code, photo_url, rank_group, designation, qualification",
     )
     .eq("status", "published")
     .eq("employee_code", code)
@@ -54,7 +66,7 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
   if (error) throw error;
   if (!data) return null;
 
-  const [assignmentRes, achievementsRes, postsRes] = await Promise.all([
+  const [assignmentRes, achievementsRes, workExperienceRes, postsRes] = await Promise.all([
     supabase
       .from("staff_department_assignments")
       .select(
@@ -70,6 +82,14 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
       .eq("staff_id", data.id)
       .is("deleted_at", null)
       .order("year", { ascending: false }),
+    supabase
+      .from("staff_work_experience")
+      .select("id, category, position, organization, start_month, start_year, end_month, end_year, is_current, description")
+      .eq("staff_id", data.id)
+      .is("deleted_at", null)
+      .order("is_current", { ascending: false })
+      .order("start_year", { ascending: false })
+      .order("start_month", { ascending: false }),
     supabase
       .from("staff_posts")
       .select(STAFF_POST_COLUMNS)
@@ -98,7 +118,8 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
   }
 
   const titlePrefix = data.title ? `${data.title} ` : "";
-  const fullName = `${titlePrefix}${data.first_name} ${data.last_name}`.trim();
+  const middleName = (data as any).middle_name ? ` ${(data as any).middle_name}` : "";
+  const fullName = `${titlePrefix}${data.first_name}${middleName} ${data.last_name}`.trim();
 
   const achievements: StaffAchievement[] = (achievementsRes.data ?? []).map((a: any) => ({
     id: a.id,
@@ -106,6 +127,19 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
     title: a.title,
     year: a.year ?? null,
     description: a.description ?? null,
+  }));
+
+  const workExperience: StaffWorkExperience[] = (workExperienceRes.data ?? []).map((w: any) => ({
+    id: w.id,
+    category: w.category,
+    position: w.position,
+    organization: w.organization,
+    startMonth: w.start_month,
+    startYear: w.start_year,
+    endMonth: w.end_month ?? null,
+    endYear: w.end_year ?? null,
+    isCurrent: w.is_current,
+    description: w.description ?? null,
   }));
 
   return {
@@ -128,9 +162,8 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
       ? (data.office_hours as StaffMember["officeHours"])
       : [],
     socialLinks: data.social_links as StaffMember["socialLinks"],
-    joiningYear: data.joining_year ?? null,
-    pastExperienceYears: data.past_experience_years ?? null,
     department: dept ? { id: dept.id, name: dept.name, code: dept.code } : null,
     achievements,
+    workExperience,
   };
 }

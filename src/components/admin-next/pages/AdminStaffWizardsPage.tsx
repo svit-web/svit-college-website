@@ -5,7 +5,7 @@ import { createClient } from '@/app/lib/supabase/client';
 import { useUserScope } from '@/hooks/useUserScope';
 import type { UserScope } from '@/hooks/useUserScope';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { Users, Plus, Trash2, Loader2, Save, Award, Search, X, Tag, School, UserCircle, Upload, FileUp } from 'lucide-react';
+import { Users, Plus, Trash2, Loader2, Save, Award, Search, X, Tag, School, UserCircle, Upload, FileUp, Briefcase } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/app/lib/auth/admin';
@@ -14,12 +14,12 @@ import { compareByMuster } from '@/lib/staff-order';
 import { findMusterConflict, parseMusterNumber } from '@/lib/muster-check';
 import { PICKER_DESIGNATION_CATEGORIES, STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds, type StaffPost } from '@/lib/staff-posts';
 import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/staff-achievements-import';
+import { normalizePhone } from '@/lib/phone';
 
-type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'experience' | 'activity';
+type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'activity';
 
 const ACHIEVEMENT_TYPES: { value: AchievementType; label: string }[] = [
   { value: 'qualification', label: 'Qualification / Degree' },
-  { value: 'experience', label: 'Work Experience' },
   { value: 'award', label: 'Award / Honor' },
   { value: 'patent', label: 'Patent' },
   { value: 'publication', label: 'Publication' },
@@ -27,11 +27,26 @@ const ACHIEVEMENT_TYPES: { value: AchievementType; label: string }[] = [
   { value: 'activity', label: 'Activity' },
 ];
 
-type Tab = 'general' | 'department' | 'achievements' | 'expertise';
+type WorkExperienceCategory = 'industry' | 'teaching';
+
+const WORK_EXPERIENCE_CATEGORIES: { value: WorkExperienceCategory; label: string }[] = [
+  { value: 'industry', label: 'Industry' },
+  { value: 'teaching', label: 'Teaching / Academic' },
+];
+
+const MONTH_OPTIONS = [
+  { value: 1, label: 'January' }, { value: 2, label: 'February' }, { value: 3, label: 'March' },
+  { value: 4, label: 'April' }, { value: 5, label: 'May' }, { value: 6, label: 'June' },
+  { value: 7, label: 'July' }, { value: 8, label: 'August' }, { value: 9, label: 'September' },
+  { value: 10, label: 'October' }, { value: 11, label: 'November' }, { value: 12, label: 'December' },
+];
+
+type Tab = 'general' | 'department' | 'experience' | 'achievements' | 'expertise';
 
 const TABS: { id: Tab; label: string; icon: any }[] = [
   { id: 'general', label: 'General', icon: UserCircle },
   { id: 'department', label: 'Department', icon: School },
+  { id: 'experience', label: 'Experience', icon: Briefcase },
   { id: 'achievements', label: 'Achievements', icon: Award },
   { id: 'expertise', label: 'Expertise', icon: Tag },
 ];
@@ -59,6 +74,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   const [generalSaving, setGeneralSaving] = useState(false);
   const [assignments, setAssignments] = useState<any[]>([]);
   const [achievements, setAchievements] = useState<any[]>([]);
+  const [workExperience, setWorkExperience] = useState<any[]>([]);
   const [expertise, setExpertise] = useState<string[]>([]);
 
   const [newAssignment, setNewAssignment] = useState<{ department_id: string; designation_id: string; post_ids: string[]; is_primary: boolean }>({
@@ -74,8 +90,20 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     year: '',
     description: '',
   });
+  const emptyWorkExperience = {
+    category: 'teaching' as WorkExperienceCategory,
+    position: '',
+    organization: '',
+    start_month: '',
+    start_year: '',
+    end_month: '',
+    end_year: '',
+    is_current: false,
+    description: '',
+  };
+  const [newWorkExperience, setNewWorkExperience] = useState(emptyWorkExperience);
   const [newTag, setNewTag] = useState('');
-  const [newStaffForm, setNewStaffForm] = useState({ title: 'Dr.', first_name: '', last_name: '', employee_code: '', email: '', phone: '' });
+  const [newStaffForm, setNewStaffForm] = useState({ title: 'Dr.', first_name: '', middle_name: '', last_name: '', employee_code: '', email: '', phone: '' });
   const [createLoading, setCreateLoading] = useState(false);
 
   const [importFacultyOpen, setImportFacultyOpen] = useState(false);
@@ -143,7 +171,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   async function loadDetails(staffId: string) {
     setDetailsLoading(true);
     try {
-      const [{ data: gen }, { data: asgn }, { data: achv }] = await Promise.all([
+      const [{ data: gen }, { data: asgn }, { data: achv }, { data: workExp }] = await Promise.all([
         supabase.from('staff_profiles').select('*').eq('id', staffId).maybeSingle(),
         supabase
           .from('staff_department_assignments')
@@ -151,11 +179,20 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           .eq('staff_id', staffId)
           .is('deleted_at', null),
         (supabase as any).from('staff_achievements').select('*').eq('staff_id', staffId).is('deleted_at', null).order('year', { ascending: false }),
+        (supabase as any)
+          .from('staff_work_experience')
+          .select('*')
+          .eq('staff_id', staffId)
+          .is('deleted_at', null)
+          .order('is_current', { ascending: false })
+          .order('start_year', { ascending: false })
+          .order('start_month', { ascending: false }),
       ]);
       // office_hours must be an array of {day, time}; older rows held {}.
       setGeneralForm(gen ? { ...gen, office_hours: Array.isArray(gen.office_hours) ? gen.office_hours : [] } : {});
       setAssignments(asgn || []);
       setAchievements(achv || []);
+      setWorkExperience(workExp || []);
       setExpertise(gen?.expertise || []);
     } catch (err: any) {
       toast.error(`Failed to load profile: ${err.message}`);
@@ -175,7 +212,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     setSelectedId(null);
     setIsNewMode(true);
     setActiveTab('general');
-    setNewStaffForm({ title: 'Dr.', first_name: '', last_name: '', employee_code: '', email: '', phone: '' });
+    setNewStaffForm({ title: 'Dr.', first_name: '', middle_name: '', last_name: '', employee_code: '', email: '', phone: '' });
     setPanelOpen(true);
   }
 
@@ -191,11 +228,16 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       toast.error('Employee code is required, format: 3-digit number + hyphen + initials, e.g. 265-NIC.');
       return;
     }
+    const phone = normalizePhone(newStaffForm.phone);
+    if (phone.error) {
+      toast.error(phone.error);
+      return;
+    }
     setCreateLoading(true);
     try {
       const { data, error } = await supabase
         .from('staff_profiles')
-        .insert({ ...newStaffForm, employee_code: employeeCode, status: 'published', created_by: admin.id })
+        .insert({ ...newStaffForm, phone: phone.value, employee_code: employeeCode, status: 'published', created_by: admin.id })
         .select()
         .single();
       if (error) throw error;
@@ -227,6 +269,11 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         toast.error('Muster number must be a whole number (0 or higher).');
         return;
       }
+      const phone = normalizePhone(generalForm.phone);
+      if (phone.error) {
+        toast.error(phone.error);
+        return;
+      }
       if (musterNumber !== null) {
         const collegeIds = [
           ...new Set(
@@ -246,14 +293,13 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         .update({
           title: generalForm.title,
           first_name: generalForm.first_name,
+          middle_name: generalForm.middle_name || null,
           last_name: generalForm.last_name,
           employee_code: employeeCode,
           email: generalForm.email,
-          phone: generalForm.phone,
+          phone: phone.value,
           bio: generalForm.bio,
           qualification: generalForm.qualification || null,
-          joining_year: generalForm.joining_year ? Number(generalForm.joining_year) : null,
-          past_experience_years: generalForm.past_experience_years ? Number(generalForm.past_experience_years) : null,
           muster_number: musterNumber,
           photo_url: generalForm._photoUrl ?? generalForm.photo_url ?? null,
           office_hours: (generalForm.office_hours || []).filter((oh: any) => oh?.day?.trim() && oh?.time?.trim()),
@@ -372,6 +418,69 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     try {
       await (supabase as any)
         .from('staff_achievements')
+        .update({ deleted_at: new Date().toISOString(), deleted_by: admin.id })
+        .eq('id', id);
+      toast.success('Removed.');
+      loadDetails(selectedId!);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  }
+
+  function validateWorkExperience(w: typeof newWorkExperience): string | null {
+    const startMonth = Number(w.start_month);
+    const startYear = Number(w.start_year);
+    if (!w.position.trim() || !w.organization.trim()) return 'Position and Organization are required.';
+    if (!startMonth || !startYear) return 'Start month and year are required.';
+    if (startYear < 1950) return 'Start year looks like a typo — must be 1950 or later.';
+    const now = new Date();
+    if (startYear * 12 + startMonth > now.getFullYear() * 12 + now.getMonth() + 1) {
+      return 'Start date cannot be in the future.';
+    }
+    if (!w.is_current) {
+      const endMonth = Number(w.end_month);
+      const endYear = Number(w.end_year);
+      if (!endMonth || !endYear) return 'End month and year are required unless "Currently Working" is checked.';
+      if (endYear * 12 + endMonth < startYear * 12 + startMonth) return 'End date cannot be before the start date.';
+    }
+    return null;
+  }
+
+  async function handleAddWorkExperience(e: React.FormEvent) {
+    e.preventDefault();
+    if (!selectedId) return;
+    const error = validateWorkExperience(newWorkExperience);
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    try {
+      const { error: insertErr } = await (supabase as any).from('staff_work_experience').insert({
+        staff_id: selectedId,
+        category: newWorkExperience.category,
+        position: newWorkExperience.position.trim(),
+        organization: newWorkExperience.organization.trim(),
+        start_month: Number(newWorkExperience.start_month),
+        start_year: Number(newWorkExperience.start_year),
+        end_month: newWorkExperience.is_current ? null : Number(newWorkExperience.end_month),
+        end_year: newWorkExperience.is_current ? null : Number(newWorkExperience.end_year),
+        is_current: newWorkExperience.is_current,
+        description: newWorkExperience.description.trim() || null,
+        created_by: admin.id,
+      });
+      if (insertErr) throw insertErr;
+      toast.success('Work experience added!');
+      setNewWorkExperience(emptyWorkExperience);
+      loadDetails(selectedId);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  }
+
+  async function handleDeleteWorkExperience(id: string) {
+    try {
+      await (supabase as any)
+        .from('staff_work_experience')
         .update({ deleted_at: new Date().toISOString(), deleted_by: admin.id })
         .eq('id', id);
       toast.success('Removed.');
@@ -615,7 +724,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                 {isNewMode
                   ? 'New Faculty Profile'
                   : selectedId
-                    ? `${generalForm.title || ''} ${generalForm.first_name || ''} ${generalForm.last_name || ''}`.trim() || 'Edit Profile'
+                    ? `${generalForm.title || ''} ${generalForm.first_name || ''} ${generalForm.middle_name || ''} ${generalForm.last_name || ''}`.replace(/\s+/g, ' ').trim() || 'Edit Profile'
                     : 'Edit Profile'}
               </h2>
               <button onClick={closePanel} className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition">
@@ -661,6 +770,15 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                   />
                 </div>
                 <div className="space-y-1">
+                  <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Middle Name (optional)</label>
+                  <input
+                    type="text"
+                    value={newStaffForm.middle_name}
+                    onChange={(e) => setNewStaffForm((p) => ({ ...p, middle_name: e.target.value }))}
+                    className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-white placeholder-zinc-600 focus:border-crimson focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
                   <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Employee Code</label>
                   <input
                     required
@@ -690,10 +808,12 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                   <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Phone</label>
                   <input
                     type="text"
+                    placeholder="e.g. 9876543210"
                     value={newStaffForm.phone}
                     onChange={(e) => setNewStaffForm((p) => ({ ...p, phone: e.target.value }))}
                     className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-white placeholder-zinc-600 focus:border-crimson focus:outline-none"
                   />
+                  <p className="text-[11px] text-zinc-500">Internal use only — never shown on the public site.</p>
                 </div>
                 <div className="pt-2 flex justify-end gap-2">
                   <button type="button" onClick={closePanel} className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-400 hover:text-white transition">
@@ -768,6 +888,11 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                       </div>
 
                       <div className="space-y-1">
+                        <label className="field-label">Middle Name (optional)</label>
+                        <input type="text" value={generalForm.middle_name || ''} onChange={(e) => setGeneralForm((p) => ({ ...p, middle_name: e.target.value }))} className="field-input" />
+                      </div>
+
+                      <div className="space-y-1">
                         <label className="field-label">Employee Code</label>
                         <input
                           type="text"
@@ -791,39 +916,13 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
                       <div className="space-y-1">
                         <label className="field-label">Phone</label>
-                        <input type="text" value={generalForm.phone || ''} onChange={(e) => setGeneralForm((p) => ({ ...p, phone: e.target.value }))} className="field-input" />
+                        <input type="text" placeholder="e.g. 9876543210" value={generalForm.phone || ''} onChange={(e) => setGeneralForm((p) => ({ ...p, phone: e.target.value }))} className="field-input" />
+                        <p className="text-[11px] text-slate-400">Internal use only — never shown on the public site.</p>
                       </div>
 
                       <div className="space-y-1">
                         <label className="field-label">Profile Photo</label>
                         <MediaUploader value={generalForm._photoUrl ?? generalForm.photo_url ?? ''} onChange={(url) => setGeneralForm((p) => ({ ...p, _photoUrl: url }))} type="image" bucketName="staff-photos" />
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <label className="field-label">Joining Year</label>
-                          <input
-                            type="number"
-                            min="1980"
-                            max="2099"
-                            value={generalForm.joining_year || ''}
-                            onChange={(e) => setGeneralForm((p) => ({ ...p, joining_year: e.target.value }))}
-                            placeholder="e.g. 2015"
-                            className="field-input"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="field-label">Past Experience (yrs)</label>
-                          <input
-                            type="number"
-                            min="0"
-                            max="60"
-                            value={generalForm.past_experience_years || ''}
-                            onChange={(e) => setGeneralForm((p) => ({ ...p, past_experience_years: e.target.value }))}
-                            placeholder="e.g. 3"
-                            className="field-input"
-                          />
-                        </div>
                       </div>
 
                       <div className="space-y-1">
@@ -1049,6 +1148,142 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                               </div>
                             ))}
                           </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === 'experience' && (
+                    <div className="space-y-5">
+                      <form onSubmit={handleAddWorkExperience} className="rounded-xl border border-zinc-800 bg-zinc-900/50 p-4 space-y-3">
+                        <h3 className="text-xs font-semibold text-zinc-300 uppercase tracking-wide">Add Work Experience</h3>
+                        <div className="space-y-1">
+                          <label className="field-label">Category</label>
+                          <select
+                            value={newWorkExperience.category}
+                            onChange={(e) => setNewWorkExperience((p) => ({ ...p, category: e.target.value as WorkExperienceCategory }))}
+                            className="field-input"
+                          >
+                            {WORK_EXPERIENCE_CATEGORIES.map((c) => (
+                              <option key={c.value} value={c.value}>{c.label}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="field-label">Position</label>
+                            <input
+                              required
+                              type="text"
+                              value={newWorkExperience.position}
+                              onChange={(e) => setNewWorkExperience((p) => ({ ...p, position: e.target.value }))}
+                              placeholder="e.g. Assistant Professor"
+                              className="field-input"
+                            />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="field-label">Organization</label>
+                            <input
+                              required
+                              type="text"
+                              value={newWorkExperience.organization}
+                              onChange={(e) => setNewWorkExperience((p) => ({ ...p, organization: e.target.value }))}
+                              placeholder="e.g. SVIT, Vasad"
+                              className="field-input"
+                            />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="space-y-1">
+                            <label className="field-label">Start Month</label>
+                            <select value={newWorkExperience.start_month} onChange={(e) => setNewWorkExperience((p) => ({ ...p, start_month: e.target.value }))} className="field-input">
+                              <option value="">—</option>
+                              {MONTH_OPTIONS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                            </select>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="field-label">Start Year</label>
+                            <input
+                              type="number"
+                              min={1950}
+                              max={new Date().getFullYear()}
+                              value={newWorkExperience.start_year}
+                              onChange={(e) => setNewWorkExperience((p) => ({ ...p, start_year: e.target.value }))}
+                              placeholder="e.g. 2015"
+                              className="field-input"
+                            />
+                          </div>
+                        </div>
+                        <label className="flex items-center gap-2 text-xs font-medium text-zinc-300">
+                          <input
+                            type="checkbox"
+                            checked={newWorkExperience.is_current}
+                            onChange={(e) => setNewWorkExperience((p) => ({ ...p, is_current: e.target.checked, end_month: '', end_year: '' }))}
+                          />
+                          Currently Working
+                        </label>
+                        {!newWorkExperience.is_current && (
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="field-label">End Month</label>
+                              <select value={newWorkExperience.end_month} onChange={(e) => setNewWorkExperience((p) => ({ ...p, end_month: e.target.value }))} className="field-input">
+                                <option value="">—</option>
+                                {MONTH_OPTIONS.map((m) => <option key={m.value} value={m.value}>{m.label}</option>)}
+                              </select>
+                            </div>
+                            <div className="space-y-1">
+                              <label className="field-label">End Year</label>
+                              <input
+                                type="number"
+                                min={1950}
+                                max={new Date().getFullYear()}
+                                value={newWorkExperience.end_year}
+                                onChange={(e) => setNewWorkExperience((p) => ({ ...p, end_year: e.target.value }))}
+                                placeholder="e.g. 2020"
+                                className="field-input"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        <div className="space-y-1">
+                          <label className="field-label">Description (optional)</label>
+                          <textarea
+                            rows={2}
+                            value={newWorkExperience.description}
+                            onChange={(e) => setNewWorkExperience((p) => ({ ...p, description: e.target.value }))}
+                            className="field-input resize-none"
+                          />
+                        </div>
+                        <div className="flex justify-end">
+                          <button type="submit" className="rounded-lg bg-crimson px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 transition">
+                            Add
+                          </button>
+                        </div>
+                      </form>
+
+                      <div className="space-y-2">
+                        {workExperience.length === 0 ? (
+                          <p className="rounded-xl border border-dashed border-zinc-800 p-6 text-center text-xs text-zinc-600">No work experience recorded yet.</p>
+                        ) : (
+                          workExperience.map((w) => (
+                            <div key={w.id} className="flex items-start justify-between rounded-lg border border-zinc-800 bg-zinc-900/40 p-3">
+                              <div>
+                                <p className="text-sm font-medium text-white">
+                                  {w.position} <span className="text-zinc-500">· {w.organization}</span>
+                                </p>
+                                <p className="text-xs text-zinc-500 mt-0.5">
+                                  {MONTH_OPTIONS[w.start_month - 1]?.label} {w.start_year} —{' '}
+                                  {w.is_current ? 'Present' : `${MONTH_OPTIONS[w.end_month - 1]?.label} ${w.end_year}`}
+                                  {' · '}
+                                  {WORK_EXPERIENCE_CATEGORIES.find((c) => c.value === w.category)?.label}
+                                </p>
+                                {w.description && <p className="text-xs text-zinc-500 mt-0.5">{w.description}</p>}
+                              </div>
+                              <button onClick={() => handleDeleteWorkExperience(w.id)} className="rounded p-1 text-zinc-600 hover:bg-rose-500/10 hover:text-rose-400 transition shrink-0">
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          ))
                         )}
                       </div>
                     </div>

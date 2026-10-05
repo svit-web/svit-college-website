@@ -63,6 +63,10 @@ _Avoid_: blog, post, update, announcement
 An Entry recording that a student, team or department won or earned something (a prize, a rank, a selection). Institute-level announcements such as accreditations are News, not Achievements. A faculty member's awards and publications are part of their staff profile, not Achievements.
 _Avoid_: award, recognition
 
+**Work Experience**:
+A row in `staff_work_experience`: one position a faculty/staff member held — position, organization, a start month+year, and either an end month+year or "Currently Working". Tagged **Industry** or **Teaching/Academic**. A faculty member's current SVIT post is itself one of these entries (marked Currently Working), not a separate "joining year" field. Shown as a chronological timeline on the faculty member's own profile page; on a department's staff listing, only the per-category year totals show (e.g. "8 yrs industry · 12 yrs teaching"), not the entries themselves. Distinct from `staff_achievements` (qualifications, awards, patents, publications, research, activities), which stays free-text.
+_Avoid_: experience achievement, job history
+
 **Event type**:
 The fixed category of an Event (Fest, Cultural, Technical, Sports, Workshop, Seminar, Expert Session, STTP, FDP, Industrial Visit, Competition, Other). Chosen from a fixed list, never typed in freely. It says what the Event _is_, while its college, department or club says whose it is.
 _Avoid_: tag, category

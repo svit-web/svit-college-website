@@ -3508,12 +3508,11 @@ export type Database = {
           first_name: string
           gender: string | null
           id: string
-          joining_year: number | null
           last_name: string
           metadata: Json
+          middle_name: string | null
           muster_number: number | null
           office_hours: Json
-          past_experience_years: number | null
           phone: string | null
           photo_url: string | null
           qualification: string | null
@@ -3538,12 +3537,11 @@ export type Database = {
           first_name: string
           gender?: string | null
           id?: string
-          joining_year?: number | null
           last_name: string
           metadata?: Json
+          middle_name?: string | null
           muster_number?: number | null
           office_hours?: Json
-          past_experience_years?: number | null
           phone?: string | null
           photo_url?: string | null
           qualification?: string | null
@@ -3568,12 +3566,11 @@ export type Database = {
           first_name?: string
           gender?: string | null
           id?: string
-          joining_year?: number | null
           last_name?: string
           metadata?: Json
+          middle_name?: string | null
           muster_number?: number | null
           office_hours?: Json
-          past_experience_years?: number | null
           phone?: string | null
           photo_url?: string | null
           qualification?: string | null
@@ -3610,6 +3607,95 @@ export type Database = {
           {
             foreignKeyName: "staff_profiles_user_id_fkey"
             columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_work_experience: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          end_month: number | null
+          end_year: number | null
+          id: string
+          is_current: boolean
+          organization: string
+          position: string
+          staff_id: string
+          start_month: number
+          start_year: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          end_month?: number | null
+          end_year?: number | null
+          id?: string
+          is_current?: boolean
+          organization: string
+          position: string
+          staff_id: string
+          start_month: number
+          start_year: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          end_month?: number | null
+          end_year?: number | null
+          id?: string
+          is_current?: boolean
+          organization?: string
+          position?: string
+          staff_id?: string
+          start_month?: number
+          start_year?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_work_experience_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_experience_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_experience_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_experience_updated_by_fkey"
+            columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
             referencedColumns: ["id"]
