@@ -224,8 +224,8 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     const employeeCode = newStaffForm.employee_code.trim();
-    if (!/^\d{4}-[A-Za-z]{2,6}$/.test(employeeCode)) {
-      toast.error('Employee code is required, format: 4-digit number + hyphen + initials, e.g. 1265-NIC.');
+    if (!/^\d{1,4}-[A-Za-z]{2,6}$/.test(employeeCode)) {
+      toast.error('Employee code is required, format: 1–4 digit number + hyphen + initials, e.g. 1265-NIC.');
       return;
     }
     const phone = normalizePhone(newStaffForm.phone);
@@ -260,8 +260,8 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     try {
       const currentMeta = (generalForm.metadata as Record<string, any>) ?? {};
       const employeeCode = (generalForm.employee_code || '').trim();
-      if (!/^\d{4}-[A-Za-z]{2,6}$/.test(employeeCode)) {
-        toast.error('Employee code is required, format: 4-digit number + hyphen + initials, e.g. 1265-NIC.');
+      if (!/^\d{1,4}-[A-Za-z]{2,6}$/.test(employeeCode)) {
+        toast.error('Employee code is required, format: 1–4 digit number + hyphen + initials, e.g. 1265-NIC.');
         return;
       }
       const musterNumber = parseMusterNumber(generalForm.muster_number);
@@ -783,15 +783,15 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                   <input
                     required
                     type="text"
-                    pattern="^\d{4}-[A-Za-z]{2,6}$"
-                    title="Format: 4-digit number, hyphen, initials — e.g. 1265-NIC"
+                    pattern="^\d{1,4}-[A-Za-z]{2,6}$"
+                    title="Format: 1–4 digit number, hyphen, initials — e.g. 1265-NIC"
                     placeholder="e.g. 1265-NIC"
                     value={newStaffForm.employee_code}
                     onChange={(e) => setNewStaffForm((p) => ({ ...p, employee_code: e.target.value }))}
                     className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-white placeholder-zinc-600 focus:border-crimson focus:outline-none"
                   />
                   <p className="text-[11px] text-zinc-500">
-                    4-digit number + hyphen + initials, e.g. <span className="font-mono">1265-NIC</span>. Used to build the faculty's public profile link.
+                    1–4 digit number + hyphen + initials, e.g. <span className="font-mono">1265-NIC</span>. Used to build the faculty's public profile link.
                   </p>
                 </div>
                 <div className="space-y-1">
@@ -897,15 +897,15 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                         <input
                           type="text"
                           required
-                          pattern="^\d{4}-[A-Za-z]{2,6}$"
-                          title="Format: 4-digit number, hyphen, initials — e.g. 1265-NIC"
+                          pattern="^\d{1,4}-[A-Za-z]{2,6}$"
+                          title="Format: 1–4 digit number, hyphen, initials — e.g. 1265-NIC"
                           placeholder="e.g. 1265-NIC"
                           value={generalForm.employee_code || ''}
                           onChange={(e) => setGeneralForm((p) => ({ ...p, employee_code: e.target.value }))}
                           className="field-input"
                         />
                         <p className="text-[11px] text-slate-400">
-                          4-digit number + hyphen + initials, e.g. <span className="font-mono">1265-NIC</span>. Used to build the faculty's public profile link.
+                          1–4 digit number + hyphen + initials, e.g. <span className="font-mono">1265-NIC</span>. Used to build the faculty's public profile link.
                         </p>
                       </div>
 
