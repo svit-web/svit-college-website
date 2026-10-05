@@ -42,6 +42,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "*.supabase.co",
       },
+      {
+        protocol: "https",
+        hostname: "supabase.svit.qzz.io",
+      },
     ],
   },
 
