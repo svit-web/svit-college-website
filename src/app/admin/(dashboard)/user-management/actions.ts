@@ -359,3 +359,23 @@ export async function adminSetUserPassword(input: ResetPasswordInput) {
 
   return { ok: true };
 }
+
+// Soft delete only: a hard delete of auth.users would hit the NO ACTION
+// created_by/updated_by/deleted_by FKs on dozens of content tables (any
+// admin who's actually edited content, unlike a throwaway test account,
+// will have left a trail there) and fail outright. shouldSoftDelete=true
+// sets deleted_at and blocks login instead of removing the row, so every
+// created_by/updated_by reference stays valid.
+export async function deletePortalUser(userId: string): Promise<ActionResult<{ ok: true }>> {
+  const admin = await assertGlobalAdmin();
+
+  if (userId === admin.id) {
+    return { error: 'You cannot delete your own account.' };
+  }
+
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+  const { error } = await supabaseAdmin.auth.admin.deleteUser(userId, true);
+  if (error) return { error: error.message };
+
+  return { ok: true };
+}

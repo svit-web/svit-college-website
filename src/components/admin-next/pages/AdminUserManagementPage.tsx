@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, UserX, Loader2, Eye, EyeOff } from 'lucide-react';
 import {
   listPortalUsers,
   listScopeOptions,
@@ -14,6 +14,7 @@ import {
   removePortalUserSection,
   updatePortalUserProfile,
   adminSetUserPassword,
+  deletePortalUser,
   type PortalUser,
   type ScopeOption,
   type SectionOption,
@@ -136,6 +137,21 @@ export function AdminUserManagementPage() {
     refresh();
   }, []);
 
+  const handleDelete = async (u: PortalUser) => {
+    if (!window.confirm(`Deactivate ${u.email}? They will no longer be able to sign in. Their past edits stay attributed to them.`)) return;
+    setSaving(true);
+    try {
+      const result = await deletePortalUser(u.id);
+      if (result.error) throw new Error(result.error);
+      toast.success(`${u.email} deactivated.`);
+      await refresh();
+    } catch (err: any) {
+      toast.error(`Failed to deactivate user: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -198,6 +214,9 @@ export function AdminUserManagementPage() {
                       </button>
                       <button title="Reset password" onClick={() => setPasswordUser(u)} className="rounded p-1.5 text-slate-500 hover:text-navy hover:bg-slate-100">
                         <KeyRound className="h-4 w-4" />
+                      </button>
+                      <button title="Deactivate user" disabled={saving} onClick={() => handleDelete(u)} className="rounded p-1.5 text-slate-500 hover:text-crimson hover:bg-crimson/10 disabled:opacity-50">
+                        <UserX className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
