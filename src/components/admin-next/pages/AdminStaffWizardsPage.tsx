@@ -718,7 +718,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         <>
           <div className="fixed inset-0 z-40 bg-black/50 backdrop-blur-sm" onClick={closePanel} />
 
-          <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-lg flex-col bg-[#16181d] shadow-2xl border-l border-zinc-800 overflow-hidden">
+          <div className="fixed inset-y-0 right-0 z-50 flex w-full max-w-3xl flex-col bg-[#16181d] shadow-2xl border-l border-zinc-800 overflow-hidden">
             <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4 shrink-0">
               <h2 className="font-semibold text-white text-sm">
                 {isNewMode
