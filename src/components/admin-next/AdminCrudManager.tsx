@@ -156,7 +156,12 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   facilities: { fields: ENTRY_PHOTO_FIELDS },
   centers: { fields: ENTRY_PHOTO_FIELDS },
   sports: { fields: ENTRY_PHOTO_FIELDS },
-  achievements: { fields: ENTRY_PHOTO_FIELDS },
+  achievements: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+    },
+  },
   student_clubs: { fields: ENTRY_PHOTO_FIELDS },
   posts: { fields: ENTRY_PHOTO_FIELDS },
   user_profiles: {
