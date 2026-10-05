@@ -1,15 +1,9 @@
-'use client';
+"use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { ChevronDown, Mail, Phone } from "lucide-react";
-
-interface CommitteeMember {
-  name: string;
-  position?: string;
-  designation?: string;
-  email?: string;
-  phone?: string;
-}
+import type { CommitteeMember } from "@/lib/committees.functions";
 
 export function CommitteeMembers({ members }: { members: CommitteeMember[] }) {
   const [open, setOpen] = useState(false);
@@ -25,16 +19,39 @@ export function CommitteeMembers({ members }: { members: CommitteeMember[] }) {
         <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
           View Members ({members.length})
         </span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-navy transition-transform ${open ? "rotate-180" : ""}`} />
+        <ChevronDown
+          className={`h-4 w-4 shrink-0 text-navy transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
       {open && (
         <ul className="mt-3 divide-y divide-line border-t border-line">
           {members.map((m, i) => (
-            <li key={i} className="flex flex-col gap-1 py-3 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-              <div>
-                <div className="font-semibold text-navy">{m.name}</div>
-                {m.position && <div className="text-xs text-ink-soft">{m.position}</div>}
-                {m.designation && <div className="text-xs text-ink-soft">{m.designation}</div>}
+            <li
+              key={i}
+              className="flex flex-col gap-1 py-3 text-sm sm:flex-row sm:items-start sm:justify-between sm:gap-3"
+            >
+              <div className="flex items-start gap-3">
+                {m.photo_url && (
+                  <img
+                    src={m.photo_url}
+                    alt=""
+                    className="h-10 w-10 shrink-0 rounded-full border border-line object-cover"
+                  />
+                )}
+                <div>
+                  {m.profile_href ? (
+                    <Link
+                      href={m.profile_href}
+                      className="font-semibold text-navy hover:text-crimson"
+                    >
+                      {m.name}
+                    </Link>
+                  ) : (
+                    <div className="font-semibold text-navy">{m.name}</div>
+                  )}
+                  {m.position && <div className="text-xs text-ink-soft">{m.position}</div>}
+                  {m.designation && <div className="text-xs text-ink-soft">{m.designation}</div>}
+                </div>
               </div>
               {(m.email || m.phone) && (
                 <div className="flex flex-col gap-1 sm:items-end">

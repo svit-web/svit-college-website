@@ -2,18 +2,38 @@
 import { publicSupabase, unwrap } from "@/lib/supabase-public";
 
 // Members live in the committee_members child table (formerly
-// committees.metadata.members); staff_profile_id is set when the member was
-// auto-linked to a staff profile by email — External members carry only the
-// free-text fields.
+// committees.metadata.members). A Linked member (staff_profile_id set) is
+// rendered from the live staff profile — name, designation, contact, photo —
+// so edits to the profile show here automatically; the row's own text is the
+// fallback for External members and for links to unpublished/deleted staff.
+// `position` (Chairman, Member…) is committee-specific and always comes from
+// the row.
+interface LinkedStaff {
+  title: string | null;
+  first_name: string;
+  last_name: string;
+  designation: string | null;
+  email: string | null;
+  phone: string | null;
+  photo_url: string | null;
+  employee_code: string | null;
+  status: string;
+  deleted_at: string | null;
+}
+
 export interface CommitteeMember {
   id: string;
   name: string;
-  position?: string;
-  designation?: string;
-  email?: string;
-  phone?: string;
+  position?: string | null;
+  designation?: string | null;
+  email?: string | null;
+  phone?: string | null;
   staff_profile_id?: string | null;
   sort_order?: number;
+  photo_url?: string | null;
+  // Set only for Linked members whose staff profile is live.
+  profile_href?: string | null;
+  staff?: LinkedStaff | null;
 }
 
 export interface Committee {
@@ -38,15 +58,34 @@ export interface Committee {
  */
 const COMMITTEE_SELECT = `*,
       committee_members (
-        id, name, position, designation, email, phone, staff_profile_id, sort_order
+        id, name, position, designation, email, phone, staff_profile_id, sort_order,
+        staff:staff_profile_id (
+          title, first_name, last_name, designation, email, phone, photo_url,
+          employee_code, status, deleted_at
+        )
       )`;
+
+function resolveMember(m: CommitteeMember): CommitteeMember {
+  const s = m.staff;
+  if (!s || s.status !== "published" || s.deleted_at) return { ...m, staff: undefined };
+  return {
+    ...m,
+    name: [s.title, s.first_name, s.last_name].filter(Boolean).join(" "),
+    designation: s.designation ?? m.designation,
+    email: s.email ?? m.email,
+    phone: s.phone ?? m.phone,
+    photo_url: s.photo_url,
+    profile_href: s.employee_code ? `/staff/${encodeURIComponent(s.employee_code)}` : null,
+    staff: undefined,
+  };
+}
 
 // This project's PostgREST build rejects `order=committee_members(col.asc)`
 // (embedded ordering), so members are sorted here instead.
 function withSortedMembers<T extends { committee_members?: CommitteeMember[] }>(c: T): T {
-  c.committee_members = [...(c.committee_members ?? [])].sort(
-    (a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0),
-  );
+  c.committee_members = [...(c.committee_members ?? [])]
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+    .map(resolveMember);
   return c;
 }
 
