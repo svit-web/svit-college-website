@@ -152,7 +152,8 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           .is('deleted_at', null),
         (supabase as any).from('staff_achievements').select('*').eq('staff_id', staffId).is('deleted_at', null).order('year', { ascending: false }),
       ]);
-      setGeneralForm(gen || {});
+      // office_hours must be an array of {day, time}; older rows held {}.
+      setGeneralForm(gen ? { ...gen, office_hours: Array.isArray(gen.office_hours) ? gen.office_hours : [] } : {});
       setAssignments(asgn || []);
       setAchievements(achv || []);
       setExpertise(gen?.expertise || []);

@@ -124,7 +124,9 @@ export async function getStaffByEmployeeCode(code: string): Promise<StaffMember 
     photoUrl: data.photo_url ?? null,
     bio: data.bio ?? null,
     qualification: data.qualification ?? null,
-    officeHours: data.office_hours as StaffMember["officeHours"],
+    officeHours: Array.isArray(data.office_hours)
+      ? (data.office_hours as StaffMember["officeHours"])
+      : [],
     socialLinks: data.social_links as StaffMember["socialLinks"],
     joiningYear: data.joining_year ?? null,
     pastExperienceYears: data.past_experience_years ?? null,
