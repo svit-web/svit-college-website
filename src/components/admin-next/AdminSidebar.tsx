@@ -77,7 +77,6 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Homepage Layout', to: '/admin/homepage' },
       { label: 'About Page', to: '/admin/page-editors/about' },
       { label: 'Admissions Page', to: '/admin/page-editors/admissions' },
-      { label: 'Alumni Page', to: '/admin/page-editors/alumni' },
       { label: 'Menus / Nav', to: '/admin/menus' },
       { label: 'Menu Items', to: '/admin/tables/menu_items' },
       { label: 'News', to: '/admin/posts' },

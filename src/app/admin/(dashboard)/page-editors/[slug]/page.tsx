@@ -3,16 +3,15 @@ import { requireAdmin, getScopeLevel } from "@/app/lib/auth/admin";
 import { isRouteAllowedForUser } from "@/lib/admin-sections";
 import { AdminPageEditor } from "@/components/admin-next/pages/AdminPageEditor";
 import type { MetadataEditorGroup } from "@/components/admin-next/MetadataEditor";
-import {
-  validateAboutPageMetadata,
-  validateAdmissionsPageMetadata,
-} from "@/lib/page-metadata-validation";
+import type { PageMetadataValidator } from "@/lib/page-metadata-validation";
 
 interface PageEditorConfig {
   heading: string;
   description: string;
   groups: MetadataEditorGroup[];
-  validate?: (value: any) => string | null;
+  // A key, not the function: functions can't cross the server → client
+  // component boundary.
+  validator?: PageMetadataValidator;
 }
 
 // The `pages` singletons whose metadata IS the public page (ADR 0003). Each
@@ -22,7 +21,7 @@ const EDITORS: Record<string, PageEditorConfig> = {
     heading: "About Page",
     description:
       "Everything on the public About SVIT page — hero text, history, leadership messages, accreditation wording and contact details.",
-    validate: validateAboutPageMetadata,
+    validator: "about",
     groups: [
       {
         title: "Hero",
@@ -72,7 +71,7 @@ const EDITORS: Record<string, PageEditorConfig> = {
   admissions: {
     heading: "Admissions Page",
     description: "The how-to-apply steps and FAQs shown on the public Admissions page.",
-    validate: validateAdmissionsPageMetadata,
+    validator: "admissions",
     groups: [
       {
         title: "Process Steps",
@@ -81,12 +80,6 @@ const EDITORS: Record<string, PageEditorConfig> = {
       },
       { title: "FAQs", description: "Question & answer pairs (q, a).", keys: ["faqs"] },
     ],
-  },
-  alumni: {
-    heading: "Alumni Page",
-    description:
-      "Alumni network headline numbers. Note: the public alumni page has not been built yet — this content is stored until it is.",
-    groups: [{ title: "KPIs", description: "Headline numbers (label + value).", keys: ["kpis"] }],
   },
 };
 
@@ -114,7 +107,7 @@ export default async function PageEditorRoute({ params }: { params: Promise<{ sl
       heading={config.heading}
       description={config.description}
       groups={config.groups}
-      validate={config.validate}
+      validator={config.validator}
       admin={admin}
     />
   );

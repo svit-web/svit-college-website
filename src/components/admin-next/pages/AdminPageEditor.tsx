@@ -1,6 +1,6 @@
 "use client";
 
-// Dedicated editor for a `pages` singleton (about / admissions / alumni), per
+// Dedicated editor for a `pages` singleton (about / admissions), per
 // ADR 0003: the page's whole content is its metadata JSON, edited section by
 // section with typed inputs — not as raw JSON in the generic tables screen.
 
@@ -10,20 +10,24 @@ import { AlertTriangle, FileText, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { MetadataEditor, type MetadataEditorGroup } from "@/components/admin-next/MetadataEditor";
 import type { AdminUser } from "@/app/lib/auth/admin";
+import {
+  PAGE_METADATA_VALIDATORS,
+  type PageMetadataValidator,
+} from "@/lib/page-metadata-validation";
 
 export function AdminPageEditor({
   slug,
   heading,
   description,
   groups,
-  validate,
+  validator,
   admin,
 }: {
   slug: string;
   heading: string;
   description: string;
   groups?: MetadataEditorGroup[];
-  validate?: (value: any) => string | null;
+  validator?: PageMetadataValidator;
   admin: AdminUser;
 }) {
   const supabase = useMemo(() => createClient(), []);
@@ -63,8 +67,8 @@ export function AdminPageEditor({
       toast.error("The JSON view has invalid JSON — fix the highlighted error before saving.");
       return;
     }
-    if (validate) {
-      const validationError = validate(metadata);
+    if (validator) {
+      const validationError = PAGE_METADATA_VALIDATORS[validator](metadata);
       if (validationError) {
         toast.error(`Invalid content — ${validationError}`);
         return;

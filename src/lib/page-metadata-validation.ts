@@ -45,3 +45,10 @@ export function validateAdmissionsPageMetadata(value: unknown): string | null {
   if (!Array.isArray(record.faqs)) return "metadata.faqs must be an array";
   return null;
 }
+
+export const PAGE_METADATA_VALIDATORS = {
+  about: validateAboutPageMetadata,
+  admissions: validateAdmissionsPageMetadata,
+} satisfies Record<string, (value: unknown) => string | null>;
+
+export type PageMetadataValidator = keyof typeof PAGE_METADATA_VALIDATORS;

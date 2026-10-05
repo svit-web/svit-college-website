@@ -14,7 +14,19 @@ type JsonObject = { [key: string]: JsonValue };
 const inputClass =
   "w-full rounded border border-slate-200 bg-white px-2.5 py-1.5 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50";
 
+// Terse keys used in existing content whose humanized form would mean nothing
+// to a non-technical admin.
+const KEY_LABELS: Record<string, string> = {
+  n: "Step Number",
+  q: "Question",
+  a: "Answer",
+  desc: "Description",
+  url: "Link (URL)",
+  srNo: "Serial Number",
+};
+
 function humanizeKey(key: string): string {
+  if (KEY_LABELS[key]) return KEY_LABELS[key];
   return key
     .replace(/_/g, " ")
     .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
@@ -369,7 +381,17 @@ export function MetadataEditor({
           <h4 className="text-xs font-bold uppercase tracking-wider text-navy">{title}</h4>
           {description && <p className="mt-0.5 text-[11px] text-slate-500">{description}</p>}
         </div>
-        <ObjectEditor value={subset} onChange={mergeSection} depth={0} />
+        {keys.length === 1 && keys[0] in objectValue ? (
+          // One-key section: the heading already names the key, so edit its
+          // value directly instead of repeating the key as a nested row.
+          <ValueEditor
+            value={objectValue[keys[0]]}
+            onChange={(v) => onChange({ ...objectValue, [keys[0]]: v })}
+            depth={0}
+          />
+        ) : (
+          <ObjectEditor value={subset} onChange={mergeSection} depth={0} />
+        )}
       </section>
     );
   };
