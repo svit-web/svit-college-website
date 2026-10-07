@@ -3,6 +3,13 @@
     "supabase": {
       "type": "http",
       "url": "https://mcp.supabase.com/mcp?project_ref=agezrfclusigfqysbxwb"
+    },
+    "supabase-selfhosted": {
+      "type": "http",
+      "url": "https://supamcp.svit.qzz.io/mcp",
+      "headers": {
+        "x-mcp-key": "${SVIT_MCP_KEY}"
+      }
     }
   }
 }

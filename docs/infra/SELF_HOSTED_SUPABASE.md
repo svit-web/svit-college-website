@@ -21,6 +21,7 @@ rotating a credential.
 | DB container | `supabase-db` (Postgres, confusingly the actual DB container name even though the compose service is `db`) |
 | Tunnel/ingress | Cloudflare Tunnel, already running as a long-lived process on `user0` (`cloudflared tunnel run --token ...`); not a systemd service, so a `user0` reboot kills it — if the public URL stops responding, check `ps aux | grep cloudflared` on `user0` first |
 | Studio (dashboard) login | `DASHBOARD_USERNAME`/`DASHBOARD_PASSWORD` in `~/deploy/supabase/docker/.env` on `user0` |
+| MCP endpoint | `https://supamcp.svit.qzz.io/mcp` (Cloudflare Tunnel hostname, path-scoped to `/mcp`), backed by Kong's `/mcp` route → studio's `/api/mcp`. Auth = `x-mcp-key` header checked by Kong (`key-auth` + `acl` on the route, consumer `mcp-client`); the key is `MCP_API_KEY` in `.env` on `user0` and `SVIT_MCP_KEY` in `.claude/settings.local.json` (gitignored). Without the header Kong returns 401. |
 
 The hosted platform project ref lives in `.mcp.json` at the repo root (currently
 `agezrfclusigfqysbxwb`) — that's the Supabase MCP tool's target, a completely
@@ -230,9 +231,23 @@ the hosted platform. See the `dev:selfhosted` script in `package.json` and
 
 ## What the MCP tooling can and can't see
 
-The `supabase` MCP server (`.mcp.json`) is scoped to the **hosted platform project
-only** — it has no visibility into self-hosted. There's no MCP server wired up for
-self-hosted; all self-hosted work goes through direct `ssh user0` + `docker exec` +
-`psql`, as documented above. Don't try to point the existing MCP tool at self-hosted
-by changing its URL — it talks to the Supabase Management API, which self-hosted
-doesn't have.
+Two MCP servers in `.mcp.json`:
+
+- `supabase` — the **hosted platform project** (Management API backed).
+- `supabase-selfhosted` — the **self-hosted instance**, via `https://supamcp.svit.qzz.io/mcp`
+  with the `x-mcp-key` header (value from `SVIT_MCP_KEY` in `.claude/settings.local.json`,
+  which also holds it on the server as `MCP_API_KEY` in `~/deploy/supabase/docker/.env`).
+  Its `execute_sql` runs against the self-hosted DB — same power as the `docker exec psql`
+  path above, so the usual caution applies.
+
+How the self-hosted MCP was enabled (2026-10-08): Kong's `mcp` service in
+`volumes/api/kong.yml` (blocked by default with `request-termination`) was switched to
+`ip-restriction` (loopback + docker bridge gateway `172.24.0.1`) + `key-auth`
+(`x-mcp-key`) + `acl` (consumer `mcp-client`, group `mcp`). Kong only listens on
+`127.0.0.1:8000`, so the only network path is the Cloudflare tunnel hostname
+`supamcp.svit.qzz.io` (path `/mcp`) — configured in the Cloudflare Zero Trust dashboard,
+not on the server (the tunnel is token-based). No Cloudflare Access policy is in front;
+the Kong key IS the authentication. To rotate the key: change `MCP_API_KEY` in `.env`,
+`docker compose up -d kong --force-recreate`, and update `SVIT_MCP_KEY` locally.
+Pre-change backup of `kong.yml` lives on `user0` next to the live file
+(`kong.yml.bak-20261008`).
