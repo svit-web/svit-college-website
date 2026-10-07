@@ -37,6 +37,12 @@ const nextConfig: NextConfig = {
     // Safe to bypass here since remotePatterns below already locks fetches
     // to trusted hostnames only.
     dangerouslyAllowLocalIP: true,
+    // Several department/college logos are SVGs (e.g. dept-ce.svg). Next blocks
+    // SVG optimization by default (XSS risk from untrusted sources); the CSP
+    // below neutralizes that since all sources are our own trusted storage.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     remotePatterns: [
       {
         protocol: "https",

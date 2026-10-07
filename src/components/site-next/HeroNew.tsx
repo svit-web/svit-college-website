@@ -10,7 +10,7 @@ import { pillOutline, pillPrimary } from "@/components/site-next/site-styles";
 import { HOMEPAGE_ROTATE_MS, heroFadeStyles, heroTextVars, type HeroAppearance } from "@/lib/theme.functions";
 
 const DEFAULT_IMAGE_URL =
-  "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1785967226472-1d6hzb.webp";
+  "https://supabase.svit.qzz.io/storage/v1/object/public/media/images/1785967226472-1d6hzb.webp";
 
 interface HeroNewProps {
   items: HomepageItem[];
