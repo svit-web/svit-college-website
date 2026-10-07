@@ -103,7 +103,17 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   };
   const [newWorkExperience, setNewWorkExperience] = useState(emptyWorkExperience);
   const [newTag, setNewTag] = useState('');
-  const [newStaffForm, setNewStaffForm] = useState({ title: 'Dr.', first_name: '', middle_name: '', last_name: '', employee_code: '', email: '', phone: '' });
+  const [newStaffForm, setNewStaffForm] = useState({
+    title: 'Dr.',
+    first_name: '',
+    middle_name: '',
+    last_name: '',
+    employee_code: '',
+    email: '',
+    phone: '',
+    department_id: '',
+    designation_id: '',
+  });
   const [createLoading, setCreateLoading] = useState(false);
 
   const [importFacultyOpen, setImportFacultyOpen] = useState(false);
@@ -212,7 +222,17 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     setSelectedId(null);
     setIsNewMode(true);
     setActiveTab('general');
-    setNewStaffForm({ title: 'Dr.', first_name: '', middle_name: '', last_name: '', employee_code: '', email: '', phone: '' });
+    setNewStaffForm({
+      title: 'Dr.',
+      first_name: '',
+      middle_name: '',
+      last_name: '',
+      employee_code: '',
+      email: '',
+      phone: '',
+      department_id: '',
+      designation_id: '',
+    });
     setPanelOpen(true);
   }
 
@@ -233,20 +253,36 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       toast.error(phone.error);
       return;
     }
+    if (!newStaffForm.department_id || !newStaffForm.designation_id) {
+      toast.error('Department and designation are required — every faculty member must belong to at least one department.');
+      return;
+    }
     setCreateLoading(true);
+    let createdId: string | null = null;
     try {
+      const { department_id, designation_id, ...profileFields } = newStaffForm;
       const { data, error } = await supabase
         .from('staff_profiles')
-        .insert({ ...newStaffForm, phone: phone.value, employee_code: employeeCode, status: 'published', created_by: admin.id })
+        .insert({ ...profileFields, phone: phone.value, employee_code: employeeCode, status: 'published', created_by: admin.id })
         .select()
         .single();
       if (error) throw error;
+      createdId = data.id;
+      const { error: assignmentError } = await supabase.from('staff_department_assignments').insert({
+        staff_id: data.id,
+        department_id,
+        designation_id,
+        is_primary: true,
+        status: 'published',
+      });
+      if (assignmentError) throw assignmentError;
       toast.success('Staff profile created!');
       await loadStaffList();
       setSelectedId(data.id);
       setIsNewMode(false);
       setActiveTab('general');
     } catch (err: any) {
+      if (createdId) await supabase.from('staff_profiles').delete().eq('id', createdId);
       toast.error(err.code === '23505' ? `Employee code ${employeeCode} is already used by another staff member.` : err.message);
     } finally {
       setCreateLoading(false);
@@ -382,6 +418,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   }
 
   async function handleDeleteAssignment(id: string) {
+    if (assignments.filter((a) => !a.deleted_at).length <= 1) {
+      toast.error('Every faculty member must have at least one department. Add another assignment before removing this one.');
+      return;
+    }
     try {
       await supabase
         .from('staff_department_assignments')
@@ -815,6 +855,45 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                   />
                   <p className="text-[11px] text-zinc-500">Internal use only — never shown on the public site.</p>
                 </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Department</label>
+                    <select
+                      required
+                      value={newStaffForm.department_id}
+                      onChange={(e) => setNewStaffForm((p) => ({ ...p, department_id: e.target.value }))}
+                      className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-white focus:border-crimson focus:outline-none"
+                    >
+                      <option value="">Select department…</option>
+                      {scopedDepartments.map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name} ({d.code})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wide">Designation</label>
+                    <select
+                      required
+                      value={newStaffForm.designation_id}
+                      onChange={(e) => setNewStaffForm((p) => ({ ...p, designation_id: e.target.value }))}
+                      className="w-full rounded-lg border border-zinc-700 bg-zinc-900 px-2.5 py-2 text-sm text-white focus:border-crimson focus:outline-none"
+                    >
+                      <option value="">Select designation…</option>
+                      {designationGroups.map((g) => (
+                        <optgroup key={g.value} label={g.label}>
+                          {g.options.map((d) => (
+                            <option key={d.id} value={d.id}>
+                              {d.title}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <p className="text-[11px] text-zinc-500">Every faculty member must have at least one department. More assignments can be added after creating the profile.</p>
                 <div className="pt-2 flex justify-end gap-2">
                   <button type="button" onClick={closePanel} className="rounded-lg border border-zinc-700 px-4 py-2 text-sm text-zinc-400 hover:text-white transition">
                     Cancel
