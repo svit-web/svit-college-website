@@ -29,7 +29,6 @@ import type { RecruiterRow } from "@/lib/homepage";
 export interface CollegeDept {
   id: string;
   name: string;
-  slug: string;
   code: string;
   logo_url?: string | null;
   metadata: { degree_type?: string | null; [key: string]: any };

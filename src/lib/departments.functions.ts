@@ -6,7 +6,6 @@ export interface Department {
   college_id: string;
   college_slug: string; // from joined colleges table
   name: string;
-  slug: string;
   code: string;
   head_of_department_id: string | null;
   logo_url: string | null;
@@ -79,27 +78,6 @@ export async function getDepartmentsByCollege(collegeId: string) {
   }
 
   return (data ?? []).map(mapRow) as Department[];
-}
-
-/**
- * Fetch a single department by slug
- */
-export async function getDepartmentBySlug(slug: string) {
-  const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('departments')
-    .select('*, colleges(slug)')
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .is('deleted_at', null)
-    .maybeSingle();
-
-  if (error) {
-    console.error('Error fetching department by slug:', error);
-    throw error;
-  }
-
-  return data ? mapRow(data) as Department : null;
 }
 
 /**
@@ -176,7 +154,7 @@ export async function getCourseWithDept(id: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('courses')
-    .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake, departments(id, name, code, slug)')
+    .select('id, name, code, degree_level, metadata, department_id, short_name, year_started, duration_years, intake, departments(id, name, code)')
     .eq('id', id)
     .eq('status', 'published')
     .is('deleted_at', null)
@@ -196,6 +174,6 @@ export async function getCourseWithDept(id: string) {
     year_started: data.year_started,
     duration_years: data.duration_years,
     intake: data.intake,
-    dept: dept ? { name: dept.name, code: dept.code, slug: dept.slug } : null,
+    dept: dept ? { name: dept.name, code: dept.code } : null,
   };
 }

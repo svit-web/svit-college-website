@@ -11,6 +11,7 @@ import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
 import { EVENT_TYPE_LABELS } from '@/lib/event-types';
 import { validateAboutPageMetadata } from '@/lib/page-metadata-validation';
+import { toSlug, toCode, toCodeStrict } from '@/lib/code-generator';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import {
   useReactTable,
@@ -94,7 +95,18 @@ interface TableFieldConfig {
   // Enum fields only: human-readable option labels keyed by enum value
   // (falls back to formatLabel for any value not listed).
   optionLabels?: Record<string, string>;
+  // Live-derives this field's value from another field (by name, usually
+  // "name") on new records only, using the matching GENERATORS variant below.
+  // Stays editable; auto-fill stops the moment the admin types in the field
+  // directly, same pattern as AdminLabsPage/AdminSportsPage's own slugify.
+  autoGenerateFrom?: { source: string; variant: 'slug' | 'code' | 'codeStrict' };
 }
+
+const CODE_GENERATORS: Record<'slug' | 'code' | 'codeStrict', (name: string) => string> = {
+  slug: toSlug,
+  code: toCode,
+  codeStrict: toCodeStrict,
+};
 
 // Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
 // card_photo_url and also owns album_id + has_detail_page, which are therefore
@@ -133,11 +145,23 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     writePermissions: {
       resolve: (level) => ({ insert: false, update: level === 'college', delete: false }),
     },
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+      code: { autoGenerateFrom: { source: 'name', variant: 'codeStrict' } },
+    },
   },
   departments: {
     scope: { selfScopeLevel: 'department' },
     writePermissions: {
       resolve: (level) => (level === 'department' ? { insert: false, update: true, delete: false } : undefined),
+    },
+    fields: {
+      code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+    },
+  },
+  courses: {
+    fields: {
+      code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
     },
   },
   events: {
@@ -151,15 +175,23 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
         booleanLabel: 'Feature on homepage (max 8 at once)',
         lockedLabel: 'Feature on homepage (global admin only)',
       },
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
     },
   },
-  facilities: { fields: ENTRY_PHOTO_FIELDS },
+  facilities: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+      code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+    },
+  },
   centers: { fields: ENTRY_PHOTO_FIELDS },
   sports: { fields: ENTRY_PHOTO_FIELDS },
   achievements: {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
     },
   },
   student_clubs: { fields: ENTRY_PHOTO_FIELDS },
@@ -220,6 +252,9 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any | null>(null);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
+  // Column names (on a new record only) still being live-derived from their
+  // `autoGenerateFrom.source` field; typing directly into one removes it here.
+  const [autoFields, setAutoFields] = useState<Set<string>>(new Set());
   const [rowSelection, setRowSelection] = useState({});
 
   const [fkCache, setFkCache] = useState<Record<string, Record<string, string>>>({});
@@ -420,11 +455,38 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     });
 
     setFormValues(initialValues);
+    setAutoFields(
+      record
+        ? new Set()
+        : new Set(
+            Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})
+              .filter(([, cfg]) => cfg.autoGenerateFrom)
+              .map(([col]) => col),
+          ),
+    );
     setIsModalOpen(true);
   };
 
   const handleFieldChange = (name: string, value: any) => {
-    setFormValues((prev) => ({ ...prev, [name]: value }));
+    setFormValues((prev) => {
+      const next = { ...prev, [name]: value };
+      if (autoFields.size > 0) {
+        for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
+          if (cfg.autoGenerateFrom?.source === name && autoFields.has(col)) {
+            next[col] = CODE_GENERATORS[cfg.autoGenerateFrom.variant](value ?? '');
+          }
+        }
+      }
+      return next;
+    });
+    // Typing directly into an auto-derived field locks it from further auto-fill.
+    if (autoFields.has(name)) {
+      setAutoFields((prev) => {
+        const next = new Set(prev);
+        next.delete(name);
+        return next;
+      });
+    }
   };
 
   const logAuditAction = async (action: 'INSERT' | 'UPDATE' | 'DELETE', recordId: string, oldValues: any, newValues: any) => {
@@ -1054,6 +1116,11 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                           className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
                         />
                         {col.type === 'ARRAY' && <p className="text-[10px] text-slate-500 font-medium">Enter multiple tags separated by commas.</p>}
+                        {autoFields.has(col.name) && (
+                          <p className="text-[10px] text-slate-500 font-medium">
+                            Auto-generated from {TABLE_CONFIGS[tableId]?.fields?.[col.name]?.autoGenerateFrom?.source} — edit to override.
+                          </p>
+                        )}
                       </div>
                     )}
                   </div>

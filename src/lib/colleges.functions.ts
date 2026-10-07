@@ -50,7 +50,6 @@ export async function getDepartmentsByCollegeSlug(slug: string) {
     return [] as {
       id: string;
       name: string;
-      slug: string;
       code: string;
       logo_url: string | null;
       metadata: any;
@@ -58,17 +57,16 @@ export async function getDepartmentsByCollegeSlug(slug: string) {
 
   const { data, error } = await supabase
     .from("departments")
-    .select("id, name, slug, code, logo_url, metadata")
+    .select("id, name, code, logo_url, metadata")
     .eq("college_id", college.id)
     .eq("status", "published")
     .is("deleted_at", null)
     .order("name");
-  if (error) return [] as { id: string; name: string; slug: string; code: string; metadata: any }[];
+  if (error) return [] as { id: string; name: string; code: string; metadata: any }[];
 
   return (data ?? []) as {
     id: string;
     name: string;
-    slug: string;
     code: string;
     logo_url: string | null;
     metadata: any;

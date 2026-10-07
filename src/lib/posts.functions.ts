@@ -19,7 +19,7 @@ export interface Post {
   expires_at: string | null;
   category: { name: string; slug: string } | null;
   college: { name: string; slug: string } | null;
-  department: { name: string; slug: string } | null;
+  department: { name: string; code: string } | null;
   metadata: Record<string, any>;
   seo: SeoOverride | null;
   created_at: string;
@@ -30,7 +30,7 @@ const POST_SELECT = [
   'id, title, slug, summary, content, card_photo_url, album_id, is_featured',
   'scope_type, published_at, expires_at, metadata, created_at, updated_at',
   'category:content_categories(name, slug)',
-  'college:colleges(name, slug), department:departments(name, slug)',
+  'college:colleges(name, slug), department:departments(name, code)',
   SEO_OVERRIDE_SELECT,
 ].join(', ');
 

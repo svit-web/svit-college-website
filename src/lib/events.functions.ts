@@ -31,7 +31,7 @@ export interface CampusEvent {
   scope_type: 'global' | 'trust' | 'institute' | 'college' | 'department';
   is_featured: boolean;
   college: { name: string; slug: string } | null;
-  department: { name: string; slug: string } | null;
+  department: { name: string; code: string } | null;
   club: { name: string; slug: string; has_detail_page: boolean } | null;
   subtitle: string | null;
   accent_color: string | null;
@@ -48,7 +48,7 @@ const EVENT_WITH_SCOPE_SELECT = [
   'id, title, slug, tag, description, start_date, end_date, location, map_url, registration_link',
   'card_photo_url, has_detail_page, album_id, event_type, club_id',
   'sort_order, status, scope_type, is_featured, subtitle, accent_color, metadata, created_at, updated_at',
-  'college:colleges(name, slug), department:departments(name, slug)',
+  'college:colleges(name, slug), department:departments(name, code)',
   'club:student_clubs(name, slug, has_detail_page)',
   SEO_OVERRIDE_SELECT,
 ].join(', ');

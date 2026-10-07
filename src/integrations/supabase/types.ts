@@ -969,7 +969,6 @@ export type Database = {
           name: string
           overview: string | null
           short_name: string | null
-          slug: string
           status: Database["public"]["Enums"]["content_status"]
           theme_color: string | null
           updated_at: string
@@ -997,7 +996,6 @@ export type Database = {
           name: string
           overview?: string | null
           short_name?: string | null
-          slug: string
           status?: Database["public"]["Enums"]["content_status"]
           theme_color?: string | null
           updated_at?: string
@@ -1025,7 +1023,6 @@ export type Database = {
           name?: string
           overview?: string | null
           short_name?: string | null
-          slug?: string
           status?: Database["public"]["Enums"]["content_status"]
           theme_color?: string | null
           updated_at?: string
