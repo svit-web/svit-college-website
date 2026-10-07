@@ -89,14 +89,13 @@ select count(*) from pg_policy where polrelid = 'storage.objects'::regclass;
 -- MCP server's execute_sql) and recreate them verbatim with CREATE POLICY
 ```
 
-## Local dev against self-hosted
+## Local dev
 
-`.env.selfhosted` at the repo root holds the self-hosted instance's
-`NEXT_PUBLIC_SUPABASE_URL`/keys (gitignored — contains the service-role key).
-`npm run dev:selfhosted` / `pnpm dev:selfhosted` loads it via `dotenv-cli`,
-overriding the platform values in the base `.env`. Plain `npm run dev` still uses
-the hosted platform. See the `dev:selfhosted` script in `package.json` and
-`dotenv-cli`'s invocation there if this needs to change.
+`.env` at the repo root now holds the **self-hosted** (prod) instance's
+`NEXT_PUBLIC_SUPABASE_URL`/keys (gitignored — contains the service-role key), so
+plain `npm run dev` runs against self-hosted: prod parity. The old hosted-platform
+values live in `.env.old` (gitignored); `npm run dev:cloud` loads them via
+`dotenv-cli` for the rare case of testing against the cloud project.
 
 ## The two MCP servers
 

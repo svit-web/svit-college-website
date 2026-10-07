@@ -96,10 +96,9 @@ gallery/[albumId], news, downloads, grievance, alumni, etc. Dependent pages have
   is the latest migration status.
 - Remaining cutover items (Vercel preview parity, production steps) need the owner's access.
 - `typedRoutes` is disabled; no `.env.example` exists. Some `any` casts in the data layer/`admin.ts`.
-- Root has leftover one-off files (`MIGRATION_COMPLETE.txt`, `FACULTY_*`, `faculty_summary.json`).
 - Supabase project ref for the MCP server is in `.mcp.json`; migrations are applied to a live DB
   that has drifted from tracked history before — inspect the live schema before writing migrations.
-- **A second, self-hosted Supabase instance** (college server) also exists, independent of the
-  platform project the MCP server talks to. Read `docs/infra/SELF_HOSTED_SUPABASE.md` before
-  touching it — connecting, applying migrations, and a resync procedure that breaks two specific
-  things every time unless you know to fix them.
+- **A second, self-hosted Supabase instance** (college server) is **production** — the site runs
+  against it. Access it only via the `supabase-selfhosted` MCP server in `.mcp.json` (never SSH).
+  Read `docs/infra/SELF_HOSTED_SUPABASE.md` before touching it — migrations, post-resync checks,
+  and what counts as an operator task.

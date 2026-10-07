@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev --webpack",
-    "dev:selfhosted": "dotenv -e .env.selfhosted -- next dev --webpack",
+    "dev:cloud": "dotenv -e .env.old -- next dev --webpack",
     "build": "next build && tsx scripts/build-search-index.ts",
     "start": "next start",
     "lint": "eslint .",
