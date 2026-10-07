@@ -21,7 +21,9 @@ export async function getCollegesGrid() {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("colleges")
-    .select("slug, code, nav_label, name, logo_url, sort_order, metadata, show_in_navigation, tagline")
+    .select(
+      "slug, code, nav_label, name, logo_url, sort_order, metadata, show_in_navigation, tagline",
+    )
     .eq("status", "published")
     .is("deleted_at", null)
     .order("sort_order", { ascending: true });
@@ -49,6 +51,7 @@ export async function getJobListings() {
     .eq("item_type", "job")
     .eq("is_active", true)
     .eq("status", "published")
+    .is("deleted_at", null)
     .order("sort_order", { ascending: true });
   if (error) throw new Error(error.message);
   return data ?? [];
@@ -99,4 +102,3 @@ export async function getLatestEvents() {
   if (error) throw new Error(error.message);
   return data ?? [];
 }
-
