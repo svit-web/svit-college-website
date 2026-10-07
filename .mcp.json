@@ -6,7 +6,7 @@
     },
     "supabase-selfhosted": {
       "type": "http",
-      "url": "https://supamcp.svit.qzz.io/mcp",
+      "url": "https://supabase.svit.qzz.io/mcp",
       "headers": {
         "x-mcp-key": "${SVIT_MCP_KEY}"
       }

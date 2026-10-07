@@ -4,7 +4,7 @@ A second Supabase instance, self-hosted on the college's own server, runs alongs
 the hosted platform project. It serves the **production site**.
 
 **Access is via the official MCP server only** — the `supabase-selfhosted` entry in
-`.mcp.json` (`https://supamcp.svit.qzz.io/mcp`, authenticated by the `x-mcp-key`
+`.mcp.json` (`https://supabase.svit.qzz.io/mcp`, authenticated by the `x-mcp-key`
 header). Do **not** SSH into the server to work on this instance; Claude sessions
 have no reason to, and this doc deliberately documents no shell path in. Anything
 the MCP can't do (restart a container, rotate the key, revive the tunnel) is an
@@ -16,7 +16,7 @@ operator task on the server — flag it to the owner instead of working around i
 |---|---|
 | Server | College server (`user0`) — operator-managed, not accessed directly by Claude sessions |
 | Public URL | `https://supabase.svit.qzz.io` (check the server `.env`'s `SUPABASE_PUBLIC_URL` before assuming, if the operator changes it) |
-| MCP endpoint | `https://supamcp.svit.qzz.io/mcp` (Cloudflare Tunnel hostname, path-scoped to `/mcp`), backed by Kong's `/mcp` route → studio's `/api/mcp`. Kong checks the `x-mcp-key` header (`key-auth` + `acl`, consumer `mcp-client`); no key → 401. `/mcp` on the main domain works identically — the check is by path, not hostname. |
+| MCP endpoint | `https://supabase.svit.qzz.io/mcp` (`.mcp.json` uses this), backed by Kong's `/mcp` route → studio's `/api/mcp`. Kong checks the `x-mcp-key` header (`key-auth` + `acl`, consumer `mcp-client`); no key → 401. The alternate hostname `supamcp.svit.qzz.io` (path-scoped `/mcp` in the tunnel) works identically — the check is by path, not hostname. |
 | Studio (dashboard) | Web dashboard at the public URL; login credentials live in the server's `.env` (operator-provided) |
 | Postgres / pooler | Loopback-only on the server, deliberately — never re-expose publicly |
 | Tunnel | Cloudflare Tunnel as a long-lived process on the server (token-based, ingress configured in the Cloudflare dashboard). If the public URL stops responding, the tunnel process likely died after a reboot — operator task. |
@@ -101,7 +101,7 @@ the hosted platform. See the `dev:selfhosted` script in `package.json` and
 ## The two MCP servers
 
 - `supabase` — the **hosted platform project** (Management API backed).
-- `supabase-selfhosted` — the **self-hosted instance** via `https://supamcp.svit.qzz.io/mcp`
+- `supabase-selfhosted` — the **self-hosted instance** via `https://supabase.svit.qzz.io/mcp`
   with the `x-mcp-key` header. The key is `SVIT_MCP_KEY` in `.claude/settings.local.json`
   (gitignored) locally, and `MCP_API_KEY` in the server's `.env` on the other end.
 
