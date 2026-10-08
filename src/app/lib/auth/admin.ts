@@ -1,4 +1,5 @@
 import { createClient } from '../supabase/server';
+import { FULL_ACCESS_ROLE_CODES } from '@/lib/admin-sections';
 
 export interface AdminRole {
   code: string;
@@ -28,14 +29,15 @@ export interface AdminUser {
 }
 
 // Allowed admin-level role codes — only these grant portal access.
-// Only 'admin' and 'editor' rows currently exist in `roles`; in practice every
-// scoped admin (college/department/institute/trust) is granted the 'editor'
-// code with a scoped user_roles row (see getScopeConstraints below, which
-// reads scope_type, not the role code). 'department_admin' and 'college_admin'
-// are reserved for a possible future split of permissions by role rather than
-// scope and are not currently assignable — don't assume a role row with
-// either code exists.
-const AUTHORIZED_ROLE_CODES = ['admin', 'editor', 'department_admin', 'college_admin'] as const;
+// Full-access codes (admin/editor, with department_admin/college_admin
+// reserved — see FULL_ACCESS_ROLE_CODES in src/lib/admin-sections.ts) carry
+// the ordinary scope-tier semantics; every scoped admin
+// (college/department/institute/trust) is granted the 'editor' code with a
+// scoped user_roles row. Section-scoped codes grant portal access limited
+// to the user's section grants: currently only 'sports_secretary' (Sports &
+// Athletics + sports-category achievements), which gets scope level
+// 'section' rather than a scope tier.
+const AUTHORIZED_ROLE_CODES = [...FULL_ACCESS_ROLE_CODES, 'sports_secretary'] as const;
 
 /**
  * Get the current admin user with roles from server-side session.
@@ -251,20 +253,30 @@ const SCOPE_RANK: Record<string, number> = {
  * Get the broadest scope level a user holds — used for route/nav visibility
  * (distinct from getScopeConstraints, which returns RLS filter values).
  * A user holding multiple role grants is treated as operating at their
- * widest one. Mirrors the old client-side useUserScope() hook exactly.
+ * widest one. Mirrors the client-side useUserScope() hook.
+ *
+ * Section-only users (no full-access role — e.g. a Sports Secretary) get
+ * 'section': their reach comes solely from section grants, and a scoped
+ * section-role row must never widen anyone's nav to its own scope tier
+ * (see isRouteAllowedForUser in src/lib/admin-sections.ts).
  */
 export function getScopeLevel(
   admin: AdminUser
-): 'global' | 'trust' | 'institute' | 'college' | 'department' | 'none' {
+): 'global' | 'trust' | 'institute' | 'college' | 'department' | 'section' | 'none' {
   if (admin.roles.length === 0) return 'none';
 
   if (hasRole(admin, 'admin')) return 'global';
 
-  const best = admin.roles.reduce((acc, r) => {
+  const fullAccessRoles = admin.roles.filter((r) =>
+    (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(r.code)
+  );
+  if (fullAccessRoles.length === 0) return 'section';
+
+  const best = fullAccessRoles.reduce((acc, r) => {
     const rank = SCOPE_RANK[r.scope_type] ?? 99;
     const bestRank = SCOPE_RANK[acc.scope_type] ?? 99;
     return rank < bestRank ? r : acc;
-  }, admin.roles[0]);
+  }, fullAccessRoles[0]);
 
   return (best.scope_type as 'global' | 'trust' | 'institute' | 'college' | 'department') || 'none';
 }

@@ -23,7 +23,7 @@ import type { AdminUser } from '@/app/lib/auth/admin';
 
 interface SidebarProps {
   admin: AdminUser;
-  scopeLevel: 'global' | 'trust' | 'institute' | 'college' | 'department' | 'none';
+  scopeLevel: 'global' | 'trust' | 'institute' | 'college' | 'department' | 'section' | 'none';
   logout: () => void | Promise<void>;
   collapsed: boolean;
   onToggle: () => void;
@@ -157,6 +157,8 @@ export function AdminSidebar({
       ? 'College Admin'
       : scopeLevel === 'department'
       ? 'Department Admin'
+      : scopeLevel === 'section'
+      ? 'Section Editor'
       : 'Editor';
   const sectionCodes = admin.sections.map((s) => s.code);
   const visibleGroups = NAV_GROUPS.map((group) => ({

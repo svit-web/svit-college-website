@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Home,
   GraduationCap,
+  Trophy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { isRouteAllowedForUser } from "@/lib/admin-sections";
@@ -66,6 +67,14 @@ const PRIMARY_CARDS = [
     color: "text-emerald-400",
     bg: "bg-emerald-500/10 border-emerald-500/20",
   },
+  {
+    key: "sports",
+    label: "Sports & Athletics",
+    icon: Trophy,
+    link: "/admin/sports",
+    color: "text-orange-400",
+    bg: "bg-orange-500/10 border-orange-500/20",
+  },
 ] as const;
 
 const SECONDARY_CARDS = [
@@ -114,6 +123,7 @@ const SCOPE_LABEL: Record<string, string> = {
   trust: "Trust Admin",
   college: "College Admin",
   department: "Department Admin",
+  section: "Section Editor",
   none: "No Role",
 };
 

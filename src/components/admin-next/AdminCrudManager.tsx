@@ -8,7 +8,7 @@ import { EntryPhotosEditor } from './EntryPhotosEditor';
 import { MetadataEditor } from './MetadataEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
-import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
+import { GLOBAL_ONLY_TABLE_IDS, getRouteSections } from '@/lib/admin-sections';
 import { EVENT_TYPE_LABELS } from '@/lib/event-types';
 import type { AdminOption } from '@/lib/admin-option-sets';
 import {
@@ -306,6 +306,26 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
 
   const userScope = useUserScope(admin.roles);
 
+  // The scope_level value to write into scoped-table defaults (scope_type,
+  // college_id, ...). Section-only users aren't a scope tier, so their rows
+  // default to the scope of the section-role grant itself (e.g. 'college'
+  // for a college-scoped Sports Secretary).
+  const scopeDefaultLevel = userScope.level === 'section' ? userScope.sectionScope : userScope.level;
+
+  // Row-level restriction for section-only users: a sports-section grant
+  // lets RLS write only category='sports' achievements (migration
+  // 20261008140000_sports_secretary_role.sql), so the list, the create form
+  // and the category field all mirror that — the user only ever sees and
+  // creates rows they can actually save. campus_life (the broader grant)
+  // and any full-access role sidestep this filter entirely.
+  const sportsRowFilter =
+    tableId === 'achievements' &&
+    userScope.level === 'section' &&
+    admin.sections.some((s) => s.code === 'sports') &&
+    !admin.sections.some((s) => s.code === 'campus_life')
+      ? { column: 'category', value: 'sports' }
+      : null;
+
   useEffect(() => {
     async function loadSchema() {
       setSchemaLoading(true);
@@ -408,6 +428,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         }
       }
 
+      if (sportsRowFilter) {
+        query = query.eq(sportsRowFilter.column, sportsRowFilter.value);
+      }
+
       if (cols.includes('deleted_at')) {
         query = query.is('deleted_at', null);
       }
@@ -474,14 +498,16 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
           initialValues[col.name] = rawVal ?? (col.type === 'boolean' ? false : '');
         }
       } else {
-        if (col.name === 'college_id' && userScope.level === 'college') {
+        if (col.name === 'college_id' && scopeDefaultLevel === 'college' && userScope.collegeId) {
           initialValues[col.name] = userScope.collegeId;
-        } else if (col.name === 'department_id' && userScope.level === 'department') {
+        } else if (col.name === 'department_id' && scopeDefaultLevel === 'department' && userScope.departmentId) {
           initialValues[col.name] = userScope.departmentId;
-        } else if (col.name === 'trust_id' && userScope.level === 'trust') {
+        } else if (col.name === 'trust_id' && scopeDefaultLevel === 'trust' && userScope.trustId) {
           initialValues[col.name] = userScope.trustId;
+        } else if (sportsRowFilter && col.name === sportsRowFilter.column) {
+          initialValues[col.name] = sportsRowFilter.value;
         } else if (TABLE_CONFIGS[tableId]?.fields?.[col.name]?.defaultsToScopeLevel && userScope.level !== 'global') {
-          initialValues[col.name] = userScope.level;
+          initialValues[col.name] = scopeDefaultLevel;
         } else if (col.name === 'status') {
           initialValues[col.name] = 'published';
         } else {
@@ -703,12 +729,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
 
     const none = { insert: false, update: false, delete: false };
 
-    // A section grant (e.g. `about_us` for /admin/tables/board_members) unlocks a
-    // table that would otherwise be global-only, mirroring the RLS carve-outs in
+    // A section grant (e.g. `about_us` for /admin/tables/board_members, or
+    // `sports` for achievements) unlocks a table that would otherwise be
+    // global-only, mirroring the RLS carve-outs in
     // supabase/migrations/*_admin_section_*.sql — this is UI convenience only,
-    // RLS is the real backstop either way.
-    const routeSection = getRouteSection(routePath ?? `/admin/tables/${tableId}`);
-    const hasSectionGrant = !!routeSection && admin.sections.some((s) => s.code === routeSection);
+    // RLS is the real backstop either way. A route can carry several codes;
+    // any one matching grant unlocks it (sportsRowFilter above narrows the
+    // rows themselves where RLS is row-level).
+    const routeSections = getRouteSections(routePath ?? `/admin/tables/${tableId}`);
+    const hasSectionGrant = routeSections.some((code) => admin.sections.some((s) => s.code === code));
     if (hasSectionGrant) return { insert: true, update: true, delete: true };
 
     if (GLOBAL_ONLY_TABLE_IDS.has(tableId)) return none;
@@ -1109,7 +1138,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       (() => {
                         const enumFieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
                         const lockedScope = !!enumFieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
-                        const options = lockedScope ? [userScope.level] : col.enum_values;
+                        const options = lockedScope ? [scopeDefaultLevel ?? userScope.level] : col.enum_values;
                         return (
                           <select
                             value={formValues[col.name] || ''}
@@ -1130,7 +1159,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                         // Text columns constrained by a CHECK constraint or by
                         // what the public site renders — offered as a locked
                         // dropdown so admins never have to know the codes.
-                        const options = tableFields![col.name]!.options!;
+                        // A row-level section filter (sportsRowFilter) locks
+                        // its column to the one value RLS will accept.
+                        const lockedToRowFilter =
+                          !!sportsRowFilter && col.name === sportsRowFilter.column;
+                        const options = lockedToRowFilter
+                          ? tableFields![col.name]!.options!.filter(
+                              (o) => o.value === sportsRowFilter!.value
+                            )
+                          : tableFields![col.name]!.options!;
                         const current = formValues[col.name];
                         // Keep a value that predates this dropdown (or was
                         // since removed from the list) selectable instead of
@@ -1144,7 +1181,8 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                             value={current ?? ''}
                             onChange={(e) => handleFieldChange(col.name, e.target.value)}
                             required={!col.is_nullable}
-                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                            disabled={lockedToRowFilter}
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
                           >
                             <option value="">{col.is_nullable ? '-- None --' : '-- Select --'}</option>
                             {list.map((o) => (

@@ -64,6 +64,21 @@ export function isCollegeOrAboveRoute(pathname: string): boolean {
   );
 }
 
+// Role codes that carry the ordinary global/trust/institute/college/
+// department scope-tier semantics. Users whose roles are all outside this
+// list (currently only 'sports_secretary') are section-only users: they get
+// scope level "section" and see only the routes their section grants
+// unlock. Keep in sync with the role-code lists hardcoded in the SQL RLS
+// helpers (is_global_admin / can_write_scoped_record / is_any_admin — see
+// supabase/migrations/20260806065601_global_only_write_rls.sql,
+// 20260805051746_scope_aware_write_rls.sql, 20261008140000_sports_secretary_role.sql).
+export const FULL_ACCESS_ROLE_CODES = [
+  "admin",
+  "editor",
+  "department_admin",
+  "college_admin",
+] as const;
+
 // Single source of truth for "can this scope level reach this route at
 // all" -- shared by the admin.tsx route guard (direct navigation) and
 // AdminSidebar (link visibility) so the two can never drift apart.
@@ -98,43 +113,46 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
 ]);
 
 // Maps a route (still gated global-only by the checks above) to the
-// content-section code that can also unlock it, per
+// content-section codes that can also unlock it, per
 // supabase/migrations/*_admin_section_*.sql. A user with a matching
 // user_section_grants row gets write access to that route even without
 // global/college/department scope. Keep in sync with the RLS policies —
 // each table listed in a migration's section bucket should have its owning
-// route(s) listed here under the same section code.
-export const ROUTE_SECTION_MAP: Record<string, string> = {
-  "/admin/homepage": "home_page",
-  "/admin/posts": "news_events",
-  "/admin/tables/content_categories": "news_events",
-  "/admin/events": "news_events",
-  "/admin/inquiries": "admissions",
-  "/admin/tnp-hub": "placement",
-  "/admin/recruiters": "placement",
-  "/admin/tables/placed_students": "placement",
-  "/admin/tables/board_members": "about_us",
-  "/admin/tables/committees": "about_us",
-  "/admin/tables/committee_members": "about_us",
-  "/admin/tables/accreditations": "about_us",
-  "/admin/sports": "campus_life",
-  "/admin/tables/achievements": "campus_life",
-  "/admin/tables/gallery_albums": "campus_life",
-  "/admin/tables/gallery_media": "campus_life",
-  "/admin/tables/student_clubs": "campus_life",
-  "/admin/tables/downloads": "library",
+// route(s) listed here under the same section code. A route can list
+// several codes when a dedicated section carves out part of a broader one
+// (e.g. 'sports' unlocks /admin/sports and sports-category achievements
+// alongside the pre-existing 'campus_life' grant).
+export const ROUTE_SECTION_MAP: Record<string, string[]> = {
+  "/admin/homepage": ["home_page"],
+  "/admin/posts": ["news_events"],
+  "/admin/tables/content_categories": ["news_events"],
+  "/admin/events": ["news_events"],
+  "/admin/inquiries": ["admissions"],
+  "/admin/tnp-hub": ["placement"],
+  "/admin/recruiters": ["placement"],
+  "/admin/tables/placed_students": ["placement"],
+  "/admin/tables/board_members": ["about_us"],
+  "/admin/tables/committees": ["about_us"],
+  "/admin/tables/committee_members": ["about_us"],
+  "/admin/tables/accreditations": ["about_us"],
+  "/admin/sports": ["campus_life", "sports"],
+  "/admin/tables/achievements": ["campus_life", "sports"],
+  "/admin/tables/gallery_albums": ["campus_life"],
+  "/admin/tables/gallery_media": ["campus_life"],
+  "/admin/tables/student_clubs": ["campus_life"],
+  "/admin/tables/downloads": ["library"],
 };
 
 // Longest-prefix match so a route like "/admin/tables/board_members/new"
-// still resolves to the same section as its list page.
-export function getRouteSection(pathname: string): string | null {
+// still resolves to the same sections as its list page.
+export function getRouteSections(pathname: string): string[] {
   let bestMatch: string | null = null;
   for (const prefix of Object.keys(ROUTE_SECTION_MAP)) {
     if (pathname === prefix || pathname.startsWith(`${prefix}/`)) {
       if (!bestMatch || prefix.length > bestMatch.length) bestMatch = prefix;
     }
   }
-  return bestMatch ? ROUTE_SECTION_MAP[bestMatch] : null;
+  return bestMatch ? ROUTE_SECTION_MAP[bestMatch] : [];
 }
 
 // Combined route guard: a section grant can unlock a route that would
@@ -144,15 +162,21 @@ export function getRouteSection(pathname: string): string | null {
 // Takes primitive scope level + section codes (not an AdminUser) so this
 // stays importable from client components without pulling in server-only
 // auth code.
+//
+// The "section" level covers section-only users — accounts whose roles are
+// all outside FULL_ACCESS_ROLE_CODES (currently a Sports Secretary). Their
+// reach comes exclusively from section grants, so everything beyond the
+// dashboard home is off-limits unless a grant unlocks it above.
 export function isRouteAllowedForUser(
   pathname: string,
   level: string,
   sectionCodes: string[]
 ): boolean {
-  if (level === "global") return true;
+  const sections = getRouteSections(pathname);
+  if (sections.some((s) => sectionCodes.includes(s))) return true;
 
-  const section = getRouteSection(pathname);
-  if (section && sectionCodes.includes(section)) return true;
+  if (level === "global") return true;
+  if (level === "section") return pathname === "/admin";
 
   return isRouteAllowedForScope(pathname, level);
 }
