@@ -51,6 +51,14 @@ export interface PlacedStudent {
   batchYear: string;
   photo: string | null;
   /**
+   * placed_students.status (draft/published). Only the admin hub sets it
+   * (a "Draft" toggle on the card form); the public page always reads
+   * published rows only. Optional so older callers that never think about
+   * status keep working — the save RPC defaults a missing value to
+   * 'published'.
+   */
+  status?: "draft" | "published";
+  /**
    * colleges.slug — resolved to colleges.id on write. Required because
    * placed_students.college_id is NOT NULL (every row needs an owning
    * college for RLS/scoping), but the unified /placement page intentionally
@@ -164,7 +172,16 @@ export function isPersistedId(id: string): boolean {
 
 // ── Reads ───────────────────────────────────────────────────────────
 
-export async function getPlacementContent(): Promise<FullPlacementData> {
+/**
+ * The one read for both the public /placement page and the admin TnP hub.
+ * The public page uses the default (published rows only); the admin hub
+ * passes `{ includeDrafts: true }` so draft student cards stay visible and
+ * editable there (marked with a badge) instead of vanishing until someone
+ * re-publishes them from the generic table editor.
+ */
+export async function getPlacementContent(opts?: {
+  includeDrafts?: boolean;
+}): Promise<FullPlacementData> {
   const sb = serverClient();
 
     const [cellRes, studentsRes, recruitersRes] = await Promise.all([
@@ -177,8 +194,8 @@ export async function getPlacementContent(): Promise<FullPlacementData> {
         .maybeSingle(),
       sb
         .from("placed_students")
-        .select("id, student_name, company_name, batch_year, photo_url, colleges(slug)")
-        .eq("status", "published")
+        .select("id, student_name, company_name, batch_year, photo_url, status, colleges(slug)")
+        .in("status", opts?.includeDrafts ? ["published", "draft"] : ["published"])
         .is("deleted_at", null)
         .order("batch_year", { ascending: false })
         .order("student_name", { ascending: true }),
@@ -222,6 +239,7 @@ export async function getPlacementContent(): Promise<FullPlacementData> {
         batchYear: s.batch_year ?? "",
         photo: s.photo_url ?? null,
         collegeId: s.colleges?.slug ?? "",
+        status: s.status === "draft" ? "draft" : "published",
       })),
       recruiters: (recruitersRes.data ?? []).map((r: any) => ({
         id: r.id,
@@ -284,6 +302,12 @@ export async function getPlacementColleges(): Promise<CollegeOption[]> {
  * table and writes back the full array each save, so edits made via
  * /admin/recruiters survive a later hub save (sort_order is the one field
  * the hub save always overwrites, from array position).
+ *
+ * Placed-student status is passed through per card (draft/published,
+ * validated in the function; missing or unrecognized → 'published'), and
+ * the end-of-save soft-delete sweep only touches rows the hub could have
+ * loaded (draft/published for students, published for recruiters), so
+ * rows drafted elsewhere are never silently published or swept away.
  */
 export async function savePlacementContent(data: FullPlacementData): Promise<void> {
   const sb = createNextBrowserClient() as any;

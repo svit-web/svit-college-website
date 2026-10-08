@@ -5,6 +5,7 @@ import { createClient } from '@/app/lib/supabase/client';
 import { Menu, Plus, Trash2, Edit2, Folder, ChevronDown, ChevronRight, Loader2, Link as LinkIcon, CornerDownRight, ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 import type { AdminUser } from '@/app/lib/auth/admin';
+import { MENU_TYPE_OPTIONS } from '@/lib/admin-option-sets';
 
 interface MenuItemNode {
   id: string;
@@ -12,6 +13,7 @@ interface MenuItemNode {
   parent_id: string | null;
   title: string;
   link_type: string;
+  menu_type: string | null;
   url: string | null;
   page_id: string | null;
   icon: string | null;
@@ -41,6 +43,9 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
     title: '',
     url: '',
     link_type: 'external',
+    // How the Header renders this item (plain link vs one of the mega
+    // panels) — the DB-constrained set, offered as a dropdown.
+    menu_type: 'simple',
     sort_order: 0,
     parent_id: '' as string | null,
     // Labeled metadata fields (the only two menu_items.metadata keys the site
@@ -161,6 +166,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
         menu_id: selectedMenuId,
         title: itemFormValues.title,
         link_type: itemFormValues.link_type,
+        menu_type: itemFormValues.menu_type,
         url: itemFormValues.url || null,
         sort_order: Number(itemFormValues.sort_order),
         parent_id: itemFormValues.parent_id || null,
@@ -192,6 +198,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
       title: '',
       url: '',
       link_type: 'external',
+      menu_type: 'simple',
       sort_order: menuItems.length * 10,
       parent_id: parentId,
       group: '',
@@ -208,6 +215,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
       title: item.title,
       url: item.url || '',
       link_type: item.link_type,
+      menu_type: item.menu_type || 'simple',
       sort_order: item.sort_order,
       parent_id: item.parent_id,
       group: typeof meta.group === 'string' ? meta.group : '',
@@ -317,7 +325,14 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
             </div>
 
             <div className="min-w-0">
-              <h4 className="text-sm font-semibold text-slate-800 truncate">{node.title}</h4>
+              <h4 className="text-sm font-semibold text-slate-800 truncate flex items-center gap-1.5">
+                {node.title}
+                {node.menu_type && node.menu_type !== 'simple' && (
+                  <span className="rounded-full bg-crimson/10 px-1.5 py-0.5 text-[9px] font-bold text-crimson border border-crimson/15 shrink-0">
+                    {MENU_TYPE_OPTIONS.find((t) => t.value === node.menu_type)?.label ?? node.menu_type}
+                  </span>
+                )}
+              </h4>
               <p className="text-[10px] text-slate-500 font-mono truncate flex items-center gap-1">
                 <LinkIcon className="h-2.5 w-2.5" />
                 <span>{node.url || '(No Link)'}</span>
@@ -503,6 +518,22 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
                     className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                   />
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-[11px] font-semibold text-slate-500 uppercase">Header Display</label>
+                <select
+                  value={itemFormValues.menu_type}
+                  onChange={(e) => setItemFormValues((p) => ({ ...p, menu_type: e.target.value }))}
+                  className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-xs text-slate-800 focus:outline-none"
+                >
+                  {MENU_TYPE_OPTIONS.map((t) => (
+                    <option key={t.value} value={t.value}>{t.label}</option>
+                  ))}
+                </select>
+                <p className="text-[10px] text-slate-400">
+                  How the site Header renders this item. Mega panels are the wide dropdowns — the item then stands for the panel and its sub-links fill it.
+                </p>
               </div>
 
               <div className="space-y-1">

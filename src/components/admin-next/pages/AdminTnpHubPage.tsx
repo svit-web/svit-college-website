@@ -42,7 +42,7 @@ export function AdminTnpHubPage() {
 
   useEffect(() => {
     let cancelled = false;
-    Promise.all([getPlacementContent(), getPlacementColleges()])
+    Promise.all([getPlacementContent({ includeDrafts: true }), getPlacementColleges()])
       .then(([content, collegeList]) => {
         if (cancelled) return;
         setData(content);
@@ -64,7 +64,7 @@ export function AdminTnpHubPage() {
     setSaving(true);
     try {
       await savePlacementContent(data);
-      const fresh = await getPlacementContent();
+      const fresh = await getPlacementContent({ includeDrafts: true });
       setData(fresh);
       toast.success('Training & Placement Cell content saved successfully!');
     } catch (err) {
@@ -159,6 +159,7 @@ export function AdminTnpHubPage() {
     batchYear: '2024',
     photo: null,
     collegeId: '',
+    status: 'published',
   });
 
   const openAddStudent = () => {
@@ -170,6 +171,7 @@ export function AdminTnpHubPage() {
       batchYear: '2024',
       photo: null,
       collegeId: colleges[0]?.slug ?? '',
+      status: 'published',
     });
     setShowStudentModal(true);
   };
@@ -499,7 +501,10 @@ export function AdminTnpHubPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
             {data.placedStudents.map((s) => (
-              <div key={s.id} className="group relative flex flex-col items-center rounded-xl border border-slate-200 bg-white p-3 text-center hover:border-navy transition">
+              <div key={s.id} className={`group relative flex flex-col items-center rounded-xl border p-3 text-center transition ${s.status === 'draft' ? 'border-amber-300 bg-amber-50/50' : 'border-slate-200 bg-white hover:border-navy'}`}>
+                {s.status === 'draft' && (
+                  <span className="absolute top-1.5 right-1.5 rounded-full bg-amber-100 px-1.5 py-0.5 text-[9px] font-bold text-amber-700 border border-amber-300">Draft</span>
+                )}
                 <div className="h-14 w-14 rounded-full bg-navy/10 overflow-hidden flex items-center justify-center mb-2">
                   {s.photo ? <img src={s.photo} alt={s.studentName} className="h-full w-full object-cover" /> : <span className="font-bold text-xs text-navy">{s.studentName.slice(0, 2).toUpperCase()}</span>}
                 </div>
@@ -663,6 +668,18 @@ export function AdminTnpHubPage() {
                     ))}
                   </select>
                 </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-xs font-semibold text-slate-700">Visibility</label>
+                <select
+                  value={studentForm.status ?? 'published'}
+                  onChange={(e) => setStudentForm({ ...studentForm, status: e.target.value as PlacedStudent["status"] })}
+                  className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs text-slate-800 bg-white"
+                >
+                  <option value="published">Published — shown on the Placement page</option>
+                  <option value="draft">Draft — saved but hidden from the site</option>
+                </select>
               </div>
 
               <div className="space-y-1">
