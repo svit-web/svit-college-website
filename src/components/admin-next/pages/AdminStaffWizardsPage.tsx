@@ -5,7 +5,7 @@ import { createClient } from '@/app/lib/supabase/client';
 import { useUserScope } from '@/hooks/useUserScope';
 import type { UserScope } from '@/hooks/useUserScope';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
-import { Users, Plus, Trash2, Loader2, Save, Award, Search, X, Tag, School, UserCircle, Upload, FileUp, Briefcase } from 'lucide-react';
+import { Users, Plus, Trash2, Loader2, Save, Award, Search, X, Tag, School, UserCircle, Upload, FileUp, Briefcase, ChevronDown, ChevronUp, UserX } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import type { AdminUser } from '@/app/lib/auth/admin';
@@ -119,9 +119,15 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   const [importFacultyOpen, setImportFacultyOpen] = useState(false);
   const [importAchievementsOpen, setImportAchievementsOpen] = useState(false);
 
+  const [unassignedStaff, setUnassignedStaff] = useState<any[]>([]);
+  const [unassignedOpen, setUnassignedOpen] = useState(false);
+  const [claimingId, setClaimingId] = useState<string | null>(null);
+  const [claimForm, setClaimForm] = useState({ department_id: '', designation_id: '' });
+
   useEffect(() => {
     loadStaffList();
     loadMasters();
+    loadUnassignedStaff();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -176,6 +182,51 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     setDepartments(d || []);
     setDesignations(des || []);
     setPosts(p || []);
+  }
+
+  async function loadUnassignedStaff() {
+    try {
+      const { data, error } = await (supabase as any).rpc('list_unassigned_staff');
+      if (error) throw error;
+      setUnassignedStaff(data || []);
+    } catch (err) {
+      console.error('Failed to load unassigned staff', err);
+    }
+  }
+
+  async function handleClaimUnassigned(staffId: string) {
+    if (!claimForm.department_id || !claimForm.designation_id) {
+      toast.error('Pick a department and designation.');
+      return;
+    }
+    try {
+      const { error } = await supabase.from('staff_department_assignments').insert({
+        staff_id: staffId,
+        department_id: claimForm.department_id,
+        designation_id: claimForm.designation_id,
+        is_primary: true,
+        status: 'published',
+      });
+      if (error) throw error;
+      toast.success('Faculty assigned to your department!');
+      setClaimingId(null);
+      setClaimForm({ department_id: '', designation_id: '' });
+      await Promise.all([loadStaffList(), loadUnassignedStaff()]);
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  }
+
+  async function handleDeleteUnassigned(staffId: string) {
+    if (!confirm('Delete this staff profile? It isn\'t linked to any department. Only a global admin can restore it from Trash.')) return;
+    try {
+      const { error } = await (supabase as any).rpc('delete_unassigned_staff', { p_staff_id: staffId });
+      if (error) throw error;
+      toast.success('Removed.');
+      await loadUnassignedStaff();
+    } catch (err: any) {
+      toast.error(err.message);
+    }
   }
 
   async function loadDetails(staffId: string) {
@@ -658,6 +709,106 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           </button>
         </div>
       </div>
+
+      {unassignedStaff.length > 0 && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setUnassignedOpen((o) => !o)}
+            className="flex w-full items-center justify-between px-4 py-3 text-sm font-semibold text-amber-800 hover:bg-amber-100/60 transition"
+          >
+            <span className="flex items-center gap-2">
+              <UserX className="h-4 w-4" />
+              Unassigned Faculty — no department ({unassignedStaff.length})
+            </span>
+            {unassignedOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+          </button>
+          {unassignedOpen && (
+            <div className="divide-y divide-amber-200 border-t border-amber-200 bg-white">
+              <p className="px-4 py-2 text-xs text-slate-500">
+                These profiles aren&apos;t linked to any department, so they don&apos;t show up for department-scoped coordinators. Assign one
+                to your department, or delete it if it&apos;s a duplicate/test entry.
+              </p>
+              {unassignedStaff.map((s) => (
+                <div key={s.id} className="flex flex-wrap items-center gap-2 p-3">
+                  <div className="min-w-[180px] flex-1">
+                    <p className="text-sm font-medium text-slate-800">
+                      {s.title} {s.first_name} {s.middle_name} {s.last_name}
+                    </p>
+                    <p className="text-xs text-slate-500">{s.employee_code || '—'} · {s.email || 'no email'}</p>
+                  </div>
+                  {claimingId === s.id ? (
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        handleClaimUnassigned(s.id);
+                      }}
+                      className="flex flex-wrap items-center gap-2"
+                    >
+                      <select
+                        required
+                        value={claimForm.department_id}
+                        onChange={(e) => setClaimForm((p) => ({ ...p, department_id: e.target.value }))}
+                        className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+                      >
+                        <option value="">Department…</option>
+                        {scopedDepartments.map((d) => (
+                          <option key={d.id} value={d.id}>
+                            {d.name}
+                          </option>
+                        ))}
+                      </select>
+                      <select
+                        required
+                        value={claimForm.designation_id}
+                        onChange={(e) => setClaimForm((p) => ({ ...p, designation_id: e.target.value }))}
+                        className="rounded-lg border border-slate-200 px-2 py-1.5 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+                      >
+                        <option value="">Designation…</option>
+                        {designationGroups.map((g) => (
+                          <optgroup key={g.value} label={g.label}>
+                            {g.options.map((d) => (
+                              <option key={d.id} value={d.id}>
+                                {d.title}
+                              </option>
+                            ))}
+                          </optgroup>
+                        ))}
+                      </select>
+                      <button type="submit" className="rounded-lg bg-crimson px-3 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 transition">
+                        Save
+                      </button>
+                      <button type="button" onClick={() => setClaimingId(null)} className="text-xs text-slate-400 hover:text-slate-600">
+                        Cancel
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setClaimingId(s.id);
+                          setClaimForm({ department_id: '', designation_id: '' });
+                        }}
+                        className="rounded-lg border border-crimson/30 px-3 py-1.5 text-xs font-semibold text-crimson hover:bg-crimson/5 transition"
+                      >
+                        Assign department
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteUnassigned(s.id)}
+                        className="rounded p-1.5 text-slate-400 hover:bg-rose-50 hover:text-rose-500 transition"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
       <div className="relative w-full max-w-sm">
