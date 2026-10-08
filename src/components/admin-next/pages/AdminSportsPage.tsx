@@ -8,8 +8,7 @@ import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { EntryPhotosEditor } from '@/components/admin-next/EntryPhotosEditor';
 import { MetadataEditor } from '@/components/admin-next/MetadataEditor';
 import type { AdminUser } from '@/app/lib/auth/admin';
-
-export const CATEGORIES = ['outdoor', 'indoor', 'aquatic', 'combat'] as const;
+import { SPORT_CATEGORY_OPTIONS } from '@/lib/admin-option-sets';
 
 const EMPTY_SPORT = {
   name: '',
@@ -226,9 +225,9 @@ function SportsManager({ userId }: { userId: string | undefined }) {
                   onChange={(e) => f('category', e.target.value)}
                   className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:outline-none"
                 >
-                  {CATEGORIES.map((c) => (
-                    <option key={c} value={c} className="capitalize">
-                      {c.charAt(0).toUpperCase() + c.slice(1)}
+                  {SPORT_CATEGORY_OPTIONS.map((c) => (
+                    <option key={c.value} value={c.value}>
+                      {c.label}
                     </option>
                   ))}
                 </select>

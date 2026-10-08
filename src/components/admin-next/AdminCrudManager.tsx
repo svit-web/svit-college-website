@@ -10,6 +10,15 @@ import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSection } from '@/lib/admin-sections';
 import { EVENT_TYPE_LABELS } from '@/lib/event-types';
+import type { AdminOption } from '@/lib/admin-option-sets';
+import {
+  ACHIEVEMENT_CATEGORY_OPTIONS,
+  DOWNLOAD_CATEGORY_OPTIONS,
+  FACILITY_CATEGORY_OPTIONS,
+  GALLERY_MEDIA_TYPE_OPTIONS,
+  MENU_TYPE_OPTIONS,
+  SPORT_CATEGORY_OPTIONS,
+} from '@/lib/admin-option-sets';
 import { validateAboutPageMetadata } from '@/lib/page-metadata-validation';
 import { toSlug, toCode, toCodeStrict } from '@/lib/code-generator';
 import type { AdminUser } from '@/app/lib/auth/admin';
@@ -95,6 +104,11 @@ interface TableFieldConfig {
   // Enum fields only: human-readable option labels keyed by enum value
   // (falls back to formatLabel for any value not listed).
   optionLabels?: Record<string, string>;
+  // Renders the field as a dropdown locked to these values — for plain text
+  // columns the backend still constrains (DB CHECK constraints, or values the
+  // public site branches on). Sources: src/lib/admin-option-sets.ts, which
+  // must stay in sync with the live schema.
+  options?: AdminOption[];
   // Live-derives this field's value from another field (by name, usually
   // "name") on new records only, using the matching GENERATORS variant below.
   // Stays editable; auto-fill stops the moment the admin types in the field
@@ -183,14 +197,21 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       ...ENTRY_PHOTO_FIELDS,
       slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
       code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+      category: { options: FACILITY_CATEGORY_OPTIONS },
     },
   },
   centers: { fields: ENTRY_PHOTO_FIELDS },
-  sports: { fields: ENTRY_PHOTO_FIELDS },
+  sports: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      category: { options: SPORT_CATEGORY_OPTIONS },
+    },
+  },
   achievements: {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
     },
   },
@@ -210,6 +231,21 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   staff_posts: {
     fields: {
       is_department_head: { booleanLabel: 'Department head (only one holder per department)' },
+    },
+  },
+  downloads: {
+    fields: {
+      category: { options: DOWNLOAD_CATEGORY_OPTIONS },
+    },
+  },
+  menu_items: {
+    fields: {
+      menu_type: { options: MENU_TYPE_OPTIONS },
+    },
+  },
+  gallery_media: {
+    fields: {
+      media_type: { options: GALLERY_MEDIA_TYPE_OPTIONS },
     },
   },
 };
@@ -1085,6 +1121,34 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                             <option value="">-- Select --</option>
                             {options.map((v: string) => (
                               <option key={v} value={v}>{enumFieldConfig?.optionLabels?.[v] ?? formatLabel(v)}</option>
+                            ))}
+                          </select>
+                        );
+                      })()
+                    ) : tableFields?.[col.name]?.options ? (
+                      (() => {
+                        // Text columns constrained by a CHECK constraint or by
+                        // what the public site renders — offered as a locked
+                        // dropdown so admins never have to know the codes.
+                        const options = tableFields![col.name]!.options!;
+                        const current = formValues[col.name];
+                        // Keep a value that predates this dropdown (or was
+                        // since removed from the list) selectable instead of
+                        // silently blanking it on save.
+                        const list =
+                          !current || options.some((o) => o.value === current)
+                            ? options
+                            : [{ value: current, label: formatLabel(current) }, ...options];
+                        return (
+                          <select
+                            value={current ?? ''}
+                            onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                            required={!col.is_nullable}
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                          >
+                            <option value="">{col.is_nullable ? '-- None --' : '-- Select --'}</option>
+                            {list.map((o) => (
+                              <option key={o.value} value={o.value}>{o.label}</option>
                             ))}
                           </select>
                         );
