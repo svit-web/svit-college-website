@@ -6,6 +6,7 @@
 // action re-checks the caller is a global admin server-side before doing
 // anything — never trust a client-supplied isAdmin flag for these.
 import { requireAdmin, isAdmin as isGlobalAdmin } from '@/app/lib/auth/admin';
+import { FULL_ACCESS_ROLE_CODES } from '@/lib/admin-sections';
 
 export interface PortalUserRole {
   userRoleId: string;
@@ -34,6 +35,9 @@ export interface PortalUser {
   lastName: string;
   roles: PortalUserRole[];
   sections: PortalUserSectionGrant[];
+  // False when the user's access was toggled off via setPortalUserAccessEnabled
+  // (all their grants archived with an access_disabled metadata tag).
+  accessEnabled: boolean;
 }
 
 export interface ScopeOption {
@@ -65,11 +69,26 @@ function roleAssignError(err: { code?: string; message: string }) {
   return err.message;
 }
 
+function isFullAccessRole(code: string) {
+  return (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(code);
+}
+
+// Section-scoped roles (currently only sports_secretary) must never be
+// granted at global scope — a global user_roles row reads as a full global
+// admin in the scope-level logic, and even with the hardened RLS helpers it
+// would make no sense for a single-section role.
+function assertRoleScopeAllowed(roleCode: string, scopeType: string): string | null {
+  if (!isFullAccessRole(roleCode) && scopeType !== 'college' && scopeType !== 'department') {
+    return 'Section-scoped roles (e.g. Sports Secretary) can only be granted at College or Department scope.';
+  }
+  return null;
+}
+
 export async function listPortalUsers(): Promise<PortalUser[]> {
   await assertGlobalAdmin();
   const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
 
-  const [{ data: authList, error: authErr }, { data: profiles, error: profErr }, { data: roleRows, error: roleErr }, { data: sectionGrantRows, error: sectionGrantErr }, { data: trusts }, { data: colleges }, { data: departments }] = await Promise.all([
+  const [{ data: authList, error: authErr }, { data: profiles, error: profErr }, { data: roleRows, error: roleErr }, { data: sectionGrantRows, error: sectionGrantErr }, { data: disabledRoleRows, error: disabledRoleErr }, { data: disabledSectionRows, error: disabledSectionErr }, { data: trusts }, { data: colleges }, { data: departments }] = await Promise.all([
     supabaseAdmin.auth.admin.listUsers({ perPage: 1000 }),
     supabaseAdmin.from('user_profiles').select('id, first_name, last_name'),
     supabaseAdmin.from('user_roles').select('id, user_id, scope_type, trust_id, college_id, department_id, role:role_id(code, name)').eq('status', 'published'),
@@ -77,6 +96,10 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
       .from('user_section_grants')
       .select('id, user_id, scope_type, trust_id, college_id, department_id, section:section_id(code, name)')
       .eq('status', 'published'),
+    // Grants archived by the enable/disable toggle (tagged so deliberately
+    // removed grants are never mistaken for a disabled account).
+    supabaseAdmin.from('user_roles').select('user_id').eq('status', 'archived').eq('metadata->>access_disabled', 'true'),
+    supabaseAdmin.from('user_section_grants').select('user_id').eq('status', 'archived').eq('metadata->>access_disabled', 'true'),
     supabaseAdmin.from('trusts').select('id, name'),
     supabaseAdmin.from('colleges').select('id, name'),
     supabaseAdmin.from('departments').select('id, name'),
@@ -85,6 +108,12 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
   if (profErr) throw new Error(profErr.message);
   if (roleErr) throw new Error(roleErr.message);
   if (sectionGrantErr) throw new Error(sectionGrantErr.message);
+  if (disabledRoleErr) throw new Error(disabledRoleErr.message);
+  if (disabledSectionErr) throw new Error(disabledSectionErr.message);
+
+  const disabledUserIds = new Set(
+    [...(disabledRoleRows ?? []), ...(disabledSectionRows ?? [])].map((r: any) => r.user_id as string)
+  );
 
   const trustNames = new Map((trusts ?? []).map((t: any) => [t.id, t.name]));
   const collegeNames = new Map((colleges ?? []).map((c: any) => [c.id, c.name]));
@@ -138,6 +167,7 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
       lastName: profile?.last_name ?? '',
       roles: rolesByUser.get(u.id) ?? [],
       sections: sectionsByUser.get(u.id) ?? [],
+      accessEnabled: !disabledUserIds.has(u.id),
     };
   });
 }
@@ -241,6 +271,8 @@ export async function createPortalUser(input: CreatePortalUserInput): Promise<Ac
   if (input.roleCode === 'admin' && input.scopeType !== 'global') {
     return { error: 'The "Administrator" role can only be granted at Global scope.' };
   }
+  const scopeViolation = assertRoleScopeAllowed(input.roleCode, input.scopeType);
+  if (scopeViolation) return { error: scopeViolation };
 
   const { data: created, error: createErr } = await supabaseAdmin.auth.admin.createUser({
     email: input.email,
@@ -292,6 +324,8 @@ export async function assignPortalUserRole(input: AssignRoleInput): Promise<Acti
   if (input.roleCode === 'admin' && input.scopeType !== 'global') {
     return { error: 'The "Administrator" role can only be granted at Global scope.' };
   }
+  const scopeViolation = assertRoleScopeAllowed(input.roleCode, input.scopeType);
+  if (scopeViolation) return { error: scopeViolation };
 
   const { data: role, error: roleErr } = await supabaseAdmin.from('roles').select('id').eq('code', input.roleCode).maybeSingle();
   if (roleErr) throw new Error(roleErr.message);
@@ -318,6 +352,88 @@ export async function removePortalUserRole(userRoleId: string) {
 
   const { error } = await supabaseAdmin.from('user_roles').update({ deleted_at: new Date().toISOString(), deleted_by: admin.id, status: 'archived' }).eq('id', userRoleId);
   if (error) throw new Error(error.message);
+
+  return { ok: true };
+}
+
+// Toggle a user's entire portal access on/off without deleting anything.
+// Disabling archives ALL of their live grants (roles AND section grants —
+// section grants alone still confer direct REST-API write powers), tagging
+// each row in metadata so enabling restores exactly these rows and never
+// resurrects grants an admin deliberately removed (the unique constraints on
+// both tables are inert over NULL scope ids, so removed and re-granted rows
+// can coexist).
+export async function setPortalUserAccessEnabled(
+  userId: string,
+  enabled: boolean
+): Promise<ActionResult<{ ok: true }>> {
+  const admin = await assertGlobalAdmin();
+
+  if (userId === admin.id) {
+    return { error: 'You cannot disable your own account.' };
+  }
+
+  const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+  const tables = ['user_roles', 'user_section_grants'] as const;
+
+  if (enabled) {
+    for (const table of tables) {
+      const { data: tagged, error: fetchErr } = await supabaseAdmin
+        .from(table)
+        .select('id, metadata')
+        .eq('user_id', userId)
+        .eq('status', 'archived')
+        .eq('metadata->>access_disabled', 'true');
+      if (fetchErr) throw new Error(fetchErr.message);
+
+      for (const row of tagged ?? []) {
+        const metadata: Record<string, unknown> = {
+          ...((row.metadata as Record<string, unknown> | null) ?? {}),
+        };
+        delete metadata.access_disabled;
+        const { error: updateErr } = await supabaseAdmin
+          .from(table)
+          .update({
+            status: 'published',
+            deleted_at: null,
+            deleted_by: null,
+            updated_by: admin.id,
+            metadata: metadata as any,
+          })
+          .eq('id', row.id);
+        if (updateErr) throw new Error(updateErr.message);
+      }
+    }
+
+    return { ok: true };
+  }
+
+  const now = new Date().toISOString();
+  for (const table of tables) {
+    const { data: live, error: fetchErr } = await supabaseAdmin
+      .from(table)
+      .select('id, metadata')
+      .eq('user_id', userId)
+      .eq('status', 'published');
+    if (fetchErr) throw new Error(fetchErr.message);
+
+    for (const row of live ?? []) {
+      const { error: updateErr } = await supabaseAdmin
+        .from(table)
+        .update({
+          status: 'archived',
+          deleted_at: now,
+          deleted_by: admin.id,
+          updated_by: admin.id,
+          metadata: {
+            ...((row.metadata as Record<string, unknown> | null) ?? {}),
+            access_disabled: true,
+          } as any,
+        })
+        .eq('id', row.id);
+      if (updateErr) throw new Error(updateErr.message);
+    }
+  }
 
   return { ok: true };
 }

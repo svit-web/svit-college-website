@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, UserX, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, UserX, Loader2, Eye, EyeOff, Power } from 'lucide-react';
 import {
   listPortalUsers,
   listScopeOptions,
@@ -15,6 +15,7 @@ import {
   updatePortalUserProfile,
   adminSetUserPassword,
   deletePortalUser,
+  setPortalUserAccessEnabled,
   type PortalUser,
   type ScopeOption,
   type SectionOption,
@@ -88,6 +89,13 @@ function ScopeFields({
           ))}
         </select>
         {scopeType !== 'global' && <p className="text-[11px] text-slate-500">Administrator is only available at Global scope.</p>}
+        {roleCode === 'sports_secretary' && (
+          <p className="text-[11px] text-slate-500">
+            Sports Secretary is granted at College or Department scope. After creating the account, use "Manage
+            roles" &rarr; Section Access to grant the <strong>Sports &amp; Athletics</strong> section — that is what
+            unlocks the sports pages for them.
+          </p>
+        )}
       </div>
 
       {entityLabel && (
@@ -107,7 +115,7 @@ function ScopeFields({
   );
 }
 
-export function AdminUserManagementPage() {
+export function AdminUserManagementPage({ currentUserId }: { currentUserId: string }) {
   const [users, setUsers] = useState<PortalUser[]>([]);
   const [scopeOptions, setScopeOptions] = useState<ScopeOptions | null>(null);
   const [sectionOptions, setSectionOptions] = useState<SectionOption[]>([]);
@@ -152,6 +160,28 @@ export function AdminUserManagementPage() {
     }
   };
 
+  const handleToggleAccess = async (u: PortalUser, enable: boolean) => {
+    if (
+      !enable &&
+      !window.confirm(
+        `Disable access for ${u.email}? This immediately revokes all of their portal and write access. They can be re-enabled later with the same permissions.`
+      )
+    ) {
+      return;
+    }
+    setSaving(true);
+    try {
+      const result = await setPortalUserAccessEnabled(u.id, enable);
+      if (result.error) throw new Error(result.error);
+      toast.success(enable ? `Access re-enabled for ${u.email}.` : `Access disabled for ${u.email}.`);
+      await refresh();
+    } catch (err: any) {
+      toast.error(`Failed to toggle access: ${err.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4">
@@ -191,6 +221,11 @@ export function AdminUserManagementPage() {
                   <td className="px-4 py-3 text-slate-600">{u.email}</td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-1.5">
+                      {!u.accessEnabled && (
+                        <span className="inline-flex items-center rounded-full bg-rose-500/10 px-2 py-1 text-xs font-semibold text-rose-600 border border-rose-500/20">
+                          Access Disabled
+                        </span>
+                      )}
                       {u.roles.length === 0 && u.sections.length === 0 && <span className="text-xs text-slate-400">No access assigned</span>}
                       {u.roles.map((r) => (
                         <span key={r.userRoleId} className="inline-flex items-center rounded bg-slate-50 px-2 py-1 text-xs font-semibold text-crimson border border-slate-200">
@@ -206,6 +241,20 @@ export function AdminUserManagementPage() {
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
+                      {u.id !== currentUserId && u.roles.length + u.sections.length > 0 && (
+                        <button
+                          title={u.accessEnabled ? 'Disable access (revokes all portal and write access)' : 'Re-enable access'}
+                          disabled={saving}
+                          onClick={() => handleToggleAccess(u, !u.accessEnabled)}
+                          className={`rounded p-1.5 disabled:opacity-50 ${
+                            u.accessEnabled
+                              ? 'text-slate-500 hover:text-rose-600 hover:bg-rose-50'
+                              : 'text-emerald-600 hover:bg-emerald-50'
+                          }`}
+                        >
+                          <Power className="h-4 w-4" />
+                        </button>
+                      )}
                       <button title="Edit profile" onClick={() => setEditProfileUser(u)} className="rounded p-1.5 text-slate-500 hover:text-navy hover:bg-slate-100">
                         <Pencil className="h-4 w-4" />
                       </button>

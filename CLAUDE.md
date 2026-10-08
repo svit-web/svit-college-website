@@ -67,8 +67,12 @@ gallery/[albumId], news, downloads, grievance, alumni, etc. Dependent pages have
   on RLS public SELECT policies; filter `status = 'published'` and `deleted_at IS NULL`.
   `layout.tsx` wraps each call in `.catch(() => fallback)` so a failing query degrades instead of 500ing.
 - **Admin auth**: `(dashboard)/layout.tsx` calls `getAdminUser()` → redirects to `/admin/login`. Authorized
-  role codes: `admin`, `editor`, `department_admin`, `college_admin`. Roles come from `user_roles`
-  (role FK + `scope_type`: global/trust/institute/college/department). Server actions must call
+  role codes: `admin`, `editor`, `department_admin`, `college_admin`, plus the section-scoped
+  `sports_secretary` (Sports & Athletics + sports-category achievements only; users whose roles are
+  all section-scoped get scope level `"section"` and see only section-granted routes). Roles come
+  from `user_roles` (role FK + `scope_type`: global/trust/institute/college/department; the RLS
+  helpers gate full-access role codes). User Management has an enable/disable toggle that
+  archives/restores all of a user's grants. Server actions must call
   `requireAdmin()` and check the role themselves (see `src/app/admin/actions.ts`); the service-role
   client is imported dynamically and only after that check.
 - **Authorization is enforced by RLS** (`is_global_admin()`, `can_write_scoped_record`, scope-aware

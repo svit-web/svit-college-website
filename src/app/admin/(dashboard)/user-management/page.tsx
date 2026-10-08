@@ -11,5 +11,5 @@ export default async function UserManagementPage() {
     redirect('/admin');
   }
 
-  return <AdminUserManagementPage />;
+  return <AdminUserManagementPage currentUserId={admin.id} />;
 }

@@ -41,7 +41,7 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
 
 export function isGlobalOnlyRoute(pathname: string): boolean {
   return GLOBAL_ONLY_ROUTE_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 }
 
@@ -60,7 +60,7 @@ export const COLLEGE_OR_ABOVE_ROUTE_PREFIXES = [
 
 export function isCollegeOrAboveRoute(pathname: string): boolean {
   return COLLEGE_OR_ABOVE_ROUTE_PREFIXES.some(
-    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 }
 
@@ -170,7 +170,7 @@ export function getRouteSections(pathname: string): string[] {
 export function isRouteAllowedForUser(
   pathname: string,
   level: string,
-  sectionCodes: string[]
+  sectionCodes: string[],
 ): boolean {
   const sections = getRouteSections(pathname);
   if (sections.some((s) => sectionCodes.includes(s))) return true;

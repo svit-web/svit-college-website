@@ -52,7 +52,7 @@ export function useUserScope(roles: AdminRole[] | undefined | null): UserScope {
       list.reduce((acc, r) => (rankOf(r) < rankOf(acc) ? r : acc), list[0]);
 
     const fullAccessRoles = roles.filter((r) =>
-      (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(r.code)
+      (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(r.code),
     );
 
     if (fullAccessRoles.length === 0) {
@@ -69,7 +69,9 @@ export function useUserScope(roles: AdminRole[] | undefined | null): UserScope {
     const best = broadest(fullAccessRoles);
 
     return {
-      level: fullAccessRoles.some((r) => r.code === "admin") ? "global" : ((best.scope_type as ScopeLevel) || "none"),
+      level: fullAccessRoles.some((r) => r.code === "admin")
+        ? "global"
+        : (best.scope_type as ScopeLevel) || "none",
       trustId: best.trust_id,
       collegeId: best.college_id,
       departmentId: best.department_id,
