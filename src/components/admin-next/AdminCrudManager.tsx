@@ -52,6 +52,10 @@ function formatLabel(str: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+function fieldLabel(tableId: string, colName: string): string {
+  return TABLE_CONFIGS[tableId]?.fields?.[colName]?.label ?? formatLabel(colName);
+}
+
 const HIDDEN_GRID_COLUMNS = [
   'id',
   'created_at',
@@ -90,6 +94,9 @@ const FK_LABEL_COLUMNS: Record<string, string> = {
 const FK_NAME_SPLIT_TABLES = new Set(['user_profiles', 'staff_profiles']);
 
 interface TableFieldConfig {
+  // Overrides the generic formatLabel(col.name) guess for a column whose
+  // real-world meaning formatLabel can't express (e.g. map_url isn't "Map Url").
+  label?: string;
   // Boolean/enum fields only: locks the control to global admins and, for
   // enums, narrows the option list to the acting admin's own scope level.
   lockedForNonGlobal?: boolean;
@@ -184,6 +191,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
       event_type: { optionLabels: EVENT_TYPE_LABELS },
+      map_url: { label: 'Google Maps link (location pin)' },
       is_featured: {
         lockedForNonGlobal: true,
         booleanLabel: 'Feature on homepage (max 8 at once)',
@@ -799,7 +807,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         accessorKey: col.name,
         header: ({ column }: any) => (
           <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="flex items-center gap-1 font-semibold text-slate-600 hover:text-navy text-[11px]">
-            <span>{formatLabel(col.name)}</span>
+            <span>{fieldLabel(tableId, col.name)}</span>
             <ArrowUpDown className="h-3 w-3 opacity-40" />
           </button>
         ),
@@ -1091,7 +1099,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 return (
                   <div key={col.name} className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center justify-between">
-                      <span>{formatLabel(col.name)}</span>
+                      <span>{fieldLabel(tableId, col.name)}</span>
                       {!col.is_nullable && <span className="text-[10px] text-crimson font-medium font-mono">Required</span>}
                     </label>
 
