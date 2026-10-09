@@ -44,11 +44,11 @@ The compact tile showing an Entry in a grid or list: Card photo, title, and a cl
 _Avoid_: tile, box
 
 **Card photo**:
-The single image an admin picks to represent an Entry on its Card. It is separate from the Entry album, so reordering album photos never changes it.
+The Entry album photo tagged `is_cover` — not a separate image or column. An admin picks it by uploading the first photo for an Entry (automatic) or clicking "Set cover" on any other photo in the album (`EntryPhotosEditor`). Because it's just a tagged album photo, it also appears in the Entry album/Entry viewer like any other photo. (Superseded the old model where the Card photo lived in its own `card_photo_url` column, separate from the album — see ADR 0004.)
 _Avoid_: thumbnail, featured image, cover image (the admin UI and code currently use all three)
 
 **Entry album**:
-The optional set of extra photos belonging to one Entry, stored as a gallery album. It exists independently of the Detail page: an Entry can have an album without a page.
+The set of photos belonging to one Entry, stored as a gallery album — one of them tagged `is_cover` is also the Card photo. It exists independently of the Detail page: an Entry can have an album without a page. An Entry with any photo always has an album (the first upload creates one).
 _Avoid_: gallery (the public Gallery section is a different thing), images
 
 **Entry viewer**:
@@ -76,7 +76,7 @@ The fixed category of an Event (Fest, Cultural, Technical, Sports, Workshop, Sem
 _Avoid_: tag, category
 
 **Detail page**:
-An Entry's own URL showing the Entry album as a slideshow, the full description and type-specific facts. An admin turns it on per Entry, and it is off by default for new Entries.
+An Entry's own URL showing the Entry album as a slideshow, the full description and type-specific facts. An admin turns it on per Entry; on by default for new Entries since 2026-10 (except Sports, which has no Detail page route yet, so the flag is a no-op there).
 _Avoid_: is_page, inner page, subpage
 
 **Committee member**:
