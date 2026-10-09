@@ -125,6 +125,26 @@
   @media (min-width: 768px) { padding-inline: 2rem; }
 }
 
+/* Reproduces Header.tsx's desktop wrapper exactly (outer vw-gutter div +
+   centered 1240px box + inner vw-padding) so banner/content lines up with
+   the navbar logo and links. container-page's flat max-width + padding
+   doesn't reduce to the same numbers as that nested, fluid system — hence
+   two utilities, used together, instead of one. Mobile matches
+   MobileUtilityBar's fixed px-4. */
+@utility container-nav-aligned {
+  width: 100%;
+  padding-inline: 1rem;
+  @media (min-width: 1024px) { padding-inline: clamp(32px, 6vw, 96px); }
+}
+@utility container-nav-aligned-inner {
+  width: 100%;
+  margin-inline: auto;
+  @media (min-width: 1024px) {
+    max-width: 1240px;
+    padding-inline: clamp(12px, 2vw, 26px);
+  }
+}
+
 @utility accent-underline {
   position: relative;
   display: inline-block;

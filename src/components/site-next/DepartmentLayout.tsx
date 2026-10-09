@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
 import { PageHero } from "./PageHero";
@@ -42,6 +41,7 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
   return (
     <div>
       <PageHero
+        flushBottom
         title={department.name}
         accent={college ? `${college.shortCode} · Department` : "Department"}
         subtitle={`Explore programs, faculty, achievements and industry engagement at the Department of ${department.name}.`}
@@ -50,48 +50,45 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
           ...(college ? [{ label: college.shortCode, to: college.route }] : []),
           { label: department.name },
         ]}
-        rightSlot={
-          department.logo_url ? (
-            <div className="relative flex h-40 w-40 items-center justify-center overflow-hidden border border-line bg-surface">
-              <Image
-                src={department.logo_url}
-                alt={`${department.name} logo`}
-                fill
-                sizes="160px"
-                className="object-contain p-2"
-              />
-            </div>
-          ) : undefined
-        }
       />
 
       {/* Sticky until the content ends, so the tabs scroll off before the
-          footer; mobile navbar is fixed (h-16), the desktop one scrolls away. */}
+          footer; mobile navbar is fixed (h-16), the desktop one scrolls away.
+          container-nav-aligned(-inner) lines this up with the navbar, same
+          as PageHero. */}
       <div className="sticky top-16 z-30 border-b border-line bg-paper lg:top-0">
-        <div className="container-page py-3">
-          <SectionTabs
-            ariaLabel="Department sections"
-            items={NAV.map((item) => {
-              const href = `${base}${item.href}`;
-              // Department routes resolve case-insensitively (/departments/ca
-              // and /departments/CA), so match the active tab the same way.
-              const path = pathname?.toLowerCase() ?? "";
-              const target = href.toLowerCase();
-              return {
-                href,
-                label: item.label,
-                icon: item.icon,
-                active: item.exact
-                  ? path === target
-                  : path === target || path.startsWith(target + "/"),
-              };
-            })}
-          />
+        <div className="container-nav-aligned py-3">
+          <div className="container-nav-aligned-inner">
+            <SectionTabs
+              ariaLabel="Department sections"
+              items={NAV.map((item) => {
+                const href = `${base}${item.href}`;
+                // Department routes resolve case-insensitively (/departments/ca
+                // and /departments/CA), so match the active tab the same way.
+                const path = pathname?.toLowerCase() ?? "";
+                const target = href.toLowerCase();
+                return {
+                  href,
+                  label: item.label,
+                  icon: item.icon,
+                  active: item.exact
+                    ? path === target
+                    : path === target || path.startsWith(target + "/"),
+                };
+              })}
+            />
+          </div>
         </div>
       </div>
 
       <div className="bg-paper">
-        <div className="container-page py-10">{children}</div>
+        <div className="container-nav-aligned py-10">
+          <div className="container-nav-aligned-inner">
+            {/* Full container width was too wide for reading once the
+                sidebar went away — cap the content column, centered. */}
+            <div className="mx-auto max-w-[1060px]">{children}</div>
+          </div>
+        </div>
       </div>
     </div>
   );

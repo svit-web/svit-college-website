@@ -27,8 +27,8 @@ export function PageHero({
   subtitle,
   crumbs,
   children,
-  rightSlot,
   appearance,
+  flushBottom = false,
 }: {
   title: string;
   accent?: string;
@@ -36,43 +36,48 @@ export function PageHero({
   crumbs?: { label: string; to?: string }[];
   /** Actions under the subtitle — use pillPrimary / pillOutline links. */
   children?: ReactNode;
-  rightSlot?: ReactNode;
   appearance?: HeroAppearance | null;
+  /** Omit the bottom border when a section tab strip follows directly — the
+      strip carries its own border, and both together read as double rules. */
+  flushBottom?: boolean;
 }) {
   return (
     <section
-      className="relative overflow-hidden border-b border-line bg-paper"
+      className={flushBottom ? "relative overflow-hidden bg-paper" : "relative overflow-hidden border-b border-line bg-paper"}
       style={appearance ? heroTextVars(appearance) : undefined}
     >
       <div
         className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 lg:block"
         style={PATTERN_STYLE}
       />
-      {/* Fixed navbar overlays the top — the clamp is clearance for it, not air. */}
-      <div className="container-page relative flex flex-col pb-9 pt-[clamp(96px,11vh,120px)]">
-        {crumbs && crumbs.length > 0 && (
-          <nav
-            aria-label="Breadcrumb"
-            className="flex flex-wrap items-center gap-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
-          >
-            {crumbs.map((c, i) => (
-              <span key={i} className="flex items-center gap-1.5">
-                {c.to ? (
-                  <Link href={c.to} className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
-                    {c.label}
-                  </Link>
-                ) : (
-                  <span aria-current="page" className="text-ink-soft">
-                    {c.label}
-                  </span>
-                )}
-                {i < crumbs.length - 1 && <ChevronRight className="h-3 w-3" />}
-              </span>
-            ))}
-          </nav>
-        )}
-        <div className="mt-6 flex items-center justify-between gap-8">
-          <div className="max-w-4xl min-w-0 flex-1">
+      {/* Fixed navbar overlays the top — the clamp is clearance for it, not
+          air. container-nav-aligned(-inner) replaces container-page here so
+          the title lines up with the navbar logo, not a separately-tuned
+          max-width. */}
+      <div className="container-nav-aligned relative pb-9 pt-[clamp(96px,11vh,120px)]">
+        <div className="container-nav-aligned-inner flex flex-col">
+          {crumbs && crumbs.length > 0 && (
+            <nav
+              aria-label="Breadcrumb"
+              className="flex flex-wrap items-center gap-1.5 text-[0.72rem] font-semibold uppercase tracking-[0.12em] text-ink-mute"
+            >
+              {crumbs.map((c, i) => (
+                <span key={i} className="flex items-center gap-1.5">
+                  {c.to ? (
+                    <Link href={c.to} className="-my-1.5 inline-block py-1.5 transition-colors hover:text-crimson">
+                      {c.label}
+                    </Link>
+                  ) : (
+                    <span aria-current="page" className="text-ink-soft">
+                      {c.label}
+                    </span>
+                  )}
+                  {i < crumbs.length - 1 && <ChevronRight className="h-3 w-3" />}
+                </span>
+              ))}
+            </nav>
+          )}
+          <div className="mt-6 max-w-4xl">
             {accent && (
               <p className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-crimson">
                 {accent}
@@ -90,7 +95,6 @@ export function PageHero({
               <div className="mt-4 flex flex-wrap items-center gap-[0.7rem]">{children}</div>
             )}
           </div>
-          {rightSlot && <div className="hidden shrink-0 lg:block">{rightSlot}</div>}
         </div>
       </div>
     </section>

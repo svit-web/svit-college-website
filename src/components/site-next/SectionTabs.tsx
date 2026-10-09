@@ -45,13 +45,13 @@ export function SectionTabs({ ariaLabel, items }: { ariaLabel: string; items: Se
                 href={item.href}
                 aria-current={item.active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors",
+                  "flex min-h-9 items-center gap-2 whitespace-nowrap rounded-full px-3.5 py-1.5 text-[0.84rem] font-semibold transition-colors",
                   item.active
-                    ? "border-ink bg-ink text-paper"
-                    : "border-line-strong text-ink hover:border-ink",
+                    ? "bg-ink text-paper"
+                    : "text-ink-soft hover:bg-paper-deep hover:text-ink",
                 )}
               >
-                {Icon && <Icon className="h-4 w-4" />}
+                {Icon && <Icon className="h-3.5 w-3.5" />}
                 {item.label}
               </Link>
             </li>

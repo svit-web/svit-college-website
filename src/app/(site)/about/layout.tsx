@@ -25,6 +25,7 @@ export default async function AboutLayout({ children }: { children: React.ReactN
   return (
     <div>
       <PageHero
+        flushBottom
         title={c?.hero?.title ?? "About SVIT"}
         accent={c?.hero?.accent}
         subtitle={c?.hero?.introText}
@@ -45,15 +46,23 @@ export default async function AboutLayout({ children }: { children: React.ReactN
       </PageHero>
 
       {/* Sticky until the content ends, so the tabs scroll off before the
-          footer; mobile navbar is fixed (h-16), the desktop one scrolls away. */}
+          footer; mobile navbar is fixed (h-16), the desktop one scrolls away.
+          container-nav-aligned(-inner) lines this up with the navbar, same
+          as PageHero. */}
       <div className="sticky top-16 z-30 border-b border-line bg-paper lg:top-0">
-        <div className="container-page py-3">
-          <AboutNav items={aboutLinks} />
+        <div className="container-nav-aligned py-3">
+          <div className="container-nav-aligned-inner">
+            <AboutNav items={aboutLinks} />
+          </div>
         </div>
       </div>
 
       <div className="bg-paper">
-        <div className="container-page py-10">{children}</div>
+        <div className="container-nav-aligned py-10">
+          <div className="container-nav-aligned-inner">
+            <div className="mx-auto max-w-[1060px]">{children}</div>
+          </div>
+        </div>
       </div>
     </div>
   );
