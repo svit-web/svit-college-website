@@ -71,7 +71,7 @@ export async function getAchievementDetailBySlug(slug: string): Promise<Achievem
     category: row.category,
     date: row.date,
     description: row.description,
-    cardPhotoUrl: row.card_photo_url,
+    cardPhotoUrl: album?.coverUrl ?? null,
     album,
     department: row.departments ? { name: row.departments.name, code: row.departments.code } : null,
   };

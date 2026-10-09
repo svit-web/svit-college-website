@@ -131,10 +131,13 @@ export async function getAchievementsByDepartmentId(departmentId: string) {
   }
 
   const rows = data ?? [];
-  // Albums only matter for Cards that open the Entry viewer (no Detail page).
-  const albums = await getEntryAlbums(
-    rows.filter((r) => !r.has_detail_page).map((r) => r.album_id),
-  ).catch(() => new Map<string, EntryAlbum>());
+  // Every row needs its album fetched now — the Card photo itself comes from
+  // the album's is_cover photo, not a separate column. `album` is still only
+  // handed to the caller for rows without a Detail page (the Entry viewer is
+  // the only other thing that needs the full photo list).
+  const albums = await getEntryAlbums(rows.map((r) => r.album_id)).catch(
+    () => new Map<string, EntryAlbum>(),
+  );
 
   return rows.map((r): DeptAchievement => ({
     id: r.id,
@@ -143,9 +146,9 @@ export async function getAchievementsByDepartmentId(departmentId: string) {
     date: r.date,
     category: r.category,
     description: r.description,
-    cardPhotoUrl: r.card_photo_url,
+    cardPhotoUrl: (r.album_id ? albums.get(r.album_id)?.coverUrl : null) ?? null,
     hasDetailPage: !!r.has_detail_page,
-    album: (r.album_id ? albums.get(r.album_id) : null) ?? null,
+    album: (!r.has_detail_page && r.album_id ? albums.get(r.album_id) : null) ?? null,
   }));
 }
 
