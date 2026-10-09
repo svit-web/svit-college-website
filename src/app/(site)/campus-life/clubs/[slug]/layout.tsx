@@ -21,7 +21,9 @@ export default async function ClubLayout({
     <div>
       <PillTabs
         ariaLabel="Clubs"
-        items={allClubs.map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
+        items={allClubs
+          .filter((c) => c.has_detail_page)
+          .map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
       />
       {children}
     </div>

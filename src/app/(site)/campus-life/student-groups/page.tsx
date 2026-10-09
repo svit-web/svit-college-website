@@ -24,16 +24,15 @@ export default async function StudentGroupsIndex() {
       <section>
         <PillTabs
           ariaLabel="Clubs"
-          items={clubs.map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
+          items={clubs
+            .filter((c) => c.has_detail_page)
+            .map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
         />
         <SectionHeading eyebrow="Clubs" title="Find your tribe" />
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {clubs.map((c, i) => (
-            <Reveal key={c.slug} delay={i * 0.03}>
-              <Link
-                href={`/campus-life/clubs/${c.slug}`}
-                className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
-              >
+          {clubs.map((c, i) => {
+            const body = (
+              <>
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">
                   {c.accent_color || "Club"}
                 </div>
@@ -47,9 +46,23 @@ export default async function StudentGroupsIndex() {
                 <p className="mt-2 text-sm text-ink-soft">
                   {c.subtitle || c.description}
                 </p>
-              </Link>
-            </Reveal>
-          ))}
+              </>
+            );
+            return (
+              <Reveal key={c.slug} delay={i * 0.03}>
+                {c.has_detail_page ? (
+                  <Link
+                    href={`/campus-life/clubs/${c.slug}`}
+                    className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
+                  >
+                    {body}
+                  </Link>
+                ) : (
+                  <div className="block h-full border border-line bg-surface p-5">{body}</div>
+                )}
+              </Reveal>
+            );
+          })}
         </div>
       </section>
 

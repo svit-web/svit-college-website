@@ -73,11 +73,17 @@ const DEGREE_LABEL: Record<string, string> = {
 
 // -------- About + Programs --------
 export function DeptAboutView({ department, courses = [] }: Props) {
+  // Admin edits the real columns (about/vision/mission/…); the metadata keys
+  // are the pre-20260917 location, kept as fallback for departments whose
+  // content was never migrated out of metadata.
   const m = department.metadata;
-  const aboutText = m.about ?? m.description;
-  const vision = m.vision;
-  const mission = m.mission;
+  const aboutText = department.about ?? m.about ?? m.description;
+  const vision = department.vision ?? m.vision;
+  const mission = department.mission ?? m.mission;
   const missionLines = Array.isArray(mission) ? mission : mission ? [mission] : [];
+  const intakeUg = department.intake_ug ?? m.intake_ug;
+  const intakePg = department.intake_pg ?? m.intake_pg;
+  const established = department.established_year ?? m.established;
 
   return (
     <div className="space-y-12">
@@ -118,23 +124,23 @@ export function DeptAboutView({ department, courses = [] }: Props) {
               )}
             </div>
           )}
-          {(m.intake_ug || m.intake_pg || m.established) && (
+          {(intakeUg || intakePg || established) && (
             <div className="grid auto-cols-fr grid-flow-col divide-x divide-line border-y border-line">
-              {m.intake_ug && (
+              {intakeUg && (
                 <div className="px-3 py-5 text-center">
-                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{m.intake_ug}</div>
+                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{intakeUg}</div>
                   <div className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">UG Intake</div>
                 </div>
               )}
-              {m.intake_pg && (
+              {intakePg && (
                 <div className="px-3 py-5 text-center">
-                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{m.intake_pg}</div>
+                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{intakePg}</div>
                   <div className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">PG Intake</div>
                 </div>
               )}
-              {m.established && (
+              {established && (
                 <div className="px-3 py-5 text-center">
-                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{m.established}</div>
+                  <div className="font-display text-2xl font-medium text-navy md:text-3xl">{established}</div>
                   <div className="mt-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Established</div>
                 </div>
               )}
@@ -394,12 +400,11 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
             <p className="text-sm text-ink-soft">No clubs listed yet.</p>
           ) : (
             <ul className="space-y-3">
-              {clubs.map((c) => (
-                <li key={c.id}>
-                  <Link
-                    href={`/campus-life/clubs/${c.slug}`}
-                    className="group block border border-line bg-surface p-4 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
-                  >
+              {clubs.map((c) => {
+                // Clubs without their own page (has_detail_page off) must not
+                // link to /campus-life/clubs/[slug] — that route 404s for them.
+                const body = (
+                  <>
                     <div className="flex items-center gap-3">
                       {c.logoUrl ? (
                         <div className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden border border-line bg-surface p-1">
@@ -423,9 +428,25 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                         {c.description}
                       </p>
                     )}
-                  </Link>
-                </li>
-              ))}
+                  </>
+                );
+                const cardClass =
+                  "group block border border-line bg-surface p-4 transition-colors duration-300";
+                return (
+                  <li key={c.id}>
+                    {c.hasDetailPage ? (
+                      <Link
+                        href={`/campus-life/clubs/${c.slug}`}
+                        className={`${cardClass} hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep`}
+                      >
+                        {body}
+                      </Link>
+                    ) : (
+                      <div className={cardClass}>{body}</div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

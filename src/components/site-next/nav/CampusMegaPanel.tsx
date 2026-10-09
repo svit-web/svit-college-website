@@ -67,10 +67,12 @@ export function useCampusCategories({
         allLabel: "All student groups",
         allTo: "/campus-life/student-groups",
         items: [
-          ...(featuredClubs ?? []).map((c) => ({
-            label: c.name,
-            to: `/campus-life/clubs/${c.slug}`,
-          })),
+          ...(featuredClubs ?? [])
+            .filter((c) => c.has_detail_page)
+            .map((c) => ({
+              label: c.name,
+              to: `/campus-life/clubs/${c.slug}`,
+            })),
           ...(centers ?? []).map((c) => ({
             label: c.name.split("(")[0].trim(),
             to: `/student-corner/${c.slug}`,
