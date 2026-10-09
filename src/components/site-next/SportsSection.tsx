@@ -55,7 +55,7 @@ function toEntry(sport: Sport, album: EntryAlbum | undefined): EntryCardData {
     title: sport.name,
     subtitle: sport.metadata?.subtitle ?? null,
     description: sportDescription(sport) || null,
-    cardPhotoUrl: sport.card_photo_url,
+    cardPhotoUrl: album?.coverUrl ?? null,
     hasDetailPage: sport.has_detail_page,
     // No sport Detail page route exists yet, so Cards never link out; a sport
     // with more to show opens the Entry viewer instead.
