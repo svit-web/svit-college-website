@@ -52,12 +52,12 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
         ]}
         rightSlot={
           department.logo_url ? (
-            <div className="relative flex h-28 w-28 items-center justify-center overflow-hidden border border-line bg-surface">
+            <div className="relative flex h-40 w-40 items-center justify-center overflow-hidden border border-line bg-surface">
               <Image
                 src={department.logo_url}
                 alt={`${department.name} logo`}
                 fill
-                sizes="112px"
+                sizes="160px"
                 className="object-contain p-2"
               />
             </div>
