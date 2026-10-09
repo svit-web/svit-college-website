@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { SectionSideNav } from "./SectionSideNav";
-import { CollegeLogo } from "./CollegeLogo";
 import type { Department } from "@/lib/departments.functions";
 import type { CollegeRow } from "@/lib/homepage";
 
@@ -53,31 +52,18 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
         ]}
         rightSlot={
           department.logo_url ? (
-            <div className="relative flex h-60 w-60 items-center justify-center overflow-hidden border border-line bg-surface">
+            <div className="relative flex h-14 w-14 items-center justify-center overflow-hidden border border-line bg-surface">
               <Image
                 src={department.logo_url}
                 alt={`${department.name} logo`}
                 fill
-                sizes="240px"
-                className="object-contain p-6"
+                sizes="56px"
+                className="object-contain p-1.5"
               />
             </div>
           ) : undefined
         }
-      >
-        {college && (
-          <div className="inline-flex items-center gap-3 rounded-full border border-line-strong py-1.5 pl-1.5 pr-4">
-            <CollegeLogo
-              shortCode={college.shortCode}
-              src={college.logo}
-              className="h-8 w-8 rounded-full border border-line bg-surface p-0.5"
-            />
-            <span className="text-xs font-semibold uppercase tracking-widest text-ink-soft">
-              {college.name}
-            </span>
-          </div>
-        )}
-      </PageHero>
+      />
 
       <div className="bg-paper">
         <div className="container-page py-10">

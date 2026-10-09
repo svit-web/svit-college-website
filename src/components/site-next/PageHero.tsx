@@ -14,10 +14,12 @@ const PATTERN_STYLE: React.CSSProperties = {
 };
 
 /**
- * Beige page banner for inner pages: homepage-hero typography on paper, no
- * photo. Text colour follows the admin "Text Color" setting through
- * --hero-text, which the public site layout sets for every page; pass
- * `appearance` only to override it locally.
+ * Beige page banner for inner pages: breadcrumbs, a small crimson eyebrow,
+ * the title, one restrained subtitle line and optional pills — sized to a
+ * slim strip so the page's content starts near the top of the first screen.
+ * Text colour follows the admin "Text Color" setting through --hero-text,
+ * which the public site layout sets for every page; pass `appearance` only
+ * to override it locally.
  */
 export function PageHero({
   title,
@@ -46,7 +48,8 @@ export function PageHero({
         className="pointer-events-none absolute inset-y-0 right-0 hidden w-1/2 lg:block"
         style={PATTERN_STYLE}
       />
-      <div className="container-page relative flex flex-col pb-[clamp(2.5rem,6vw,4.5rem)] pt-[clamp(112px,16vh,180px)] lg:min-h-[60vh]">
+      {/* Fixed navbar overlays the top — the clamp is clearance for it, not air. */}
+      <div className="container-page relative flex flex-col pb-9 pt-[clamp(96px,11vh,120px)]">
         {crumbs && crumbs.length > 0 && (
           <nav
             aria-label="Breadcrumb"
@@ -68,23 +71,23 @@ export function PageHero({
             ))}
           </nav>
         )}
-        <div className="mt-auto flex items-end justify-between gap-10 pt-10 md:pt-14">
-          <div className="max-w-4xl flex-1">
+        <div className="mt-6 flex items-center justify-between gap-8">
+          <div className="max-w-4xl min-w-0 flex-1">
             {accent && (
-              <p className="text-[0.7rem] font-bold uppercase tracking-[0.22em] text-crimson">
+              <p className="text-[0.65rem] font-bold uppercase tracking-[0.22em] text-crimson">
                 {accent}
               </p>
             )}
-            <h1 className="mt-[1.1rem] text-[clamp(2.2rem,4.6vw,3.8rem)] font-bold leading-[1.02] tracking-[-0.035em] text-[var(--hero-text,var(--navy))]">
+            <h1 className="mt-2 text-[clamp(1.9rem,3.4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.03em] text-[var(--hero-text,var(--navy))]">
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-5 max-w-2xl text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-[color-mix(in_oklab,var(--hero-text,var(--navy))_78%,var(--paper))]">
+              <p className="mt-3 max-w-2xl text-[0.95rem] font-medium leading-[1.55] text-[color-mix(in_oklab,var(--hero-text,var(--navy))_78%,var(--paper))]">
                 {subtitle}
               </p>
             )}
             {children && (
-              <div className="mt-7 flex flex-wrap items-center gap-[0.7rem]">{children}</div>
+              <div className="mt-4 flex flex-wrap items-center gap-[0.7rem]">{children}</div>
             )}
           </div>
           {rightSlot && <div className="hidden shrink-0 lg:block">{rightSlot}</div>}

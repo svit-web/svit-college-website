@@ -9,7 +9,7 @@ A full-bleed photo hero whose text sits on a paper-coloured fade down the left s
 _Avoid_: overlay hero, background hero
 
 **Page banner**:
-The beige, photo-less hero on inner pages (`PageHero`, also used by the About and Campus Life layouts): breadcrumbs, crimson eyebrow, homepage-scale title. Only the admin Text Color affects it.
+The beige, photo-less banner at the top of inner pages (`PageHero`, also used by the department, About and Campus Life layouts): breadcrumbs, small crimson eyebrow, title, one subtitle line, optional pills/actions — deliberately slim (no viewport-height minimum) so page content starts near the top of the first screen. Only the admin Text Color affects it.
 _Avoid_: page hero (ambiguous with Photo hero)
 
 **Split hero**:
