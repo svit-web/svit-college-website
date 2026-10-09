@@ -66,7 +66,7 @@ export default async function CentreLeaf({ params }: { params: Promise<{ slug: s
             subtitle: item.subtitle,
             accent: item.accent_color || "Centre",
             description: item.description,
-            cardPhotoUrl: item.card_photo_url,
+            cardPhotoUrl: album?.coverUrl ?? null,
             album,
           }}
         >

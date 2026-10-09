@@ -50,7 +50,7 @@ export default async function CoePage() {
             subtitle: item.subtitle,
             accent: item.accent_color || "Centre",
             description: item.description,
-            cardPhotoUrl: item.card_photo_url,
+            cardPhotoUrl: album?.coverUrl ?? null,
             album,
           }}
         >

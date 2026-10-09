@@ -40,7 +40,7 @@ export default async function NssNccPage() {
         subtitle: center.subtitle,
         accent: center.accent_color || "Centre",
         description: center.description,
-        cardPhotoUrl: center.card_photo_url,
+        cardPhotoUrl: album?.coverUrl ?? null,
         album,
       }}
     >
