@@ -1,4 +1,5 @@
 import { publicSupabase } from "@/lib/supabase-public";
+import { getEntryAlbums } from "@/lib/gallery.functions";
 
 export async function getGlobalHomepageItems() {
   const supabase = publicSupabase();
@@ -92,7 +93,7 @@ export async function getLatestEvents() {
   const { data, error } = await supabase
     .from("events")
     .select(
-      "id, slug, title, tag, start_date, end_date, description, card_photo_url, registration_link, sort_order",
+      "id, slug, title, tag, start_date, end_date, description, card_photo_url, album_id, registration_link, sort_order",
     )
     .eq("status", "published")
     .eq("is_featured", true)
@@ -100,5 +101,10 @@ export async function getLatestEvents() {
     .order("featured_at", { ascending: false })
     .limit(8);
   if (error) throw new Error(error.message);
-  return data ?? [];
+  const rows = data ?? [];
+  const albums = await getEntryAlbums(rows.map((r) => r.album_id));
+  return rows.map(({ album_id, ...row }) => ({
+    ...row,
+    card_photo_url: albums.get(album_id ?? "")?.coverUrl ?? null,
+  }));
 }

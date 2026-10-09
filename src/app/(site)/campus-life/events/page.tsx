@@ -40,7 +40,7 @@ export default async function EventsIndex() {
       title: event.title,
       subtitle: event.subtitle ?? event.accent_color ?? event.tag ?? null,
       description: event.description,
-      cardPhotoUrl: event.card_photo_url,
+      cardPhotoUrl: albums.get(event.album_id ?? "")?.coverUrl ?? null,
       hasDetailPage: event.has_detail_page,
       detailHref: event.has_detail_page ? `/campus-life/events/${event.slug}` : null,
       album: event.album_id ? albums.get(event.album_id) ?? null : null,

@@ -223,7 +223,7 @@ export async function getDepartmentActivities(departmentId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('events')
-    .select('id, slug, event_type, title, start_date, end_date, description, card_photo_url, has_detail_page')
+    .select('id, slug, event_type, title, start_date, end_date, description, card_photo_url, has_detail_page, album_id')
     .eq('department_id', departmentId)
     .eq('status', 'published')
     .is('deleted_at', null)
@@ -235,7 +235,12 @@ export async function getDepartmentActivities(departmentId: string) {
     throw error;
   }
 
-  return (data ?? []).map((a: any): DeptActivity => ({
+  const rows = data ?? [];
+  const albums = await getEntryAlbums(rows.map((r: any) => r.album_id)).catch(
+    () => new Map<string, EntryAlbum>(),
+  );
+
+  return rows.map((a: any): DeptActivity => ({
     id: a.id,
     slug: a.slug,
     type: a.event_type,
@@ -243,7 +248,7 @@ export async function getDepartmentActivities(departmentId: string) {
     startDate: a.start_date,
     endDate: a.end_date,
     notes: a.description,
-    cardPhotoUrl: a.card_photo_url,
+    cardPhotoUrl: albums.get(a.album_id ?? '')?.coverUrl ?? null,
     hasDetailPage: !!a.has_detail_page,
   }));
 }

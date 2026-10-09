@@ -1,5 +1,6 @@
 // Server functions for student clubs data from Supabase
 import { publicSupabase } from '@/lib/supabase-public';
+import { getEntryAlbums } from '@/lib/gallery.functions';
 
 export interface StudentClub {
   id: string;
@@ -107,14 +108,14 @@ export interface ClubEvent {
   albumId: string | null;
 }
 
-function mapClubEventRow(e: any): ClubEvent {
+function mapClubEventRow(e: any, coverUrl: string | null): ClubEvent {
   return {
     id: e.id,
     slug: e.slug,
     title: e.title,
     description: e.description,
     eventDate: e.start_date,
-    imageUrl: e.card_photo_url,
+    imageUrl: coverUrl,
     hasDetailPage: !!e.has_detail_page,
     albumId: e.album_id ?? null,
   };
@@ -142,8 +143,10 @@ export async function getClubEvents(clubId: string) {
     throw error;
   }
 
+  const rows = data ?? [];
+  const albums = await getEntryAlbums(rows.map((r) => r.album_id));
   return {
-    events: (data ?? []).map(mapClubEventRow),
+    events: rows.map((r) => mapClubEventRow(r, albums.get(r.album_id ?? '')?.coverUrl ?? null)),
     total: count ?? 0,
   };
 }
@@ -167,5 +170,7 @@ export async function getAllClubEvents(clubId: string) {
     throw error;
   }
 
-  return (data ?? []).map(mapClubEventRow);
+  const rows = data ?? [];
+  const albums = await getEntryAlbums(rows.map((r) => r.album_id));
+  return rows.map((r) => mapClubEventRow(r, albums.get(r.album_id ?? '')?.coverUrl ?? null));
 }

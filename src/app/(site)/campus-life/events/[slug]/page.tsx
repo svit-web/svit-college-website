@@ -28,10 +28,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const result = await loadEvent(slug);
   if (!result) return { title: "Event — SVIT Vasad", robots: { index: false } };
-  const { event } = result;
+  const { event, album } = result;
   const seo = event.seo;
   const description = seo?.meta_description || metaDescription(event.description);
-  const image = seo?.og_image_url || event.card_photo_url;
+  const image = seo?.og_image_url || album?.coverUrl;
   const base = await siteOpenGraph();
   return {
     title: seo?.meta_title || `${event.title} — Events — SVIT Vasad`,
@@ -66,7 +66,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
             startDate: event.start_date,
             endDate: event.end_date,
             description: metaDescription(event.description),
-            image: event.card_photo_url,
+            image: album?.coverUrl,
             location: event.location,
           })}
         />
@@ -84,7 +84,7 @@ export default async function EventLeaf({ params }: { params: Promise<{ slug: st
           subtitle: event.subtitle,
           accent: typeLabel ?? event.accent_color ?? event.tag ?? "Event",
           description: event.description,
-          cardPhotoUrl: event.card_photo_url,
+          cardPhotoUrl: album?.coverUrl ?? null,
           album,
         }}
       >
