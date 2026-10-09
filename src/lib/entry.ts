@@ -8,11 +8,14 @@ export type EntryPhoto = {
   id: string;
   url: string;
   caption: string | null;
+  isCover: boolean;
 };
 
 export type EntryAlbum = {
   id: string;
   media: EntryPhoto[];
+  /** The is_cover-tagged photo's url, falling back to the first photo if none is tagged. */
+  coverUrl: string | null;
 };
 
 export type EntryCardData = {

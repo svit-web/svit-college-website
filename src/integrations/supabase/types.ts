@@ -1634,6 +1634,7 @@ export type Database = {
           deleted_at: string | null
           deleted_by: string | null
           id: string
+          is_cover: boolean
           media_type: string
           metadata: Json
           sort_order: number
@@ -1650,6 +1651,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           id?: string
+          is_cover?: boolean
           media_type: string
           metadata?: Json
           sort_order?: number
@@ -1666,6 +1668,7 @@ export type Database = {
           deleted_at?: string | null
           deleted_by?: string | null
           id?: string
+          is_cover?: boolean
           media_type?: string
           metadata?: Json
           sort_order?: number

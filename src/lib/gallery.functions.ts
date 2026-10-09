@@ -107,17 +107,19 @@ export async function getEntryAlbums(
 
   const { data: media, error: mediaError } = await supabase
     .from('gallery_media')
-    .select('id, album_id, url, caption, media_type')
+    .select('id, album_id, url, caption, media_type, is_cover')
     .in('album_id', publishedIds)
     .eq('status', 'published')
     .is('deleted_at', null)
+    .order('is_cover', { ascending: false })
     .order('sort_order', { ascending: true });
   if (mediaError) throw mediaError;
 
   for (const m of media ?? []) {
     if (m.media_type !== 'image' || !m.url) continue;
-    const album = result.get(m.album_id) ?? { id: m.album_id, media: [] };
-    album.media.push({ id: m.id, url: m.url, caption: m.caption });
+    const album = result.get(m.album_id) ?? { id: m.album_id, media: [], coverUrl: null };
+    album.media.push({ id: m.id, url: m.url, caption: m.caption, isCover: !!m.is_cover });
+    if (album.coverUrl === null) album.coverUrl = m.url;
     result.set(m.album_id, album);
   }
   return result;
