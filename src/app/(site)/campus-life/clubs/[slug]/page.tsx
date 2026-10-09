@@ -61,7 +61,7 @@ export default async function ClubLeaf({ params }: { params: Promise<{ slug: str
           subtitle: item.subtitle,
           accent: item.accent_color || "Club",
           description: item.description,
-          cardPhotoUrl: item.card_photo_url,
+          cardPhotoUrl: album?.coverUrl ?? null,
           album,
           fallbackLogoUrl: item.logo_url,
         }}
