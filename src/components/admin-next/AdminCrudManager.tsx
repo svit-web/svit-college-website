@@ -510,6 +510,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
           initialValues[col.name] = scopeDefaultLevel;
         } else if (col.name === 'status') {
           initialValues[col.name] = 'published';
+        } else if (col.name === 'has_detail_page' && tableId !== 'sports') {
+          // No public detail route exists for sports yet (SportsSection.tsx
+          // hardcodes detailHref to null), so it keeps the false default.
+          initialValues[col.name] = true;
         } else {
           initialValues[col.name] = col.type === 'boolean' ? false : '';
         }
@@ -1264,9 +1268,14 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                     if (selectedIds.length === 0) return;
                     setDataLoading(true);
                     try {
+                      const alreadyPublished = selectedRows.filter((r: any) => r.status === 'published').length;
                       const { error } = await supabaseClient.from(tableId).update({ status: 'published', updated_by: admin.id }).in(schema.primary_key, selectedIds);
                       if (error) throw error;
-                      toast.success(`Successfully published ${selectedIds.length} records!`);
+                      if (alreadyPublished === selectedIds.length) {
+                        toast.info(`All ${selectedIds.length} selected records were already published — nothing changed.`);
+                      } else {
+                        toast.success(`Successfully published ${selectedIds.length} records!`);
+                      }
                       const auditRows = selectedRows.map((row: any) => ({
                         user_id: admin.id,
                         action: 'UPDATE' as const,
@@ -1302,9 +1311,14 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                     if (selectedIds.length === 0) return;
                     setDataLoading(true);
                     try {
+                      const alreadyDraft = selectedRows.filter((r: any) => r.status === 'draft').length;
                       const { error } = await supabaseClient.from(tableId).update({ status: 'draft', updated_by: admin.id }).in(schema.primary_key, selectedIds);
                       if (error) throw error;
-                      toast.success(`Successfully set ${selectedIds.length} records to Draft!`);
+                      if (alreadyDraft === selectedIds.length) {
+                        toast.info(`All ${selectedIds.length} selected records were already drafts — nothing changed.`);
+                      } else {
+                        toast.success(`Successfully set ${selectedIds.length} records to Draft!`);
+                      }
                       const auditRows = selectedRows.map((row: any) => ({
                         user_id: admin.id,
                         action: 'UPDATE' as const,

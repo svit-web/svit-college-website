@@ -75,7 +75,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     highlights: [],
     card_photo_url: '',
     album_id: null,
-    has_detail_page: false,
+    has_detail_page: true,
     status: 'published',
   });
 
@@ -129,7 +129,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
       highlights: [],
       card_photo_url: '',
       album_id: null,
-      has_detail_page: false,
+      has_detail_page: true,
       status: 'published',
     });
     setPanelOpen(true);

@@ -11,12 +11,17 @@ import { requireAdmin, isAdmin, getAdminUser } from '@/app/lib/auth/admin';
  * (see src/app/lib/supabase/client.ts) — without it, public pages keep serving
  * whatever was in the DB at build time until the next deploy.
  *
- * Silently no-ops for non-admins so an anonymous caller can't use it to force
- * site-wide re-renders.
+ * No-ops for non-admins so an anonymous caller can't use it to force
+ * site-wide re-renders — but logs server-side when it skips, so a dropped
+ * revalidation after a real admin write is visible instead of silently
+ * leaving the public site stale.
  */
 export async function revalidatePublicSite() {
   const admin = await getAdminUser();
-  if (!admin) return;
+  if (!admin) {
+    console.error('revalidatePublicSite skipped: no admin session — public pages were NOT revalidated after a write');
+    return;
+  }
   revalidatePath('/', 'layout');
 }
 
