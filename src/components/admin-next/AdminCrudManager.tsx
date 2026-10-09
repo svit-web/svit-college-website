@@ -52,9 +52,6 @@ function formatLabel(str: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-function fieldLabel(tableId: string, colName: string): string {
-  return TABLE_CONFIGS[tableId]?.fields?.[colName]?.label ?? formatLabel(colName);
-}
 
 const HIDDEN_GRID_COLUMNS = [
   'id',
@@ -70,6 +67,7 @@ const HIDDEN_GRID_COLUMNS = [
   'content',
   'featured_at',
   'featured_by',
+  'map_url',
 ];
 
 const STATUS_STYLES: Record<string, string> = {
@@ -94,9 +92,10 @@ const FK_LABEL_COLUMNS: Record<string, string> = {
 const FK_NAME_SPLIT_TABLES = new Set(['user_profiles', 'staff_profiles']);
 
 interface TableFieldConfig {
-  // Overrides the generic formatLabel(col.name) guess for a column whose
-  // real-world meaning formatLabel can't express (e.g. map_url isn't "Map Url").
-  label?: string;
+  // Removes this column from the admin form entirely (still a real DB column,
+  // just not editable here) — for a field that turned out not to be worth
+  // exposing, without a destructive migration to drop it.
+  hidden?: boolean;
   // Boolean/enum fields only: locks the control to global admins and, for
   // enums, narrows the option list to the acting admin's own scope level.
   lockedForNonGlobal?: boolean;
@@ -191,7 +190,9 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
       event_type: { optionLabels: EVENT_TYPE_LABELS },
-      map_url: { label: 'Google Maps link (location pin)' },
+      // Every event happens on campus — not worth an admin field. The column
+      // stays (a handful of old rows have a value), just not editable here.
+      map_url: { hidden: true },
       is_featured: {
         lockedForNonGlobal: true,
         booleanLabel: 'Feature on homepage (max 8 at once)',
@@ -807,7 +808,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         accessorKey: col.name,
         header: ({ column }: any) => (
           <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="flex items-center gap-1 font-semibold text-slate-600 hover:text-navy text-[11px]">
-            <span>{fieldLabel(tableId, col.name)}</span>
+            <span>{formatLabel(col.name)}</span>
             <ArrowUpDown className="h-3 w-3 opacity-40" />
           </button>
         ),
@@ -1068,6 +1069,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 const tableFields = TABLE_CONFIGS[tableId]?.fields;
                 const usesEntryPhotos = !!tableFields && Object.values(tableFields).some((f) => f.render === 'entry-photos');
                 if (usesEntryPhotos && ENTRY_PHOTOS_OWNED_COLUMNS.has(col.name)) return null;
+                if (tableFields?.[col.name]?.hidden) return null;
 
                 // jsonb columns (metadata and friends) get the typed key-by-key
                 // editor with a raw-JSON toggle, not a bare textarea.
@@ -1099,7 +1101,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 return (
                   <div key={col.name} className="space-y-1.5">
                     <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center justify-between">
-                      <span>{fieldLabel(tableId, col.name)}</span>
+                      <span>{formatLabel(col.name)}</span>
                       {!col.is_nullable && <span className="text-[10px] text-crimson font-medium font-mono">Required</span>}
                     </label>
 
