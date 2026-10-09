@@ -49,7 +49,7 @@ export default async function FacilityLeaf({ params }: { params: Promise<{ slug:
         subtitle: facility.subtitle,
         accent: facility.accent_color || "Facility",
         description: facility.description,
-        cardPhotoUrl: facility.card_photo_url,
+        cardPhotoUrl: album?.coverUrl ?? null,
         album,
       }}
     >

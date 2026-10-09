@@ -463,7 +463,7 @@ function toLabCard(lab: Facility, deptCode: string, album: EntryAlbum | null): E
     title: lab.name,
     subtitle: lab.accent_color,
     description: lab.description,
-    cardPhotoUrl: lab.card_photo_url,
+    cardPhotoUrl: album?.coverUrl ?? null,
     hasDetailPage: lab.has_detail_page,
     detailHref: lab.has_detail_page ? `/departments/${deptCode}/labs/${lab.slug}` : null,
     album,

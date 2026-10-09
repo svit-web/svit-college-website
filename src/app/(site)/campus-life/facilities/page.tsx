@@ -28,7 +28,7 @@ function toCard(
     title: facility.name,
     subtitle: facility.subtitle,
     description: facility.description,
-    cardPhotoUrl: facility.card_photo_url,
+    cardPhotoUrl: facility.album_id ? (albums.get(facility.album_id)?.coverUrl ?? null) : null,
     hasDetailPage: facility.has_detail_page,
     detailHref: facility.has_detail_page ? pathFor(category, facility.slug) : null,
     album: facility.album_id ? (albums.get(facility.album_id) ?? null) : null,

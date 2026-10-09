@@ -84,7 +84,7 @@ export default async function LabDetailPage({
             subtitle: lab.subtitle,
             accent: lab.accent_color || "Laboratory",
             description: lab.description,
-            cardPhotoUrl: lab.card_photo_url,
+            cardPhotoUrl: album?.coverUrl ?? null,
             album,
           }}
         >
