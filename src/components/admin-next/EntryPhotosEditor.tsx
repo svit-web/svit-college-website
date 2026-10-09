@@ -36,6 +36,13 @@ interface EntryPhotosEditorProps {
   values: Record<string, any>;
   onChange: (name: string, value: any) => void;
   hasDetailPageField: boolean;
+  // Called instead of blocking the upload when recordId is null: validates
+  // the form's required fields (surfacing the browser's own "please fill
+  // this in" UI if any are missing, which rejects), then silently saves the
+  // record and returns its new id. The host component keeps editing it from
+  // there — the modal never closes, and a later explicit Save becomes an
+  // update instead of a second insert.
+  onRequireSave: () => Promise<string>;
 }
 
 function slugify(text: string): string {
@@ -61,7 +68,7 @@ function sortCoverFirst(photos: AlbumPhoto[]): AlbumPhoto[] {
   return [...photos].sort((a, b) => Number(b.isCover) - Number(a.isCover) || a.sort_order - b.sort_order);
 }
 
-export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onChange, hasDetailPageField }: EntryPhotosEditorProps) {
+export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onChange, hasDetailPageField, onRequireSave }: EntryPhotosEditorProps) {
   const supabase = useMemo(() => createClient() as any, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -141,7 +148,7 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
   };
 
   // Steps 1 + 2 of the RLS flow. Returns the linked album id.
-  const createAndLinkAlbum = async (): Promise<string> => {
+  const createAndLinkAlbum = async (entryId: string): Promise<string> => {
     const title = String(values.title || values.name || 'Untitled').trim() || 'Untitled';
     const suffix = Math.random().toString(36).slice(2, 8);
     const slug = `${slugify(title) || tableId}-${suffix}`;
@@ -157,7 +164,7 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
     const { data: linked, error: linkError } = await supabase
       .from(tableId)
       .update({ album_id: album.id })
-      .eq(primaryKey, recordId)
+      .eq(primaryKey, entryId)
       .select(primaryKey);
     if (linkError) throw new Error(`Could not link album: ${linkError.message}`);
     if (!linked || linked.length === 0) throw new Error('Could not link album: you do not have permission to edit this entry');
@@ -167,8 +174,11 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
     return album.id;
   };
 
+  // Shares one in-flight ensureSaved() between overlapping drops, same
+  // pattern as creatingRef below for the album.
+  const savingRef = useRef<Promise<string> | null>(null);
+
   const addFiles = async (fileList: FileList | File[]) => {
-    if (!recordId) return;
     const files = Array.from(fileList);
     const accepted: File[] = [];
     for (const file of files) {
@@ -178,6 +188,19 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
     }
     if (accepted.length === 0) return;
 
+    let entryId = recordId;
+    if (!entryId) {
+      try {
+        savingRef.current ??= onRequireSave().finally(() => {
+          savingRef.current = null;
+        });
+        entryId = await savingRef.current;
+      } catch (err: any) {
+        toast.error(err.message);
+        return;
+      }
+    }
+
     // The first photo this Entry has ever gotten becomes the cover.
     let needsCover = !photos.some((p) => p.isCover);
 
@@ -186,7 +209,7 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
       let targetAlbumId = albumIdRef.current;
       if (!targetAlbumId) {
         // Share one in-flight creation between overlapping drops.
-        creatingRef.current ??= createAndLinkAlbum().finally(() => {
+        creatingRef.current ??= createAndLinkAlbum(entryId).finally(() => {
           creatingRef.current = null;
         });
         targetAlbumId = await creatingRef.current;
@@ -328,14 +351,9 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
             Also show in Gallery
           </label>
         </div>
-        {!recordId ? (
-          <div className="rounded-lg border-2 border-dashed border-slate-200 bg-white p-5 text-center text-sm text-slate-500">
-            Save this first, then add photos.
-          </div>
-        ) : (
-          <>
-            <input
-              ref={fileInputRef}
+        <>
+          <input
+            ref={fileInputRef}
               type="file"
               accept="image/*"
               multiple
@@ -473,7 +491,6 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
               )}
             </div>
           </>
-        )}
       </div>
 
       {hasDetailPageField && (

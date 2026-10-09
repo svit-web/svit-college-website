@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
 import { MediaUploader } from './MediaUploader';
 import { SeoEditor } from './SeoEditor';
@@ -296,6 +296,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [formValues, setFormValues] = useState<Record<string, any>>({});
   // Column names (on a new record only) still being live-derived from their
   // `autoGenerateFrom.source` field; typing directly into one removes it here.
@@ -579,88 +580,102 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     }
   };
 
+  const buildPayload = (): Record<string, any> => {
+    const payload: Record<string, any> = {};
+
+    schema.columns.forEach((col: any) => {
+      if (
+        col.name === schema.primary_key ||
+        col.name === 'created_at' ||
+        col.name === 'updated_at' ||
+        col.name === 'deleted_at' ||
+        col.name === 'created_by' ||
+        col.name === 'updated_by' ||
+        col.name === 'featured_at' ||
+        col.name === 'featured_by'
+      ) {
+        return;
+      }
+
+      const val = formValues[col.name];
+
+      if (col.type === 'boolean') {
+        payload[col.name] = !!val;
+      } else if (col.type.startsWith('integer') || col.type === 'numeric') {
+        payload[col.name] = val === '' ? null : Number(val);
+      } else if (col.name === 'metadata' || col.type === 'jsonb') {
+        if (val === '' || val === null || val === undefined) {
+          payload[col.name] = {};
+        } else if (typeof val === 'string') {
+          // A string here means the MetadataEditor's JSON view has
+          // unparseable text — block the save with a fixable message
+          // instead of JSON.parse's "Unexpected token".
+          try {
+            payload[col.name] = JSON.parse(val);
+          } catch {
+            throw new Error(
+              `${formatLabel(col.name)} contains invalid JSON — open Additional Fields, switch to the JSON view and fix the highlighted error.`
+            );
+          }
+        } else {
+          payload[col.name] = val;
+        }
+      } else if (col.type === 'ARRAY') {
+        payload[col.name] = typeof val === 'string' ? val.split(',').map((t) => t.trim()).filter(Boolean) : Array.isArray(val) ? val : [];
+      } else {
+        payload[col.name] = val === '' ? null : val;
+      }
+    });
+
+    if (tableId === 'pages' && (payload.slug ?? editingRecord?.slug) === 'about') {
+      const validationError = validateAboutPageMetadata(payload.metadata);
+      if (validationError) {
+        throw new Error(`Invalid About page content — ${validationError}`);
+      }
+    }
+
+    return payload;
+  };
+
+  // Inserts or updates depending on editingRecord, writing the audit log
+  // either way. Returns the saved row (synthesized for an update, since that
+  // path doesn't select the row back).
+  const persistRecord = async (payload: Record<string, any>): Promise<any> => {
+    if (editingRecord) {
+      const pkVal = editingRecord[schema.primary_key];
+
+      if (schema.columns.some((c: any) => c.name === 'updated_by')) {
+        payload.updated_by = admin.id;
+      }
+
+      const { error } = await supabaseClient.from(tableId).update(payload).eq(schema.primary_key, pkVal);
+      if (error) throw error;
+
+      await logAuditAction('UPDATE', pkVal, editingRecord, payload);
+      return { ...editingRecord, ...payload };
+    }
+
+    if (schema.columns.some((c: any) => c.name === 'created_by')) {
+      payload.created_by = admin.id;
+    }
+
+    const { data: insertedData, error } = await supabaseClient.from(tableId).insert(payload).select().single();
+    if (error) throw error;
+
+    if (insertedData) {
+      await logAuditAction('INSERT', insertedData[schema.primary_key], null, payload);
+    }
+    return insertedData;
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!schema) return;
     setMutating(true);
 
     try {
-      const payload: Record<string, any> = {};
-
-      schema.columns.forEach((col: any) => {
-        if (
-          col.name === schema.primary_key ||
-          col.name === 'created_at' ||
-          col.name === 'updated_at' ||
-          col.name === 'deleted_at' ||
-          col.name === 'created_by' ||
-          col.name === 'updated_by' ||
-          col.name === 'featured_at' ||
-          col.name === 'featured_by'
-        ) {
-          return;
-        }
-
-        const val = formValues[col.name];
-
-        if (col.type === 'boolean') {
-          payload[col.name] = !!val;
-        } else if (col.type.startsWith('integer') || col.type === 'numeric') {
-          payload[col.name] = val === '' ? null : Number(val);
-        } else if (col.name === 'metadata' || col.type === 'jsonb') {
-          if (val === '' || val === null || val === undefined) {
-            payload[col.name] = {};
-          } else if (typeof val === 'string') {
-            // A string here means the MetadataEditor's JSON view has
-            // unparseable text — block the save with a fixable message
-            // instead of JSON.parse's "Unexpected token".
-            try {
-              payload[col.name] = JSON.parse(val);
-            } catch {
-              throw new Error(
-                `${formatLabel(col.name)} contains invalid JSON — open Additional Fields, switch to the JSON view and fix the highlighted error.`
-              );
-            }
-          } else {
-            payload[col.name] = val;
-          }
-        } else if (col.type === 'ARRAY') {
-          payload[col.name] = typeof val === 'string' ? val.split(',').map((t) => t.trim()).filter(Boolean) : Array.isArray(val) ? val : [];
-        } else {
-          payload[col.name] = val === '' ? null : val;
-        }
-      });
-
-      if (tableId === 'pages' && (payload.slug ?? editingRecord?.slug) === 'about') {
-        const validationError = validateAboutPageMetadata(payload.metadata);
-        if (validationError) {
-          throw new Error(`Invalid About page content — ${validationError}`);
-        }
-      }
-
-      if (editingRecord) {
-        const pkVal = editingRecord[schema.primary_key];
-
-        if (schema.columns.some((c: any) => c.name === 'updated_by')) {
-          payload.updated_by = admin.id;
-        }
-
-        const { error } = await supabaseClient.from(tableId).update(payload).eq(schema.primary_key, pkVal);
-        if (error) throw error;
-
-        await logAuditAction('UPDATE', pkVal, editingRecord, payload);
-      } else {
-        if (schema.columns.some((c: any) => c.name === 'created_by')) {
-          payload.created_by = admin.id;
-        }
-
-        const { data: insertedData, error } = await supabaseClient.from(tableId).insert(payload).select().single();
-        if (error) throw error;
-
-        if (insertedData) {
-          await logAuditAction('INSERT', insertedData[schema.primary_key], null, payload);
-        }
-      }
+      const payload = buildPayload();
+      await persistRecord(payload);
 
       setIsModalOpen(false);
       loadData();
@@ -672,6 +687,24 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     } finally {
       setMutating(false);
     }
+  };
+
+  // Passed to EntryPhotosEditor as onRequireSave: called when an admin drops
+  // a photo onto a brand-new, not-yet-saved record. Validates the form the
+  // same way clicking Save would (native required-field UI), then silently
+  // inserts the row — the modal stays open and editingRecord switches this
+  // form over to update mode for everything after.
+  const ensureSaved = async (): Promise<string> => {
+    if (editingRecord) return editingRecord[schema.primary_key];
+    if (formRef.current && !formRef.current.reportValidity()) {
+      throw new Error('Fill in the required fields above first.');
+    }
+    const payload = buildPayload();
+    const saved = await persistRecord(payload);
+    if (!saved) throw new Error('Could not save this record.');
+    setEditingRecord(saved);
+    loadData();
+    return saved[schema.primary_key];
   };
 
   const handleDelete = async (record: any) => {
@@ -1041,7 +1074,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
               {editingRecord ? 'Edit Record Details' : `Add New ${formatLabel(tableId).slice(0, -1) || 'Record'}`}
             </h2>
 
-            <form onSubmit={handleSave} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+            <form ref={formRef} onSubmit={handleSave} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
               {schema.columns.map((col: any) => {
                 if (
                   col.name === 'created_at' ||
@@ -1092,6 +1125,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       values={formValues}
                       onChange={handleFieldChange}
                       hasDetailPageField={schema.columns.some((c: any) => c.name === 'has_detail_page')}
+                      onRequireSave={ensureSaved}
                     />
                   );
                 }

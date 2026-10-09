@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
 import { Plus, Trash2, Edit2, Loader2, Trophy } from 'lucide-react';
 import { toast } from 'sonner';
@@ -63,6 +63,7 @@ function SportsManager({ userId }: { userId: string | undefined }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<any | null>(null);
   const [form, setForm] = useState<typeof EMPTY_SPORT>({ ...EMPTY_SPORT });
+  const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
     loadSports();
@@ -110,10 +111,14 @@ function SportsManager({ userId }: { userId: string | undefined }) {
     setModalOpen(true);
   }
 
+  function buildPayload() {
+    return { ...form, players_count: form.players_count === '' ? null : Number(form.players_count) };
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const payload = { ...form, players_count: form.players_count === '' ? null : Number(form.players_count) };
+      const payload = buildPayload();
       if (editing) {
         const { error } = await (supabase as any).from('sports').update({ ...payload, updated_by: userId }).eq('id', editing.id);
         if (error) throw error;
@@ -128,6 +133,27 @@ function SportsManager({ userId }: { userId: string | undefined }) {
     } catch (err: any) {
       toast.error(err.message);
     }
+  }
+
+  // Passed to EntryPhotosEditor as onRequireSave: called when an admin drops
+  // a photo onto a brand-new, not-yet-saved sport. Same "native
+  // required-field validation, then silent insert" pattern as
+  // AdminCrudManager's ensureSaved.
+  async function ensureSaved(): Promise<string> {
+    if (editing) return editing.id;
+    if (formRef.current && !formRef.current.reportValidity()) {
+      throw new Error('Fill in the required fields above first.');
+    }
+    const payload = buildPayload();
+    const { data, error } = await (supabase as any)
+      .from('sports')
+      .insert({ ...payload, created_by: userId })
+      .select('id')
+      .single();
+    if (error) throw error;
+    setEditing(data);
+    loadSports();
+    return data.id;
   }
 
   async function handleDelete(s: any) {
@@ -193,7 +219,7 @@ function SportsManager({ userId }: { userId: string | undefined }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 p-4 overflow-y-auto">
           <div className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-2xl">
             <h3 className="mb-4 font-display text-lg font-bold text-navy">{editing ? 'Edit Sport' : 'Add Sport'}</h3>
-            <form onSubmit={handleSave} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
+            <form ref={formRef} onSubmit={handleSave} className="space-y-4 max-h-[75vh] overflow-y-auto pr-1">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <label className="text-xs font-semibold uppercase text-slate-600">Name *</label>
@@ -250,6 +276,7 @@ function SportsManager({ userId }: { userId: string | undefined }) {
                 values={form}
                 onChange={(name, value) => setForm((p) => ({ ...p, [name]: value }))}
                 hasDetailPageField
+                onRequireSave={ensureSaved}
               />
 
               <div className="grid grid-cols-2 gap-3">

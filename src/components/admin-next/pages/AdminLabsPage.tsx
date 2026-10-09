@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
 import { EntryPhotosEditor } from '@/components/admin-next/EntryPhotosEditor';
 import { FlaskConical, Plus, Trash2, Save, Loader2, X, Search } from 'lucide-react';
@@ -51,6 +51,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
 
   const [panelOpen, setPanelOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
   const [saving, setSaving] = useState(false);
 
   const [form, setForm] = useState<{
@@ -178,6 +179,33 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     setForm((p) => ({ ...p, highlights: p.highlights.filter((_, idx) => idx !== i) }));
   }
 
+  // Merge onto the lab's existing metadata rather than replacing it
+  // wholesale — the old bug here silently dropped anything else stored
+  // there (see docs/audits/2026-09-23-entry-model-drift.md). `images`/
+  // `imageUrl` are dead now that lab photos live in the Entry album.
+  function buildPayload() {
+    const editingLab = editingId ? labs.find((l) => l.id === editingId) : null;
+    const { images: _images, imageUrl: _imageUrl, ...restMetadata } = editingLab?.metadata ?? {};
+    return {
+      name: form.name.trim(),
+      slug: form.slug.trim() || slugify(form.name),
+      department_id: form.department_id,
+      facility_type: 'laboratory' as const,
+      status: form.status,
+      subtitle: form.subtitle.trim() || null,
+      accent_color: form.accent.trim() || null,
+      description: form.description.trim() || null,
+      card_photo_url: form.card_photo_url || null,
+      album_id: form.album_id,
+      has_detail_page: form.has_detail_page,
+      metadata: {
+        ...restMetadata,
+        highlights: form.highlights.filter((h) => h.title.trim()),
+      },
+      updated_by: admin.id,
+    };
+  }
+
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     if (!form.department_id) {
@@ -186,30 +214,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     }
     setSaving(true);
     try {
-      // Merge onto the lab's existing metadata rather than replacing it
-      // wholesale — the old bug here silently dropped anything else stored
-      // there (see docs/audits/2026-09-23-entry-model-drift.md). `images`/
-      // `imageUrl` are dead now that lab photos live in card_photo_url.
-      const editingLab = editingId ? labs.find((l) => l.id === editingId) : null;
-      const { images: _images, imageUrl: _imageUrl, ...restMetadata } = editingLab?.metadata ?? {};
-      const payload = {
-        name: form.name.trim(),
-        slug: form.slug.trim() || slugify(form.name),
-        department_id: form.department_id,
-        facility_type: 'laboratory' as const,
-        status: form.status,
-        subtitle: form.subtitle.trim() || null,
-        accent_color: form.accent.trim() || null,
-        description: form.description.trim() || null,
-        card_photo_url: form.card_photo_url || null,
-        album_id: form.album_id,
-        has_detail_page: form.has_detail_page,
-        metadata: {
-          ...restMetadata,
-          highlights: form.highlights.filter((h) => h.title.trim()),
-        },
-        updated_by: admin.id,
-      };
+      const payload = buildPayload();
 
       if (editingId) {
         const { error } = await supabase.from('facilities').update(payload as any).eq('id', editingId);
@@ -227,6 +232,26 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
     } finally {
       setSaving(false);
     }
+  }
+
+  // Passed to EntryPhotosEditor as onRequireSave: called when an admin drops
+  // a photo onto a brand-new, not-yet-saved lab. Same "native required-field
+  // validation, then silent insert" pattern as AdminCrudManager's ensureSaved.
+  async function ensureSaved(): Promise<string> {
+    if (editingId) return editingId;
+    if (formRef.current && !formRef.current.reportValidity()) {
+      throw new Error('Fill in the required fields above first.');
+    }
+    const payload = buildPayload();
+    const { data, error } = await supabase
+      .from('facilities')
+      .insert({ ...payload, created_by: admin.id } as any)
+      .select('id')
+      .single();
+    if (error) throw error;
+    setEditingId(data.id);
+    if (form.department_id) fetchLabs(form.department_id);
+    return data.id;
   }
 
   async function handleDelete(lab: Lab) {
@@ -371,7 +396,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
               </button>
             </div>
 
-            <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-5 space-y-4 admin-scroll">
+            <form ref={formRef} onSubmit={handleSave} className="flex-1 overflow-y-auto p-5 space-y-4 admin-scroll">
               {isGlobal ? (
                 <div className="space-y-1">
                   <label className="field-label">Department</label>
@@ -467,6 +492,7 @@ export function AdminLabsPage({ admin }: { admin: AdminUser }) {
                 values={form}
                 onChange={(name, value) => setForm((p) => ({ ...p, [name]: value }))}
                 hasDetailPageField
+                onRequireSave={ensureSaved}
               />
 
               <div className="space-y-2">
