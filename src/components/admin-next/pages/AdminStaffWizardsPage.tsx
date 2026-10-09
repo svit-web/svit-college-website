@@ -334,7 +334,29 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
       setActiveTab('general');
     } catch (err: any) {
       if (createdId) await supabase.from('staff_profiles').delete().eq('id', createdId);
-      toast.error(err.code === '23505' ? `Employee code ${employeeCode} is already used by another staff member.` : err.message);
+      if (err.code === '23505') {
+        const submittedEmail = newStaffForm.email.trim().toLowerCase();
+        const match = unassignedStaff.find(
+          (s) => (s.employee_code && s.employee_code === employeeCode) || (s.email && submittedEmail && s.email.toLowerCase() === submittedEmail)
+        );
+        if (match) {
+          toast.error(
+            `${match.first_name} ${match.last_name} already has this employee code/email but isn't assigned to a department yet. Assign them one in the "Unassigned Faculty" panel below instead of creating a new profile.`,
+            { duration: 8000 }
+          );
+          closePanel();
+          setUnassignedOpen(true);
+          setClaimingId(match.id);
+          setClaimForm({ department_id: '', designation_id: '' });
+          requestAnimationFrame(() => {
+            document.getElementById(`unassigned-${match.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          });
+        } else {
+          toast.error(`Employee code ${employeeCode} is already used by another staff member.`);
+        }
+      } else {
+        toast.error(err.message);
+      }
     } finally {
       setCreateLoading(false);
     }
@@ -730,7 +752,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                 to your department, or delete it if it&apos;s a duplicate/test entry.
               </p>
               {unassignedStaff.map((s) => (
-                <div key={s.id} className="flex flex-wrap items-center gap-2 p-3">
+                <div key={s.id} id={`unassigned-${s.id}`} className="flex flex-wrap items-center gap-2 p-3 scroll-mt-20">
                   <div className="min-w-[180px] flex-1">
                     <p className="text-sm font-medium text-slate-800">
                       {s.title} {s.first_name} {s.middle_name} {s.last_name}
