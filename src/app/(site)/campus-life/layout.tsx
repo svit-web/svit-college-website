@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function CampusLifeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <div>
       <PageHero
         title="Campus Life"
         accent="Beyond the Classroom"
@@ -17,19 +17,17 @@ export default function CampusLifeLayout({ children }: { children: React.ReactNo
         crumbs={[{ label: "Home", to: "/" }, { label: "Campus Life" }]}
       />
 
-      <div className="bg-paper">
-        <div className="container-page py-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-              <CampusLifeNav />
-            </aside>
-
-            <div className="min-w-0">
-              {children}
-            </div>
-          </div>
+      {/* Sticky until the content ends, so the tabs scroll off before the
+          footer; mobile navbar is fixed (h-16), the desktop one scrolls away. */}
+      <div className="sticky top-16 z-30 border-b border-line bg-paper lg:top-0">
+        <div className="container-page py-3">
+          <CampusLifeNav />
         </div>
       </div>
-    </>
+
+      <div className="bg-paper">
+        <div className="container-page py-10">{children}</div>
+      </div>
+    </div>
   );
 }

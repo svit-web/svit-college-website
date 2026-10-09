@@ -23,7 +23,7 @@ export default async function AboutLayout({ children }: { children: React.ReactN
       ?.children ?? [];
 
   return (
-    <>
+    <div>
       <PageHero
         title={c?.hero?.title ?? "About SVIT"}
         accent={c?.hero?.accent}
@@ -44,19 +44,18 @@ export default async function AboutLayout({ children }: { children: React.ReactN
         </span>
       </PageHero>
 
-      {/* Vertical sidebar + content */}
-      <div className="bg-paper">
-        <div className="container-page py-10">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-              <AboutNav items={aboutLinks} />
-            </aside>
-
-            <div className="min-w-0">{children}</div>
-          </div>
+      {/* Sticky until the content ends, so the tabs scroll off before the
+          footer; mobile navbar is fixed (h-16), the desktop one scrolls away. */}
+      <div className="sticky top-16 z-30 border-b border-line bg-paper lg:top-0">
+        <div className="container-page py-3">
+          <AboutNav items={aboutLinks} />
         </div>
       </div>
-    </>
+
+      <div className="bg-paper">
+        <div className="container-page py-10">{children}</div>
+      </div>
+    </div>
   );
 }
 

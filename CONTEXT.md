@@ -12,6 +12,10 @@ _Avoid_: overlay hero, background hero
 The beige, photo-less banner at the top of inner pages (`PageHero`, also used by the department, About and Campus Life layouts): breadcrumbs, small crimson eyebrow, title, one subtitle line, optional pills/actions — deliberately slim (no viewport-height minimum) so page content starts near the top of the first screen. Only the admin Text Color affects it.
 _Avoid_: page hero (ambiguous with Photo hero)
 
+**Section tab strip**:
+The horizontally scrolling row of section pills (`SectionTabs`) mounted in a sticky strip directly below the Page banner on section layouts (department, About, Campus Life). It replaced the old vertical `SectionSideNav` sidebar; active section = ink pill, and the strip sticks under the navbar while the page scrolls, releasing at the end of the content so it never overlaps the footer. Distinct from `PillTabs`, which links peer entries inside a page (e.g. clubs), not page sections.
+_Avoid_: sidebar nav, section sidebar (the vertical layout is gone)
+
 **Split hero**:
 A section where the photo and the text occupy separate, non-overlapping regions, so the photo is shown untinted — e.g. the homepage carousel (`Carousel.tsx`). `HeroPhotoLayer`'s `overlay={false}` renders a photo this way.
 _Avoid_: content hero, split-screen hero

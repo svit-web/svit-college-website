@@ -11,7 +11,7 @@ export interface PillTabItem {
 
 /**
  * Horizontal pill tabs for sub-sections (clubs, student groups, student
- * corner). Same pill vocabulary as SectionSideNav: active = ink pill. One
+ * corner). Same pill vocabulary as SectionTabs: active = ink pill. One
  * row that scrolls sideways on narrow screens instead of wrapping.
  */
 export function PillTabs({ items, ariaLabel }: { items: PillTabItem[]; ariaLabel: string }) {

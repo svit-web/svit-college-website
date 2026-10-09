@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Home, Building2, Users, CalendarDays, Trophy, Shield } from "lucide-react";
-import { SectionSideNav } from "./SectionSideNav";
+import { SectionTabs } from "./SectionTabs";
 
 const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] = [
   { to: "/campus-life", label: "Overview", icon: Home, exact: true },
@@ -16,8 +16,7 @@ const NAV: { to: string; label: string; icon: typeof Home; exact?: boolean }[] =
 export function CampusLifeNav() {
   const pathname = usePathname();
   return (
-    <SectionSideNav
-      title="Campus Life"
+    <SectionTabs
       ariaLabel="Campus Life sections"
       items={NAV.map((item) => ({
         href: item.to,

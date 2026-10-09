@@ -2,14 +2,13 @@
 
 import { usePathname } from "next/navigation";
 import type { MenuLink } from "@/lib/menus.functions";
-import { SectionSideNav } from "@/components/site-next/SectionSideNav";
+import { SectionTabs } from "@/components/site-next/SectionTabs";
 
 export function AboutNav({ items }: { items: MenuLink[] }) {
   const pathname = usePathname();
 
   return (
-    <SectionSideNav
-      title="About SVIT"
+    <SectionTabs
       ariaLabel="About sections"
       items={items.map((s) => {
         const href = s.url ?? "#";

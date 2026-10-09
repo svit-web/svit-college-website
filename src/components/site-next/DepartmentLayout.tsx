@@ -4,7 +4,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
 import { PageHero } from "./PageHero";
-import { SectionSideNav } from "./SectionSideNav";
+import { SectionTabs } from "./SectionTabs";
 import type { Department } from "@/lib/departments.functions";
 import type { CollegeRow } from "@/lib/homepage";
 
@@ -40,7 +40,7 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
   const base = `/departments/${department.code}`;
 
   return (
-    <>
+    <div>
       <PageHero
         title={department.name}
         accent={college ? `${college.shortCode} · Department` : "Department"}
@@ -65,35 +65,34 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
         }
       />
 
-      <div className="bg-paper">
-        <div className="container-page py-10">
-          <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
-            <aside className="min-w-0 lg:sticky lg:top-24 lg:self-start">
-              <SectionSideNav
-                title="In this department"
-                ariaLabel="Department sections"
-                items={NAV.map((item) => {
-                  const href = `${base}${item.href}`;
-                  // Department routes resolve case-insensitively (/departments/ca
-                  // and /departments/CA), so match the active tab the same way.
-                  const path = pathname?.toLowerCase() ?? "";
-                  const target = href.toLowerCase();
-                  return {
-                    href,
-                    label: item.label,
-                    icon: item.icon,
-                    active: item.exact
-                      ? path === target
-                      : path === target || path.startsWith(target + "/"),
-                  };
-                })}
-              />
-            </aside>
-
-            <div className="min-w-0">{children}</div>
-          </div>
+      {/* Sticky until the content ends, so the tabs scroll off before the
+          footer; mobile navbar is fixed (h-16), the desktop one scrolls away. */}
+      <div className="sticky top-16 z-30 border-b border-line bg-paper lg:top-0">
+        <div className="container-page py-3">
+          <SectionTabs
+            ariaLabel="Department sections"
+            items={NAV.map((item) => {
+              const href = `${base}${item.href}`;
+              // Department routes resolve case-insensitively (/departments/ca
+              // and /departments/CA), so match the active tab the same way.
+              const path = pathname?.toLowerCase() ?? "";
+              const target = href.toLowerCase();
+              return {
+                href,
+                label: item.label,
+                icon: item.icon,
+                active: item.exact
+                  ? path === target
+                  : path === target || path.startsWith(target + "/"),
+              };
+            })}
+          />
         </div>
       </div>
-    </>
+
+      <div className="bg-paper">
+        <div className="container-page py-10">{children}</div>
+      </div>
+    </div>
   );
 }

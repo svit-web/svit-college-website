@@ -3,9 +3,8 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { eyebrow } from "./site-styles";
 
-export interface SectionSideNavItem {
+export interface SectionTabItem {
   href: string;
   label: string;
   icon?: React.ComponentType<{ className?: string }>;
@@ -13,20 +12,14 @@ export interface SectionSideNavItem {
 }
 
 /**
- * Section navigation beside inner-page content (About, Campus Life,
- * Department). Desktop: a vertical list on paper, active item as an ink pill.
- * Phones/tablets: one horizontally scrolling row of pills, with the active
- * pill scrolled into view.
+ * Section navigation below inner-page banners (About, Campus Life,
+ * Department): one horizontally scrolling row of icon pills, active item as
+ * an ink pill, with the active pill scrolled into view. Layouts mount it in
+ * a sticky strip so section switching stays reachable while the page
+ * scrolls. Same pill vocabulary as PillTabs (which links peer entries, not
+ * page sections).
  */
-export function SectionSideNav({
-  title,
-  ariaLabel,
-  items,
-}: {
-  title: string;
-  ariaLabel: string;
-  items: SectionSideNavItem[];
-}) {
+export function SectionTabs({ ariaLabel, items }: { ariaLabel: string; items: SectionTabItem[] }) {
   const listRef = useRef<HTMLUListElement>(null);
   const activeHref = items.find((i) => i.active)?.href;
 
@@ -40,27 +33,26 @@ export function SectionSideNav({
 
   return (
     <nav aria-label={ariaLabel} className="min-w-0">
-      <div className={cn("mb-3 lg:mb-4 lg:px-4", eyebrow)}>{title}</div>
       <ul
         ref={listRef}
-        className="-mx-5 flex min-w-0 gap-2 overflow-x-auto px-5 pb-1 [scrollbar-width:none] md:-mx-8 md:px-8 lg:mx-0 lg:flex-col lg:gap-1 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden"
+        className="flex min-w-0 gap-2 overflow-x-auto pb-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         {items.map((item) => {
           const Icon = item.icon;
           return (
-            <li key={item.href} className="shrink-0 lg:shrink">
+            <li key={item.href} className="shrink-0">
               <Link
                 href={item.href}
                 aria-current={item.active ? "page" : undefined}
                 className={cn(
-                  "flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors lg:whitespace-normal",
+                  "flex min-h-11 items-center gap-2.5 whitespace-nowrap rounded-full border px-4 py-2 text-[0.84rem] font-semibold transition-colors",
                   item.active
                     ? "border-ink bg-ink text-paper"
-                    : "border-line-strong text-ink hover:border-ink lg:border-transparent lg:text-ink-soft lg:hover:border-transparent lg:hover:bg-paper-deep lg:hover:text-ink",
+                    : "border-line-strong text-ink hover:border-ink",
                 )}
               >
-                {Icon && <Icon className="h-4 w-4 shrink-0" />}
-                <span>{item.label}</span>
+                {Icon && <Icon className="h-4 w-4" />}
+                {item.label}
               </Link>
             </li>
           );
