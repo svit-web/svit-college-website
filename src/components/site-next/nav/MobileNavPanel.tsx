@@ -98,6 +98,32 @@ function AccordionItem({
   );
 }
 
+function LinksAccordionBody({ item, onNavigate }: { item: MenuTopItem; onNavigate: () => void }) {
+  return (
+    <>
+      {groupMenuChildren(item.children).map((g) => (
+        <div key={g.group ?? "default"} className="mb-2">
+          {g.group && (
+            <div className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson">
+              {g.group}
+            </div>
+          )}
+          {g.items.map((link) => (
+            <Link
+              key={link.id}
+              href={link.url ?? "#"}
+              onClick={onNavigate}
+              className="block px-3 py-2 text-sm text-ink-soft"
+            >
+              {link.title}
+            </Link>
+          ))}
+        </div>
+      ))}
+    </>
+  );
+}
+
 export function MobileNavPanel({
   open,
   mainNav,
@@ -124,13 +150,6 @@ export function MobileNavPanel({
 
   if (!open) return null;
 
-  const home = mainNav.find((i) => i.title === "Home");
-  const about = mainNav.find((i) => i.menu_type === "links_mega" && i.title === "About SVIT");
-  const admissions = mainNav.find((i) => i.menu_type === "links_mega" && i.title === "Admissions");
-  const collegesItem = mainNav.find((i) => i.menu_type === "colleges_mega");
-  const campusItem = mainNav.find((i) => i.menu_type === "campus_mega");
-  const placementItem = mainNav.find((i) => i.menu_type === "placement_mega");
-
   const socials = {
     facebook: contactInfo?.social_links?.Facebook,
     instagram: contactInfo?.social_links?.Instagram,
@@ -144,130 +163,86 @@ export function MobileNavPanel({
       aria-label="Mobile"
     >
       <div className="container-page flex flex-col gap-1 py-4">
-        {home && (
-          <Link
-            href={home.url ?? "/"}
-            onClick={onNavigate}
-            className="block border-b border-line py-[0.85rem] text-[1.3rem] font-bold tracking-[-0.02em] text-ink"
-          >
-            {home.title}
-          </Link>
-        )}
+        {mainNav.map((item) => {
+          if (item.menu_type === "links_mega") {
+            return (
+              <AccordionItem
+                key={item.id}
+                label={item.title}
+                isOpen={openKey === item.id}
+                onToggle={() => toggle(item.id)}
+              >
+                <LinksAccordionBody item={item} onNavigate={onNavigate} />
+              </AccordionItem>
+            );
+          }
 
-        {about && (
-          <AccordionItem
-            label={about.title}
-            isOpen={openKey === "about"}
-            onToggle={() => toggle("about")}
-          >
-            {groupMenuChildren(about.children).map((g) => (
-              <div key={g.group ?? "default"} className="mb-2">
-                {g.group && (
-                  <div className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                    {g.group}
+          if (item.menu_type === "colleges_mega") {
+            return (
+              <AccordionItem
+                key={item.id}
+                label={item.title}
+                isOpen={openKey === item.id}
+                onToggle={() => toggle(item.id)}
+              >
+                {colleges.map((c) => (
+                  <CollegeAccordionRow
+                    key={c.id}
+                    college={c}
+                    departments={departmentsByCollege[c.id] ?? []}
+                    isOpen={openCollegeId === c.id}
+                    onToggle={() => toggleCollege(c.id)}
+                    onNavigate={onNavigate}
+                  />
+                ))}
+              </AccordionItem>
+            );
+          }
+
+          if (item.menu_type === "campus_mega") {
+            return (
+              <AccordionItem
+                key={item.id}
+                label={item.title}
+                isOpen={openKey === item.id}
+                onToggle={() => toggle(item.id)}
+              >
+                {campusCategories.map((cat) => (
+                  <div key={cat.key} className="mb-2">
+                    <Link
+                      href={cat.allTo}
+                      onClick={onNavigate}
+                      className="block px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson"
+                    >
+                      {cat.title}
+                    </Link>
+                    {cat.items.map((it) => (
+                      <Link
+                        key={it.to}
+                        href={it.to}
+                        onClick={onNavigate}
+                        className="block px-3 py-1.5 text-sm text-ink-soft"
+                      >
+                        {it.label}
+                      </Link>
+                    ))}
                   </div>
-                )}
-                {g.items.map((link) => (
-                  <Link
-                    key={link.id}
-                    href={link.url ?? "#"}
-                    onClick={onNavigate}
-                    className="block px-3 py-2 text-sm text-ink-soft"
-                  >
-                    {link.title}
-                  </Link>
                 ))}
-              </div>
-            ))}
-          </AccordionItem>
-        )}
+              </AccordionItem>
+            );
+          }
 
-        {collegesItem && (
-          <AccordionItem
-            label={collegesItem.title}
-            isOpen={openKey === "colleges"}
-            onToggle={() => toggle("colleges")}
-          >
-            {colleges.map((c) => (
-              <CollegeAccordionRow
-                key={c.id}
-                college={c}
-                departments={departmentsByCollege[c.id] ?? []}
-                isOpen={openCollegeId === c.id}
-                onToggle={() => toggleCollege(c.id)}
-                onNavigate={onNavigate}
-              />
-            ))}
-          </AccordionItem>
-        )}
-
-        {admissions && (
-          <AccordionItem
-            label={admissions.title}
-            isOpen={openKey === "admissions"}
-            onToggle={() => toggle("admissions")}
-          >
-            {groupMenuChildren(admissions.children).map((g) => (
-              <div key={g.group ?? "default"} className="mb-2">
-                {g.group && (
-                  <div className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson">
-                    {g.group}
-                  </div>
-                )}
-                {g.items.map((link) => (
-                  <Link
-                    key={link.id}
-                    href={link.url ?? "#"}
-                    onClick={onNavigate}
-                    className="block px-3 py-2 text-sm text-ink-soft"
-                  >
-                    {link.title}
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </AccordionItem>
-        )}
-
-        {campusItem && (
-          <AccordionItem
-            label={campusItem.title}
-            isOpen={openKey === "campus"}
-            onToggle={() => toggle("campus")}
-          >
-            {campusCategories.map((cat) => (
-              <div key={cat.key} className="mb-2">
-                <Link
-                  href={cat.allTo}
-                  onClick={onNavigate}
-                  className="block px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson"
-                >
-                  {cat.title}
-                </Link>
-                {cat.items.map((it) => (
-                  <Link
-                    key={it.to}
-                    href={it.to}
-                    onClick={onNavigate}
-                    className="block px-3 py-1.5 text-sm text-ink-soft"
-                  >
-                    {it.label}
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </AccordionItem>
-        )}
-
-        {placementItem && (
-          <Link
-            href={placementItem.url ?? "/placement"}
-            onClick={onNavigate}
-            className="block border-b border-line py-[0.85rem] text-[1.3rem] font-bold tracking-[-0.02em] text-ink"
-          >
-            {placementItem.title}
-          </Link>
-        )}
+          return (
+            <Link
+              key={item.id}
+              href={item.url ?? "#"}
+              onClick={onNavigate}
+              className="block border-b border-line py-[0.85rem] text-[1.3rem] font-bold tracking-[-0.02em] text-ink"
+            >
+              {item.title}
+            </Link>
+          );
+        })}
 
         <div className="my-2 border-t border-line" />
         <div className="flex items-center gap-4 px-3 py-2">

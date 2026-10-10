@@ -35,6 +35,10 @@ _Avoid_: college dropdown (ambiguous — could mean the trigger or the panel), c
 **College accordion row** (mobile nav):
 A mobile nav pattern where each college row has two tap targets: the college name (navigates to `/colleges/[id]`) and a right-side chevron arrow (expands an inline department list). Tapping the arrow toggles the nested department links without navigating away.
 
+**Mobile nav drawer**:
+The hamburger panel on small breakpoints. It has no item list of its own — it renders the same main navigation items as the desktop navbar, in the same order: mega items (About SVIT, Admissions, Colleges, Campus Life) as accordion rows and every other item as a plain link. Adding or reordering a main navigation item in admin changes both breakpoints; only the drawer's pinned extras (utility links, a11y toggles, socials) are drawer-specific.
+_Avoid_: hamburger menu, mobile menu (implies a separate, second menu to maintain)
+
 **Entry**:
 Any admin-managed content item that the public site shows as a Card — a facility, lab, event, news post, achievement, club, sport, etc. Every Entry has a title, a description and at most one Card photo; it may also have an Entry album and a Detail page.
 _Avoid_: item, record, object, post (post is one kind of Entry)
