@@ -64,6 +64,14 @@ async function loadCollege(slug: string) {
     },
     stats: stats.length > 0 ? stats : null,
     whyChoose: whyChoose.length > 0 ? whyChoose : null,
+    principal: dbCollege.principal_name
+      ? {
+          name: dbCollege.principal_name,
+          title: dbCollege.principal_title ?? "",
+          message: dbCollege.principal_message ?? "",
+          photoUrl: dbCollege.principal_photo_url ?? null,
+        }
+      : null,
     trustBadges,
     recruiters,
     departments,

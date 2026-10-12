@@ -8,6 +8,7 @@ import {
   Building2,
   GraduationCap,
   Lightbulb,
+  Quote,
   Trees,
   Users,
   type LucideIcon,
@@ -45,6 +46,7 @@ export interface College {
   stats: { value: string; label: string }[] | null;
   whyChoose: { title: string; desc: string; icon: string }[] | null;
   trustBadges: { label: string; icon: string }[];
+  principal: { name: string; title: string; message: string; photoUrl: string | null } | null;
   recruiters: RecruiterRow[];
   departments: CollegeDept[];
 }
@@ -90,6 +92,7 @@ export function CollegeLandingPage({
       <StatsStrip data={displayStats} />
       <ProgramsSection college={college} />
       <WhySection college={college} data={displayWhy} />
+      <PrincipalSection college={college} />
       <TrustBand items={college.trustBadges} />
       <Events />
       <RecruitersStrip data={displayRecruiters} />
@@ -272,6 +275,44 @@ function WhySection({
               </Reveal>
             );
           })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PrincipalSection({ college }: { college: College }) {
+  const p = college.principal;
+  if (!p || !p.message) return null;
+  return (
+    <section className={`container-page ${sectionSpacing}`}>
+      <SectionHeading
+        center
+        eyebrow={`Guiding ${college.shortCode}`}
+        title="Principal's Message"
+        variant="eyebrow"
+      />
+      <div className="mx-auto mt-10 max-w-3xl">
+        <div className="flex flex-col gap-6 border border-line bg-surface p-8 sm:flex-row">
+          {p.photoUrl && (
+            <Image
+              src={p.photoUrl}
+              alt={p.name}
+              width={96}
+              height={96}
+              className="h-24 w-24 shrink-0 rounded-full object-cover"
+            />
+          )}
+          <div>
+            <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
+              <Quote className="h-4 w-4" /> Principal&rsquo;s Message
+            </div>
+            <blockquote className="whitespace-pre-line text-navy leading-relaxed">
+              {p.message}
+            </blockquote>
+            <div className="mt-4 text-sm font-semibold text-navy">{p.name}</div>
+            {p.title && <div className="text-xs text-ink-soft">{p.title}</div>}
+          </div>
         </div>
       </div>
     </section>

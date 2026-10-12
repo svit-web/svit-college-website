@@ -65,6 +65,7 @@ const HIDDEN_GRID_COLUMNS = [
   'bio',
   'description',
   'content',
+  'principal_message',
   'featured_at',
   'featured_by',
   'map_url',
@@ -1239,12 +1240,12 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                           </select>
                         );
                       })()
-                    ) : col.name === 'description' || col.name === 'bio' || col.name === 'content' ? (
+                    ) : col.name === 'description' || col.name === 'bio' || col.name === 'content' || col.name === 'principal_message' ? (
                       <textarea
                         value={formValues[col.name] || ''}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
-                        rows={3}
+                        rows={col.name === 'principal_message' ? 6 : 3}
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
                       />
                     ) : col.type.startsWith('timestamp') || col.type === 'date' ? (

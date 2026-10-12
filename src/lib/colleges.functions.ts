@@ -13,6 +13,10 @@ export interface College {
   tagline: string | null;
   hero_kicker: string | null;
   hero_subhead: string | null;
+  principal_name: string | null;
+  principal_title: string | null;
+  principal_message: string | null;
+  principal_photo_url: string | null;
   metadata: Record<string, any>;
   created_at: string;
   updated_at: string;
