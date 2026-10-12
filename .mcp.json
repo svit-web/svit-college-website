@@ -6,7 +6,7 @@
     },
     "supabase-selfhosted": {
       "type": "http",
-      "url": "https://supabase.svit.qzz.io/mcp",
+      "url": "https://db.svitvasad.ac.in/mcp",
       "headers": {
         "x-mcp-key": "${SVIT_MCP_KEY}"
       }
