@@ -1,0 +1,15 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
+        NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: ${NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY}
+        NEXT_PUBLIC_SUPABASE_PROJECT_ID: ${NEXT_PUBLIC_SUPABASE_PROJECT_ID}
+        NEXT_PUBLIC_GA4_ID: ${NEXT_PUBLIC_GA4_ID}
+    image: ghcr.io/svit-web/svit-college-website:${IMAGE_TAG:-dev-latest}
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
