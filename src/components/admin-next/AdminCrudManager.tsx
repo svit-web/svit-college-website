@@ -129,6 +129,16 @@ const CODE_GENERATORS: Record<'slug' | 'code' | 'codeStrict', (name: string) => 
   codeStrict: toCodeStrict,
 };
 
+// Matches each variant's DB format constraint (see code-generator.ts). Used as
+// a submit-time safety net: editing an existing record never live auto-fills
+// (autoFields starts empty — see initializeForm), so a raw title pasted
+// straight into the field would otherwise reach the DB unslugified.
+const CODE_VALIDATORS: Record<'slug' | 'code' | 'codeStrict', RegExp> = {
+  slug: /^[a-z0-9]+(-[a-z0-9]+)*$/,
+  code: /^[A-Z0-9]+(-[A-Z0-9]+)*$/,
+  codeStrict: /^[A-Z0-9]+$/,
+};
+
 // Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
 // card_photo_url and also owns album_id + has_detail_page, which are therefore
 // skipped by the default field renderer.
@@ -210,11 +220,17 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       category: { options: FACILITY_CATEGORY_OPTIONS },
     },
   },
-  centers: { fields: ENTRY_PHOTO_FIELDS },
+  centers: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
   sports: {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       category: { options: SPORT_CATEGORY_OPTIONS },
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
     },
   },
   achievements: {
@@ -225,8 +241,23 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
     },
   },
-  student_clubs: { fields: ENTRY_PHOTO_FIELDS },
-  posts: { fields: ENTRY_PHOTO_FIELDS },
+  student_clubs: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  posts: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
+  gallery_albums: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
   user_profiles: {
     rowActions: { resetPassword: true },
   },
@@ -627,6 +658,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         payload[col.name] = val === '' ? null : val;
       }
     });
+
+    for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
+      if (!cfg.autoGenerateFrom) continue;
+      const current = payload[col];
+      if (typeof current === 'string' && current !== '' && !CODE_VALIDATORS[cfg.autoGenerateFrom.variant].test(current)) {
+        const source = formValues[cfg.autoGenerateFrom.source];
+        payload[col] = CODE_GENERATORS[cfg.autoGenerateFrom.variant](typeof source === 'string' && source !== '' ? source : current);
+      }
+    }
 
     if (tableId === 'pages' && (payload.slug ?? editingRecord?.slug) === 'about') {
       const validationError = validateAboutPageMetadata(payload.metadata);
