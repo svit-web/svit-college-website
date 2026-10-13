@@ -121,6 +121,10 @@ interface TableFieldConfig {
   // Stays editable; auto-fill stops the moment the admin types in the field
   // directly, same pattern as AdminLabsPage/AdminSportsPage's own slugify.
   autoGenerateFrom?: { source: string; variant: 'slug' | 'code' | 'codeStrict' };
+  // One line of plain-language guidance shown under the field label — for a
+  // field whose consequence isn't obvious from its name alone (e.g. which
+  // values make an event show up on its own department's page).
+  helpText?: string;
 }
 
 const CODE_GENERATORS: Record<'slug' | 'code' | 'codeStrict', (name: string) => string> = {
@@ -200,7 +204,13 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
-      event_type: { optionLabels: EVENT_TYPE_LABELS },
+      event_type: {
+        optionLabels: EVENT_TYPE_LABELS,
+        helpText:
+          'A department event only shows on that department\'s own Activities page for these types: ' +
+          'Expert Session, Industrial Visit, Seminar, Workshop, STTP, FDP. Other types (Fest, Cultural, ' +
+          'Technical, Sports, Competition, Other) still show on the sitewide Events page.',
+      },
       // Every event happens on campus — not worth an admin field. The column
       // stays (a handful of old rows have a value), just not editable here.
       map_url: { hidden: true },
@@ -239,6 +249,11 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
       category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+      department_id: {
+        helpText:
+          "There's no sitewide achievements listing on the public site — a department is required for " +
+          'this to show up anywhere other than its own direct URL.',
+      },
     },
   },
   student_clubs: {
@@ -260,6 +275,18 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   },
   user_profiles: {
     rowActions: { resetPassword: true },
+  },
+  staff_profiles: {
+    // No college_id/department_id column here — scope is resolved via the
+    // staff_department_assignments join (see RLS on staff_profiles), so the
+    // generic column-based rule never matches and everyone but global falls
+    // through to read-only. RLS already lets any scoped admin insert, and
+    // lets college/department admins write rows assigned to their own scope
+    // — mirror that here instead of blocking the UI outright.
+    writePermissions: {
+      resolve: (level) =>
+        level === 'college' || level === 'department' ? { insert: true, update: true, delete: true } : undefined,
+    },
   },
   designations: {
     fields: {
@@ -408,10 +435,29 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
             const isNameSplit = FK_NAME_SPLIT_TABLES.has(fk.foreign_table);
             const labelCol = isNameSplit ? 'first_name' : (FK_LABEL_COLUMNS[fk.foreign_table] ?? 'name');
 
-            let query = supabaseClient.from(fk.foreign_table).select(isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`);
-            query = query.order(labelCol, { ascending: true });
+            const selectCols = isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`;
 
-            const { data, error } = await query;
+            // Best-effort: exclude soft-deleted/unpublished rows from every
+            // FK picker admin-wide (Department, College, Club, Staff,
+            // Designation, ...) — most referenced tables carry deleted_at +
+            // status per this repo's soft-delete convention, but reference
+            // tables like roles/admin_sections don't, so a column-does-not-
+            // exist error here just falls back to the unfiltered query
+            // rather than breaking the dropdown. See
+            // docs/audits/events-achievements-add-flow-2026-10.md #6 — a
+            // soft-deleted, archived row was showing up selectable in the
+            // Club picker, and 155 of ~233 staff_profiles rows were showing
+            // up in every staff picker.
+            let { data, error } = await supabaseClient
+              .from(fk.foreign_table)
+              .select(selectCols)
+              .is('deleted_at', null)
+              .eq('status', 'published')
+              .order(labelCol, { ascending: true });
+
+            if (error) {
+              ({ data, error } = await supabaseClient.from(fk.foreign_table).select(selectCols).order(labelCol, { ascending: true }));
+            }
             if (error) throw error;
 
             if (data) {
@@ -659,6 +705,26 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
       }
     });
 
+    // Keep department_id/college_id consistent with scope_type on any
+    // scope-typed table (events, achievements, ...). The DB CHECK
+    // constraints reject department_id unless scope_type is 'department',
+    // and the form disables these fields to match — but formValues can
+    // still hold a value from before the admin changed scope_type, and that
+    // stale value would otherwise go straight into the payload. See
+    // docs/audits/events-achievements-add-flow-2026-10.md #1/#2.
+    if (schema.columns.some((c: any) => c.name === 'scope_type')) {
+      if (payload.scope_type !== 'department' && 'department_id' in payload) {
+        payload.department_id = null;
+      }
+      if (payload.scope_type === 'department' && 'college_id' in payload) {
+        // Auto-derived from the chosen department by the
+        // events_before_write/achievements_before_write DB trigger — never
+        // set it here, that's exactly how a department ended up paired with
+        // an unrelated college in the first place.
+        payload.college_id = null;
+      }
+    }
+
     for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
       if (!cfg.autoGenerateFrom) continue;
       const current = payload[col];
@@ -716,12 +782,22 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
 
     try {
       const payload = buildPayload();
-      await persistRecord(payload);
+      const typedSlug = typeof payload.slug === 'string' && payload.slug !== '' ? payload.slug : null;
+      const saved = await persistRecord(payload);
 
       setIsModalOpen(false);
       loadData();
 
-      toast.success('Changes saved!', { duration: 3000 });
+      // The normalize_slug DB trigger silently renumbers a colliding slug
+      // (event-fest -> event-fest-2) — surface that instead of a generic
+      // success toast, so an admin who typed a specific slug (matching a
+      // flyer/QR code/shared link) finds out it changed.
+      const finalSlug = saved?.slug;
+      if (typedSlug && finalSlug && finalSlug !== typedSlug) {
+        toast.success(`Changes saved! Slug adjusted to "${finalSlug}" to avoid a collision.`, { duration: 5000 });
+      } else {
+        toast.success('Changes saved!', { duration: 3000 });
+      }
     } catch (err: any) {
       console.error('Mutation failed:', err);
       toast.error(`Save failed: ${err.message}`);
@@ -741,6 +817,14 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
       throw new Error('Fill in the required fields above first.');
     }
     const payload = buildPayload();
+    // This insert happens before the admin has clicked Create Record — e.g.
+    // dropping a photo onto a new record needs somewhere to attach the
+    // upload to. Default to draft regardless of the form's chosen status so
+    // an abandoned Cancel afterward doesn't leave a published page live on
+    // the public site (see docs/audits/events-achievements-add-flow-2026-10.md #7).
+    if (schema.columns.some((c: any) => c.name === 'status')) {
+      payload.status = 'draft';
+    }
     const saved = await persistRecord(payload);
     if (!saved) throw new Error('Could not save this record.');
     setEditingRecord(saved);
@@ -837,7 +921,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     if (userScope.level === 'trust' && cols.includes('trust_id')) {
       return { insert: true, update: true, delete: true };
     }
-    if (userScope.level === 'college' && cols.includes('college_id')) {
+    // College scope also covers department-scoped tables: RLS resolves
+    // college ownership transitively via departments.college_id for any
+    // table that only carries department_id (courses, facilities,
+    // achievements, gallery_albums, ... — see
+    // supabase/migrations/20260805051746_scope_aware_write_rls.sql).
+    if (
+      userScope.level === 'college' &&
+      (cols.includes('college_id') || cols.includes('department_id'))
+    ) {
       return { insert: true, update: true, delete: true };
     }
     if (userScope.level === 'department' && cols.includes('department_id')) {
@@ -1179,6 +1271,9 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       <span>{formatLabel(col.name)}</span>
                       {!col.is_nullable && <span className="text-[10px] text-crimson font-medium font-mono">Required</span>}
                     </label>
+                    {TABLE_CONFIGS[tableId]?.fields?.[col.name]?.helpText && (
+                      <p className="text-xs text-slate-500">{TABLE_CONFIGS[tableId]?.fields?.[col.name]?.helpText}</p>
+                    )}
 
                     {col.name === 'seo_id' ? (
                       <SeoEditor seoId={formValues.seo_id} onChange={(newSeoId) => handleFieldChange('seo_id', newSeoId)} />
@@ -1205,18 +1300,48 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                     ) : (col.name.endsWith('_url') || col.name.includes('image') || col.name.includes('file')) && col.type === 'text' ? (
                       <MediaUploader value={formValues[col.name] || ''} onChange={(url) => handleFieldChange(col.name, url)} type={col.name.includes('file') ? 'file' : 'image'} />
                     ) : fk ? (
-                      <select
-                        value={formValues[col.name] || ''}
-                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                        required={!col.is_nullable}
-                        disabled={(col.name === 'trust_id' && userScope.level === 'trust') || (col.name === 'college_id' && userScope.level === 'college') || (col.name === 'department_id' && userScope.level === 'department')}
-                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
-                      >
-                        <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
-                        {fkOptions[fk.foreign_table]?.map((opt) => (
-                          <option key={opt.value} value={opt.value}>{opt.label}</option>
-                        ))}
-                      </select>
+                      (() => {
+                        // On any scope-typed table (events, achievements, ...)
+                        // department_id only ever belongs in the payload when
+                        // scope_type === 'department' (the DB CHECK constraint
+                        // rejects it otherwise), and college_id is auto-derived
+                        // from the department once it does — see buildPayload's
+                        // matching normalization and
+                        // docs/audits/events-achievements-add-flow-2026-10.md #1/#2.
+                        const hasScopeType = schema.columns.some((c: any) => c.name === 'scope_type');
+                        const scopeTypeVal = formValues.scope_type;
+                        const scopeLocksField =
+                          hasScopeType &&
+                          ((col.name === 'department_id' && scopeTypeVal !== 'department') ||
+                            (col.name === 'college_id' && scopeTypeVal === 'department'));
+                        return (
+                          <>
+                            <select
+                              value={formValues[col.name] || ''}
+                              onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                              required={!col.is_nullable}
+                              disabled={
+                                scopeLocksField ||
+                                (col.name === 'trust_id' && userScope.level === 'trust') ||
+                                (col.name === 'college_id' && userScope.level === 'college') ||
+                                (col.name === 'department_id' && userScope.level === 'department')
+                              }
+                              className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
+                            >
+                              <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
+                              {fkOptions[fk.foreign_table]?.map((opt) => (
+                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                              ))}
+                            </select>
+                            {scopeLocksField && col.name === 'department_id' && (
+                              <p className="text-xs text-slate-500">Only available when Scope Type is set to Department.</p>
+                            )}
+                            {scopeLocksField && col.name === 'college_id' && (
+                              <p className="text-xs text-slate-500">Set automatically from the department once saved.</p>
+                            )}
+                          </>
+                        );
+                      })()
                     ) : col.name === 'status' ? (
                       <select value={formValues[col.name] || ''} onChange={(e) => handleFieldChange(col.name, e.target.value)} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none">
                         {(col.enum_values ?? ['published', 'draft', 'archived']).map((v: string) => (

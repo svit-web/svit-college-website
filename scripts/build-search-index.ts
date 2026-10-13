@@ -28,12 +28,14 @@ try {
 }
 
 import { publicSupabase } from "../src/lib/supabase-public";
+import { DEFAULT_CONTACT, getContactInfo } from "../src/lib/site-settings.functions";
 import { getAllColleges, type College } from "../src/lib/colleges.functions";
 import { getAllDepartments, type Department } from "../src/lib/departments.functions";
 import { getAllProgrammes, type Programme } from "../src/lib/programmes.functions";
 import { getAllGalleryAlbums, type GalleryAlbum } from "../src/lib/gallery.functions";
 import { getAllStudentClubs, type StudentClub } from "../src/lib/clubs.functions";
 import { getAllEvents, type CampusEvent } from "../src/lib/events.functions";
+import { getAllAchievements, type AchievementSummary } from "../src/lib/achievements.functions";
 import { getAllCenters, type Center } from "../src/lib/centers.functions";
 import { getAllFacilities, type Facility } from "../src/lib/facilities.functions";
 import type { SearchEntry } from "../src/lib/search-index";
@@ -46,13 +48,13 @@ const OUTPUT_PATH = path.join(process.cwd(), "public", "search-index.json");
 // redirect-only pages like /placement/[college] and
 // /courses/engineering/[dept] (superseded by /departments/[dept]) — are
 // deliberately left out, same as before.
-const STATIC_ENTRIES: SearchEntry[] = [
+const staticEntries = (fullName: string): SearchEntry[] => [
   {
     url: "/",
     type: "Page",
     college: null,
     title: "Home",
-    description: "SVIT Vasad — Sardar Vallabhbhai Institute of Technology.",
+    description: `SVIT Vasad — ${fullName}.`,
   },
   {
     url: "/about",
@@ -311,13 +313,24 @@ async function getStaffEntries(
 }
 
 async function buildContentEntries(): Promise<SearchEntry[]> {
-  const [colleges, departments, programmes, albums, clubs, events, centers, facilities]: [
+  const [
+    colleges,
+    departments,
+    programmes,
+    albums,
+    clubs,
+    events,
+    achievements,
+    centers,
+    facilities,
+  ]: [
     College[],
     Department[],
     Programme[],
     GalleryAlbum[],
     StudentClub[],
     CampusEvent[],
+    AchievementSummary[],
     Center[],
     Facility[],
   ] = await Promise.all([
@@ -327,6 +340,7 @@ async function buildContentEntries(): Promise<SearchEntry[]> {
     getAllGalleryAlbums(),
     getAllStudentClubs(),
     getAllEvents(),
+    getAllAchievements(),
     getAllCenters(),
     getAllFacilities(),
   ]);
@@ -396,6 +410,15 @@ async function buildContentEntries(): Promise<SearchEntry[]> {
       description: e.description ?? "",
     });
   }
+  for (const a of achievements) {
+    entries.push({
+      url: `/achievements/${a.slug}`,
+      type: "Achievement",
+      college: null,
+      title: a.title,
+      description: a.description ?? "",
+    });
+  }
   for (const c of centers) {
     entries.push({
       url: `/student-corner/${c.slug}`,
@@ -422,12 +445,15 @@ async function buildContentEntries(): Promise<SearchEntry[]> {
 
 async function main() {
   console.log("[search-index] fetching content from Supabase...");
-  const contentEntries = await buildContentEntries();
+  const [contentEntries, contactInfo] = await Promise.all([
+    buildContentEntries(),
+    getContactInfo().catch(() => DEFAULT_CONTACT),
+  ]);
 
   // De-dupe: a handful of entities can legitimately resolve to the same URL
   // (e.g. two draft rows sharing a slug during content editing).
   const seen = new Set<string>();
-  const entries = [...STATIC_ENTRIES, ...contentEntries]
+  const entries = [...staticEntries(contactInfo.full_name), ...contentEntries]
     .filter((e) => !!e.title)
     .filter((e) => (seen.has(e.url) ? false : (seen.add(e.url), true)));
 

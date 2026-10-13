@@ -1,23 +1,22 @@
 // Public data access for achievements (an Entry type, see CONTEXT.md).
 // Department-scoped lists live in department-content.functions.ts; this module
 // holds the shared category labels and the single-achievement Detail page query.
-import { publicSupabase } from '@/lib/supabase-public';
-import { getEntryAlbum } from '@/lib/gallery.functions';
-import type { EntryAlbum } from '@/lib/entry';
+import { publicSupabase } from "@/lib/supabase-public";
+import { getEntryAlbum } from "@/lib/gallery.functions";
+import type { EntryAlbum } from "@/lib/entry";
 
 export const ACHIEVEMENT_CATEGORY_LABELS: Record<string, string> = {
-  student: 'Student',
-  faculty: 'Faculty',
-  college: 'College',
-  department: 'Department',
-  sports: 'Sports',
+  student: "Student",
+  faculty: "Faculty",
+  college: "College",
+  department: "Department",
+  sports: "Sports",
 };
 
 export function achievementCategoryLabel(category: string | null | undefined): string {
-  if (!category) return 'Achievement';
+  if (!category) return "Achievement";
   return (
-    ACHIEVEMENT_CATEGORY_LABELS[category] ??
-    category.charAt(0).toUpperCase() + category.slice(1)
+    ACHIEVEMENT_CATEGORY_LABELS[category] ?? category.charAt(0).toUpperCase() + category.slice(1)
   );
 }
 
@@ -37,6 +36,34 @@ export interface AchievementDetail {
   department: { name: string; code: string } | null;
 }
 
+export interface AchievementSummary {
+  id: string;
+  slug: string;
+  title: string;
+  description: string | null;
+}
+
+/**
+ * Every published, has-a-detail-page achievement — for the search index
+ * (achievements were never indexed at all; see
+ * docs/audits/events-achievements-add-flow-2026-10.md #8). Filtered to
+ * `has_detail_page: true` so a search result never links to a 404 — see
+ * getAchievementDetailBySlug's matching filter below.
+ */
+export async function getAllAchievements(): Promise<AchievementSummary[]> {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from("achievements")
+    .select("id, slug, title, description")
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .eq("has_detail_page", true)
+    .order("date", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as AchievementSummary[];
+}
+
 /**
  * A published achievement that has a Detail page. Returns null when the slug
  * doesn't exist, isn't published, or `has_detail_page` is off, so the route
@@ -45,18 +72,18 @@ export interface AchievementDetail {
 export async function getAchievementDetailBySlug(slug: string): Promise<AchievementDetail | null> {
   const supabase = publicSupabase();
   const { data, error } = await supabase
-    .from('achievements')
+    .from("achievements")
     .select(
-      'id, slug, title, category, date, description, card_photo_url, album_id, has_detail_page, departments ( name, code )',
+      "id, slug, title, category, date, description, card_photo_url, album_id, has_detail_page, departments ( name, code )",
     )
-    .eq('slug', slug)
-    .eq('status', 'published')
-    .is('deleted_at', null)
-    .eq('has_detail_page', true)
+    .eq("slug", slug)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .eq("has_detail_page", true)
     .maybeSingle();
 
   if (error) {
-    console.error('Error fetching achievement:', error);
+    console.error("Error fetching achievement:", error);
     throw error;
   }
   if (!data) return null;

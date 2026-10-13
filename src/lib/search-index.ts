@@ -9,6 +9,7 @@ export const TYPE_ORDER = [
   "Course",
   "Staff",
   "Event",
+  "Achievement",
   "Facility",
   "Club",
   "Centre",

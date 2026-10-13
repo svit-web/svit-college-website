@@ -74,7 +74,8 @@ export async function getAdminUser(): Promise<AdminUser | null> {
       `
       )
       .eq('user_id', user.id)
-      .eq('status', 'published'),
+      .eq('status', 'published')
+      .is('deleted_at', null),
     supabase
       .from('user_section_grants')
       .select(
@@ -89,7 +90,8 @@ export async function getAdminUser(): Promise<AdminUser | null> {
       `
       )
       .eq('user_id', user.id)
-      .eq('status', 'published'),
+      .eq('status', 'published')
+      .is('deleted_at', null),
   ]);
 
   const profile = profileResult.data;
