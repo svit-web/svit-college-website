@@ -1723,6 +1723,8 @@ export type Database = {
           image_url: string | null
           is_active: boolean
           item_type: string
+          link_entity_id: string | null
+          link_entity_type: string | null
           link_href: string | null
           link_label: string | null
           metadata: Json
@@ -1752,6 +1754,8 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           item_type: string
+          link_entity_id?: string | null
+          link_entity_type?: string | null
           link_href?: string | null
           link_label?: string | null
           metadata?: Json
@@ -1781,6 +1785,8 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           item_type?: string
+          link_entity_id?: string | null
+          link_entity_type?: string | null
           link_href?: string | null
           link_label?: string | null
           metadata?: Json

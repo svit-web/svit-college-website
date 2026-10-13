@@ -103,6 +103,14 @@ _Avoid_: admissions role, admissions permission
 A `user_section_grants` row giving a user write access to one Admin section (e.g. Admissions, Sports) at a chosen scope, independent of and additive to their scope-tier role (`department_admin`, `college_admin`, etc.). Assigned via User Management → "Manage roles" → Section Access. RLS enforces it at the row level only — it cannot restrict which columns of a row a grant-holder writes.
 _Avoid_: section role, section permission
 
+**Campus life tile**:
+One of up to 11 `homepage_items` rows (`item_type = 'campus_life_tile'`) rendered by `CampusLifeSection` in the "Life beyond the classroom" homepage grid. Has its own editorial title, eyebrow label and photo (`image_url`), independent of any Entry it may point to — unlike a Card, whose title and photo always come from the Entry it shows. Optionally carries a Tile destination.
+_Avoid_: campus life card (it is not a Card), homepage card
+
+**Tile destination**:
+The optional navigation target of a Campus life tile, resolved to a URL at render time rather than stored as one. One of: a specific Entry (Facility, Student Club or Event, referenced by id — resolves to that Entry's current Detail page), a fixed Campus Life section (Overview/Facilities/Student Groups/Events/Sports & Athletics/NSS-NCC), a Custom URL, or none. If an Entry target becomes unavailable (unpublished, deleted, or its Detail page turned off), the tile stays visible with its photo and text but drops the link rather than pointing at a dead page.
+_Avoid_: tile link, link_href (that column covers only the Custom URL case, not the whole concept)
+
 **Navbar wordmark**:
 The single line of text next to the logo mark in `Logo.tsx`, sourced from `ContactInfo.full_name` (admin-editable via Admin → Settings → Contact Information → "Full Name"). Falls back to "Sardar Vallabhbhai Institute of Technology" if unset. Deliberately just one line — the old two-line "SVIT Vasad" / "Institute of Technology" treatment was dropped in favor of a single dynamic name.
 _Avoid_: logo text, header title

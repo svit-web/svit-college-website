@@ -84,6 +84,25 @@ const ITEM_TYPE_LABELS: Record<string, string> = {
 
 const ITEM_TYPES = Object.keys(ITEM_TYPE_LABELS).filter((t) => t !== 'quick_link' && t !== 'hero_slide');
 
+// Keys must match CAMPUS_LIFE_SECTION_PATHS in src/lib/homepage.functions.ts.
+const CAMPUS_LIFE_SECTIONS = [
+  { value: 'overview', label: 'Overview' },
+  { value: 'facilities', label: 'Facilities' },
+  { value: 'student_groups', label: 'Student Groups' },
+  { value: 'events', label: 'Events' },
+  { value: 'sports_and_athletics', label: 'Sports & Athletics' },
+  { value: 'nss_ncc', label: 'NSS / NCC' },
+];
+
+const TILE_LINK_TYPE_LABELS: Record<string, string> = {
+  custom: 'Custom URL',
+  facility: 'Facility',
+  student_club: 'Student Club',
+  event: 'Event',
+  section: 'Campus Life section',
+  none: 'No link (photo + text only)',
+};
+
 const EMPTY_FORM = {
   item_type: 'stat',
   scope_type: 'global',
@@ -97,6 +116,8 @@ const EMPTY_FORM = {
   image_url: '',
   link_href: '',
   link_label: '',
+  link_entity_type: 'custom' as string | null,
+  link_entity_id: null as string | null,
   secondary_link_href: '',
   secondary_link_label: '',
   sort_order: 10,
@@ -116,6 +137,41 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any | null>(null);
   const [form, setForm] = useState({ ...EMPTY_FORM });
+  const [entityOptions, setEntityOptions] = useState<{ id: string; label: string }[]>([]);
+  const [loadingEntityOptions, setLoadingEntityOptions] = useState(false);
+
+  useEffect(() => {
+    if (form.item_type !== 'campus_life_tile') return;
+    const type = form.link_entity_type;
+    if (type !== 'facility' && type !== 'student_club' && type !== 'event') {
+      setEntityOptions([]);
+      return;
+    }
+    const table = type === 'facility' ? 'facilities' : type === 'student_club' ? 'student_clubs' : 'events';
+    const nameColumn = type === 'event' ? 'title' : 'name';
+    setLoadingEntityOptions(true);
+    let query = (supabase as any)
+      .from(table)
+      .select(`id, ${nameColumn}`)
+      .eq('status', 'published')
+      .eq('has_detail_page', true)
+      .is('deleted_at', null);
+    // Facilities rows with a department_id are labs — they resolve via
+    // /departments/[dept]/labs/[slug], not the campus-life facilities path.
+    if (type === 'facility') query = query.is('department_id', null);
+    query
+      .order(nameColumn, { ascending: true })
+      .then(({ data, error }: any) => {
+        if (error) {
+          toast.error(`Failed to load ${TILE_LINK_TYPE_LABELS[type]} options: ${error.message}`);
+          setEntityOptions([]);
+        } else {
+          setEntityOptions((data || []).map((row: any) => ({ id: row.id, label: row[nameColumn] })));
+        }
+        setLoadingEntityOptions(false);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.item_type, form.link_entity_type]);
 
   useEffect(() => {
     supabase
@@ -137,7 +193,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
       let query = (supabase as any)
         .from('homepage_items')
         .select(
-          'id, item_type, scope_type, college_id, title, subtitle, body, icon_name, eyebrow, title_accent, image_url, link_href, link_label, secondary_link_href, secondary_link_label, metadata, sort_order, is_active, status'
+          'id, item_type, scope_type, college_id, title, subtitle, body, icon_name, eyebrow, title_accent, image_url, link_href, link_label, link_entity_type, link_entity_id, secondary_link_href, secondary_link_label, metadata, sort_order, is_active, status'
         )
         .is('deleted_at', null)
         .order('item_type', { ascending: true })
@@ -184,6 +240,8 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
       image_url: item.image_url || '',
       link_href: item.link_href || '',
       link_label: item.link_label || '',
+      link_entity_type: item.link_entity_type || 'custom',
+      link_entity_id: item.link_entity_id || null,
       secondary_link_href: item.secondary_link_href || '',
       secondary_link_label: item.secondary_link_label || '',
       sort_order: item.sort_order ?? 10,
@@ -197,9 +255,19 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     try {
+      const isTile = form.item_type === 'campus_life_tile';
+      const linkEntityType = isTile ? form.link_entity_type : null;
       const payload: any = {
         ...form,
         college_id: form.scope_type === 'college' ? form.college_id : null,
+        link_entity_type: linkEntityType,
+        link_entity_id: linkEntityType === 'facility' || linkEntityType === 'student_club' || linkEntityType === 'event'
+          ? form.link_entity_id
+          : null,
+        link_href:
+          linkEntityType === 'custom' || linkEntityType === 'section' || !isTile
+            ? form.link_href
+            : null,
       };
 
       if (editingItem) {
@@ -416,10 +484,83 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                 </div>
               )}
 
-              {['hero', 'carousel_slide', 'promo_card', 'quick_link', 'hero_slide', 'campus_life_tile'].includes(form.item_type) && (
-                <div className="grid grid-cols-2 gap-3">
+              {form.item_type === 'campus_life_tile' && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Link Type</label>
+                  <select
+                    value={form.link_entity_type ?? 'custom'}
+                    onChange={(e) => {
+                      f('link_entity_type', e.target.value);
+                      f('link_entity_id', null);
+                      f('link_href', '');
+                    }}
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                  >
+                    {Object.entries(TILE_LINK_TYPE_LABELS).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {form.item_type === 'campus_life_tile' &&
+                (form.link_entity_type === 'facility' ||
+                  form.link_entity_type === 'student_club' ||
+                  form.link_entity_type === 'event') && (
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold uppercase text-slate-600">{form.item_type === 'campus_life_tile' ? 'Link' : 'CTA Link'}</label>
+                    <label className="text-xs font-semibold uppercase text-slate-600">
+                      {TILE_LINK_TYPE_LABELS[form.link_entity_type]}
+                    </label>
+                    <select
+                      value={form.link_entity_id ?? ''}
+                      onChange={(e) => f('link_entity_id', e.target.value || null)}
+                      disabled={loadingEntityOptions}
+                      className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                    >
+                      <option value="">
+                        {loadingEntityOptions ? 'Loading…' : 'Select one…'}
+                      </option>
+                      {entityOptions.map((opt) => (
+                        <option key={opt.id} value={opt.id}>
+                          {opt.label}
+                        </option>
+                      ))}
+                    </select>
+                    <p className="text-[11px] text-slate-500">
+                      Links to that {TILE_LINK_TYPE_LABELS[form.link_entity_type].toLowerCase()}'s own page. If it's
+                      later unpublished or its page is turned off, the tile stays but stops being clickable.
+                    </p>
+                  </div>
+                )}
+
+              {form.item_type === 'campus_life_tile' && form.link_entity_type === 'section' && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-semibold uppercase text-slate-600">Campus Life section</label>
+                  <select
+                    value={form.link_href}
+                    onChange={(e) => f('link_href', e.target.value)}
+                    className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
+                  >
+                    <option value="">Select one…</option>
+                    {CAMPUS_LIFE_SECTIONS.map((s) => (
+                      <option key={s.value} value={s.value}>
+                        {s.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {(form.item_type !== 'campus_life_tile' || form.link_entity_type === 'custom') &&
+                ['hero', 'carousel_slide', 'promo_card', 'quick_link', 'hero_slide', 'campus_life_tile'].includes(
+                  form.item_type,
+                ) && (
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold uppercase text-slate-600">
+                      {form.item_type === 'campus_life_tile' ? 'Custom URL' : 'CTA Link'}
+                    </label>
                     <input
                       value={form.link_href}
                       onChange={(e) => f('link_href', e.target.value)}
@@ -427,6 +568,10 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                       className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 focus:border-crimson focus:outline-none"
                     />
                   </div>
+                )}
+
+              {form.item_type !== 'campus_life_tile' &&
+                ['hero', 'carousel_slide', 'promo_card', 'quick_link', 'hero_slide'].includes(form.item_type) && (
                   <div className="space-y-1.5">
                     <label className="text-xs font-semibold uppercase text-slate-600">CTA Label</label>
                     {isCtaBannerItem ? (
@@ -442,8 +587,7 @@ function HomepageItemsManager({ userId }: { userId: string | undefined }) {
                       />
                     )}
                   </div>
-                </div>
-              )}
+                )}
 
               {form.item_type === 'promo_card' && (
                 <div className="grid grid-cols-2 gap-3">

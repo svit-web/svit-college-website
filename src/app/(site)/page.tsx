@@ -35,6 +35,7 @@ import {
   getCollegesGrid,
   getRecruiterLogos,
   getLatestEvents,
+  resolveCampusLifeTileLinks,
 } from "@/lib/homepage.functions";
 import { getFeaturedPosts } from "@/lib/posts.functions";
 import { getHeroAppearance, DEFAULT_HERO_APPEARANCE } from "@/lib/theme.functions";
@@ -85,13 +86,18 @@ export default async function Home() {
       getHomePopup().catch(() => null),
     ]);
 
+  const campusLifeTiles = byType(items, "campus_life_tile");
+  const campusLifeTileLinks = await resolveCampusLifeTileLinks(campusLifeTiles).catch(
+    () => new Map<string, string | null>(),
+  );
+
   return (
     <>
       <HeroNew items={items} misc={misc} appearance={appearance} />
       <CollegesSection colleges={colleges} misc={misc} />
       <HomeCarouselSection items={items} />
       <StatsStrip items={items} liveStats={liveStats} />
-      <CampusLifeSection items={items} />
+      <CampusLifeSection tiles={campusLifeTiles} tileLinks={campusLifeTileLinks} />
       <WhySection items={items} />
       <TrustBand items={items} />
       <EventsAndEnquiry events={events} posts={posts} recruiters={recruiters} />
@@ -288,8 +294,13 @@ const TILE_PATTERNS: Record<string, React.CSSProperties> = {
   },
 };
 
-function CampusLifeSection({ items }: { items: HomepageItem[] }) {
-  const tiles = byType(items, "campus_life_tile");
+function CampusLifeSection({
+  tiles,
+  tileLinks,
+}: {
+  tiles: HomepageItem[];
+  tileLinks: Map<string, string | null>;
+}) {
   if (tiles.length === 0) return null;
 
   return (
@@ -304,27 +315,50 @@ function CampusLifeSection({ items }: { items: HomepageItem[] }) {
           {tiles.map((tile, i) => {
             const layout = TILE_LAYOUT[i % TILE_LAYOUT.length];
             const pattern = TILE_PATTERNS[layout.pattern];
+            const href = tileLinks.get(tile.id) ?? null;
             const card = (
               <div className="group relative flex min-h-[172px] flex-col overflow-hidden border border-border bg-paper p-[20px_22px] transition-[background-color,border-color] duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-navy">
-                <div
-                  className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-0"
-                  style={pattern}
-                />
-                <span className="relative text-[9.5px] font-bold uppercase tracking-[0.2em] text-muted-foreground transition-colors duration-300 group-hover:text-gold">
+                {tile.image_url ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={tile.image_url}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover transition-transform duration-[350ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/35 to-navy/5" />
+                  </>
+                ) : (
+                  <div
+                    className="pointer-events-none absolute inset-0 transition-opacity duration-300 group-hover:opacity-0"
+                    style={pattern}
+                  />
+                )}
+                <span
+                  className={`relative text-[9.5px] font-bold uppercase tracking-[0.2em] transition-colors duration-300 group-hover:text-gold ${
+                    tile.image_url ? "text-gold" : "text-muted-foreground"
+                  }`}
+                >
                   {tile.eyebrow}
                 </span>
-                <span className="relative mt-auto pt-5 font-display text-[clamp(1.15rem,1.6vw,1.45rem)] font-medium leading-[1.2] text-navy transition-colors duration-300 group-hover:text-paper">
+                <span
+                  className={`relative mt-auto pt-5 font-display text-[clamp(1.15rem,1.6vw,1.45rem)] font-medium leading-[1.2] transition-colors duration-300 group-hover:text-paper ${
+                    tile.image_url ? "text-paper" : "text-navy"
+                  }`}
+                >
                   {tile.title}
                 </span>
-                <span className="pointer-events-none absolute bottom-[16px] right-[18px] -translate-x-2 translate-y-2 text-base text-gold opacity-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
-                  →
-                </span>
+                {href && (
+                  <span className="pointer-events-none absolute bottom-[16px] right-[18px] -translate-x-2 translate-y-2 text-base text-gold opacity-0 transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100">
+                    →
+                  </span>
+                )}
               </div>
             );
             return (
               <Reveal key={tile.id} delay={i * 0.03} className={layout.span}>
-                {tile.link_href ? (
-                  <Link href={tile.link_href} className="block h-full">
+                {href ? (
+                  <Link href={href} className="block h-full">
                     {card}
                   </Link>
                 ) : (
