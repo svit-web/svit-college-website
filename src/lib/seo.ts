@@ -6,14 +6,26 @@
 // `openGraph` therefore spread `await siteOpenGraph()` first so they keep the
 // site name and default share image.
 import type { Metadata } from "next";
-import { DEFAULT_MISC, getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
+import {
+  DEFAULT_MISC,
+  DEFAULT_CONTACT,
+  getMiscSettings,
+  getContactInfo,
+  type MiscSettings,
+} from "@/lib/site-settings.functions";
 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://svitvasad.ac.in").replace(
   /\/+$/,
   "",
 );
-export const SITE_NAME = "SVIT Vasad — Sardar Vallabhbhai Institute of Technology";
 const DEFAULT_OG_IMAGE = "/og-image.jpg";
+
+/** "SVIT Vasad — {admin-set full institute name}" — full name comes from Settings → Contact Info. */
+export function siteName(fullName: string): string {
+  return `SVIT Vasad — ${fullName}`;
+}
+
+export const DEFAULT_SITE_NAME = siteName(DEFAULT_CONTACT.full_name);
 
 export function absoluteUrl(path: string): string {
   if (/^https?:\/\//.test(path)) return path;
@@ -27,11 +39,13 @@ export function absoluteUrl(path: string): string {
  */
 export async function siteOpenGraph(
   misc?: MiscSettings,
+  fullName?: string,
 ): Promise<NonNullable<Metadata["openGraph"]>> {
   const settings = misc ?? (await getMiscSettings().catch(() => DEFAULT_MISC));
+  const name = fullName ?? (await getContactInfo().catch(() => DEFAULT_CONTACT)).full_name;
   return {
     type: "website",
-    siteName: SITE_NAME,
+    siteName: siteName(name),
     locale: "en_IN",
     images: [settings.og_image_url || DEFAULT_OG_IMAGE],
   };
@@ -89,6 +103,7 @@ interface OrganizationInput {
   address: string | null;
   socialLinks: Record<string, string>;
   logoUrl: string | null;
+  fullName: string;
 }
 
 export function organizationJsonLd({
@@ -97,13 +112,14 @@ export function organizationJsonLd({
   address,
   socialLinks,
   logoUrl,
+  fullName,
 }: OrganizationInput) {
   const sameAs = Object.values(socialLinks ?? {}).filter((u) => /^https?:\/\//.test(u));
   return {
     "@context": "https://schema.org",
     "@type": "CollegeOrUniversity",
     "@id": ORGANIZATION_ID,
-    name: "Sardar Vallabhbhai Institute of Technology",
+    name: fullName,
     alternateName: "SVIT Vasad",
     url: SITE_URL,
     logo: absoluteUrl(logoUrl || "/icon.png"),

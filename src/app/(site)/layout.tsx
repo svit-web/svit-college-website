@@ -1,7 +1,7 @@
 import { Header } from "@/components/site-next/Header";
 import { Footer } from "@/components/site-next/Footer";
 import { getCollegesGrid } from "@/lib/homepage.functions";
-import { getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
+import { DEFAULT_CONTACT, getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
 import { getAllDepartments } from "@/lib/departments.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
@@ -75,6 +75,7 @@ export default async function SiteLayout({
           address: contactInfo?.address ?? null,
           socialLinks: contactInfo?.social_links ?? {},
           logoUrl,
+          fullName: contactInfo?.full_name ?? DEFAULT_CONTACT.full_name,
         })}
       />
     </div>
