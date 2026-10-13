@@ -29,7 +29,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
 
   const eyebrow = hero?.eyebrow ||
     (misc?.year_established ? `Est. ${misc.year_established} · Vasad, Gujarat` : "Vasad, Gujarat");
-  const title = hero?.title || "Sardar Vallabhbhai Patel Institute of";
+  const title = hero?.title || "Sardar Vallabhbhai Institute of";
   const titleAccent = hero?.title_accent || "Technology";
   const subtitle = hero?.subtitle ||
     "A premier AICTE-approved institute on the banks of the Mahi River — shaping engineers, technologists, architects and nurses for nearly three decades.";
