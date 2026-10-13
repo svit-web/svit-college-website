@@ -13,11 +13,21 @@ interface MediaUploaderProps {
   bucketName?: string;
 }
 
+function checkImageUrlLoads(url: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+}
+
 export function MediaUploader({ value, onChange, type = 'image', bucketName = 'media' }: MediaUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
   const [mode, setMode] = useState<'upload' | 'url'>('upload');
   const [urlDraft, setUrlDraft] = useState('');
+  const [checkingUrl, setCheckingUrl] = useState(false);
   const [libraryOpen, setLibraryOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -95,7 +105,7 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
     toast.success('Image selected from Library');
   };
 
-  const handleUrlSubmit = (e?: React.SyntheticEvent) => {
+  const handleUrlSubmit = async (e?: React.SyntheticEvent) => {
     e?.preventDefault();
     const trimmed = urlDraft.trim();
     if (!trimmed) return;
@@ -103,6 +113,17 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
       toast.error('Enter a valid URL starting with http:// or https://');
       return;
     }
+
+    if (type === 'image') {
+      setCheckingUrl(true);
+      const loads = await checkImageUrlLoads(trimmed);
+      setCheckingUrl(false);
+      if (!loads) {
+        toast.error('That URL does not load as an image. Double-check the link and try again.');
+        return;
+      }
+    }
+
     onChange(trimmed);
     setUrlDraft('');
     toast.success(`${type === 'image' ? 'Image' : 'File'} URL set`);
@@ -203,11 +224,17 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') handleUrlSubmit(e);
                 }}
+                disabled={checkingUrl}
                 placeholder={`https://example.com/${type === 'image' ? 'photo.jpg' : 'file.pdf'}`}
-                className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-crimson focus:bg-white focus:outline-none"
+                className="flex-1 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-sm text-slate-700 placeholder:text-slate-400 focus:border-crimson focus:bg-white focus:outline-none disabled:opacity-60"
               />
-              <button type="button" onClick={handleUrlSubmit} className="shrink-0 rounded-lg bg-crimson px-3 py-2 text-xs font-semibold text-white hover:bg-crimson/90 transition">
-                Use URL
+              <button
+                type="button"
+                onClick={handleUrlSubmit}
+                disabled={checkingUrl}
+                className="shrink-0 rounded-lg bg-crimson px-3 py-2 text-xs font-semibold text-white hover:bg-crimson/90 transition disabled:opacity-60"
+              >
+                {checkingUrl ? <Loader2 className="h-4 w-4 animate-spin" /> : 'Use URL'}
               </button>
             </div>
           )}
