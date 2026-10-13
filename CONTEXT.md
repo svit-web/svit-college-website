@@ -87,6 +87,22 @@ _Avoid_: is_page, inner page, subpage
 A person serving on a committee — a row in `committee_members` (committee, name, position, designation, contact, sort order). A **Linked** member carries a `staff_profile_id` (set automatically at migration time when the member's email matched exactly one live Staff profile); an **External** member is not staff and is held as free text only.
 _Avoid_: committee JSON, members array
 
+**Course**:
+A `courses` row with `department_id` set — belongs to one department (and transitively one college). Every admissions-editable field (intake, fees, duration, eligibility, brochure) lives on this row. Distinct from a Programme, which is a different kind of `courses` row.
+_Avoid_: programme (only when `department_id` is set), subject
+
+**Programme**:
+A `courses` row with `is_programme = true` and `department_id` left NULL — a standalone landing page at `/programs/[program]`, not scoped to any department or college. Writable only by global admins today; excluded from the Admissions section grant and from the public intake/fees table, which lists Courses only.
+_Avoid_: course (the two are deliberately different kinds of row, despite sharing a table)
+
+**Admissions section**:
+A row in `admin_sections` (code `'admissions'`) granting write access to admissions-related admin pages via `user_section_grants`, independent of a user's scope-tier role (global/college/department admin). Distinct from the public "Admissions" nav item/page and from "Admissions Details" (the admin tab it unlocks).
+_Avoid_: admissions role, admissions permission
+
+**Section grant**:
+A `user_section_grants` row giving a user write access to one Admin section (e.g. Admissions, Sports) at a chosen scope, independent of and additive to their scope-tier role (`department_admin`, `college_admin`, etc.). Assigned via User Management → "Manage roles" → Section Access. RLS enforces it at the row level only — it cannot restrict which columns of a row a grant-holder writes.
+_Avoid_: section role, section permission
+
 **Navbar wordmark**:
 The single line of text next to the logo mark in `Logo.tsx`, sourced from `ContactInfo.full_name` (admin-editable via Admin → Settings → Contact Information → "Full Name"). Falls back to "Sardar Vallabhbhai Institute of Technology" if unset. Deliberately just one line — the old two-line "SVIT Vasad" / "Institute of Technology" treatment was dropped in favor of a single dynamic name.
 _Avoid_: logo text, header title

@@ -59,21 +59,6 @@ export default async function Admissions() {
         </Link>
       </PageHero>
 
-      <section className="container-page py-20">
-        <SectionHeading center eyebrow="Process" title="How to Apply" />
-        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {steps.map((s, i) => (
-            <Reveal key={s.n} delay={i * 0.05}>
-              <div className="h-full border border-line bg-surface p-6">
-                <div className="font-display text-4xl font-medium text-crimson">{s.n}</div>
-                <h3 className="mt-3 font-display font-medium text-navy">{s.title}</h3>
-                <p className="mt-2 text-sm text-ink-soft">{s.desc}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       <section className="bg-paper-deep py-20">
         <div className="container-page">
           <SectionHeading center eyebrow="Eligibility" title="Programme Requirements" />
@@ -99,6 +84,21 @@ export default async function Admissions() {
               </tbody>
             </table>
           </div>
+        </div>
+      </section>
+
+      <section className="container-page py-20">
+        <SectionHeading center eyebrow="Process" title="How to Apply" />
+        <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {steps.map((s, i) => (
+            <Reveal key={s.n} delay={i * 0.05}>
+              <div className="h-full border border-line bg-surface p-6">
+                <div className="font-display text-4xl font-medium text-crimson">{s.n}</div>
+                <h3 className="mt-3 font-display font-medium text-navy">{s.title}</h3>
+                <p className="mt-2 text-sm text-ink-soft">{s.desc}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </section>
 

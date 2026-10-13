@@ -1,7 +1,8 @@
 // Classifies admin routes as either "global-only" (only scope_type ===
 // "global" users may see or write to them — covers the Website CMS, Campus
 // Life, and System sidebar groups in full, plus the Admissions group's
-// Scholarships item) or
+// Scholarships and Details items — both also unlockable via the
+// 'admissions' section grant, see ROUTE_SECTION_MAP below) or
 // "scope-following" (a college/department-scoped user gets a filtered view
 // of the same section). Mirrors the RLS classification applied in
 // supabase/migrations/*_scope_aware_*_rls.sql and *_global_only_write_rls.sql
@@ -37,6 +38,7 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/designations",
   "/admin/tables/staff_posts",
   "/admin/tables/trusts",
+  "/admin/admissions-details",
 ] as const;
 
 export function isGlobalOnlyRoute(pathname: string): boolean {
@@ -128,6 +130,8 @@ export const ROUTE_SECTION_MAP: Record<string, string[]> = {
   "/admin/tables/content_categories": ["news_events"],
   "/admin/events": ["news_events"],
   "/admin/inquiries": ["admissions"],
+  "/admin/admissions-details": ["admissions"],
+  "/admin/scholarships": ["admissions"],
   "/admin/tnp-hub": ["placement"],
   "/admin/recruiters": ["placement"],
   "/admin/tables/placed_students": ["placement"],

@@ -59,7 +59,10 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: 'Admissions',
     icon: GraduationCap,
-    items: [{ label: 'Scholarships', to: '/admin/scholarships' }],
+    items: [
+      { label: 'Details', to: '/admin/admissions-details' },
+      { label: 'Scholarships', to: '/admin/scholarships' },
+    ],
   },
   {
     label: 'Staff & Faculty',
