@@ -54,7 +54,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
-        hostname: "dl.svitvasad.ac.in",
+        hostname: "db.svitvasad.ac.in",
       },
     ],
   },
