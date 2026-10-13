@@ -121,6 +121,7 @@ const ACTION_MAP: Record<string, string> = {
 const SCOPE_LABEL: Record<string, string> = {
   global: "Global Administrator",
   trust: "Trust Admin",
+  institute: "Institute Admin",
   college: "College Admin",
   department: "Department Admin",
   section: "Section Editor",

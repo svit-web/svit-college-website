@@ -6,6 +6,7 @@ export interface AdminRole {
   name: string;
   scope_type: string;
   trust_id?: string | null;
+  institute_id?: string | null;
   college_id?: string | null;
   department_id?: string | null;
 }
@@ -65,6 +66,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
         `
         scope_type,
         trust_id,
+        institute_id,
         college_id,
         department_id,
         role:role_id (
@@ -103,6 +105,7 @@ export async function getAdminUser(): Promise<AdminUser | null> {
     name: ur.role?.name || '',
     scope_type: ur.scope_type,
     trust_id: ur.trust_id,
+    institute_id: ur.institute_id,
     college_id: ur.college_id,
     department_id: ur.department_id,
   }));
@@ -196,6 +199,7 @@ export function hasSectionAccess(admin: AdminUser, sectionCode: string): boolean
 export function getScopeConstraints(admin: AdminUser): {
   scopeType: string;
   trustId?: string;
+  instituteId?: string;
   collegeId?: string;
   departmentId?: string;
 } | null {
@@ -222,13 +226,13 @@ export function getScopeConstraints(admin: AdminUser): {
     };
   }
 
-  // Institute-scoped role — narrower than global/trust, but has no college/department
-  // to filter on, so callers should treat this the same as "no constraint" for
-  // college/department-owned tables. Kept distinct from the `null` (unrestricted)
-  // return so a future caller can special-case it if a table gains an institute_id.
+  // Institute-scoped role — has no college/department to filter on, so
+  // callers should treat this the same as "no constraint" for
+  // college/department-owned tables, but can filter institute_id-owned
+  // tables (institutes itself, colleges) by instituteId.
   const instituteRole = admin.roles.find((r) => r.scope_type === 'institute');
   if (instituteRole) {
-    return { scopeType: 'institute' };
+    return { scopeType: 'institute', instituteId: instituteRole.institute_id || undefined };
   }
 
   // Trust-scoped role

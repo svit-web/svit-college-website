@@ -143,6 +143,12 @@ const CODE_VALIDATORS: Record<'slug' | 'code' | 'codeStrict', RegExp> = {
   codeStrict: /^[A-Z0-9]+$/,
 };
 
+// _url columns default to the MediaUploader (image) widget, but these hold a
+// plain external link rather than uploaded media — pasting a real link fails
+// MediaUploader's "does this load as an image" check (colleges, institutes,
+// recruiters, trusts all carry a website_url column with this exact shape).
+const LINK_URL_COLUMNS = new Set(['website_url']);
+
 // Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
 // card_photo_url and also owns album_id + has_detail_page, which are therefore
 // skipped by the default field renderer.
@@ -156,7 +162,7 @@ interface TableConfig {
     // This table IS the scope entity itself — a college/department admin
     // only ever sees their own row, matched by primary key rather than a
     // foreign-key column.
-    selfScopeLevel?: 'college' | 'department';
+    selfScopeLevel?: 'institute' | 'college' | 'department';
     // Extra equality filter applied on top of the generic college_id match
     // (e.g. a college admin only sees events they own directly, not ones
     // inherited from a parent scope).
@@ -183,6 +189,20 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     fields: {
       slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
       code: { autoGenerateFrom: { source: 'name', variant: 'codeStrict' } },
+    },
+  },
+  institutes: {
+    scope: { selfScopeLevel: 'institute' },
+    writePermissions: {
+      resolve: (level) => (level === 'institute' ? { insert: false, update: true, delete: false } : undefined),
+    },
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  trusts: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
     },
   },
   departments: {
@@ -497,6 +517,13 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
       if (userScope.level !== 'global') {
         if (userScope.level === 'trust' && userScope.trustId && cols.includes('trust_id')) {
           query = query.eq('trust_id', userScope.trustId);
+        } else if (userScope.level === 'institute' && userScope.instituteId) {
+          const scope = TABLE_CONFIGS[tableId]?.scope;
+          if (scope?.selfScopeLevel === 'institute') {
+            query = query.eq('id', userScope.instituteId);
+          } else if (cols.includes('institute_id')) {
+            query = query.eq('institute_id', userScope.instituteId);
+          }
         } else if (userScope.level === 'college' && userScope.collegeId) {
           const scope = TABLE_CONFIGS[tableId]?.scope;
           if (scope?.selfScopeLevel === 'college') {
@@ -1297,6 +1324,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                           </div>
                         );
                       })()
+                    ) : LINK_URL_COLUMNS.has(col.name) && col.type === 'text' ? (
+                      <input
+                        type="url"
+                        placeholder="https://example.com"
+                        value={formValues[col.name] || ''}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                      />
                     ) : (col.name.endsWith('_url') || col.name.includes('image') || col.name.includes('file')) && col.type === 'text' ? (
                       <MediaUploader value={formValues[col.name] || ''} onChange={(url) => handleFieldChange(col.name, url)} type={col.name.includes('file') ? 'file' : 'image'} />
                     ) : fk ? (

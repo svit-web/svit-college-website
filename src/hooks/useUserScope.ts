@@ -19,6 +19,7 @@ export interface UserScope {
   // not a scope tier.
   sectionScope?: Exclude<ScopeLevel, "section" | "none">;
   trustId?: string | null;
+  instituteId?: string | null;
   collegeId?: string | null;
   departmentId?: string | null;
 }
@@ -61,6 +62,7 @@ export function useUserScope(roles: AdminRole[] | undefined | null): UserScope {
         level: "section",
         sectionScope: (carrier.scope_type as Exclude<ScopeLevel, "section" | "none">) || undefined,
         trustId: carrier.trust_id,
+        instituteId: carrier.institute_id,
         collegeId: carrier.college_id,
         departmentId: carrier.department_id,
       };
@@ -73,6 +75,7 @@ export function useUserScope(roles: AdminRole[] | undefined | null): UserScope {
         ? "global"
         : (best.scope_type as ScopeLevel) || "none",
       trustId: best.trust_id,
+      instituteId: best.institute_id,
       collegeId: best.college_id,
       departmentId: best.department_id,
     };

@@ -155,7 +155,7 @@ export function AdminSidebar({
       : scopeLevel === 'trust'
       ? 'Trust Admin'
       : scopeLevel === 'institute'
-      ? 'Section Editor'
+      ? 'Institute Admin'
       : scopeLevel === 'college'
       ? 'College Admin'
       : scopeLevel === 'department'
