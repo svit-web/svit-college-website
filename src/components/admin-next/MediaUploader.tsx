@@ -88,6 +88,21 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent) => {
+    const items = e.clipboardData?.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.kind === 'file' && item.type.startsWith(type === 'image' ? 'image/' : '')) {
+        const file = item.getAsFile();
+        if (file) {
+          e.preventDefault();
+          uploadFile(file);
+          return;
+        }
+      }
+    }
+  };
+
   const handleRemove = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -130,11 +145,19 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" tabIndex={0} onPaste={handlePaste}>
       <input ref={fileInputRef} type="file" accept={type === 'image' ? 'image/*' : '*'} onChange={handleFileChange} className="hidden" />
 
       {value ? (
-        <div className="relative rounded-lg border border-slate-200 bg-slate-50 p-2">
+        <div
+          onDragEnter={handleDrag}
+          onDragOver={handleDrag}
+          onDragLeave={handleDrag}
+          onDrop={handleDrop}
+          className={`relative rounded-lg border p-2 transition ${
+            dragActive ? 'border-crimson bg-crimson/5' : 'border-slate-200 bg-slate-50'
+          }`}
+        >
           <div className="flex items-center gap-3">
             {type === 'image' ? (
               <div className="relative h-16 w-16 overflow-hidden rounded border border-slate-200 bg-white">
@@ -157,6 +180,14 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
               <X className="h-4 w-4" />
             </button>
           </div>
+          <p className="mt-1 text-[11px] text-slate-400">Drop or paste a new file here to replace it.</p>
+
+          {uploading && (
+            <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-white/90 text-sm font-medium text-slate-600">
+              <Loader2 className="h-4 w-4 animate-spin text-crimson" />
+              Uploading...
+            </div>
+          )}
         </div>
       ) : (
         <div className="space-y-2">
