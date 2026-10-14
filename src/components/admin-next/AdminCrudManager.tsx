@@ -224,6 +224,21 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
     },
   },
+  committees: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  content_categories: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  pages: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
   events: {
     scope: { collegeScopeExtra: { column: 'scope_type', value: 'college' } },
     fields: {
