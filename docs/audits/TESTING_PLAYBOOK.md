@@ -292,31 +292,50 @@ Also now done:
 Still open:
 - Multi-college-grant edge cases — a user holding grants on 2+ colleges simultaneously, never tested
 
-### ⚠️ Significant finding, not fixed — needs a product/security decision, not a drive-by migration
+### ✅ Trust-scope cascade — found, fixed, and applied to the live database
 
-**Trust-scoped admins cannot read or write anything below the institute tier — colleges, departments,
+**Trust-scoped admins could not read or write anything below the institute tier — colleges, departments,
 courses, facilities, centers, staff — at the RLS level, not just in the UI.** Confirmed live: a
 trust-scoped temp account saw 0 rows on `/admin/tables/colleges` (not a UI filtering issue — RLS itself
-returns zero rows for that role). Root cause, confirmed by inspecting every `"Scoped read ..."` RLS
-policy across the scoped table hierarchy: each one calls `can_write_scoped_record(p_trust_id, ...)` with
-`p_trust_id` hardcoded to `NULL`, e.g.
+returned zero rows for that role). Root cause, confirmed by inspecting every `"Scoped read ..."` RLS
+policy across the scoped table hierarchy: each one called `can_write_scoped_record(p_trust_id, ...)` with
+`p_trust_id` hardcoded to `NULL` (and, below the college tier, `p_institute_id` was hardcoded `NULL` too
+— so institute-scope was equally broken for departments/courses/staff, not just trust-scope), e.g.
 
 ```sql
--- colleges "Scoped read" policy
+-- colleges "Scoped read" policy, before the fix
 can_write_scoped_record(NULL::uuid, institute_id, id, NULL::uuid)
 ```
 
-This is the same shape on `colleges`, `centers`, `courses`, `departments`, `facilities`,
-`staff_department_assignments`. Only `institutes` itself correctly threads `trust_id` through (fixed for
-the admin UI layer earlier in this pass). So today a trust-scoped editor can only ever manage the
-institute row(s) directly under their trust — nothing cascades further down, by RLS design or omission.
+User confirmed the intended design (2026-10-14): a Trust Admin should manage everything under their
+trust's institutes, same as institute-scope and college-scope already cascade downward. Fixed in
+`supabase/migrations/20261014150000_trust_and_institute_scope_cascade.sql`, applied to the live
+self-hosted instance via the `supabase-selfhosted` MCP server: every affected policy's `trust_id`/
+`institute_id` arguments now resolve through the real FK chain (table → ... → colleges → institutes)
+instead of being hardcoded `NULL`. Covers `colleges`, `centers`, `courses`, `departments`, `facilities`,
+`staff_department_assignments`, `staff_profiles` (read/update/delete; insert policies that didn't already
+call `can_write_scoped_record` were left untouched). `institutes` itself already threaded `trust_id`
+correctly and needed no change.
 
-This wasn't fixed in this pass because it's a live-production RLS/security policy change across 6+
-tables, not an admin-UI bug — exactly the kind of change `CLAUDE.md` flags needing extra care on a DB
-that's drifted from tracked migration history before. Whether trust-scope *should* cascade to colleges
-and below is a product decision (does a Trust Admin manage every college under every institute in their
-trust, or only their own institute directly?) that needs the repo owner's call before writing a
-migration. Flagging here rather than silently patching it.
+Also found and fixed a related pre-existing data gap while verifying: all 9 `centers` rows had
+`institute_id = NULL` even though `college_id` was set, which would have silently kept centers invisible
+to institute/trust-scoped admins even after the RLS fix. Backfilled `institute_id` from each row's
+`college_id` → `colleges.institute_id`.
+
+**Verified via RLS session simulation** (`set_config('request.jwt.claims', ...)` + `set local role
+authenticated`, the same mechanism PostgREST uses) rather than the browser UI, since the Chrome extension
+disconnected mid-verification:
+- Trust-scoped: colleges 6/6, departments 23/23, courses 26, facilities 7, centers 9/9 (after backfill),
+  staff_profiles 432/472 (the 40-row gap is unassigned faculty with no department — correctly excluded,
+  not a bug), staff_department_assignments 472/472 — all now visible, previously 0.
+- Regression check — institute-scope still sees all 6 colleges (single-institute dataset, expected).
+  College-scope still correctly stays narrow (1 college, 2 departments, 2 courses) — no scope leakage
+  introduced by the fix.
+- `get_advisors('security')` run after applying: zero new findings, only pre-existing unrelated warnings.
+
+Not yet re-verified through the actual browser/admin-UI session (extension was down) — worth a quick
+click-through next time a session has the browser connected, to confirm the admin tables render for a
+real trust-scoped login, not just the RLS layer.
 
 ## 6. Format note
 
