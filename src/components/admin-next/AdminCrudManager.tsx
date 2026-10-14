@@ -1396,12 +1396,20 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                           hasScopeType &&
                           ((col.name === 'department_id' && scopeTypeVal !== 'department') ||
                             (col.name === 'college_id' && scopeTypeVal === 'department'));
+                        // The events_scope_consistency/achievements_scope_consistency
+                        // constraint requires college_id when scope_type='college' and
+                        // department_id when scope_type='department', so these fields
+                        // must be required when their scope_type is active.
+                        const scopeRequiresField =
+                          hasScopeType &&
+                          ((col.name === 'college_id' && scopeTypeVal === 'college') ||
+                            (col.name === 'department_id' && scopeTypeVal === 'department'));
                         return (
                           <>
                             <select
                               value={formValues[col.name] || ''}
                               onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                              required={!col.is_nullable}
+                              required={!col.is_nullable || scopeRequiresField}
                               disabled={
                                 scopeLocksField ||
                                 (col.name === 'trust_id' && userScope.level === 'trust') ||

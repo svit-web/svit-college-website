@@ -267,18 +267,18 @@ page reverted too.
 
 ## 5. Explicitly out of scope so far — the literal starting list for the next pass
 
+Done in the 2026-10-14 pass (see §3/§4 above and `institutes-trusts-scope-audit-2026-10.md`): Trash
+restore flow, Audit Log correctness, Menus builder, HeroAppearance, the `homepage_items` scope-
+consistency question, institute-scope role testing, and all of section 3's checklist.
+
+Still open:
 - CSV imports (`faculty-import.ts`, `achievements-import.ts`) — never tested
 - Staff profile wizards (`/admin/staff-wizards`) — never tested
 - Media upload/compression pipeline (`src/lib/image-compression.ts`, `@jsquash/*`) — never tested;
   `CLAUDE.md` already notes server-side compression is known non-functional (Cloudflare-era)
-- HeroAppearance / homepage appearance settings — never tested
-- Trash restore flow — nav-checked only (loads), never actually restored something
-- Audit Log correctness — only spot-checked for events/achievements triggers, not read end-to-end
-- Menus builder — never tested
 - Multi-college-grant edge cases — a user holding grants on 2+ colleges simultaneously, never tested
-- Institute- and trust-scope role testing beyond the single Events spot-check in the second audit
-- The `homepage_items`/`homepage_sections` scope-consistency question flagged in section 3 above
-- Everything in section 3's unchecked-checklist
+- Trust-scope role testing beyond the single Events spot-check in the second audit (institute-scope is
+  now covered, trust-scope still isn't)
 
 ## 6. Format note
 
