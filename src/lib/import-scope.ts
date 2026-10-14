@@ -8,11 +8,13 @@ import type { UserScope } from '@/hooks/useUserScope';
  * import can report a clear per-row error instead of a raw Postgres error).
  */
 export function canWriteDepartment(scope: UserScope, department: { id: string; college_id?: string | null }): boolean {
+  // A user can hold grants on more than one department/college — check
+  // against the full set, not just the single representative id.
   if (scope.level === 'department') {
-    return scope.departmentId === department.id;
+    return scope.departmentIds.includes(department.id);
   }
   if (scope.level === 'college') {
-    return !!scope.collegeId && scope.collegeId === department.college_id;
+    return !!department.college_id && scope.collegeIds.includes(department.college_id);
   }
   return true;
 }

@@ -635,11 +635,13 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   }
 
   const scopedDepartmentIds = useMemo(() => {
-    if (userScope.level === 'department' && userScope.departmentId) {
-      return new Set([userScope.departmentId]);
+    // A user can hold grants on more than one department/college — union
+    // across every granted id, not just the first.
+    if (userScope.level === 'department' && userScope.departmentIds.length > 0) {
+      return new Set(userScope.departmentIds);
     }
-    if (userScope.level === 'college' && userScope.collegeId) {
-      return new Set(departments.filter((d) => d.college_id === userScope.collegeId).map((d) => d.id));
+    if (userScope.level === 'college' && userScope.collegeIds.length > 0) {
+      return new Set(departments.filter((d) => userScope.collegeIds.includes(d.college_id)).map((d) => d.id));
     }
     return null;
   }, [userScope, departments]);

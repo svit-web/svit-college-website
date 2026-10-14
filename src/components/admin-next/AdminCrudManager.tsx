@@ -535,30 +535,34 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
       const cols = schema.columns.map((c: any) => c.name);
 
       if (userScope.level !== 'global') {
-        if (userScope.level === 'trust' && userScope.trustId && cols.includes('trust_id')) {
-          query = query.eq('trust_id', userScope.trustId);
-        } else if (userScope.level === 'institute' && userScope.instituteId) {
+        // A user can hold more than one role grant at the same scope tier
+        // (e.g. editor on two colleges) — filter on the full *Ids list, not
+        // just the single representative id, so every granted college/
+        // department/etc. shows up rather than silently just the first one.
+        if (userScope.level === 'trust' && userScope.trustIds.length > 0 && cols.includes('trust_id')) {
+          query = query.in('trust_id', userScope.trustIds);
+        } else if (userScope.level === 'institute' && userScope.instituteIds.length > 0) {
           const scope = TABLE_CONFIGS[tableId]?.scope;
           if (scope?.selfScopeLevel === 'institute') {
-            query = query.eq('id', userScope.instituteId);
+            query = query.in('id', userScope.instituteIds);
           } else if (cols.includes('institute_id')) {
-            query = query.eq('institute_id', userScope.instituteId);
+            query = query.in('institute_id', userScope.instituteIds);
           }
-        } else if (userScope.level === 'college' && userScope.collegeId) {
+        } else if (userScope.level === 'college' && userScope.collegeIds.length > 0) {
           const scope = TABLE_CONFIGS[tableId]?.scope;
           if (scope?.selfScopeLevel === 'college') {
-            query = query.eq('id', userScope.collegeId);
+            query = query.in('id', userScope.collegeIds);
           } else if (cols.includes('college_id')) {
-            query = query.eq('college_id', userScope.collegeId);
+            query = query.in('college_id', userScope.collegeIds);
             if (scope?.collegeScopeExtra) {
               query = query.eq(scope.collegeScopeExtra.column, scope.collegeScopeExtra.value);
             }
           }
-        } else if (userScope.level === 'department' && userScope.departmentId) {
+        } else if (userScope.level === 'department' && userScope.departmentIds.length > 0) {
           if (TABLE_CONFIGS[tableId]?.scope?.selfScopeLevel === 'department') {
-            query = query.eq('id', userScope.departmentId);
+            query = query.in('id', userScope.departmentIds);
           } else if (cols.includes('department_id')) {
-            query = query.eq('department_id', userScope.departmentId);
+            query = query.in('department_id', userScope.departmentIds);
           }
         }
       }
