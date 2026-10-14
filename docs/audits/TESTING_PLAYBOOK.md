@@ -271,14 +271,52 @@ Done in the 2026-10-14 pass (see §3/§4 above and `institutes-trusts-scope-audi
 restore flow, Audit Log correctness, Menus builder, HeroAppearance, the `homepage_items` scope-
 consistency question, institute-scope role testing, and all of section 3's checklist.
 
+Also now done:
+- Staff profile wizards (`/admin/staff-wizards`) — "Add Faculty" wizard verified live (create round-trip
+  + public `/staff/[employee_code]` page). Note the "Dr." title dropdown and First/Last Name inputs sit
+  ahead of a hidden background search box in DOM order — when scripting this modal, filter out
+  `input[placeholder="Search by name or email..."]` or you'll write into the page behind the modal
+- CSV imports — both `faculty-import.ts` and `staff-achievements-import.ts` verified live via real file
+  uploads (not just reading the source). Faculty import correctly rejected a `muster_number` clash
+  against real data with a clear message; re-run without the clash created 1/0/0. Achievements import
+  created 1 row and correctly flagged 0 skipped (duplicate) on the dedupe check. No bugs found in either.
+
+Also now done:
+- Media upload/compression pipeline — verified with a real 240KB JPG upload through `MediaUploader`: the
+  client-side `@jsquash` pipeline actually re-encoded it to `.webp` (not a passthrough) and uploaded to
+  the real storage bucket; round-trip confirmed via the saved record. One orphaned test asset left in the
+  `media/images/` storage bucket (DB row deleted, blob itself not — low-stakes, a stray 240KB image) if
+  anyone wants to clean it up later. Server-side compression still noted as known non-functional per
+  `CLAUDE.md` — not retested, out of scope for a client-driven admin-panel pass.
+
 Still open:
-- CSV imports (`faculty-import.ts`, `achievements-import.ts`) — never tested
-- Staff profile wizards (`/admin/staff-wizards`) — never tested
-- Media upload/compression pipeline (`src/lib/image-compression.ts`, `@jsquash/*`) — never tested;
-  `CLAUDE.md` already notes server-side compression is known non-functional (Cloudflare-era)
 - Multi-college-grant edge cases — a user holding grants on 2+ colleges simultaneously, never tested
-- Trust-scope role testing beyond the single Events spot-check in the second audit (institute-scope is
-  now covered, trust-scope still isn't)
+
+### ⚠️ Significant finding, not fixed — needs a product/security decision, not a drive-by migration
+
+**Trust-scoped admins cannot read or write anything below the institute tier — colleges, departments,
+courses, facilities, centers, staff — at the RLS level, not just in the UI.** Confirmed live: a
+trust-scoped temp account saw 0 rows on `/admin/tables/colleges` (not a UI filtering issue — RLS itself
+returns zero rows for that role). Root cause, confirmed by inspecting every `"Scoped read ..."` RLS
+policy across the scoped table hierarchy: each one calls `can_write_scoped_record(p_trust_id, ...)` with
+`p_trust_id` hardcoded to `NULL`, e.g.
+
+```sql
+-- colleges "Scoped read" policy
+can_write_scoped_record(NULL::uuid, institute_id, id, NULL::uuid)
+```
+
+This is the same shape on `colleges`, `centers`, `courses`, `departments`, `facilities`,
+`staff_department_assignments`. Only `institutes` itself correctly threads `trust_id` through (fixed for
+the admin UI layer earlier in this pass). So today a trust-scoped editor can only ever manage the
+institute row(s) directly under their trust — nothing cascades further down, by RLS design or omission.
+
+This wasn't fixed in this pass because it's a live-production RLS/security policy change across 6+
+tables, not an admin-UI bug — exactly the kind of change `CLAUDE.md` flags needing extra care on a DB
+that's drifted from tracked migration history before. Whether trust-scope *should* cascade to colleges
+and below is a product decision (does a Trust Admin manage every college under every institute in their
+trust, or only their own institute directly?) that needs the repo owner's call before writing a
+migration. Flagging here rather than silently patching it.
 
 ## 6. Format note
 
