@@ -67,7 +67,7 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
       <div className="container-page py-8 md:py-14">
         <div className="grid gap-0 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-2 mb-2 md:mb-0">
-            <Logo logoUrl={logoUrl} />
+            <Logo logoUrl={logoUrl} instituteName={site.fullName} />
             <p className="mt-4 text-sm text-ink-soft max-w-sm">
               {site.fullName} — a premier institute committed to excellence in education, research
               and community impact{misc?.year_established ? ` since ${misc.year_established}` : ""}.
