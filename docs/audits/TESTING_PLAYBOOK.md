@@ -312,11 +312,17 @@ picking a Department when adding a Course) aren't scope-filtered, so a multi-col
 row under their *second* college and then never see it again in any admin list, since every list query is
 `.eq()`-filtered to whichever single `collegeId` the reduce happened to keep.
 
-**Fix would require**: widening `UserScope` to carry arrays (`collegeIds: string[]` etc. instead of a
-single `collegeId`) and changing `.eq()` → `.in()` across all four consumer call sites — a real refactor
-touching a widely-shared hook, not a one-line patch. Flagging for a product decision before touching it:
-(a) is this grant shape (one editor, 2+ colleges) actually used/intended in prod today, and (b) is a
-multi-value scope refactor worth doing now vs. deferring. Not fixed this session.
+**Fixed** (same session, after confirming with the user): widened `UserScope` with `trustIds`/
+`instituteIds`/`collegeIds`/`departmentIds` arrays (every id at the user's broadest tier, keeping the
+existing singular `*Id` fields as a representative value for form defaults) and switched the affected
+`.eq()` filters to `.in()`/array-membership in `AdminCrudManager`'s row-loading query,
+`AdminStaffWizardsPage`'s `scopedDepartmentIds` memo, and `import-scope.ts`'s `canWriteDepartment`
+pre-check. `AdminMediaPage.tsx` has its own separate, even simpler scope derivation
+(`admin.roles[0]`, not `useUserScope()` at all) with the same first-grant-wins flaw for department-scoped
+media folders — not touched this session since it's a different code path; worth a follow-up pass.
+`tsc --noEmit` clean. Verified live: a temp editor with grants on both College Of Architecture and
+SVIT-Diploma went from 1 college/1 department visible to the correct 2 colleges/7 departments on
+`/admin/tables/colleges` and `/departments`. Committed separately from the facilities fix (`3cad53f`).
 
 ### ✅ Trust-scope cascade — found, fixed, and applied to the live database
 
