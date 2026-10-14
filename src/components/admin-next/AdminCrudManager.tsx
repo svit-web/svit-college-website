@@ -149,6 +149,11 @@ const CODE_VALIDATORS: Record<'slug' | 'code' | 'codeStrict', RegExp> = {
 // recruiters, trusts all carry a website_url column with this exact shape).
 const LINK_URL_COLUMNS = new Set(['website_url']);
 
+// Columns whose name merely contains "file"/"image" but hold a short plain-
+// text label, not an uploaded asset's URL — `downloads.file_type` stores
+// values like "pdf", not a file to upload.
+const PLAIN_TEXT_FIELD_COLUMNS = new Set(['file_type']);
+
 // Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
 // card_photo_url and also owns album_id + has_detail_page, which are therefore
 // skipped by the default field renderer.
@@ -1328,6 +1333,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       <input
                         type="url"
                         placeholder="https://example.com"
+                        value={formValues[col.name] || ''}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                      />
+                    ) : PLAIN_TEXT_FIELD_COLUMNS.has(col.name) && col.type === 'text' ? (
+                      <input
+                        type="text"
+                        placeholder="e.g. pdf"
                         value={formValues[col.name] || ''}
                         onChange={(e) => handleFieldChange(col.name, e.target.value)}
                         required={!col.is_nullable}
