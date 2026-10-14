@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import type { AdminUser } from '@/app/lib/auth/admin';
 
 const SOFT_DELETE_TABLES = [
+  'trusts',
+  'institutes',
   'colleges',
   'departments',
   'courses',
@@ -14,6 +16,7 @@ const SOFT_DELETE_TABLES = [
   'staff_profiles',
   'staff_achievements',
   'staff_work_experience',
+  'pages',
   'menus',
   'menu_items',
   'homepage_items',
@@ -105,12 +108,19 @@ export function AdminTrashPage({ admin }: { admin: AdminUser }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
-  const handleRestore = async (recordId: string) => {
+  const handleRestore = async (recordId: string, record?: Record<string, any>) => {
     setRestoringId(recordId);
     try {
+      const payload: Record<string, any> = { deleted_at: null, deleted_by: null, updated_by: userId };
+      // Soft-delete always force-sets status to 'archived' (see AdminCrudManager's
+      // handleDelete) regardless of what it was before, so restoring must bring it
+      // back to 'published' too — otherwise the row reappears in admin lists but
+      // stays invisible on the public site (which filters status = 'published'),
+      // silently defeating the point of "Restore".
+      if (record && 'status' in record) payload.status = 'published';
       const { error } = await (supabase as any)
         .from(selectedTable)
-        .update({ deleted_at: null, deleted_by: null, updated_by: userId })
+        .update(payload)
         .eq('id', recordId);
 
       if (error) throw error;
@@ -291,7 +301,7 @@ export function AdminTrashPage({ admin }: { admin: AdminUser }) {
                       <td className="px-6 py-4 text-right">
                         <div className="flex justify-end gap-3">
                           <button
-                            onClick={() => handleRestore(r.id)}
+                            onClick={() => handleRestore(r.id, r)}
                             disabled={restoringId === r.id || purgingId === r.id}
                             className="inline-flex items-center gap-1.5 rounded bg-emerald-600/10 px-3 py-1.5 text-xs font-semibold text-emerald-400 border border-emerald-500/20 hover:bg-emerald-600/25 transition disabled:opacity-50"
                           >
