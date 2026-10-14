@@ -1348,7 +1348,11 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                         className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
                       />
                     ) : (col.name.endsWith('_url') || col.name.includes('image') || col.name.includes('file')) && col.type === 'text' ? (
-                      <MediaUploader value={formValues[col.name] || ''} onChange={(url) => handleFieldChange(col.name, url)} type={col.name.includes('file') ? 'file' : 'image'} />
+                      <MediaUploader
+                        value={formValues[col.name] || ''}
+                        onChange={(url) => handleFieldChange(col.name, url)}
+                        type={col.name.includes('file') || col.name.includes('document') ? 'file' : 'image'}
+                      />
                     ) : fk ? (
                       (() => {
                         // On any scope-typed table (events, achievements, ...)
