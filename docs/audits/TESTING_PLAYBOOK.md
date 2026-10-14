@@ -231,22 +231,22 @@ page reverted too.
 
 | Content type | Admin table(s) | Public route(s) | Data-fetch function | Notes |
 |---|---|---|---|---|
-| Colleges | `colleges` | `/colleges`, `/colleges/[college]` | `src/lib/colleges.functions.ts` | |
-| Departments | `departments` | `/departments/[dept]` | `src/lib/departments.functions.ts` | |
-| Courses | `courses` | `/courses`, `/courses/[course]` | `src/lib/programmes.functions.ts` | |
-| Facilities | `facilities` | `/campus-life/facilities` | `src/lib/facilities.functions.ts` | |
-| Events | `events` | `/campus-life/events`, `/campus-life/events/[slug]`, `/departments/[dept]` (Activities tab) | `src/lib/events.functions.ts`, `src/lib/department-content.functions.ts` | Department Activities tab only shows 6 of 12 `event_type` values — documented, not a bug to re-report |
-| Achievements | `achievements` | `/achievements/[slug]` only — **no sitewide listing page exists** | `src/lib/achievements.functions.ts` | A published achievement with no `department_id` or `has_detail_page: false` is effectively unreachable — documented finding, not new |
-| Staff Profiles | `staff_profiles`, `staff_department_assignments` | `/staff/[staff]`, department pages | `src/lib/staff.functions.ts` | |
-| News/Posts | `posts`, `content_categories` | `/news`, `/news/[slug]` | `src/lib/posts.functions.ts` (check actual filename) | |
-| Gallery | `gallery_albums`, `gallery_media` | `/gallery`, `/gallery/[albumId]` | `src/lib/gallery.functions.ts` | |
-| Downloads | `downloads` | `/downloads` | check `src/lib/*.functions.ts` for the downloads module | |
-| Board Members | `board_members` | `/about/board-of-management` | check `src/lib/*.functions.ts` | |
-| Committees | `committees`, `committee_members` | `/about/committees` | check `src/lib/*.functions.ts` | |
-| Placements | `placed_students`, `recruiters`, T&P hub tables | placement pages | check `src/lib/*.functions.ts` | |
-| Homepage | `homepage_sections`, `homepage_items` | `/` | homepage data-fetch, check `src/lib/*.functions.ts` | |
-| Menus | `menus`, `menu_items` | site nav (Header component) | `src/lib/menus.functions.ts` | |
-| Search | all of the above | search dropdown (client-side, reads `public/search-index.json`) | `scripts/build-search-index.ts` | **Build-time only** — see caveat below |
+| Colleges | `colleges` | `/colleges`, `/colleges/[college]` | `src/lib/colleges.functions.ts` | ✅ verified — tagline edit reflected instantly, reverted cleanly |
+| Departments | `departments` | `/departments/[dept]` | `src/lib/departments.functions.ts` | ✅ verified — `about` edit reflected instantly (route param is `code`, not `slug` — departments.slug is dead per earlier memory), reverted cleanly |
+| Courses | `courses` | `/courses`, `/courses/[course]` | `src/lib/programmes.functions.ts` | ⚠️ found & fixed a severe bug: editing *any* field on a legacy-coded course (several real rows predate the strict code regex: bsc/bba/architecture/mba/mca/diploma/engineering/B.ARCH) silently mangled its `code`, breaking the public URL. Fixed in `AdminCrudManager.tsx` buildPayload; verified live. Route param is `code`, not slug — `is_programme=false` courses (e.g. individual BE-CIV) 404 on `/courses/[code]` by design, that's not a bug |
+| Facilities | `facilities` | `/campus-life/facilities` | `src/lib/facilities.functions.ts` | ✅ verified — `description` edit reflected instantly |
+| Events | `events` | `/campus-life/events`, `/campus-life/events/[slug]`, `/departments/[dept]` (Activities tab) | `src/lib/events.functions.ts`, `src/lib/department-content.functions.ts` | ✅ verified — title edit reflected instantly on the sitewide listing. Department Activities tab only shows 6 of 12 `event_type` values — documented, not a bug to re-report |
+| Achievements | `achievements` | `/achievements/[slug]` only — **no sitewide listing page exists** | `src/lib/achievements.functions.ts` | ✅ verified — title edit reflected instantly on the detail page. A published achievement with no `department_id` or `has_detail_page: false` is effectively unreachable — documented finding, not new |
+| Staff Profiles | `staff_profiles`, `staff_department_assignments` | `/staff/[staff]`, department pages | `src/lib/staff.functions.ts` | ✅ verified — `bio` edit reflected instantly. Route param is `employee_code`, not slug |
+| News/Posts | `posts`, `content_categories` | `/news`, `/news/[slug]` | `src/lib/posts.functions.ts` | ✅ verified — `summary` edit reflected instantly on `/news` listing |
+| Gallery | `gallery_albums`, `gallery_media` | `/gallery`, `/gallery/[albumId]` | `src/lib/gallery.functions.ts` | ✅ verified — album title edit reflected instantly |
+| Downloads | `downloads` | `/downloads` | `src/lib/downloads.functions.ts` | ✅ list renders titles correctly; the "download" links themselves are dead (`file_url = '#'` on all 8 rows — already-documented content issue, not a linkage bug) |
+| Board Members | `board_members` | `/about/board-of-management` | `src/lib/*.functions.ts` | ✅ verified — designation edit reflected instantly |
+| Committees | `committees`, `committee_members` | `/about/committees` | `src/lib/*.functions.ts` | ✅ verified — name edit reflected instantly |
+| Placements | `placed_students`, `recruiters`, T&P hub tables | `/placement` | `src/lib/*.functions.ts` | ✅ verified — recruiter-wall edit and placed-students showcase both reflected instantly |
+| Homepage | `homepage_items` | `/` | homepage data-fetch | ✅ verified — stat-item title edit reflected instantly |
+| Menus | `menus`, `menu_items` | site nav (Header component) | `src/lib/menus.functions.ts` | ✅ verified — nav link title edit reflected instantly. Gotcha hit while testing: the first root item in `main_navigation` by `sort_order` was actually a soft-deleted "Home" row (`deleted_at` set) — always filter `deleted_at is null` when picking a row to test, not just `sort_order` |
+| Search | all of the above | search dropdown (client-side, reads `public/search-index.json`) | `scripts/build-search-index.ts` | **Build-time only** — not re-tested, already-documented limitation, skipped per the caveat below |
 
 ### Caching/revalidation traps — don't misdiagnose these as bugs
 
