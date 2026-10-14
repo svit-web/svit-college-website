@@ -289,8 +289,34 @@ Also now done:
   anyone wants to clean it up later. Server-side compression still noted as known non-functional per
   `CLAUDE.md` — not retested, out of scope for a client-driven admin-panel pass.
 
-Still open:
-- Multi-college-grant edge cases — a user holding grants on 2+ colleges simultaneously, never tested
+### ⚠️ Multi-college-grant edge case — found, not yet fixed (needs a product decision)
+
+**A user holding `editor` role grants on 2+ colleges simultaneously only ever sees/writes through one of
+them in the admin UI** — the second (and any further) grant is silently dropped, not unioned. Verified
+live: a temp account with `college` grants on both College Of Architecture (1 department) and
+SVIT-Diploma (6 departments) — dashboard "Structure" tile correctly counted `Colleges: 2, Departments: 7`
+(that count query is unscoped-by-role), but `/admin/tables/colleges` showed only 1 row and
+`/admin/tables/departments` only 1 row (both Architecture's), never any of Diploma's 7.
+
+**Root cause**: `useUserScope()` (`src/hooks/useUserScope.ts`) reduces a user's *entire* role-grant list
+down to a single "broadest" grant via `list.reduce((acc, r) => rankOf(r) < rankOf(acc) ? r : acc, list[0])`
+— when two grants tie at the same scope tier (e.g. two `college` grants), the reduce keeps whichever
+came first and discards the other entirely. The resulting `UserScope` object carries one `collegeId` (not
+a list), and that single value feeds **four** consumers: `AdminSidebar` (section visibility), the admin
+route guard (direct-nav redirects), `AdminCrudManager` (`.eq('college_id', userScope.collegeId)` row
+filtering *and* write-permission checks), and the staff wizard's faculty visibility.
+
+**Not a security hole** — RLS still permits both grants independently, so this is a UI-correctness bug,
+not a privilege-escalation or data-leak one. But it's a real functional bug: cross-table FK pickers (e.g.
+picking a Department when adding a Course) aren't scope-filtered, so a multi-college admin could create a
+row under their *second* college and then never see it again in any admin list, since every list query is
+`.eq()`-filtered to whichever single `collegeId` the reduce happened to keep.
+
+**Fix would require**: widening `UserScope` to carry arrays (`collegeIds: string[]` etc. instead of a
+single `collegeId`) and changing `.eq()` → `.in()` across all four consumer call sites — a real refactor
+touching a widely-shared hook, not a one-line patch. Flagging for a product decision before touching it:
+(a) is this grant shape (one editor, 2+ colleges) actually used/intended in prod today, and (b) is a
+multi-value scope refactor worth doing now vs. deferring. Not fixed this session.
 
 ### ✅ Trust-scope cascade — found, fixed, and applied to the live database
 
@@ -333,9 +359,26 @@ disconnected mid-verification:
   introduced by the fix.
 - `get_advisors('security')` run after applying: zero new findings, only pre-existing unrelated warnings.
 
-Not yet re-verified through the actual browser/admin-UI session (extension was down) — worth a quick
-click-through next time a session has the browser connected, to confirm the admin tables render for a
-real trust-scoped login, not just the RLS layer.
+**Re-verified live through the browser (2026-10-14, session 3)**, logged in as a real trust-scoped temp
+account (`editor` role, `scope_type='trust'`, NEST trust id): `/admin/tables/colleges` 6/6,
+`/departments` 23/23, `/courses` 26/26, `/centers` 9/9 — all matched the RLS-simulation numbers from the
+first pass.
+
+`/admin/tables/facilities` did **not** match (2 rows shown vs the RLS-simulation's claimed 7) — found and
+fixed a real bug the simulation missed: the original cascade migration's comment said "facilities:
+institute_id is direct," but in the live data the large majority of facility rows (labs, libraries, etc.)
+only set `department_id` and leave `institute_id` null. All four `facilities` scoped policies derived
+`trust_id`/`institute_id` solely from `facilities.institute_id`, so any department-attached facility was
+invisible to trust- and institute-scoped admins even though college-scope could already see it (the
+policy's `college_id` derivation went through `department_id` correctly). Fixed in
+`supabase/migrations/20261014180000_fix_facilities_scope_chain.sql`: now resolves institute/trust through
+`COALESCE(facilities.institute_id, department -> college -> institute)`. Verified live: 2 rows -> 114 rows
+for the same trust-scoped account after applying. `get_advisors('security')` showed no new findings.
+Committed and pushed separately (`2d2b01f`).
+
+Also spot-checked `staff_profiles`: UI showed 361 rows, a fresh RLS simulation confirmed 363 (RLS and UI
+agree; the playbook's earlier "432/472" figures were stale from before this session's faculty-import/seed
+work, not a bug).
 
 ## 6. Format note
 
