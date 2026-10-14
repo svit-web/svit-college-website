@@ -158,30 +158,66 @@ second audit).
 
 **Not yet tested, checklist for the next pass** (tick off as you go):
 
-- [ ] Institutes (Add/Edit/Delete, all scope tiers)
-- [ ] Trusts (global-only — confirm it's actually blocked for every other role)
-- [ ] Labs (`/admin/labs` — custom page, not generic `/admin/tables/*`)
-- [ ] Designations, Staff Posts (global-only per `GLOBAL_ONLY_TABLE_IDS`)
-- [ ] Posts / Blog & News, Content Categories (global-only, `news_events` section carve-out)
-- [ ] Menus, Menu Items (global-only)
-- [ ] Homepage Layout / `homepage_items` / `homepage_sections` — note: `homepage_items` has the same
-      nullable `college_id`+`department_id` pair as events/achievements; check whether it has the same
-      CHECK-constraint-without-cross-validation gap (flagged, not confirmed, in the events/achievements
-      audit's "not investigated" section)
-- [ ] Downloads (`library` section carve-out)
-- [ ] Recruiters, T&P Master Hub, Placed Students write path (`placement` section carve-out)
-- [ ] Accreditations, Board Members, Committees/Committee Members write path (`about_us` section carve-out)
-- [ ] Gallery Albums / Gallery Media (global-only, `campus_life` section carve-out)
-- [ ] Student Clubs — Clubs & Societies (Centers) full round-trip, not just permission check
+- [x] Institutes (Add/Edit/Delete, all scope tiers) — see `institutes-trusts-scope-audit-2026-10.md`
+- [x] Trusts (global-only — confirm it's actually blocked for every other role) — see `institutes-trusts-scope-audit-2026-10.md`
+- [x] Labs (`/admin/labs` — custom page, not generic `/admin/tables/*`) — Add round-trip OK (stored in `facilities`, department-scoped correctly for a college-scoped admin)
+- [x] Designations (global-only) — Add round-trip OK, simple form, no issues
+- [x] Staff Posts (global-only) — Add round-trip OK, simple form, no issues
+- [x] Posts / Blog & News (global-only) — Add round-trip OK, card-photo widget correct
+- [x] Content Categories — empty table (0 rows), `module_type` free-text column unreferenced anywhere in `src/` outside generated types; feature appears unused/dead, not actively broken
+- [x] Menus, Menu Items (global-only) — tree loads real nav (just slow, 2-3s), Add/Delete round-trip OK. Note: clicking a delete icon anywhere in this admin fires a native `confirm()` that freezes browser-automation tools; a human had to dismiss it manually mid-session — not a site bug, but worth knowing for future automated passes
+- [x] Homepage Layout / `homepage_items` — page loads real data correctly (just slow on first load, same
+      pattern as Menus — don't mistake a mid-load screenshot for an empty state). The flagged CHECK-
+      constraint gap turns out not exploitable: `AdminHomepagePage.tsx` only ever writes `scope_type`
+      'global'/'college' and never includes `department_id` in any payload, so the admin UI can't produce
+      the inconsistent-scope row shape that bit events/achievements. Not fixed because not reachable.
+- [x] Downloads (`library` section carve-out) — found & fixed `file_type` rendering as a file-upload
+      widget (same heuristic bug class as website_url). Add round-trip now OK. **Content finding (not a
+      code bug)**: all 8 live Downloads rows have `file_url = '#'` — every public download link is
+      currently dead; admin needs to upload real files and set real URLs
+- [x] Recruiters (global-only custom page) — Add round-trip OK, website_url fix confirmed
+- [x] T&P Master Hub / Placed Students write path (`placement` section carve-out) — Add round-trip OK on both Placed Students tab and the hub's section toggles page
+- [x] Accreditations — found & fixed `document_url` rendering as an image uploader (should be file-type,
+      same bug class as website_url/file_type); Add round-trip OK after fix
+- [x] Board Members — Add round-trip OK, Photo Url correctly an image field
+- [x] Committees (`about_us` section carve-out) — found & fixed missing slug autogen (same gap as
+      institutes/trusts); also fixed the same gap on `content_categories` and `pages` while in the file.
+      Add round-trip OK
+- [x] Gallery Albums (global-only, `campus_life` carve-out) — Add round-trip OK, cover image correctly
+      image-typed; 116 pre-existing rows, many auto-sourced from facilities/events/achievements/clubs
+- [x] Gallery Media — 168 real rows load with real image URLs, data path healthy (did not do a full Add
+      round-trip, lower risk since the URL field here is already correctly typed)
+- [x] Student Clubs — Clubs & Societies full Add round-trip OK (slug autogen, logo field correct)
 - [ ] Sports & Athletics full round-trip (already permission-checked; not yet a live create/delete test)
-- [ ] MOUs
-- [ ] Inquiries Inbox (`admissions` section carve-out)
-- [ ] Admissions Details, Scholarships (global-only, `admissions` section carve-out)
-- [ ] User Management (create/edit/disable a user through the UI, not just SQL)
-- [ ] Trash (restore flow — soft-delete something, confirm it appears, restore it, confirm it's live
-      again; confirm permanent-delete actually hard-deletes)
-- [ ] Audit Log (confirm entries appear for writes across several tables, not just events)
-- [ ] Settings / HeroAppearance
+- [x] Sports & Athletics full round-trip — live Add Sport confirmed (slug silently autogenerates, coach
+      photo correctly image-typed)
+- [x] MOUs — Add round-trip OK, logo/activities fields correct
+- [x] Inquiries Inbox (`admissions` section carve-out) — real inbox data loads correctly (Admission
+      Inquiry + Grievance templates), Export CSV button not disabled. Did not create test rows or export
+      (inbox holds real applicant PII). "FieldsCount: 9" label on Configure Template Fields reads
+      camelCase/dev-ish but the whole card uses a deliberate monospace style — likely intentional, left
+      as-is
+- [x] Admissions Details (global-only, `admissions` carve-out) — Edit round-trip OK (brochure correctly
+      file-typed), reverted test value
+- [x] Scholarships — Add round-trip OK
+- [x] User Management — found & fixed a severe bug: disabling a user's access made the re-enable button
+      disappear forever (visibility condition checked `roles.length + sections.length > 0`, but disabling
+      archives all grants, zeroing both). Backend restore logic was already correct; only the button was
+      broken. Verified live: disable → button vanishes → fix applied → button reappears → re-enable →
+      role fully restored. Did not test Create User (would send a real account-creation flow) or
+      Reset Password (would attempt a real email send) — left both unexercised
+- [x] Trash (restore flow) — found & fixed two bugs: (1) `institutes`/`trusts`/`pages` were missing from
+      the Trash panel's table dropdown entirely, so soft-deleted rows there were unrecoverable; (2)
+      Restore only cleared `deleted_at`, never reset `status` from 'archived' back to 'published', so a
+      "restored" row stayed invisible on the public site. Both fixed and verified live with a real
+      delete→restore→verify round-trip on `institutes`.
+- [x] Audit Log — confirmed entries logged correctly across every table touched this session (institutes,
+      mous, centers, student_clubs, gallery_albums, committees, board_members, accreditations,
+      recruiters, downloads, posts, ...). Table is large (1300+ rows) and slow to first-load (same
+      pattern as Menus/Homepage) — don't mistake the loading state for "0 rows"
+- [x] Settings / HeroAppearance — both pages (+ Popup tab) load real config correctly with working live
+      previews; all URL/image fields correctly typed. Did not Save (shared global config, not a
+      test-isolable row — no safe way to revert a live edit here)
 
 ## 4. Admin → public site linkage checklist
 
