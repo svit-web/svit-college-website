@@ -148,6 +148,7 @@ export default async function AdminDashboardHome() {
     homepageItems,
     posts,
     placedStudents,
+    sports,
   ] = await Promise.all([
     sb.from("colleges").select("*", { count: "exact", head: true }),
     sb.from("departments").select("*", { count: "exact", head: true }),
@@ -159,6 +160,7 @@ export default async function AdminDashboardHome() {
     sb.from("homepage_items").select("*", { count: "exact", head: true }),
     sb.from("posts").select("*", { count: "exact", head: true }),
     sb.from("placed_students").select("*", { count: "exact", head: true }),
+    sb.from("sports").select("*", { count: "exact", head: true }),
   ]);
 
   const metrics: Record<string, number> = {
@@ -172,6 +174,7 @@ export default async function AdminDashboardHome() {
     homepageItems: homepageItems.count || 0,
     posts: posts.count || 0,
     placedStudents: placedStudents.count || 0,
+    sports: sports.count || 0,
   };
 
   // audit_logs RLS is global-admin-only (`is_global_admin()`) — scoped
