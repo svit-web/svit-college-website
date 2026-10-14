@@ -241,7 +241,7 @@ export function AdminUserManagementPage({ currentUserId }: { currentUserId: stri
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-1">
-                      {u.id !== currentUserId && u.roles.length + u.sections.length > 0 && (
+                      {u.id !== currentUserId && (!u.accessEnabled || u.roles.length + u.sections.length > 0) && (
                         <button
                           title={u.accessEnabled ? 'Disable access (revokes all portal and write access)' : 'Re-enable access'}
                           disabled={saving}
