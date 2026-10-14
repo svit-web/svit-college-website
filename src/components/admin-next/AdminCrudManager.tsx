@@ -775,7 +775,20 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
       if (!cfg.autoGenerateFrom) continue;
       const current = payload[col];
-      if (typeof current === 'string' && current !== '' && !CODE_VALIDATORS[cfg.autoGenerateFrom.variant].test(current)) {
+      // Editing an existing record whose code/slug predates the current
+      // strict format (e.g. a legacy lowercase course code like
+      // "engineering") must not silently rewrite it just because some other
+      // field on the same row changed — that mangles the public URL as a
+      // side effect of an unrelated edit. Only regenerate when the admin
+      // actually touched this field (it differs from what the record
+      // already had) or when creating a brand-new record.
+      const untouchedOnEdit = !!editingRecord && current === editingRecord[col];
+      if (
+        !untouchedOnEdit &&
+        typeof current === 'string' &&
+        current !== '' &&
+        !CODE_VALIDATORS[cfg.autoGenerateFrom.variant].test(current)
+      ) {
         const source = formValues[cfg.autoGenerateFrom.source];
         payload[col] = CODE_GENERATORS[cfg.autoGenerateFrom.variant](typeof source === 'string' && source !== '' ? source : current);
       }
