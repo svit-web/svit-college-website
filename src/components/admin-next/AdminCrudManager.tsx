@@ -125,6 +125,11 @@ interface TableFieldConfig {
   // field whose consequence isn't obvious from its name alone (e.g. which
   // values make an event show up on its own department's page).
   helpText?: string;
+  // Moves this field to render immediately after the named field, instead of
+  // wherever raw DB column order puts it — for a field whose relevance is
+  // decided by another field (e.g. college_id only matters once Scope Type
+  // is set), so the two stay visually adjacent.
+  renderAfter?: string;
 }
 
 const CODE_GENERATORS: Record<'slug' | 'code' | 'codeStrict', (name: string) => string> = {
@@ -244,6 +249,8 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      college_id: { renderAfter: 'scope_type' },
+      department_id: { renderAfter: 'scope_type' },
       event_type: {
         optionLabels: EVENT_TYPE_LABELS,
         helpText:
@@ -287,9 +294,11 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      college_id: { renderAfter: 'scope_type' },
       category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
       department_id: {
+        renderAfter: 'scope_type',
         helpText:
           "There's no sitewide achievements listing on the public site — a department is required for " +
           'this to show up anywhere other than its own direct URL.',
@@ -1006,6 +1015,32 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   const hasWritePermission = writePermissions.insert || writePermissions.update || writePermissions.delete;
   const canShowRowActions = writePermissions.update || writePermissions.delete;
 
+  // Form field order, with any `renderAfter` fields spliced in right after
+  // the field they name — otherwise identical to raw DB column order.
+  const formColumns = useMemo(() => {
+    const tableFieldsForOrder = TABLE_CONFIGS[tableId]?.fields;
+    if (!tableFieldsForOrder || !schema?.columns) return schema?.columns ?? [];
+
+    const afterMap: Record<string, any[]> = {};
+    const rest: any[] = [];
+    for (const col of schema.columns) {
+      const after = tableFieldsForOrder[col.name]?.renderAfter;
+      if (after) {
+        (afterMap[after] ??= []).push(col);
+      } else {
+        rest.push(col);
+      }
+    }
+    if (Object.keys(afterMap).length === 0) return schema.columns;
+
+    const result: any[] = [];
+    for (const col of rest) {
+      result.push(col);
+      if (afterMap[col.name]) result.push(...afterMap[col.name]);
+    }
+    return result;
+  }, [schema?.columns, tableId]);
+
   const tableColumns = useMemo(() => {
     if (!schema?.columns) return [];
 
@@ -1272,7 +1307,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
             </h2>
 
             <form ref={formRef} onSubmit={handleSave} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-              {schema.columns.map((col: any) => {
+              {formColumns.map((col: any) => {
                 if (
                   col.name === 'created_at' ||
                   col.name === 'updated_at' ||
@@ -1300,6 +1335,27 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 const usesEntryPhotos = !!tableFields && Object.values(tableFields).some((f) => f.render === 'entry-photos');
                 if (usesEntryPhotos && ENTRY_PHOTOS_OWNED_COLUMNS.has(col.name)) return null;
                 if (tableFields?.[col.name]?.hidden) return null;
+
+                // On scope-typed tables (events, achievements, ...), college_id
+                // and department_id are each only meaningful for their own
+                // scope_type value (the DB CHECK constraint rejects the other
+                // combinations) — hide the irrelevant one entirely instead of
+                // showing it disabled, rather than rendering a dead control for
+                // a global/trust/institute-scoped record. See
+                // docs/audits/events-achievements-add-flow-2026-10.md #1/#2.
+                if (col.name === 'college_id' || col.name === 'department_id') {
+                  // Gated on scope_type being explicitly configured (currently
+                  // only events/achievements), not merely present on the
+                  // table — tables like gallery_albums/posts/homepage_items
+                  // also carry scope_type + college_id/department_id but
+                  // handle scoping differently and must render as before.
+                  const hasConfiguredScopeType = !!tableFields?.scope_type;
+                  if (hasConfiguredScopeType) {
+                    const scopeTypeVal = formValues.scope_type;
+                    if (col.name === 'college_id' && scopeTypeVal !== 'college') return null;
+                    if (col.name === 'department_id' && scopeTypeVal !== 'department') return null;
+                  }
+                }
 
                 // jsonb columns (metadata and friends) get the typed key-by-key
                 // editor with a raw-JSON toggle, not a bare textarea.
@@ -1387,53 +1443,34 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       />
                     ) : fk ? (
                       (() => {
-                        // On any scope-typed table (events, achievements, ...)
-                        // department_id only ever belongs in the payload when
-                        // scope_type === 'department' (the DB CHECK constraint
-                        // rejects it otherwise), and college_id is auto-derived
-                        // from the department once it does — see buildPayload's
-                        // matching normalization and
-                        // docs/audits/events-achievements-add-flow-2026-10.md #1/#2.
-                        const hasScopeType = schema.columns.some((c: any) => c.name === 'scope_type');
-                        const scopeTypeVal = formValues.scope_type;
-                        const scopeLocksField =
-                          hasScopeType &&
-                          ((col.name === 'department_id' && scopeTypeVal !== 'department') ||
-                            (col.name === 'college_id' && scopeTypeVal === 'department'));
-                        // The events_scope_consistency/achievements_scope_consistency
-                        // constraint requires college_id when scope_type='college' and
-                        // department_id when scope_type='department', so these fields
-                        // must be required when their scope_type is active.
+                        // college_id/department_id on a scope-typed table
+                        // (events, achievements) never reach this branch
+                        // unless they already match the active scope_type —
+                        // see the hide check above — so they're always
+                        // required here, matching the
+                        // events_scope_consistency/achievements_scope_consistency
+                        // CHECK constraint.
+                        const hasConfiguredScopeType = !!tableFields?.scope_type;
                         const scopeRequiresField =
-                          hasScopeType &&
-                          ((col.name === 'college_id' && scopeTypeVal === 'college') ||
-                            (col.name === 'department_id' && scopeTypeVal === 'department'));
+                          hasConfiguredScopeType &&
+                          (col.name === 'college_id' || col.name === 'department_id');
                         return (
-                          <>
-                            <select
-                              value={formValues[col.name] || ''}
-                              onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                              required={!col.is_nullable || scopeRequiresField}
-                              disabled={
-                                scopeLocksField ||
-                                (col.name === 'trust_id' && userScope.level === 'trust') ||
-                                (col.name === 'college_id' && userScope.level === 'college') ||
-                                (col.name === 'department_id' && userScope.level === 'department')
-                              }
-                              className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
-                            >
-                              <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
-                              {fkOptions[fk.foreign_table]?.map((opt) => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                              ))}
-                            </select>
-                            {scopeLocksField && col.name === 'department_id' && (
-                              <p className="text-xs text-slate-500">Only available when Scope Type is set to Department.</p>
-                            )}
-                            {scopeLocksField && col.name === 'college_id' && (
-                              <p className="text-xs text-slate-500">Set automatically from the department once saved.</p>
-                            )}
-                          </>
+                          <select
+                            value={formValues[col.name] || ''}
+                            onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                            required={!col.is_nullable || scopeRequiresField}
+                            disabled={
+                              (col.name === 'trust_id' && userScope.level === 'trust') ||
+                              (col.name === 'college_id' && userScope.level === 'college') ||
+                              (col.name === 'department_id' && userScope.level === 'department')
+                            }
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
+                          >
+                            <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
+                            {fkOptions[fk.foreign_table]?.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
                         );
                       })()
                     ) : col.name === 'status' ? (
