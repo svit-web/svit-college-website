@@ -23,7 +23,7 @@ export interface LeadershipPerson {
 export interface LeadershipValue {
   intro: string;
   chairman: LeadershipPerson;
-  principal: LeadershipPerson;
+  principal?: LeadershipPerson;
   boardOfManagement: { srNo: number; name: string; designation: string }[];
 }
 
@@ -149,7 +149,6 @@ export function LeadershipMessagesEditor({
 }) {
   const board = value.boardOfManagement ?? [];
   const patchChairman = (next: LeadershipPerson) => onChange({ ...value, chairman: next });
-  const patchPrincipal = (next: LeadershipPerson) => onChange({ ...value, principal: next });
   const patchBoard = (next: LeadershipValue["boardOfManagement"]) =>
     onChange({ ...value, boardOfManagement: next });
 
@@ -160,7 +159,8 @@ export function LeadershipMessagesEditor({
           Leadership Messages
         </h4>
         <p className="mt-0.5 text-[11px] text-slate-500">
-          Chairman and Principal messages, plus the Board of Management list.
+          Chairman message, plus the Board of Management list. Principal messages are managed under
+          Principal Messages.
         </p>
       </div>
 
@@ -173,7 +173,7 @@ export function LeadershipMessagesEditor({
         />
       </Field>
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className="grid gap-3">
         <PersonCard
           title="Chairman"
           person={value.chairman}
@@ -198,22 +198,6 @@ export function LeadershipMessagesEditor({
                 />
               </Field>
             </>
-          }
-        />
-
-        <PersonCard
-          title="Principal"
-          person={value.principal}
-          onChange={patchPrincipal}
-          extra={
-            <Field label="Body Text (optional)">
-              <textarea
-                rows={2}
-                value={value.principal.bodyText ?? ""}
-                onChange={(e) => patchPrincipal({ ...value.principal, bodyText: e.target.value })}
-                className={inputClass}
-              />
-            </Field>
           }
         />
       </div>

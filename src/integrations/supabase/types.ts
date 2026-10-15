@@ -2743,6 +2743,60 @@ export type Database = {
         }
         Relationships: []
       }
+      principal_messages: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          content: string
+          metadata: Json
+          name: string
+          photo_url: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          content?: string
+          metadata?: Json
+          name: string
+          photo_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          content?: string
+          metadata?: Json
+          name?: string
+          photo_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       posts: {
         Row: {
           album_id: string | null

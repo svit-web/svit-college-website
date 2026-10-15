@@ -36,6 +36,7 @@ const SOFT_DELETE_TABLES = [
   'placed_students',
   'student_clubs',
   'board_members',
+  'principal_messages',
   'committees',
   'committee_members',
   'accreditations',

@@ -91,6 +91,7 @@ const NAV_GROUPS: NavGroup[] = [
       // sidebar link until now.
       { label: 'Placed Students (dept. & package)', to: '/admin/tables/placed_students' },
       { label: 'Board of Management', to: '/admin/tables/board_members' },
+      { label: 'Principal Messages', to: '/admin/tables/principal_messages' },
       { label: 'Committees', to: '/admin/tables/committees' },
       { label: 'Committee Members', to: '/admin/tables/committee_members' },
       { label: 'Accreditations', to: '/admin/tables/accreditations' },
