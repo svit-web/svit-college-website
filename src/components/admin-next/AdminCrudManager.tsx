@@ -130,6 +130,15 @@ interface TableFieldConfig {
   // decided by another field (e.g. college_id only matters once Scope Type
   // is set), so the two stay visually adjacent.
   renderAfter?: string;
+  // Shows this field only while another form field holds one of these values
+  // (e.g. facilities.parent_id only matters for a building). While shown it is
+  // required; while hidden its value is cleared from the payload.
+  visibleWhen?: { field: string; equals: string[] };
+  // New-record default for a field with no scope-based default.
+  defaultValue?: string;
+  // Enum fields only: values withheld from the dropdown (an existing record
+  // already holding one keeps it selectable).
+  excludeOptions?: string[];
 }
 
 const CODE_GENERATORS: Record<'slug' | 'code' | 'codeStrict', (name: string) => string> = {
@@ -275,6 +284,18 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
       code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
       category: { options: FACILITY_CATEGORY_OPTIONS },
+      // check_facility_fields ties facility_type to its FK: campus needs
+      // institute_id (auto-filled, never shown — there is one institute and
+      // campus-wide facilities belong to it, not to a college), building needs
+      // parent_id, laboratory needs department_id (created on the Labs page).
+      facility_type: {
+        defaultValue: 'campus',
+        excludeOptions: ['laboratory'],
+        optionLabels: { campus: 'Campus-wide', building: 'Building (inside a campus facility)' },
+      },
+      institute_id: { hidden: true },
+      parent_id: { visibleWhen: { field: 'facility_type', equals: ['building'] } },
+      department_id: { visibleWhen: { field: 'facility_type', equals: ['laboratory'] } },
     },
   },
   centers: {
@@ -656,6 +677,8 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
           initialValues[col.name] = sportsRowFilter.value;
         } else if (TABLE_CONFIGS[tableId]?.fields?.[col.name]?.defaultsToScopeLevel && userScope.level !== 'global') {
           initialValues[col.name] = scopeDefaultLevel;
+        } else if (TABLE_CONFIGS[tableId]?.fields?.[col.name]?.defaultValue) {
+          initialValues[col.name] = TABLE_CONFIGS[tableId]!.fields![col.name].defaultValue;
         } else if (col.name === 'status') {
           initialValues[col.name] = 'published';
         } else if (col.name === 'has_detail_page' && tableId !== 'sports') {
@@ -764,6 +787,27 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         payload[col.name] = val === '' ? null : val;
       }
     });
+
+    // Drop values of fields hidden by visibleWhen so a stale pick from a
+    // previously chosen type can't reach the CHECK constraint.
+    const configuredFields = TABLE_CONFIGS[tableId]?.fields ?? {};
+    for (const [name, cfg] of Object.entries(configuredFields)) {
+      const rule = cfg.visibleWhen;
+      if (rule && name in payload && !rule.equals.includes(String(formValues[rule.field] ?? ''))) {
+        payload[name] = null;
+      }
+    }
+
+    // facilities: institute_id is hidden and filled with the single institute
+    // (campus-wide facilities are institute-level, see the facilities config).
+    if (tableId === 'facilities' && 'institute_id' in payload && !payload.institute_id) {
+      const institutes = fkOptions['institutes'] ?? [];
+      if (institutes.length === 1) {
+        payload.institute_id = institutes[0].value;
+      } else if (payload.facility_type === 'campus') {
+        throw new Error('Could not determine the institute for this campus-wide facility. Reload the page and try again.');
+      }
+    }
 
     // Keep department_id/college_id consistent with scope_type on any
     // scope-typed table (events, achievements, ...). The DB CHECK
@@ -1335,6 +1379,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 const usesEntryPhotos = !!tableFields && Object.values(tableFields).some((f) => f.render === 'entry-photos');
                 if (usesEntryPhotos && ENTRY_PHOTOS_OWNED_COLUMNS.has(col.name)) return null;
                 if (tableFields?.[col.name]?.hidden) return null;
+                const visibleWhen = tableFields?.[col.name]?.visibleWhen;
+                if (visibleWhen && !visibleWhen.equals.includes(String(formValues[visibleWhen.field] ?? ''))) {
+                  return null;
+                }
 
                 // On scope-typed tables (events, achievements, ...), college_id
                 // and department_id are each only meaningful for their own
@@ -1458,7 +1506,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                           <select
                             value={formValues[col.name] || ''}
                             onChange={(e) => handleFieldChange(col.name, e.target.value)}
-                            required={!col.is_nullable || scopeRequiresField}
+                            required={!col.is_nullable || scopeRequiresField || !!tableFields?.[col.name]?.visibleWhen}
                             disabled={
                               (col.name === 'trust_id' && userScope.level === 'trust') ||
                               (col.name === 'college_id' && userScope.level === 'college') ||
@@ -1483,7 +1531,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       (() => {
                         const enumFieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
                         const lockedScope = !!enumFieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
-                        const options = lockedScope ? [scopeDefaultLevel ?? userScope.level] : col.enum_values;
+                        const excluded = enumFieldConfig?.excludeOptions ?? [];
+                        const options = lockedScope
+                          ? [scopeDefaultLevel ?? userScope.level]
+                          : col.enum_values.filter((v: string) => !excluded.includes(v) || v === formValues[col.name]);
                         return (
                           <select
                             value={formValues[col.name] || ''}
