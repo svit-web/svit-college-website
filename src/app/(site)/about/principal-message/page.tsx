@@ -24,10 +24,22 @@ export default async function PrincipalMessagePage() {
           <blockquote className="text-navy leading-relaxed italic">
             "{c?.leadership?.principal?.quote}"
           </blockquote>
-          <div className="mt-4 text-sm font-semibold text-navy">
-            {c?.leadership?.principal?.name}
+          <div className="mt-4 flex items-center gap-4">
+            {c?.leadership?.principal?.photoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={c.leadership.principal.photoUrl}
+                alt={c.leadership.principal.name}
+                className="h-16 w-16 shrink-0 rounded-full border border-line object-cover"
+              />
+            )}
+            <div>
+              <div className="text-sm font-semibold text-navy">
+                {c?.leadership?.principal?.name}
+              </div>
+              <div className="text-xs text-ink-soft">{c?.leadership?.principal?.title}</div>
+            </div>
           </div>
-          <div className="text-xs text-ink-soft">{c?.leadership?.principal?.title}</div>
           {c?.leadership?.principal?.bodyText && (
             <p className="mt-6 border-t border-line pt-6 text-sm text-ink-soft leading-relaxed">
               {c.leadership.principal.bodyText}

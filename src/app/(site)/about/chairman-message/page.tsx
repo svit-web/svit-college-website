@@ -24,10 +24,20 @@ export default async function ChairmanMessagePage() {
           <blockquote className="text-navy leading-relaxed italic">
             "{c?.leadership?.chairman?.quote}"
           </blockquote>
-          <div className="mt-4 text-sm font-semibold text-navy">
-            {c?.leadership?.chairman?.name}
+          <div className="mt-4 flex items-center gap-4">
+            {c?.leadership?.chairman?.photoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={c.leadership.chairman.photoUrl}
+                alt={c.leadership.chairman.name}
+                className="h-16 w-16 shrink-0 rounded-full border border-line object-cover"
+              />
+            )}
+            <div>
+              <div className="text-sm font-semibold text-navy">{c?.leadership?.chairman?.name}</div>
+              <div className="text-xs text-ink-soft">{c?.leadership?.chairman?.title}</div>
+            </div>
           </div>
-          <div className="text-xs text-ink-soft">{c?.leadership?.chairman?.title}</div>
 
           {c?.leadership?.chairman?.strategicPlanText && (
             <div className="mt-6 border-t border-line pt-6">

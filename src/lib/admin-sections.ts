@@ -139,6 +139,7 @@ export const ROUTE_SECTION_MAP: Record<string, string[]> = {
   "/admin/tables/committees": ["about_us"],
   "/admin/tables/committee_members": ["about_us"],
   "/admin/tables/accreditations": ["about_us"],
+  "/admin/page-editors/about": ["about_us"],
   "/admin/sports": ["campus_life", "sports"],
   "/admin/tables/achievements": ["campus_life", "sports"],
   "/admin/tables/gallery_albums": ["campus_life"],

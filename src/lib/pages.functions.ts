@@ -18,6 +18,7 @@ export interface AboutPageData {
       quote: string;
       name: string;
       title: string;
+      photoUrl?: string;
       strategicPlanText?: string;
       corePrinciples?: string[];
     };
@@ -25,6 +26,7 @@ export interface AboutPageData {
       quote: string;
       name: string;
       title: string;
+      photoUrl?: string;
       bodyText?: string;
     };
     boardOfManagement: { srNo: number; name: string; designation: string }[];

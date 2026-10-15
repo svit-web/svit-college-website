@@ -9,6 +9,10 @@ import { createClient } from "@/app/lib/supabase/client";
 import { AlertTriangle, FileText, Loader2, Save } from "lucide-react";
 import { toast } from "sonner";
 import { MetadataEditor, type MetadataEditorGroup } from "@/components/admin-next/MetadataEditor";
+import {
+  LeadershipMessagesEditor,
+  type LeadershipValue,
+} from "@/components/admin-next/pages/LeadershipMessagesEditor";
 import type { AdminUser } from "@/app/lib/auth/admin";
 import {
   PAGE_METADATA_VALIDATORS,
@@ -160,10 +164,34 @@ export function AdminPageEditor({
         </div>
       </div>
 
+      {typeof metadata !== "string" && metadata.leadership && (
+        <LeadershipMessagesEditor
+          value={metadata.leadership as LeadershipValue}
+          onChange={(next) => setMetadata({ ...metadata, leadership: next })}
+        />
+      )}
+
+      {/* "leadership" is edited above, by LeadershipMessagesEditor, not here
+          — stripped from what MetadataEditor sees so it doesn't also show up
+          under its generic "Other Fields" catch-all, and re-merged back in
+          on every change since MetadataEditor's onChange otherwise replaces
+          the whole metadata object. */}
       <MetadataEditor
-        value={metadata}
+        value={
+          typeof metadata === "string"
+            ? metadata
+            : (() => {
+                const { leadership: _leadership, ...rest } = metadata;
+                return rest;
+              })()
+        }
         onChange={(next) =>
-          setMetadata(typeof next === "string" ? next : (next as Record<string, any>))
+          setMetadata((prev) => {
+            if (typeof next === "string") return next;
+            const nextObj = next as Record<string, any>;
+            const leadership = typeof prev === "string" ? undefined : prev.leadership;
+            return leadership !== undefined ? { ...nextObj, leadership } : nextObj;
+          })
         }
         defaultOpen
         groups={groups}

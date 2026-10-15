@@ -41,11 +41,9 @@ const EDITORS: Record<string, PageEditorConfig> = {
       },
       { title: "Vision", description: "The vision statement.", keys: ["vision"] },
       { title: "Mission", description: "The mission points list.", keys: ["mission"] },
-      {
-        title: "Leadership Messages",
-        description: "Chairman and Principal messages, plus the Board of Management list.",
-        keys: ["leadership"],
-      },
+      // "leadership" is deliberately absent here — AdminPageEditor renders it
+      // with the dedicated LeadershipMessagesEditor instead of the generic
+      // JSON form, so it's excluded from this group list.
       {
         title: "Accreditation & Disclosures",
         description: "Recognition list, NBA/NIRF/AICTE text and disclosure documents.",
@@ -93,7 +91,7 @@ export default async function PageEditorRoute({ params }: { params: Promise<{ sl
 
   if (
     !isRouteAllowedForUser(
-      "/admin/page-editors",
+      `/admin/page-editors/${slug}`,
       level,
       admin.sections.map((s) => s.code),
     )

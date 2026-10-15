@@ -114,3 +114,7 @@ _Avoid_: tile link, link_href (that column covers only the Custom URL case, not 
 **Navbar wordmark**:
 The single line of text next to the logo mark in `Logo.tsx`, sourced from `ContactInfo.full_name` (admin-editable via Admin → Settings → Contact Information → "Full Name"). Falls back to "Sardar Vallabhbhai Institute of Technology" if unset. Deliberately just one line — the old two-line "SVIT Vasad" / "Institute of Technology" treatment was dropped in favor of a single dynamic name.
 _Avoid_: logo text, header title
+
+**Leadership message**:
+The Chairman's or Principal's message shown on the SVIT-wide About pages (`/about/chairman-message`, `/about/principal-message`), stored as a single record each in `pages.metadata.leadership.chairman` / `.principal` (the `about` page row) and edited on the About SVIT admin page. Despite multi-college being core elsewhere, this is deliberately a single trust-wide pair, not one per college — a separate, currently unused set of per-college columns (`colleges.principal_name/title/message/photo_url`, rendered by `PrincipalSection` on college landing pages) exists but is out of scope for this concept (2026-10).
+_Avoid_: principal message (ambiguous with the per-college `colleges.principal_*` fields), leadership JSON
