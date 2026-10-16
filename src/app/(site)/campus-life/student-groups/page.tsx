@@ -1,3 +1,4 @@
+import { clubBlurb } from "@/lib/club-blurb";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2 } from "lucide-react";
@@ -43,8 +44,10 @@ export default async function StudentGroupsIndex() {
                     <span className="truncate">{c.departmentName}</span>
                   </div>
                 )}
-                <p className="mt-2 text-sm text-ink-soft">
-                  {c.subtitle || c.description}
+                <p
+                  className={`mt-2 text-sm text-ink-soft ${clubBlurb(c).isFallback ? "line-clamp-2" : ""}`}
+                >
+                  {clubBlurb(c).text}
                 </p>
               </>
             );

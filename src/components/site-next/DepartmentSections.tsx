@@ -1,3 +1,4 @@
+import { clubBlurb } from "@/lib/club-blurb";
 import Link from "next/link";
 import NextImage from "next/image";
 import { SectionHeading } from "./SectionHeading";
@@ -403,6 +404,7 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
               {clubs.map((c) => {
                 // Clubs without their own page (has_detail_page off) must not
                 // link to /campus-life/clubs/[slug] — that route 404s for them.
+                const blurb = clubBlurb(c);
                 const body = (
                   <>
                     <div className="flex items-center gap-3">
@@ -423,9 +425,11 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                       )}
                       <div className="font-display font-medium text-navy">{c.name}</div>
                     </div>
-                    {c.description && (
-                      <p className="mt-2 text-xs text-ink-soft leading-relaxed">
-                        {c.description}
+                    {blurb.text && (
+                      <p
+                        className={`mt-2 text-xs text-ink-soft leading-relaxed ${blurb.isFallback ? "line-clamp-2" : ""}`}
+                      >
+                        {blurb.text}
                       </p>
                     )}
                   </>

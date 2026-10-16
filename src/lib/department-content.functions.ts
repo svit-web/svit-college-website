@@ -157,6 +157,7 @@ export interface DeptClub {
   name: string;
   slug: string;
   description: string | null;
+  subtitle: string | null;
   logoUrl: string | null;
   hasDetailPage: boolean;
 }
@@ -170,7 +171,7 @@ export async function getClubsByDepartmentId(departmentId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('student_clubs')
-    .select('id, name, slug, description, logo_url, has_detail_page')
+    .select('id, name, slug, description, subtitle, logo_url, has_detail_page')
     .eq('department_id', departmentId)
     .eq('status', 'published')
     .is('deleted_at', null)
@@ -186,6 +187,7 @@ export async function getClubsByDepartmentId(departmentId: string) {
     name: c.name,
     slug: c.slug,
     description: c.description,
+    subtitle: c.subtitle,
     logoUrl: c.logo_url,
     hasDetailPage: !!c.has_detail_page,
   }));

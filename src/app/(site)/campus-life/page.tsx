@@ -1,3 +1,4 @@
+import { clubBlurb } from "@/lib/club-blurb";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
@@ -79,12 +80,12 @@ export default async function CampusLifeOverview() {
                   className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
                 >
                   <h4 className="font-display font-medium text-navy">{c.name}</h4>
-                  <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
+                  <p className={`mt-2 text-sm text-ink-soft ${clubBlurb(c).isFallback ? "line-clamp-2" : ""}`}>{clubBlurb(c).text}</p>
                 </Link>
               ) : (
                 <div className="block h-full border border-line bg-surface p-5">
                   <h4 className="font-display font-medium text-navy">{c.name}</h4>
-                  <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
+                  <p className={`mt-2 text-sm text-ink-soft ${clubBlurb(c).isFallback ? "line-clamp-2" : ""}`}>{clubBlurb(c).text}</p>
                 </div>
               )}
             </Reveal>
