@@ -9,12 +9,15 @@ import {
   achievementCategoryLabel,
   getAchievementDetailBySlug,
 } from "@/lib/achievements.functions";
+import { getEntryImageFit } from "@/lib/entry-image-fit";
 import { metaDescription } from "@/lib/seo";
 
 // Per-request dedupe between generateMetadata and the page.
-const loadAchievement = cache((slug: string) =>
-  getAchievementDetailBySlug(slug).catch(() => null),
-);
+const loadAchievement = cache(async (slug: string) => {
+  const item = await getAchievementDetailBySlug(slug).catch(() => null);
+  if (!item) return null;
+  return { ...item, imageFit: await getEntryImageFit("achievements", item.id) };
+});
 
 export async function generateMetadata({
   params,
@@ -79,6 +82,7 @@ export default async function AchievementDetailPage({
             description: item.description,
             cardPhotoUrl: item.cardPhotoUrl,
             album: item.album,
+            imageFit: item.imageFit,
           }}
         />
       </div>

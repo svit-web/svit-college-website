@@ -20,6 +20,8 @@ interface Props {
   ariaLabel?: string;
   photoAlt?: string;
   aspectRatio?: string;
+  /** `fit` shows each whole photo (letterboxed on the stage); `fill` (default) crops to it. */
+  fit?: "fill" | "fit";
   /** When set, clicking the current slide calls this (e.g. to open a lightbox). */
   onPhotoClick?: (index: number) => void;
 }
@@ -29,6 +31,7 @@ export function PhotoSlider({
   ariaLabel = "Photos",
   photoAlt = "Photo",
   aspectRatio = PHOTO_ASPECT_RATIO,
+  fit = "fill",
   onPhotoClick,
 }: Props) {
   const [index, setIndex] = useState(0);
@@ -73,10 +76,12 @@ export function PhotoSlider({
               src={photo.url}
               alt={photoAlt}
               loading={i === 0 ? "eager" : "lazy"}
-              className="absolute inset-0 h-full w-full object-cover"
-              style={{
-                objectPosition: `${photo.focalX ?? "center"} ${photo.focalY ?? "center"}`,
-              }}
+              className={`absolute inset-0 h-full w-full ${fit === "fit" ? "object-contain" : "object-cover"}`}
+              style={
+                fit === "fit"
+                  ? undefined
+                  : { objectPosition: `${photo.focalX ?? "center"} ${photo.focalY ?? "center"}` }
+              }
             />
             {onPhotoClick && (
               <button

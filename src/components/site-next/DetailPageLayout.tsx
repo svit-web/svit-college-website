@@ -1,6 +1,6 @@
 import Image from "next/image";
 import type { ReactNode } from "react";
-import type { EntryPhoto } from "@/lib/entry";
+import type { EntryImageFit, EntryPhoto } from "@/lib/entry";
 import { EntryAlbumSlideshow } from "./EntryAlbumSlideshow";
 import { EntryCardPlaceholder } from "./EntryCard";
 import { PlainText } from "./PlainText";
@@ -20,6 +20,8 @@ export type DetailPageEntry = {
    * background — never cropped — when there's neither an album nor a Card photo.
    */
   fallbackLogoUrl?: string | null;
+  /** Photo treatment on this page; omitted means `fill` (crop), the original look. */
+  imageFit?: EntryImageFit;
 };
 
 /**
@@ -40,7 +42,7 @@ export function DetailPageLayout({
   return (
     <div className="space-y-8">
       {photos.length > 0 ? (
-        <EntryAlbumSlideshow photos={photos} title={entry.title} />
+        <EntryAlbumSlideshow photos={photos} title={entry.title} fit={entry.imageFit} />
       ) : (
         <div className="relative aspect-video w-full overflow-hidden border border-line bg-paper-deep">
           {entry.cardPhotoUrl ? (
@@ -50,7 +52,7 @@ export function DetailPageLayout({
               fill
               priority
               sizes="(max-width: 768px) 100vw, 768px"
-              className="object-cover"
+              className={entry.imageFit === "fit" ? "object-contain" : "object-cover"}
             />
           ) : entry.fallbackLogoUrl ? (
             <div className="absolute inset-0 bg-surface">

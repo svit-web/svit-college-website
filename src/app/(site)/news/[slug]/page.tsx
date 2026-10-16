@@ -7,6 +7,7 @@ import { formatDate } from "@/components/site-next/DepartmentSections";
 import { getPostBySlug } from "@/lib/posts.functions";
 import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { getEntryImageFit } from "@/lib/entry-image-fit";
 import { metaDescription, newsArticleJsonLd, parseRobots, siteOpenGraph } from "@/lib/seo";
 import { JsonLd } from "@/components/site-next/JsonLd";
 
@@ -14,8 +15,11 @@ import { JsonLd } from "@/components/site-next/JsonLd";
 const loadPost = cache(async (slug: string) => {
   const post = await getPostBySlug(slug).catch(() => null);
   if (!post) return null;
-  const album = await getEntryAlbum(post.album_id).catch(() => null);
-  return { post, album };
+  const [album, imageFit] = await Promise.all([
+    getEntryAlbum(post.album_id).catch(() => null),
+    getEntryImageFit("posts", post.id),
+  ]);
+  return { post, album, imageFit };
 });
 
 export async function generateMetadata({
@@ -57,7 +61,7 @@ export default async function NewsDetailPage({
   const loaded = await loadPost(slug);
   if (!loaded) notFound();
 
-  const { post, album } = loaded;
+  const { post, album, imageFit } = loaded;
 
   return (
     <div className="bg-paper">
@@ -100,6 +104,7 @@ export default async function NewsDetailPage({
             description: post.content ?? post.summary,
             cardPhotoUrl: post.card_photo_url,
             album,
+            imageFit,
           }}
         />
       </div>
