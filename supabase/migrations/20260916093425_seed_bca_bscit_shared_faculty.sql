@@ -1,0 +1,75 @@
+-- Seed BCA/BSc(IT) shared faculty profiles from provided docx sheets
+
+insert into staff_profiles (id, title, first_name, last_name, email, phone, bio, expertise, past_experience_years, designation, qualification, gender, status) values
+  ('4ea2bbf1-0800-4f05-bbdd-ae1d48500137', 'Prof.', 'Amitkumar Kantibhai', 'Patel', 'amitpatel.bca@svitvasad.ac.in', '9879523933', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['C / C++ Programming', 'Database Management System', 'Data Structure', 'Networking', 'Python', 'System Analysis', 'E-Commerce', '.Net', 'RDBMS']::text[], 17, 'Assistant Professor', 'MCA (Computer Science), B.Sc. (Computer Science)', 'male', 'published'),
+  ('80190a53-8a68-4d3c-9a84-648609a0565b', 'Prof.', 'Chandni R', 'Darji', 'chandnidarji.bscit@svitvasad.ac.in', '9033203345', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['C / C++ Programming', 'Data Structure', 'System Analysis', 'C Programming', 'Python']::text[], 12, 'Assistant Professor', 'Ph.D. (Pursuing), MCA (Computer Science), BCA (Computer Science)', 'female', 'published'),
+  ('7eb35b7f-9b8c-4386-a9a0-8e7c115808bc', NULL, 'Chirag', 'Trivedi', 'chiragtrivedi.bca@svitvasad.ac.in', '7600012356', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Javascript', 'Software Engineering', 'Software Project Management']::text[], 1, 'Assistant Professor', 'MSc (Information Technology), BSc (Computer Science)', 'male', 'published'),
+  ('93097b44-1000-4b46-8335-d09659ed6193', NULL, 'Fiza', 'Vhora', 'fizavhora.bca@svitvasad.ac.in', '8511826235', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Python', 'Java', 'OS', 'Software Project Management', 'ASP.NET', 'DBMS', 'Office Automation', 'Full Stack Development', 'Machine Learning']::text[], 3, 'Assistant Professor', 'MCA, BCA', 'female', 'published'),
+  ('bc1017ef-0be5-4d5e-9268-93c56f538c08', NULL, 'Ghanshyam', 'Thakar', 'ghanshyamthakar.bca@svitvasad.ac.in', '9909361198', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['C / C++ Programming', 'DBMS', 'Software Engineering', 'Python', 'VB.NET', 'ASP.NET', 'Java Programming', 'MS Office']::text[], 7, 'Assistant Professor', 'MCA (Computer Science), BCA (Computer Science)', 'male', 'published'),
+  ('402c423b-42ba-4b17-8e3d-672fa982b482', 'Ms.', 'Janish', 'Macwan', 'janishmacwan.bca@svitvasad.ac.in', '8780621655', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['C', 'C++', 'Java', 'Advance Java', 'RDBMS', 'Operating System', 'System Analysis & Design', 'Python', 'E-Commerce', 'PHP', 'Cloud Computing', 'Machine Learning', 'Android']::text[], 7, 'Assistant Professor', 'MCA, BCA', 'female', 'published'),
+  ('eda6c6ec-8087-4d43-a631-0e6baee0db22', NULL, 'Jigisha', 'Patel', 'jigishapatel.bscit@svitvasad.ac.in', '9737545071', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Office Automation Tools', 'Fundamentals of Computer Organization']::text[], NULL, 'Assistant Professor', 'MCA, BBA (IT)', 'female', 'published'),
+  ('d7181b43-e435-4fa3-9ae2-310a9e29e38f', 'Dr.', 'Nehal P.', 'Daulatjada', 'nehald.bca@svitvasad.ac.in', '9825167484', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Web Page Designing (HTML, CSS)', 'Front-end Scripting (JavaScript, VBScript)', 'Back-end Scripting (PHP, ASP, C#.NET)', 'Systems'' Analysis & Design', 'Programming Languages (C, C++, Python, COBOL)', 'Database Programming (Oracle, FoxPro, MySQL)', 'Artificial Intelligence', 'Operating System Concepts', 'Computer Organization & Digital Electronics', 'Information Security', 'Internet Technologies', 'Data Communication and Networking', 'Numerical and Statistical Methods', 'Data Structures and Algorithms', 'Web Application Development', 'PHP Programming & WordPress']::text[], 27, 'Assistant Professor', 'Ph.D. (Computer Science), MCA (Computer Science), B.Sc. (Statistics)', 'female', 'published'),
+  ('5a9e7adb-5f83-403f-91d5-aaf24d4157be', NULL, 'Rachit', 'Prajapati', 'rachitprajapati.bca@svitvasad.ac.in', '8140135995', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Office Automation', 'Information Technology and Fundamentals', 'ASP.NET', 'Computer Organization']::text[], NULL, 'Assistant Professor', 'MCA, B.Sc. (Maths)', 'male', 'published'),
+  ('8aa510eb-18d1-419f-ad9a-8f1f50814e1c', NULL, 'Rashmin', 'Parmar', 'rashminparmar.bca@svitvasad.ac.in', '9913018647', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Office Automation', 'System Analysis & Design', 'ASP.NET', 'E-Commerce', 'Biometrics', 'Artificial Intelligence']::text[], 2, 'Assistant Professor', 'MCA, BCA', 'male', 'published'),
+  ('c98b42ae-bd38-4f90-9fbe-e5090e08b21c', 'Mr.', 'Shivendu', 'Pandya', 'shivendupandya.bca@svitvasad.ac.in', '9428901810', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['C', 'C++', 'Python', 'E-Commerce', 'Computer Network', 'Software Engineering', 'Microprocessor', 'Web Application Development', 'Office Automation', 'Computer Organization']::text[], 12, 'Assistant Professor', 'Ph.D. (Pursuing), M.Sc. (Information Science), BCA', 'male', 'published'),
+  ('e79cf4ef-5ba7-47c3-ad9b-34f3d0043cf6', NULL, 'Shobha', 'Sharma', 'shobhasharma.bca@svitvasad.ac.in', '7046556983', 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', ARRAY['Software Engineering', 'Information Technology Fundamentals', 'ASP.NET', 'RDBMS', 'VB.NET', 'Operating System']::text[], 1, 'Assistant Professor', 'MSc (IT), BCA', 'female', 'published');
+
+update staff_profiles set title = 'Mr.', phone = '9904161342', bio = 'Assistant Professor teaching Computer Applications (BCA) and B.Sc. (IT) students at SVIT, Vasad.', expertise = ARRAY['RDBMS', 'ASP.NET', 'VB.NET', 'E-Commerce']::text[], gender = 'male' where id = '31ab4bdc-c42c-4aab-94d9-54fdb886a90a';
+
+update staff_department_assignments set is_primary = false where staff_id = '31ab4bdc-c42c-4aab-94d9-54fdb886a90a' and department_id = 'ead447d9-12c3-4d9f-98f0-ce639487355c';
+
+insert into staff_department_assignments (staff_id, department_id, designation_id, is_primary, status) values
+  ('4ea2bbf1-0800-4f05-bbdd-ae1d48500137', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('4ea2bbf1-0800-4f05-bbdd-ae1d48500137', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('80190a53-8a68-4d3c-9a84-648609a0565b', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('80190a53-8a68-4d3c-9a84-648609a0565b', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('7eb35b7f-9b8c-4386-a9a0-8e7c115808bc', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('7eb35b7f-9b8c-4386-a9a0-8e7c115808bc', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('93097b44-1000-4b46-8335-d09659ed6193', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('93097b44-1000-4b46-8335-d09659ed6193', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('bc1017ef-0be5-4d5e-9268-93c56f538c08', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('bc1017ef-0be5-4d5e-9268-93c56f538c08', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('402c423b-42ba-4b17-8e3d-672fa982b482', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('402c423b-42ba-4b17-8e3d-672fa982b482', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('eda6c6ec-8087-4d43-a631-0e6baee0db22', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('eda6c6ec-8087-4d43-a631-0e6baee0db22', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('d7181b43-e435-4fa3-9ae2-310a9e29e38f', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('d7181b43-e435-4fa3-9ae2-310a9e29e38f', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('5a9e7adb-5f83-403f-91d5-aaf24d4157be', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('5a9e7adb-5f83-403f-91d5-aaf24d4157be', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('8aa510eb-18d1-419f-ad9a-8f1f50814e1c', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('8aa510eb-18d1-419f-ad9a-8f1f50814e1c', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('31ab4bdc-c42c-4aab-94d9-54fdb886a90a', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('c98b42ae-bd38-4f90-9fbe-e5090e08b21c', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('c98b42ae-bd38-4f90-9fbe-e5090e08b21c', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published'),
+  ('e79cf4ef-5ba7-47c3-ad9b-34f3d0043cf6', 'ead447d9-12c3-4d9f-98f0-ce639487355c', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', true, 'published'),
+  ('e79cf4ef-5ba7-47c3-ad9b-34f3d0043cf6', '6a81b23f-8bdf-482e-b5e3-c79d1ebc9b87', 'cc61f20d-3441-4e24-8e2a-a510ecf88fd6', false, 'published');
+
+insert into staff_achievements (staff_id, type, title, year, extra, status) values
+  ('4ea2bbf1-0800-4f05-bbdd-ae1d48500137', 'qualification', 'MCA (Computer Science)', 2003, '{"university": "Sardar Patel University", "grade": "First Class"}'::jsonb, 'published'),
+  ('4ea2bbf1-0800-4f05-bbdd-ae1d48500137', 'qualification', 'B.Sc. (Computer Science)', 2006, '{"university": "Sardar Patel University", "grade": "First Class"}'::jsonb, 'published'),
+  ('80190a53-8a68-4d3c-9a84-648609a0565b', 'qualification', 'Ph.D. (Pursuing)', NULL, '{"university": "CVM University"}'::jsonb, 'published'),
+  ('80190a53-8a68-4d3c-9a84-648609a0565b', 'qualification', 'MCA (Computer Science)', 2014, '{"university": "GTU", "grade": "Distinction"}'::jsonb, 'published'),
+  ('80190a53-8a68-4d3c-9a84-648609a0565b', 'qualification', 'BCA (Computer Science)', 2011, '{"university": "SPU", "grade": "Distinction"}'::jsonb, 'published'),
+  ('7eb35b7f-9b8c-4386-a9a0-8e7c115808bc', 'qualification', 'MSc (Information Technology)', 2023, '{"university": "Sardar Patel University", "grade": "8.87 CGPA"}'::jsonb, 'published'),
+  ('7eb35b7f-9b8c-4386-a9a0-8e7c115808bc', 'qualification', 'BSc (Computer Science)', 2020, '{"university": "Sardar Patel University", "grade": "6.90 CGPA"}'::jsonb, 'published'),
+  ('93097b44-1000-4b46-8335-d09659ed6193', 'qualification', 'MCA', 2024, '{"university": "Gujarat Technological University", "grade": "9.62 CPI"}'::jsonb, 'published'),
+  ('93097b44-1000-4b46-8335-d09659ed6193', 'qualification', 'BCA', 2022, '{"university": "Sardar Patel University", "grade": "9.62 CGPA"}'::jsonb, 'published'),
+  ('bc1017ef-0be5-4d5e-9268-93c56f538c08', 'qualification', 'MCA (Computer Science)', 2014, '{"university": "GTU", "grade": "Distinction"}'::jsonb, 'published'),
+  ('bc1017ef-0be5-4d5e-9268-93c56f538c08', 'qualification', 'BCA (Computer Science)', 2010, '{"university": "SPU", "grade": "First Class"}'::jsonb, 'published'),
+  ('402c423b-42ba-4b17-8e3d-672fa982b482', 'qualification', 'MCA', 2018, '{"university": "Charusat", "grade": "7.5 CGPA"}'::jsonb, 'published'),
+  ('402c423b-42ba-4b17-8e3d-672fa982b482', 'qualification', 'BCA', 2015, '{"university": "Sardar Patel University", "grade": "6.8 SPI"}'::jsonb, 'published'),
+  ('eda6c6ec-8087-4d43-a631-0e6baee0db22', 'qualification', 'MCA', 2014, '{"university": "Gujarat Technological University", "grade": "6.76"}'::jsonb, 'published'),
+  ('eda6c6ec-8087-4d43-a631-0e6baee0db22', 'qualification', 'BBA (IT)', 2011, '{"university": "Sardar Patel University", "grade": "First Class"}'::jsonb, 'published'),
+  ('d7181b43-e435-4fa3-9ae2-310a9e29e38f', 'qualification', 'Ph.D. (Computer Science)', 2013, '{"university": "Sardar Patel University", "grade": "Cleared"}'::jsonb, 'published'),
+  ('d7181b43-e435-4fa3-9ae2-310a9e29e38f', 'qualification', 'MCA (Computer Science)', 1998, '{"university": "Sardar Patel University", "grade": "First Class"}'::jsonb, 'published'),
+  ('d7181b43-e435-4fa3-9ae2-310a9e29e38f', 'qualification', 'B.Sc. (Statistics)', 1995, '{"university": "Sardar Patel University", "grade": "First Class with Distinction"}'::jsonb, 'published'),
+  ('5a9e7adb-5f83-403f-91d5-aaf24d4157be', 'qualification', 'MCA', 2025, '{"university": "Dharmsinh Desai University", "grade": "6.5 CGPA"}'::jsonb, 'published'),
+  ('5a9e7adb-5f83-403f-91d5-aaf24d4157be', 'qualification', 'B.Sc. (Maths)', 2022, '{"university": "Maharaja Sayajirao University", "grade": "5.4 SPI"}'::jsonb, 'published'),
+  ('8aa510eb-18d1-419f-ad9a-8f1f50814e1c', 'qualification', 'MCA', 2016, '{"university": "Gujarat Technological University", "grade": "7.7 CGPA"}'::jsonb, 'published'),
+  ('8aa510eb-18d1-419f-ad9a-8f1f50814e1c', 'qualification', 'BCA', 2014, '{"university": "Sardar Patel University", "grade": "6.8 SPI"}'::jsonb, 'published'),
+  ('c98b42ae-bd38-4f90-9fbe-e5090e08b21c', 'qualification', 'Ph.D. (Pursuing)', NULL, '{"university": "Sabarmati University"}'::jsonb, 'published'),
+  ('c98b42ae-bd38-4f90-9fbe-e5090e08b21c', 'qualification', 'M.Sc. (Information Science)', 2011, '{"university": "Sardar Patel University", "grade": "62.14%"}'::jsonb, 'published'),
+  ('c98b42ae-bd38-4f90-9fbe-e5090e08b21c', 'qualification', 'BCA', 2009, '{"university": "Sardar Patel University", "grade": "50%"}'::jsonb, 'published'),
+  ('e79cf4ef-5ba7-47c3-ad9b-34f3d0043cf6', 'qualification', 'MSc (IT)', 2021, '{"university": "Sardar Patel University", "grade": "8.88 CGPA"}'::jsonb, 'published'),
+  ('e79cf4ef-5ba7-47c3-ad9b-34f3d0043cf6', 'qualification', 'BCA', 2018, '{"university": "Sardar Patel University", "grade": "6.99 CGPA"}'::jsonb, 'published');

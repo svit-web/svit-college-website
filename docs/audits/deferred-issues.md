@@ -1,0 +1,56 @@
+# Deferred Issues
+
+Issues surfaced during a codebase exploration (2026-07-29) that need attention but aren't blocking current work.
+
+## 1. Schema drift on `user_roles` — RESOLVED (2026-08-07)
+
+Two different migrations define conflicting shapes for `user_roles`:
+
+- `supabase/migrations/20260722000000_auth_tables.sql` — role-FK + `scope_type` model (`role_id` referencing a `roles` table, `scope_type` enum trust/institute/college/department).
+- `supabase/migrations/20260728120000_schema_restructure.sql` — a second, differently-shaped `user_roles` table using a `user_role_enum` (`super_admin`/`college_admin`/`dept_coordinator`) that references `auth.users` directly, instead of going through the `roles` table.
+
+Confirmed against the live DB: the role-FK + `scope_type` shape (first migration) is what's actually live — `20260728120000`'s `CREATE TABLE IF NOT EXISTS` never ran (the table already existed), so it's inert dead SQL sitting in migration history, not a live conflict. `useAdminAuth.ts` and the RLS scoping logic (`can_write_scoped_record`, `is_global_admin`) all correctly assume the role-FK + `scope_type` shape. No action needed beyond this note — left the historical migration file untouched rather than rewriting already-applied history.
+
+A related but separate gap found during the same review: the RLS policies directly on `roles`/`user_roles` (the tables that decide who has what access) were using three helper functions — `current_user_is_admin()`, `current_user_is_editor()`, `current_user_is_college_admin_for()` — that were never in tracked migration history at all (applied directly to the live DB, same pattern as the `placement_cells` issue below) and were scope-blind (checked role code only, not `scope_type`), which let any scoped editor read the entire `user_roles` table and made an (role=admin, scope_type=department) row a privilege-escalation path. Fixed in `supabase/migrations/20260807042646_rbac_harden_user_roles_and_media_storage.sql` — those three functions are dropped and the five policies now use `is_global_admin()` like everything else.
+
+## 2. `placement_cells` table has no tracked `CREATE TABLE`
+
+Only `ALTER TABLE` migrations reference `placement_cells`:
+- `20260729131000_add_placed_students_to_placement_cells.sql`
+- `20260729133600_add_default_student_placeholder_url_to_placement_cells.sql`
+
+The table itself (columns: `college_code`, `officer_name/designation/email/phone/photo_url`, `about_text`, `metadata`, standard audit columns) was created directly against the live DB, not via a migration. `src/integrations/supabase/types.ts` reflects it, but migration history alone can't rebuild this table from scratch. Worth backfilling a proper `CREATE TABLE` migration (or documenting the manual origin) before the DB is ever rebuilt from migrations.
+
+## 3. Server-side image compression toggle is non-functional (2026-07-30)
+
+Added as part of the hybrid image-compression feature (`src/lib/image-compression.ts`, `@jsquash/*` WASM codecs, `app_settings.image_compression_mode`). Client-side compression works fully and is the default. The "server-side" mode (`uploadCompressedMedia` in `src/lib/media-upload.functions.ts`) is currently broken under this app's Cloudflare Workers build:
+
+- `@jsquash/*` packages load their WASM binary via `new URL("*.wasm", import.meta.url)` + `fetch()`.
+- Vite correctly rewrites this to a proper hashed asset URL for the **client** bundle (`.output/public/assets/*.wasm` — confirmed present after a build), but does **not** do the same for the **server**/Workers bundle — no `.wasm` files exist anywhere under `.output/server`, so the fetch has nothing to reach at runtime. Reproduced directly: calling `compressImage()` server-side throws `TypeError: fetch failed` / `Error: not implemented... yet...`.
+
+The toggle UI (`/admin/settings`) is disabled with an explanatory note; `app_settings.image_compression_mode` stays seeded at `"client"`. To actually fix server-side compression: bypass each `@jsquash/*` package's default WASM loader and manually feed it a `WebAssembly.Module` through that package's `init()` — either via a static `.wasm` import Vite bundles correctly for the server target, or via Cloudflare's `ASSETS` binding (`wrangler.json` already has an `assets` binding configured). Needs verification via an actual `wrangler dev`/deployed run, not just a successful build (the build succeeds silently even though the runtime path is broken).
+
+## 4. Public-site revalidation is site-wide, and dynamic pages are uncached (2026-09-24)
+
+Public data is read with supabase-js (not `fetch`), so Next never caches it per-query: `○` routes
+(`/`, `/news`, `/placement`, `/gallery`, `/downloads`, …) are prerendered at build and `ƒ` routes
+(`/colleges/[college]`, `/staff/[staff]`, `/departments/[dept]`, …) hit Supabase on every request.
+Commit `70a196d` fixed admin edits not appearing until a redeploy: the browser Supabase client
+(`src/app/lib/supabase/client.ts`) calls `revalidatePublicSite()` (`src/app/admin/actions.ts`,
+admin-only, debounced) after any `/rest/v1/` write from `/admin`, which runs
+`revalidatePath('/', 'layout')` — every page goes stale and re-renders lazily on its next visit.
+
+Fine at current scale (~15 static routes, low edit frequency). Possible refinement, only if
+performance ever warrants it: wrap each `src/lib/*.functions.ts` reader in `'use cache'` /
+`unstable_cache` with a per-table tag and revalidate only the changed table's tag. The real win
+would be caching the `ƒ` routes; narrowing revalidation alone gains little, because
+colleges/departments/menus/settings feed the Header/Footer on every page. Risk: a missed or wrong
+tag brings back stale content, which CLAUDE.md treats as a regression. Still uncovered by the
+current hook: edits made directly in the Supabase dashboard (need a redeploy, or a DB webhook → a
+route handler calling `revalidatePath`).
+
+## Other stale-doc notes (lower priority)
+
+- `migration/implemented/status_summary.md` lists "Homepage Layout Builder" and "Inquiry Forms & Submissions Dashboard" as outstanding (Phase 4), but `migration/implemented/5_homepage_inquiries.md` documents both as completed — `status_summary.md` is stale.
+- `testing/TESTING_REPORT.md` flagged an SSR hydration bug where clubs/centers index pages render 0 cards server-side; this was never explicitly marked fixed even though `sessions/SESSION_SUMMARY.md`/`migration/MIGRATION_STATUS.md` call Phase 1 "100% complete."
+- `database/SUPABASE_SCHEMA.md` is called out in `migration/PHASE4_COMPLETE.md` as a stale one-time audit snapshot that undercounts real row counts — don't treat it as current.

@@ -1,0 +1,1884 @@
+'use client';
+
+import { useEffect, useState, useMemo, useRef } from 'react';
+import { createClient } from '@/app/lib/supabase/client';
+import { MediaUploader } from './MediaUploader';
+import { SeoEditor } from './SeoEditor';
+import { EntryPhotosEditor } from './EntryPhotosEditor';
+import { MetadataEditor } from './MetadataEditor';
+import { sendPasswordResetForUser } from '@/app/admin/actions';
+import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
+import { GLOBAL_ONLY_TABLE_IDS, getRouteSections } from '@/lib/admin-sections';
+import { EVENT_TYPE_LABELS } from '@/lib/event-types';
+import type { AdminOption } from '@/lib/admin-option-sets';
+import {
+  ACHIEVEMENT_CATEGORY_OPTIONS,
+  DOWNLOAD_CATEGORY_OPTIONS,
+  FACILITY_CATEGORY_OPTIONS,
+  GALLERY_MEDIA_TYPE_OPTIONS,
+  MENU_TYPE_OPTIONS,
+  SPORT_CATEGORY_OPTIONS,
+} from '@/lib/admin-option-sets';
+import { validateAboutPageMetadata } from '@/lib/page-metadata-validation';
+import { toSlug, toCode, toCodeStrict } from '@/lib/code-generator';
+import type { AdminUser } from '@/app/lib/auth/admin';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  flexRender,
+  type SortingState,
+} from '@tanstack/react-table';
+import {
+  Plus,
+  Edit2,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  Search,
+  X,
+  Loader2,
+  AlertTriangle,
+  KeyRound,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { NEW_ENTRY_IMAGE_FIT } from '@/lib/entry';
+
+function formatLabel(str: string): string {
+  return str
+    .replace(/_id$/, '')
+    .replace(/[_-]/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+
+const HIDDEN_GRID_COLUMNS = [
+  'id',
+  'created_at',
+  'updated_at',
+  'created_by',
+  'updated_by',
+  'deleted_at',
+  'deleted_by',
+  'metadata',
+  'bio',
+  'description',
+  'content',
+  'principal_message',
+  'featured_at',
+  'featured_by',
+  'map_url',
+];
+
+const STATUS_STYLES: Record<string, string> = {
+  published: 'bg-emerald-100 text-emerald-700 border-emerald-300',
+  draft: 'bg-amber-100 text-amber-700 border-amber-300',
+  archived: 'bg-rose-100 text-rose-700 border-rose-300',
+};
+
+// FK dropdown / cell-label loading falls back to a `name` column by default,
+// which not every table has. Tables that need a different (or split) label
+// column go here — keep in sync with the actual schema, not guesses.
+const FK_LABEL_COLUMNS: Record<string, string> = {
+  roles: 'code',
+  designations: 'title',
+  staff_posts: 'title',
+  gallery_albums: 'title',
+  inquiry_forms: 'form_name',
+  menu_items: 'title',
+  pages: 'title',
+  seo_metadata: 'meta_title',
+};
+const FK_NAME_SPLIT_TABLES = new Set(['user_profiles', 'staff_profiles']);
+
+interface TableFieldConfig {
+  // Removes this column from the admin form entirely (still a real DB column,
+  // just not editable here) — for a field that turned out not to be worth
+  // exposing, without a destructive migration to drop it.
+  hidden?: boolean;
+  // Boolean/enum fields only: locks the control to global admins and, for
+  // enums, narrows the option list to the acting admin's own scope level.
+  lockedForNonGlobal?: boolean;
+  // Boolean fields only: label shown unlocked / locked (falls back to the
+  // generic "Toggle Active State" when neither is set).
+  booleanLabel?: string;
+  lockedLabel?: string;
+  // New-record default: prefill with the acting admin's own scope level.
+  defaultsToScopeLevel?: boolean;
+  // Custom field renderer, dispatched by name in the edit form below.
+  render?: 'entry-photos';
+  // Enum fields only: human-readable option labels keyed by enum value
+  // (falls back to formatLabel for any value not listed).
+  optionLabels?: Record<string, string>;
+  // Renders the field as a dropdown locked to these values — for plain text
+  // columns the backend still constrains (DB CHECK constraints, or values the
+  // public site branches on). Sources: src/lib/admin-option-sets.ts, which
+  // must stay in sync with the live schema.
+  options?: AdminOption[];
+  // Live-derives this field's value from another field (by name, usually
+  // "name") on new records only, using the matching GENERATORS variant below.
+  // Stays editable; auto-fill stops the moment the admin types in the field
+  // directly, same pattern as AdminLabsPage/AdminSportsPage's own slugify.
+  autoGenerateFrom?: { source: string; variant: 'slug' | 'code' | 'codeStrict' };
+  // One line of plain-language guidance shown under the field label — for a
+  // field whose consequence isn't obvious from its name alone (e.g. which
+  // values make an event show up on its own department's page).
+  helpText?: string;
+  // Moves this field to render immediately after the named field, instead of
+  // wherever raw DB column order puts it — for a field whose relevance is
+  // decided by another field (e.g. college_id only matters once Scope Type
+  // is set), so the two stay visually adjacent.
+  renderAfter?: string;
+  // Shows this field only while another form field holds one of these values
+  // (e.g. facilities.parent_id only matters for a building). While shown it is
+  // required; while hidden its value is cleared from the payload.
+  visibleWhen?: { field: string; equals: string[] };
+  // New-record default for a field with no scope-based default.
+  defaultValue?: string;
+  // Enum fields only: values withheld from the dropdown (an existing record
+  // already holding one keeps it selectable).
+  excludeOptions?: string[];
+}
+
+const CODE_GENERATORS: Record<'slug' | 'code' | 'codeStrict', (name: string) => string> = {
+  slug: toSlug,
+  code: toCode,
+  codeStrict: toCodeStrict,
+};
+
+// Matches each variant's DB format constraint (see code-generator.ts). Used as
+// a submit-time safety net: editing an existing record never live auto-fills
+// (autoFields starts empty — see initializeForm), so a raw title pasted
+// straight into the field would otherwise reach the DB unslugified.
+const CODE_VALIDATORS: Record<'slug' | 'code' | 'codeStrict', RegExp> = {
+  slug: /^[a-z0-9]+(-[a-z0-9]+)*$/,
+  code: /^[A-Z0-9]+(-[A-Z0-9]+)*$/,
+  codeStrict: /^[A-Z0-9]+$/,
+};
+
+// _url columns default to the MediaUploader (image) widget, but these hold a
+// plain external link rather than uploaded media — pasting a real link fails
+// MediaUploader's "does this load as an image" check (colleges, institutes,
+// recruiters, trusts all carry a website_url column with this exact shape).
+const LINK_URL_COLUMNS = new Set(['website_url']);
+
+// Columns whose name merely contains "file"/"image" but hold a short plain-
+// text label, not an uploaded asset's URL — `downloads.file_type` stores
+// values like "pdf", not a file to upload.
+const PLAIN_TEXT_FIELD_COLUMNS = new Set(['file_type']);
+
+// Entry tables (CONTEXT.md: Entry): the Photos section is rendered in place of
+// card_photo_url and also owns album_id + has_detail_page, which are therefore
+// skipped by the default field renderer.
+const ENTRY_PHOTO_FIELDS: Record<string, TableFieldConfig> = {
+  card_photo_url: { render: 'entry-photos' },
+};
+const ENTRY_PHOTOS_OWNED_COLUMNS = new Set(['album_id', 'has_detail_page', 'image_fit']);
+
+interface TableConfig {
+  scope?: {
+    // This table IS the scope entity itself — a college/department admin
+    // only ever sees their own row, matched by primary key rather than a
+    // foreign-key column.
+    selfScopeLevel?: 'institute' | 'college' | 'department';
+    // Extra equality filter applied on top of the generic college_id match
+    // (e.g. a college admin only sees events they own directly, not ones
+    // inherited from a parent scope).
+    collegeScopeExtra?: { column: string; value: string };
+  };
+  // Overrides the generic column-based write-permission rule. Return
+  // undefined for a given level to fall through to the generic rule.
+  writePermissions?: {
+    resolve: (level: ScopeLevel) => Partial<Record<'insert' | 'update' | 'delete', boolean>> | undefined;
+  };
+  rowActions?: { resetPassword?: boolean };
+  fields?: Record<string, TableFieldConfig>;
+}
+
+// Everything AdminCrudManager needs to know about a specific table's quirks,
+// in one place, instead of scattered tableId === '...' checks throughout the
+// component body.
+const TABLE_CONFIGS: Record<string, TableConfig> = {
+  colleges: {
+    scope: { selfScopeLevel: 'college' },
+    writePermissions: {
+      resolve: (level) => ({ insert: false, update: level === 'college', delete: false }),
+    },
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+      code: { autoGenerateFrom: { source: 'name', variant: 'codeStrict' } },
+    },
+  },
+  institutes: {
+    scope: { selfScopeLevel: 'institute' },
+    writePermissions: {
+      resolve: (level) => (level === 'institute' ? { insert: false, update: true, delete: false } : undefined),
+    },
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  trusts: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  departments: {
+    scope: { selfScopeLevel: 'department' },
+    writePermissions: {
+      resolve: (level) => (level === 'department' ? { insert: false, update: true, delete: false } : undefined),
+    },
+    fields: {
+      code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+    },
+  },
+  courses: {
+    fields: {
+      code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+    },
+  },
+  committees: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  content_categories: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  pages: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
+  events: {
+    scope: { collegeScopeExtra: { column: 'scope_type', value: 'college' } },
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      college_id: { renderAfter: 'scope_type' },
+      department_id: { renderAfter: 'scope_type' },
+      event_type: {
+        optionLabels: EVENT_TYPE_LABELS,
+        helpText:
+          'A department event only shows on that department\'s own Activities page for these types: ' +
+          'Expert Session, Industrial Visit, Seminar, Workshop, STTP, FDP. Other types (Fest, Cultural, ' +
+          'Technical, Sports, Competition, Other) still show on the sitewide Events page.',
+      },
+      // Every event happens on campus — not worth an admin field. The column
+      // stays (a handful of old rows have a value), just not editable here.
+      map_url: { hidden: true },
+      is_featured: {
+        lockedForNonGlobal: true,
+        booleanLabel: 'Feature on homepage (max 8 at once)',
+        lockedLabel: 'Feature on homepage (global admin only)',
+      },
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
+  facilities: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+      code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+      category: { options: FACILITY_CATEGORY_OPTIONS },
+      // check_facility_fields ties facility_type to its FK: campus needs
+      // institute_id (auto-filled, never shown — there is one institute and
+      // campus-wide facilities belong to it, not to a college), building needs
+      // parent_id, laboratory needs department_id (created on the Labs page).
+      facility_type: {
+        defaultValue: 'campus',
+        excludeOptions: ['laboratory'],
+        optionLabels: { campus: 'Campus-wide', building: 'Building (inside a campus facility)' },
+      },
+      institute_id: { hidden: true },
+      parent_id: { visibleWhen: { field: 'facility_type', equals: ['building'] } },
+      department_id: { visibleWhen: { field: 'facility_type', equals: ['laboratory'] } },
+    },
+  },
+  centers: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  sports: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      category: { options: SPORT_CATEGORY_OPTIONS },
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  achievements: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
+      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      college_id: { renderAfter: 'scope_type' },
+      category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+      department_id: {
+        renderAfter: 'scope_type',
+        helpText:
+          "There's no sitewide achievements listing on the public site — a department is required for " +
+          'this to show up anywhere other than its own direct URL.',
+      },
+    },
+  },
+  student_clubs: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
+      slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
+    },
+  },
+  posts: {
+    fields: {
+      ...ENTRY_PHOTO_FIELDS,
+      image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
+  gallery_albums: {
+    fields: {
+      slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+    },
+  },
+  user_profiles: {
+    rowActions: { resetPassword: true },
+  },
+  staff_profiles: {
+    // No college_id/department_id column here — scope is resolved via the
+    // staff_department_assignments join (see RLS on staff_profiles), so the
+    // generic column-based rule never matches and everyone but global falls
+    // through to read-only. RLS already lets any scoped admin insert, and
+    // lets college/department admins write rows assigned to their own scope
+    // — mirror that here instead of blocking the UI outright.
+    writePermissions: {
+      resolve: (level) =>
+        level === 'college' || level === 'department' ? { insert: true, update: true, delete: true } : undefined,
+    },
+  },
+  designations: {
+    fields: {
+      category: {
+        optionLabels: { teaching: 'Teaching', technical: 'Technical / Lab', administrative: 'Administrative & Library', support: 'Support (not offered for faculty)' },
+      },
+      is_selectable: { booleanLabel: 'Offer in the faculty designation dropdown' },
+    },
+  },
+  staff_posts: {
+    fields: {
+      is_department_head: { booleanLabel: 'Department head (only one holder per department)' },
+    },
+  },
+  downloads: {
+    fields: {
+      category: { options: DOWNLOAD_CATEGORY_OPTIONS },
+    },
+  },
+  menu_items: {
+    fields: {
+      menu_type: { options: MENU_TYPE_OPTIONS },
+    },
+  },
+  gallery_media: {
+    fields: {
+      media_type: { options: GALLERY_MEDIA_TYPE_OPTIONS },
+    },
+  },
+};
+
+interface AdminCrudManagerProps {
+  tableId: string;
+  admin: AdminUser;
+  // The actual mounted route, for tables whose list page lives at a custom
+  // path (e.g. recruiters at /admin/recruiters) rather than the generic
+  // /admin/tables/:tableId. Must match the key used in ROUTE_SECTION_MAP /
+  // the page's own isRouteAllowedForUser check, or a section-grant user who
+  // the page already let in gets zero write permission here even though
+  // RLS (can_write_section) allows the write.
+  routePath?: string;
+}
+
+// The `pages` row with slug "about" is the only consumer of the AboutPageData
+// shape (see src/lib/pages.functions.ts). Its shape check lives in
+// src/lib/page-metadata-validation.ts, shared with the dedicated About page
+// editor (/admin/page-editors/about) so both save paths validate identically.
+
+export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManagerProps) {
+  const supabase = useMemo(() => createClient(), []);
+  const supabaseClient = supabase as any;
+
+  const [schemaLoading, setSchemaLoading] = useState(true);
+  const [dataLoading, setDataLoading] = useState(false);
+  const [mutating, setMutating] = useState(false);
+
+  const [schema, setSchema] = useState<any>(null);
+  const [records, setRecords] = useState<any[]>([]);
+  const [recordCount, setRecordCount] = useState(0);
+
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(25);
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  // Admin-wide, not events-only: any table with these columns (events,
+  // achievements, posts, ...) gets the dropdown — see the toolbar render
+  // below, which only shows a filter when the column actually exists.
+  const [departmentFilter, setDepartmentFilter] = useState('');
+  const [scopeTypeFilter, setScopeTypeFilter] = useState('');
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRecord, setEditingRecord] = useState<any | null>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [formValues, setFormValues] = useState<Record<string, any>>({});
+  // Column names (on a new record only) still being live-derived from their
+  // `autoGenerateFrom.source` field; typing directly into one removes it here.
+  const [autoFields, setAutoFields] = useState<Set<string>>(new Set());
+  const [rowSelection, setRowSelection] = useState({});
+
+  const [fkCache, setFkCache] = useState<Record<string, Record<string, string>>>({});
+  const [fkOptions, setFkOptions] = useState<Record<string, { value: string; label: string }[]>>({});
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setPage(0);
+    }, 450);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  const userScope = useUserScope(admin.roles);
+
+  // The scope_level value to write into scoped-table defaults (scope_type,
+  // college_id, ...). Section-only users aren't a scope tier, so their rows
+  // default to the scope of the section-role grant itself (e.g. 'college'
+  // for a college-scoped Sports Secretary).
+  const scopeDefaultLevel = userScope.level === 'section' ? userScope.sectionScope : userScope.level;
+
+  // Row-level restriction for section-only users: a sports-section grant
+  // lets RLS write only category='sports' achievements (migration
+  // 20261008140000_sports_secretary_role.sql), so the list, the create form
+  // and the category field all mirror that — the user only ever sees and
+  // creates rows they can actually save. campus_life (the broader grant)
+  // and any full-access role sidestep this filter entirely.
+  const sportsRowFilter =
+    tableId === 'achievements' &&
+    userScope.level === 'section' &&
+    admin.sections.some((s) => s.code === 'sports') &&
+    !admin.sections.some((s) => s.code === 'campus_life')
+      ? { column: 'category', value: 'sports' }
+      : null;
+
+  useEffect(() => {
+    async function loadSchema() {
+      setSchemaLoading(true);
+      try {
+        const { data, error } = await supabaseClient.rpc('get_table_schema_info', {
+          target_table: tableId,
+        });
+
+        if (error) throw error;
+        setSchema(data);
+
+        setRecords([]);
+        setPage(0);
+        setSorting([]);
+        setSearchQuery('');
+        setDepartmentFilter('');
+        setScopeTypeFilter('');
+        setRowSelection({});
+      } catch (err: any) {
+        console.error('Failed to load schema:', err);
+        toast.error(`Error loading table schema: ${err.message}`);
+      } finally {
+        setSchemaLoading(false);
+      }
+    }
+    loadSchema();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableId]);
+
+  useEffect(() => {
+    if (!schema?.foreign_keys || schema.foreign_keys.length === 0) return;
+
+    async function loadFKOptions() {
+      const cache: Record<string, Record<string, string>> = {};
+      const options: Record<string, { value: string; label: string }[]> = {};
+
+      await Promise.all(
+        schema.foreign_keys.map(async (fk: any) => {
+          try {
+            const isNameSplit = FK_NAME_SPLIT_TABLES.has(fk.foreign_table);
+            const labelCol = isNameSplit ? 'first_name' : (FK_LABEL_COLUMNS[fk.foreign_table] ?? 'name');
+
+            const selectCols = isNameSplit ? 'id, first_name, last_name' : `id, ${labelCol}`;
+
+            // Best-effort: exclude soft-deleted/unpublished rows from every
+            // FK picker admin-wide (Department, College, Club, Staff,
+            // Designation, ...) — most referenced tables carry deleted_at +
+            // status per this repo's soft-delete convention, but reference
+            // tables like roles/admin_sections don't, so a column-does-not-
+            // exist error here just falls back to the unfiltered query
+            // rather than breaking the dropdown. See
+            // docs/audits/events-achievements-add-flow-2026-10.md #6 — a
+            // soft-deleted, archived row was showing up selectable in the
+            // Club picker, and 155 of ~233 staff_profiles rows were showing
+            // up in every staff picker.
+            let { data, error } = await supabaseClient
+              .from(fk.foreign_table)
+              .select(selectCols)
+              .is('deleted_at', null)
+              .eq('status', 'published')
+              .order(labelCol, { ascending: true });
+
+            if (error) {
+              ({ data, error } = await supabaseClient.from(fk.foreign_table).select(selectCols).order(labelCol, { ascending: true }));
+            }
+            if (error) throw error;
+
+            if (data) {
+              cache[fk.foreign_table] = {};
+              options[fk.foreign_table] = data.map((row: any) => {
+                let display = row[labelCol] || row.id;
+                if (isNameSplit) {
+                  display = `${row.first_name || ''} ${row.last_name || ''}`.trim() || row.id;
+                }
+                cache[fk.foreign_table][row.id] = display;
+                return { value: row.id, label: display };
+              });
+            }
+          } catch (err) {
+            console.error(`Failed to load references for ${fk.foreign_table}:`, err);
+          }
+        })
+      );
+
+      setFkCache(cache);
+      setFkOptions(options);
+    }
+
+    loadFKOptions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schema]);
+
+  const loadData = async () => {
+    if (!schema) return;
+    setDataLoading(true);
+
+    try {
+      let query = supabaseClient.from(tableId).select('*', { count: 'exact' });
+
+      const cols = schema.columns.map((c: any) => c.name);
+
+      if (userScope.level !== 'global') {
+        // A user can hold more than one role grant at the same scope tier
+        // (e.g. editor on two colleges) — filter on the full *Ids list, not
+        // just the single representative id, so every granted college/
+        // department/etc. shows up rather than silently just the first one.
+        if (userScope.level === 'trust' && userScope.trustIds.length > 0 && cols.includes('trust_id')) {
+          query = query.in('trust_id', userScope.trustIds);
+        } else if (userScope.level === 'institute' && userScope.instituteIds.length > 0) {
+          const scope = TABLE_CONFIGS[tableId]?.scope;
+          if (scope?.selfScopeLevel === 'institute') {
+            query = query.in('id', userScope.instituteIds);
+          } else if (cols.includes('institute_id')) {
+            query = query.in('institute_id', userScope.instituteIds);
+          }
+        } else if (userScope.level === 'college' && userScope.collegeIds.length > 0) {
+          const scope = TABLE_CONFIGS[tableId]?.scope;
+          if (scope?.selfScopeLevel === 'college') {
+            query = query.in('id', userScope.collegeIds);
+          } else if (cols.includes('college_id')) {
+            query = query.in('college_id', userScope.collegeIds);
+            if (scope?.collegeScopeExtra) {
+              query = query.eq(scope.collegeScopeExtra.column, scope.collegeScopeExtra.value);
+            }
+          }
+        } else if (userScope.level === 'department' && userScope.departmentIds.length > 0) {
+          if (TABLE_CONFIGS[tableId]?.scope?.selfScopeLevel === 'department') {
+            query = query.in('id', userScope.departmentIds);
+          } else if (cols.includes('department_id')) {
+            query = query.in('department_id', userScope.departmentIds);
+          }
+        }
+      }
+
+      if (sportsRowFilter) {
+        query = query.eq(sportsRowFilter.column, sportsRowFilter.value);
+      }
+
+      if (departmentFilter && cols.includes('department_id')) {
+        query = query.eq('department_id', departmentFilter);
+      }
+      if (scopeTypeFilter && cols.includes('scope_type')) {
+        query = query.eq('scope_type', scopeTypeFilter);
+      }
+
+      if (cols.includes('deleted_at')) {
+        query = query.is('deleted_at', null);
+      }
+
+      if (debouncedSearch) {
+        const searchFilters: string[] = [];
+        if (cols.includes('name')) searchFilters.push(`name.ilike.%${debouncedSearch}%`);
+        if (cols.includes('code')) searchFilters.push(`code.ilike.%${debouncedSearch}%`);
+        if (cols.includes('slug')) searchFilters.push(`slug.ilike.%${debouncedSearch}%`);
+        if (cols.includes('title')) searchFilters.push(`title.ilike.%${debouncedSearch}%`);
+
+        if (searchFilters.length > 0) {
+          query = query.or(searchFilters.join(','));
+        }
+      }
+
+      if (sorting.length > 0) {
+        const sort = sorting[0];
+        query = query.order(sort.id, { ascending: !sort.desc });
+      } else {
+        if (cols.includes('sort_order')) {
+          query = query.order('sort_order', { ascending: true });
+        } else if (cols.includes('created_at')) {
+          query = query.order('created_at', { ascending: false });
+        } else {
+          query = query.order(schema.primary_key, { ascending: true });
+        }
+      }
+
+      const from = page * pageSize;
+      const to = from + pageSize - 1;
+      query = query.range(from, to);
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+
+      setRecords(data || []);
+      setRecordCount(count || 0);
+    } catch (err: any) {
+      console.error('Error loading data:', err);
+      toast.error(`Failed to load records: ${err.message}`);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [schema, page, pageSize, sorting, debouncedSearch, departmentFilter, scopeTypeFilter, userScope]);
+
+  // Changing a filter mid-list should land back on page 1, same as a new
+  // search term does above.
+  useEffect(() => {
+    setPage(0);
+  }, [departmentFilter, scopeTypeFilter]);
+
+  const handleOpenModal = (record: any = null) => {
+    setEditingRecord(record);
+    const initialValues: Record<string, any> = {};
+
+    schema.columns.forEach((col: any) => {
+      if (col.name === 'created_at' || col.name === 'updated_at' || col.name === 'deleted_at' || col.name === 'featured_at' || col.name === 'featured_by') return;
+
+      if (record) {
+        const rawVal = record[col.name];
+        if (col.type === 'ARRAY') {
+          initialValues[col.name] = Array.isArray(rawVal) ? rawVal.join(', ') : rawVal ?? '';
+        } else {
+          initialValues[col.name] = rawVal ?? (col.type === 'boolean' ? false : '');
+        }
+      } else {
+        if (col.name === 'college_id' && scopeDefaultLevel === 'college' && userScope.collegeId) {
+          initialValues[col.name] = userScope.collegeId;
+        } else if (col.name === 'department_id' && scopeDefaultLevel === 'department' && userScope.departmentId) {
+          initialValues[col.name] = userScope.departmentId;
+        } else if (col.name === 'trust_id' && scopeDefaultLevel === 'trust' && userScope.trustId) {
+          initialValues[col.name] = userScope.trustId;
+        } else if (sportsRowFilter && col.name === sportsRowFilter.column) {
+          initialValues[col.name] = sportsRowFilter.value;
+        } else if (TABLE_CONFIGS[tableId]?.fields?.[col.name]?.defaultsToScopeLevel && userScope.level !== 'global') {
+          initialValues[col.name] = scopeDefaultLevel;
+        } else if (TABLE_CONFIGS[tableId]?.fields?.[col.name]?.defaultValue) {
+          initialValues[col.name] = TABLE_CONFIGS[tableId]!.fields![col.name].defaultValue;
+        } else if (col.name === 'status') {
+          initialValues[col.name] = 'published';
+        } else if (col.name === 'has_detail_page' && tableId !== 'sports') {
+          // No public detail route exists for sports yet (SportsSection.tsx
+          // hardcodes detailHref to null), so it keeps the false default.
+          initialValues[col.name] = true;
+        } else {
+          initialValues[col.name] = col.type === 'boolean' ? false : '';
+        }
+      }
+    });
+
+    setFormValues(initialValues);
+    setAutoFields(
+      record
+        ? new Set()
+        : new Set(
+            Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})
+              .filter(([, cfg]) => cfg.autoGenerateFrom)
+              .map(([col]) => col),
+          ),
+    );
+    setIsModalOpen(true);
+  };
+
+  const handleFieldChange = (name: string, value: any) => {
+    setFormValues((prev) => {
+      const next = { ...prev, [name]: value };
+      if (autoFields.size > 0) {
+        for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
+          if (cfg.autoGenerateFrom?.source === name && autoFields.has(col)) {
+            next[col] = CODE_GENERATORS[cfg.autoGenerateFrom.variant](value ?? '');
+          }
+        }
+      }
+      return next;
+    });
+    // Typing directly into an auto-derived field locks it from further auto-fill.
+    if (autoFields.has(name)) {
+      setAutoFields((prev) => {
+        const next = new Set(prev);
+        next.delete(name);
+        return next;
+      });
+    }
+  };
+
+  const logAuditAction = async (action: 'INSERT' | 'UPDATE' | 'DELETE', recordId: string, oldValues: any, newValues: any) => {
+    try {
+      await supabase.from('audit_logs').insert({
+        user_id: admin.id,
+        action,
+        table_name: tableId,
+        record_id: recordId,
+        old_values: oldValues || {},
+        new_values: newValues || {},
+      } as any);
+    } catch (err) {
+      console.error('Failed to write to audit_logs:', err);
+    }
+  };
+
+  const buildPayload = (): Record<string, any> => {
+    const payload: Record<string, any> = {};
+
+    schema.columns.forEach((col: any) => {
+      if (
+        col.name === schema.primary_key ||
+        col.name === 'created_at' ||
+        col.name === 'updated_at' ||
+        col.name === 'deleted_at' ||
+        col.name === 'created_by' ||
+        col.name === 'updated_by' ||
+        col.name === 'featured_at' ||
+        col.name === 'featured_by'
+      ) {
+        return;
+      }
+
+      const val = formValues[col.name];
+
+      if (col.type === 'boolean') {
+        payload[col.name] = !!val;
+      } else if (col.type.startsWith('integer') || col.type === 'numeric') {
+        payload[col.name] = val === '' ? null : Number(val);
+      } else if (col.name === 'metadata' || col.type === 'jsonb') {
+        if (val === '' || val === null || val === undefined) {
+          payload[col.name] = {};
+        } else if (typeof val === 'string') {
+          // A string here means the MetadataEditor's JSON view has
+          // unparseable text — block the save with a fixable message
+          // instead of JSON.parse's "Unexpected token".
+          try {
+            payload[col.name] = JSON.parse(val);
+          } catch {
+            throw new Error(
+              `${formatLabel(col.name)} contains invalid JSON — open Additional Fields, switch to the JSON view and fix the highlighted error.`
+            );
+          }
+        } else {
+          payload[col.name] = val;
+        }
+      } else if (col.type === 'ARRAY') {
+        payload[col.name] = typeof val === 'string' ? val.split(',').map((t) => t.trim()).filter(Boolean) : Array.isArray(val) ? val : [];
+      } else {
+        payload[col.name] = val === '' ? null : val;
+      }
+    });
+
+    // Drop values of fields hidden by visibleWhen so a stale pick from a
+    // previously chosen type can't reach the CHECK constraint.
+    const configuredFields = TABLE_CONFIGS[tableId]?.fields ?? {};
+    for (const [name, cfg] of Object.entries(configuredFields)) {
+      const rule = cfg.visibleWhen;
+      if (rule && name in payload && !rule.equals.includes(String(formValues[rule.field] ?? ''))) {
+        payload[name] = null;
+      }
+    }
+
+    // facilities: institute_id is hidden and filled with the single institute
+    // (campus-wide facilities are institute-level, see the facilities config).
+    if (tableId === 'facilities' && 'institute_id' in payload && !payload.institute_id) {
+      const institutes = fkOptions['institutes'] ?? [];
+      if (institutes.length === 1) {
+        payload.institute_id = institutes[0].value;
+      } else if (payload.facility_type === 'campus') {
+        throw new Error('Could not determine the institute for this campus-wide facility. Reload the page and try again.');
+      }
+    }
+
+    // Keep department_id/college_id consistent with scope_type on any
+    // scope-typed table (events, achievements, ...). The DB CHECK
+    // constraints reject department_id unless scope_type is 'department',
+    // and the form disables these fields to match — but formValues can
+    // still hold a value from before the admin changed scope_type, and that
+    // stale value would otherwise go straight into the payload. See
+    // docs/audits/events-achievements-add-flow-2026-10.md #1/#2.
+    if (schema.columns.some((c: any) => c.name === 'scope_type')) {
+      if (payload.scope_type !== 'department' && 'department_id' in payload) {
+        payload.department_id = null;
+      }
+      if (payload.scope_type === 'department' && 'college_id' in payload) {
+        // Auto-derived from the chosen department by the
+        // events_before_write/achievements_before_write DB trigger — never
+        // set it here, that's exactly how a department ended up paired with
+        // an unrelated college in the first place.
+        payload.college_id = null;
+      }
+    }
+
+    for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
+      if (!cfg.autoGenerateFrom) continue;
+      const current = payload[col];
+      // Editing an existing record whose code/slug predates the current
+      // strict format (e.g. a legacy lowercase course code like
+      // "engineering") must not silently rewrite it just because some other
+      // field on the same row changed — that mangles the public URL as a
+      // side effect of an unrelated edit. Only regenerate when the admin
+      // actually touched this field (it differs from what the record
+      // already had) or when creating a brand-new record.
+      const untouchedOnEdit = !!editingRecord && current === editingRecord[col];
+      if (
+        !untouchedOnEdit &&
+        typeof current === 'string' &&
+        current !== '' &&
+        !CODE_VALIDATORS[cfg.autoGenerateFrom.variant].test(current)
+      ) {
+        const source = formValues[cfg.autoGenerateFrom.source];
+        payload[col] = CODE_GENERATORS[cfg.autoGenerateFrom.variant](typeof source === 'string' && source !== '' ? source : current);
+      }
+    }
+
+    if (tableId === 'pages' && (payload.slug ?? editingRecord?.slug) === 'about') {
+      const validationError = validateAboutPageMetadata(payload.metadata);
+      if (validationError) {
+        throw new Error(`Invalid About page content — ${validationError}`);
+      }
+    }
+
+    return payload;
+  };
+
+  // Inserts or updates depending on editingRecord, writing the audit log
+  // either way. Returns the saved row (synthesized for an update, since that
+  // path doesn't select the row back).
+  const persistRecord = async (payload: Record<string, any>): Promise<any> => {
+    if (editingRecord) {
+      const pkVal = editingRecord[schema.primary_key];
+
+      if (schema.columns.some((c: any) => c.name === 'updated_by')) {
+        payload.updated_by = admin.id;
+      }
+
+      const { error } = await supabaseClient.from(tableId).update(payload).eq(schema.primary_key, pkVal);
+      if (error) throw error;
+
+      await logAuditAction('UPDATE', pkVal, editingRecord, payload);
+      return { ...editingRecord, ...payload };
+    }
+
+    if (schema.columns.some((c: any) => c.name === 'created_by')) {
+      payload.created_by = admin.id;
+    }
+
+    const { data: insertedData, error } = await supabaseClient.from(tableId).insert(payload).select().single();
+    if (error) throw error;
+
+    if (insertedData) {
+      await logAuditAction('INSERT', insertedData[schema.primary_key], null, payload);
+    }
+    return insertedData;
+  };
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!schema) return;
+    setMutating(true);
+
+    try {
+      const payload = buildPayload();
+      const typedSlug = typeof payload.slug === 'string' && payload.slug !== '' ? payload.slug : null;
+      const saved = await persistRecord(payload);
+
+      setIsModalOpen(false);
+      loadData();
+
+      // The normalize_slug DB trigger silently renumbers a colliding slug
+      // (event-fest -> event-fest-2) — surface that instead of a generic
+      // success toast, so an admin who typed a specific slug (matching a
+      // flyer/QR code/shared link) finds out it changed.
+      const finalSlug = saved?.slug;
+      if (typedSlug && finalSlug && finalSlug !== typedSlug) {
+        toast.success(`Changes saved! Slug adjusted to "${finalSlug}" to avoid a collision.`, { duration: 5000 });
+      } else {
+        toast.success('Changes saved!', { duration: 3000 });
+      }
+    } catch (err: any) {
+      console.error('Mutation failed:', err);
+      toast.error(`Save failed: ${err.message}`);
+    } finally {
+      setMutating(false);
+    }
+  };
+
+  // Passed to EntryPhotosEditor as onRequireSave: called when an admin drops
+  // a photo onto a brand-new, not-yet-saved record. Validates the form the
+  // same way clicking Save would (native required-field UI), then silently
+  // inserts the row — the modal stays open and editingRecord switches this
+  // form over to update mode for everything after.
+  const ensureSaved = async (): Promise<string> => {
+    if (editingRecord) return editingRecord[schema.primary_key];
+    if (formRef.current && !formRef.current.reportValidity()) {
+      throw new Error('Fill in the required fields above first.');
+    }
+    const payload = buildPayload();
+    // This insert happens before the admin has clicked Create Record — e.g.
+    // dropping a photo onto a new record needs somewhere to attach the
+    // upload to. Default to draft regardless of the form's chosen status so
+    // an abandoned Cancel afterward doesn't leave a published page live on
+    // the public site (see docs/audits/events-achievements-add-flow-2026-10.md #7).
+    if (schema.columns.some((c: any) => c.name === 'status')) {
+      payload.status = 'draft';
+    }
+    const saved = await persistRecord(payload);
+    if (!saved) throw new Error('Could not save this record.');
+    setEditingRecord(saved);
+    loadData();
+    return saved[schema.primary_key];
+  };
+
+  const handleDelete = async (record: any) => {
+    if (!schema) return;
+    const pkVal = record[schema.primary_key];
+    const isSoftDelete = schema.columns.some((c: any) => c.name === 'deleted_at');
+    const hasStatusCol = schema.columns.some((c: any) => c.name === 'status');
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete this record?${isSoftDelete ? ' (This will move it to the bin/soft delete).' : ' (This action is permanent).'}`
+    );
+    if (!confirmed) return;
+
+    setDataLoading(true);
+    try {
+      if (isSoftDelete) {
+        const { error } = await supabaseClient
+          .from(tableId)
+          .update({
+            deleted_at: new Date().toISOString(),
+            deleted_by: admin.id,
+            ...(hasStatusCol ? { status: 'archived' } : {}),
+          })
+          .eq(schema.primary_key, pkVal);
+
+        if (error) throw error;
+
+        await logAuditAction('DELETE', pkVal, record, { deleted_at: new Date().toISOString() });
+      } else {
+        const { error } = await supabaseClient.from(tableId).delete().eq(schema.primary_key, pkVal);
+        if (error) throw error;
+
+        await logAuditAction('DELETE', pkVal, record, null);
+      }
+      loadData();
+
+      toast.success('Record deleted!', { duration: 3000 });
+    } catch (err: any) {
+      console.error('Delete failed:', err);
+      toast.error(`Delete failed: ${err.message}`);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  const handleResetPassword = async (record: any) => {
+    if (!schema) return;
+    const pkVal = record[schema.primary_key];
+
+    const confirmed = window.confirm('Send a password reset email to this user?');
+    if (!confirmed) return;
+
+    setDataLoading(true);
+    try {
+      const result = await sendPasswordResetForUser(pkVal);
+      toast.success(`Password reset email sent to ${result.email}`);
+      await logAuditAction('UPDATE', pkVal, null, { action: 'password_reset_requested' });
+    } catch (err: any) {
+      console.error('Password reset failed:', err);
+      toast.error(`Failed to send reset email: ${err.message}`);
+    } finally {
+      setDataLoading(false);
+    }
+  };
+
+  const writePermissions = useMemo(() => {
+    if (userScope.level === 'global') return { insert: true, update: true, delete: true };
+
+    const none = { insert: false, update: false, delete: false };
+
+    // A section grant (e.g. `about_us` for /admin/tables/board_members, or
+    // `sports` for achievements) unlocks a table that would otherwise be
+    // global-only, mirroring the RLS carve-outs in
+    // supabase/migrations/*_admin_section_*.sql — this is UI convenience only,
+    // RLS is the real backstop either way. A route can carry several codes;
+    // any one matching grant unlocks it (sportsRowFilter above narrows the
+    // rows themselves where RLS is row-level).
+    const routeSections = getRouteSections(routePath ?? `/admin/tables/${tableId}`);
+    const hasSectionGrant = routeSections.some((code) => admin.sections.some((s) => s.code === code));
+    if (hasSectionGrant) return { insert: true, update: true, delete: true };
+
+    if (GLOBAL_ONLY_TABLE_IDS.has(tableId)) return none;
+
+    const override = TABLE_CONFIGS[tableId]?.writePermissions?.resolve(userScope.level);
+    if (override) return { ...none, ...override };
+
+    const cols = schema?.columns?.map((c: any) => c.name) || [];
+
+    if (userScope.level === 'trust' && cols.includes('trust_id')) {
+      return { insert: true, update: true, delete: true };
+    }
+    // College scope also covers department-scoped tables: RLS resolves
+    // college ownership transitively via departments.college_id for any
+    // table that only carries department_id (courses, facilities,
+    // achievements, gallery_albums, ... — see
+    // supabase/migrations/20260805051746_scope_aware_write_rls.sql).
+    if (
+      userScope.level === 'college' &&
+      (cols.includes('college_id') || cols.includes('department_id'))
+    ) {
+      return { insert: true, update: true, delete: true };
+    }
+    if (userScope.level === 'department' && cols.includes('department_id')) {
+      return { insert: true, update: true, delete: true };
+    }
+
+    return none;
+  }, [userScope, schema, tableId, admin, routePath]);
+
+  const hasWritePermission = writePermissions.insert || writePermissions.update || writePermissions.delete;
+  const canShowRowActions = writePermissions.update || writePermissions.delete;
+
+  // Form field order, with any `renderAfter` fields spliced in right after
+  // the field they name — otherwise identical to raw DB column order.
+  const formColumns = useMemo(() => {
+    const tableFieldsForOrder = TABLE_CONFIGS[tableId]?.fields;
+    if (!tableFieldsForOrder || !schema?.columns) return schema?.columns ?? [];
+
+    const afterMap: Record<string, any[]> = {};
+    const rest: any[] = [];
+    for (const col of schema.columns) {
+      const after = tableFieldsForOrder[col.name]?.renderAfter;
+      if (after) {
+        (afterMap[after] ??= []).push(col);
+      } else {
+        rest.push(col);
+      }
+    }
+    if (Object.keys(afterMap).length === 0) return schema.columns;
+
+    const result: any[] = [];
+    for (const col of rest) {
+      result.push(col);
+      if (afterMap[col.name]) result.push(...afterMap[col.name]);
+    }
+    return result;
+  }, [schema?.columns, tableId]);
+
+  const tableColumns = useMemo(() => {
+    if (!schema?.columns) return [];
+
+    const colsToDisplay = schema.columns.filter((col: any) => !HIDDEN_GRID_COLUMNS.includes(col.name));
+
+    const selectionColumn = {
+      id: 'select',
+      header: ({ table }: any) => (
+        <input
+          type="checkbox"
+          checked={table.getIsAllPageRowsSelected()}
+          onChange={table.getToggleAllPageRowsSelectedHandler()}
+          className="h-4 w-4 rounded border-slate-300 bg-white text-crimson focus:ring-crimson focus:ring-offset-white cursor-pointer"
+        />
+      ),
+      cell: ({ row }: any) => (
+        <input
+          type="checkbox"
+          checked={row.getIsSelected()}
+          onChange={row.getToggleSelectedHandler()}
+          className="h-4 w-4 rounded border-slate-300 bg-white text-crimson focus:ring-crimson focus:ring-offset-white cursor-pointer"
+        />
+      ),
+    };
+
+    const mappedColumns = colsToDisplay.map((col: any) => {
+      const fk = schema.foreign_keys?.find((f: any) => f.column === col.name);
+
+      return {
+        accessorKey: col.name,
+        header: ({ column }: any) => (
+          <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')} className="flex items-center gap-1 font-semibold text-slate-600 hover:text-navy text-[11px]">
+            <span>{formatLabel(col.name)}</span>
+            <ArrowUpDown className="h-3 w-3 opacity-40" />
+          </button>
+        ),
+        cell: ({ getValue }: any) => {
+          const val = getValue();
+          if (val === null || val === undefined) return <span className="text-slate-400">-</span>;
+
+          if (fk && fkCache[fk.foreign_table]?.[val]) {
+            return (
+              <span className="inline-flex items-center rounded bg-slate-50 px-2 py-1 text-xs font-semibold text-crimson border border-slate-200">
+                {fkCache[fk.foreign_table][val]}
+              </span>
+            );
+          }
+
+          if (col.type === 'boolean') {
+            return val ? (
+              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400 border border-emerald-500/20">True</span>
+            ) : (
+              <span className="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-600 border border-slate-200">False</span>
+            );
+          }
+
+          if (col.name === 'status') {
+            return (
+              <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold border ${STATUS_STYLES[val] || 'bg-slate-100 text-slate-600 border-slate-200'}`}>
+                {val}
+              </span>
+            );
+          }
+
+          if (typeof val === 'string') {
+            return <span className="truncate max-w-[180px] block">{val}</span>;
+          }
+
+          return <span>{String(val)}</span>;
+        },
+      };
+    });
+
+    return canShowRowActions ? [selectionColumn, ...mappedColumns] : mappedColumns;
+  }, [schema, fkCache, canShowRowActions]);
+
+  const table = useReactTable({
+    data: records,
+    columns: tableColumns,
+    pageCount: Math.ceil(recordCount / pageSize),
+    state: {
+      sorting,
+      pagination: { pageIndex: page, pageSize },
+      rowSelection,
+    },
+    onRowSelectionChange: setRowSelection,
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    manualPagination: true,
+    manualSorting: true,
+  });
+
+  if (schemaLoading) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-crimson" />
+          <p className="text-sm text-slate-700">Analyzing schema & references...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!schema) {
+    return (
+      <div className="rounded-lg bg-white p-8 text-center border border-slate-200">
+        <AlertTriangle className="mx-auto h-12 w-12 text-rose-500" />
+        <h3 className="mt-4 text-lg font-bold text-navy">Schema Analysis Error</h3>
+        <p className="mt-2 text-sm text-slate-600">
+          The requested table <code className="text-rose-600 font-mono">"{tableId}"</code> was not found in the public database schema.
+        </p>
+      </div>
+    );
+  }
+
+  const scopeTypeColumn = schema.columns.find((c: any) => c.name === 'scope_type');
+  const hasDepartmentColumn = schema.columns.some((c: any) => c.name === 'department_id');
+
+  return (
+    <div className="space-y-6">
+      {/* Title + Search + Add — single compact row */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3 min-w-0">
+          <h1 className="text-lg font-bold text-navy truncate">{formatLabel(tableId)}</h1>
+          <span className="shrink-0 text-xs text-slate-500">{recordCount} rows</span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {hasDepartmentColumn && (
+            <select
+              value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}
+              className="rounded border border-slate-200 bg-white py-1.5 pl-2 pr-6 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+              title="Filter by department"
+            >
+              <option value="">All departments</option>
+              {fkOptions['departments']?.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          )}
+
+          {scopeTypeColumn?.enum_values && (
+            <select
+              value={scopeTypeFilter}
+              onChange={(e) => setScopeTypeFilter(e.target.value)}
+              className="rounded border border-slate-200 bg-white py-1.5 pl-2 pr-6 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+              title="Filter by scope type"
+            >
+              <option value="">All scope types</option>
+              {scopeTypeColumn.enum_values.map((v: string) => (
+                <option key={v} value={v}>{formatLabel(v)}</option>
+              ))}
+            </select>
+          )}
+
+          <div className="relative">
+            <Search className="absolute top-2 left-2.5 h-3.5 w-3.5 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-44 rounded border border-slate-200 bg-white py-1.5 pl-8 pr-7 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="absolute top-2 right-2 text-slate-400 hover:text-navy">
+                <X className="h-3.5 w-3.5" />
+              </button>
+            )}
+          </div>
+
+          {writePermissions.insert ? (
+            <button onClick={() => handleOpenModal()} className="flex items-center gap-1.5 rounded bg-crimson px-3 py-1.5 text-xs font-semibold text-white hover:bg-crimson/90 transition shrink-0">
+              <Plus className="h-3.5 w-3.5" />
+              Add
+            </button>
+          ) : !hasWritePermission ? (
+            <div className="flex items-center gap-1.5 rounded bg-amber-50 px-2.5 py-1.5 text-[10px] font-semibold text-amber-700 border border-amber-200">
+              <AlertTriangle className="h-3 w-3" />
+              Read-Only
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      {/* Grid Table Container */}
+      <div className="relative overflow-hidden rounded-lg bg-white border border-slate-200 shadow-sm">
+        {dataLoading && (
+          <div className="absolute inset-0 flex items-center justify-center bg-white/80 z-10">
+            <Loader2 className="h-7 w-7 animate-spin text-crimson" />
+          </div>
+        )}
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse text-xs">
+            <thead>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id} className="border-b border-slate-200 bg-slate-50">
+                  {headerGroup.headers.map((header) => (
+                    <th key={header.id} className="px-3 py-2 text-xs font-semibold text-slate-700 whitespace-nowrap">
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    </th>
+                  ))}
+                  {canShowRowActions && <th className="px-3 py-2 text-right text-xs font-semibold text-slate-700 w-24" />}
+                </tr>
+              ))}
+            </thead>
+            <tbody>
+              {records.length > 0 ? (
+                table.getRowModel().rows.map((row) => (
+                  <tr
+                    key={row.id}
+                    onClick={() => writePermissions.update && handleOpenModal(row.original)}
+                    className={`border-b border-slate-100 transition ${writePermissions.update ? 'cursor-pointer hover:bg-crimson/[0.02]' : 'hover:bg-slate-50'}`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-3 py-2 text-xs text-slate-800 max-w-[200px] truncate" onClick={cell.column.id === 'select' ? (e) => e.stopPropagation() : undefined}>
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                    {canShowRowActions && (
+                      <td className="px-3 py-2 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-1 opacity-60 hover:opacity-100 transition">
+                          {TABLE_CONFIGS[tableId]?.rowActions?.resetPassword && writePermissions.update && (
+                            <button onClick={() => handleResetPassword(row.original)} className="rounded p-1 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition" title="Reset password">
+                              <KeyRound className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          {writePermissions.update && (
+                            <button onClick={() => handleOpenModal(row.original)} className="rounded p-1 text-crimson hover:bg-crimson/10 transition" title="Edit">
+                              <Edit2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                          {writePermissions.delete && (
+                            <button onClick={() => handleDelete(row.original)} className="rounded p-1 text-slate-400 hover:bg-red-50 hover:text-red-500 transition" title="Delete">
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={tableColumns.length + (canShowRowActions ? 1 : 0)} className="px-3 py-10 text-center text-xs text-slate-500">
+                    No matching records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination — compact */}
+        {recordCount > 0 && (
+          <div className="flex items-center justify-between border-t border-slate-200 bg-slate-50 px-3 py-2">
+            <span className="text-xs text-slate-500">
+              {page * pageSize + 1}–{Math.min((page + 1) * pageSize, recordCount)} of {recordCount}
+            </span>
+
+            <div className="flex items-center gap-3">
+              <select value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(0); }} className="rounded border border-slate-200 bg-white px-1.5 py-1 text-xs text-slate-700 focus:outline-none">
+                {[10, 25, 50, 100].map((s) => (
+                  <option key={s} value={s}>{s}/page</option>
+                ))}
+              </select>
+
+              <div className="flex gap-1">
+                <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={page === 0} className="rounded border border-slate-200 bg-white p-1 text-slate-500 hover:text-navy disabled:opacity-30 transition">
+                  <ChevronLeft className="h-3.5 w-3.5" />
+                </button>
+                <button onClick={() => setPage((p) => p + 1)} disabled={(page + 1) * pageSize >= recordCount} className="rounded border border-slate-200 bg-white p-1 text-slate-500 hover:text-navy disabled:opacity-30 transition">
+                  <ChevronRight className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Create / Edit Record Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-slate-900/80 p-4 z-50 overflow-y-auto">
+          <div className="relative w-full max-w-lg rounded-lg border border-slate-200 bg-white p-6 shadow-2xl shadow-black/30 transition">
+            <button onClick={() => setIsModalOpen(false)} className="absolute top-4 right-4 text-slate-500 hover:text-navy">
+              <X className="h-5 w-5" />
+            </button>
+
+            <h2 className="font-display text-xl font-bold text-navy mb-4">
+              {editingRecord ? 'Edit Record Details' : `Add New ${formatLabel(tableId).slice(0, -1) || 'Record'}`}
+            </h2>
+
+            <form ref={formRef} onSubmit={handleSave} className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+              {formColumns.map((col: any) => {
+                if (
+                  col.name === 'created_at' ||
+                  col.name === 'updated_at' ||
+                  col.name === 'deleted_at' ||
+                  col.name === 'created_by' ||
+                  col.name === 'updated_by' ||
+                  col.name === 'deleted_by' ||
+                  col.name === 'featured_at' ||
+                  col.name === 'featured_by'
+                ) {
+                  return null;
+                }
+
+                if (col.name === schema.primary_key) {
+                  if (!editingRecord) return null;
+                  return (
+                    <div key={col.name} className="space-y-1">
+                      <label className="text-xs font-semibold text-slate-600 uppercase tracking-wider">{formatLabel(col.name)}</label>
+                      <input type="text" value={formValues[col.name] || ''} readOnly className="w-full rounded border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 focus:outline-none" />
+                    </div>
+                  );
+                }
+
+                const tableFields = TABLE_CONFIGS[tableId]?.fields;
+                const usesEntryPhotos = !!tableFields && Object.values(tableFields).some((f) => f.render === 'entry-photos');
+                if (usesEntryPhotos && ENTRY_PHOTOS_OWNED_COLUMNS.has(col.name)) return null;
+                if (tableFields?.[col.name]?.hidden) return null;
+                const visibleWhen = tableFields?.[col.name]?.visibleWhen;
+                if (visibleWhen && !visibleWhen.equals.includes(String(formValues[visibleWhen.field] ?? ''))) {
+                  return null;
+                }
+
+                // On scope-typed tables (events, achievements, ...), college_id
+                // and department_id are each only meaningful for their own
+                // scope_type value (the DB CHECK constraint rejects the other
+                // combinations) — hide the irrelevant one entirely instead of
+                // showing it disabled, rather than rendering a dead control for
+                // a global/trust/institute-scoped record. See
+                // docs/audits/events-achievements-add-flow-2026-10.md #1/#2.
+                if (col.name === 'college_id' || col.name === 'department_id') {
+                  // Gated on scope_type being explicitly configured (currently
+                  // only events/achievements), not merely present on the
+                  // table — tables like gallery_albums/posts/homepage_items
+                  // also carry scope_type + college_id/department_id but
+                  // handle scoping differently and must render as before.
+                  const hasConfiguredScopeType = !!tableFields?.scope_type;
+                  if (hasConfiguredScopeType) {
+                    const scopeTypeVal = formValues.scope_type;
+                    if (col.name === 'college_id' && scopeTypeVal !== 'college') return null;
+                    if (col.name === 'department_id' && scopeTypeVal !== 'department') return null;
+                  }
+                }
+
+                // jsonb columns (metadata and friends) get the typed key-by-key
+                // editor with a raw-JSON toggle, not a bare textarea.
+                if (col.name === 'metadata' || col.type === 'jsonb') {
+                  return (
+                    <MetadataEditor
+                      key={col.name}
+                      value={formValues[col.name]}
+                      onChange={(v) => handleFieldChange(col.name, v)}
+                    />
+                  );
+                }
+                if (tableFields?.[col.name]?.render === 'entry-photos') {
+                  return (
+                    <EntryPhotosEditor
+                      key={col.name}
+                      tableId={tableId}
+                      recordId={editingRecord ? editingRecord[schema.primary_key] : null}
+                      primaryKey={schema.primary_key}
+                      values={formValues}
+                      onChange={handleFieldChange}
+                      hasDetailPageField={schema.columns.some((c: any) => c.name === 'has_detail_page')}
+                      hasImageFitField={schema.columns.some((c: any) => c.name === 'image_fit')}
+                      onRequireSave={ensureSaved}
+                    />
+                  );
+                }
+
+                const fk = schema.foreign_keys?.find((f: any) => f.column === col.name);
+
+                return (
+                  <div key={col.name} className="space-y-1.5">
+                    <label className="text-xs font-semibold text-slate-900 uppercase tracking-wider flex items-center justify-between">
+                      <span>{formatLabel(col.name)}</span>
+                      {!col.is_nullable && <span className="text-[10px] text-crimson font-medium font-mono">Required</span>}
+                    </label>
+                    {TABLE_CONFIGS[tableId]?.fields?.[col.name]?.helpText && (
+                      <p className="text-xs text-slate-500">{TABLE_CONFIGS[tableId]?.fields?.[col.name]?.helpText}</p>
+                    )}
+
+                    {col.name === 'seo_id' ? (
+                      <SeoEditor seoId={formValues.seo_id} onChange={(newSeoId) => handleFieldChange('seo_id', newSeoId)} />
+                    ) : col.type === 'boolean' ? (
+                      (() => {
+                        const fieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
+                        const lockedForNonGlobal = !!fieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
+                        return (
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={col.name}
+                              checked={!!formValues[col.name]}
+                              disabled={lockedForNonGlobal}
+                              onChange={(e) => handleFieldChange(col.name, e.target.checked)}
+                              className="h-4 w-4 rounded border-slate-200 bg-white text-crimson focus:ring-crimson focus:ring-offset-white disabled:opacity-50"
+                            />
+                            <label htmlFor={col.name} className="ml-2 text-sm text-slate-600">
+                              {lockedForNonGlobal ? fieldConfig?.lockedLabel : (fieldConfig?.booleanLabel ?? 'Toggle Active State')}
+                            </label>
+                          </div>
+                        );
+                      })()
+                    ) : LINK_URL_COLUMNS.has(col.name) && col.type === 'text' ? (
+                      <input
+                        type="url"
+                        placeholder="https://example.com"
+                        value={formValues[col.name] || ''}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                      />
+                    ) : PLAIN_TEXT_FIELD_COLUMNS.has(col.name) && col.type === 'text' ? (
+                      <input
+                        type="text"
+                        placeholder="e.g. pdf"
+                        value={formValues[col.name] || ''}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                      />
+                    ) : (col.name.endsWith('_url') || col.name.includes('image') || col.name.includes('file')) && col.type === 'text' ? (
+                      <MediaUploader
+                        value={formValues[col.name] || ''}
+                        onChange={(url) => handleFieldChange(col.name, url)}
+                        type={col.name.includes('file') || col.name.includes('document') ? 'file' : 'image'}
+                      />
+                    ) : fk ? (
+                      (() => {
+                        // college_id/department_id on a scope-typed table
+                        // (events, achievements) never reach this branch
+                        // unless they already match the active scope_type —
+                        // see the hide check above — so they're always
+                        // required here, matching the
+                        // events_scope_consistency/achievements_scope_consistency
+                        // CHECK constraint.
+                        const hasConfiguredScopeType = !!tableFields?.scope_type;
+                        const scopeRequiresField =
+                          hasConfiguredScopeType &&
+                          (col.name === 'college_id' || col.name === 'department_id');
+                        return (
+                          <select
+                            value={formValues[col.name] || ''}
+                            onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                            required={!col.is_nullable || scopeRequiresField || !!tableFields?.[col.name]?.visibleWhen}
+                            disabled={
+                              (col.name === 'trust_id' && userScope.level === 'trust') ||
+                              (col.name === 'college_id' && userScope.level === 'college') ||
+                              (col.name === 'department_id' && userScope.level === 'department')
+                            }
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
+                          >
+                            <option value="">-- Choose {formatLabel(fk.foreign_table)} --</option>
+                            {fkOptions[fk.foreign_table]?.map((opt) => (
+                              <option key={opt.value} value={opt.value}>{opt.label}</option>
+                            ))}
+                          </select>
+                        );
+                      })()
+                    ) : col.name === 'status' ? (
+                      <select value={formValues[col.name] || ''} onChange={(e) => handleFieldChange(col.name, e.target.value)} className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none">
+                        {(col.enum_values ?? ['published', 'draft', 'archived']).map((v: string) => (
+                          <option key={v} value={v}>{formatLabel(v)}</option>
+                        ))}
+                      </select>
+                    ) : col.type === 'USER-DEFINED' && col.enum_values ? (
+                      (() => {
+                        const enumFieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
+                        const lockedScope = !!enumFieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
+                        const excluded = enumFieldConfig?.excludeOptions ?? [];
+                        const options = lockedScope
+                          ? [scopeDefaultLevel ?? userScope.level]
+                          : col.enum_values.filter((v: string) => !excluded.includes(v) || v === formValues[col.name]);
+                        return (
+                          <select
+                            value={formValues[col.name] || ''}
+                            onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                            required={!col.is_nullable}
+                            disabled={lockedScope}
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none disabled:opacity-60"
+                          >
+                            <option value="">-- Select --</option>
+                            {options.map((v: string) => (
+                              <option key={v} value={v}>{enumFieldConfig?.optionLabels?.[v] ?? formatLabel(v)}</option>
+                            ))}
+                          </select>
+                        );
+                      })()
+                    ) : tableFields?.[col.name]?.options ? (
+                      (() => {
+                        // Text columns constrained by a CHECK constraint or by
+                        // what the public site renders — offered as a locked
+                        // dropdown so admins never have to know the codes.
+                        // A row-level section filter (sportsRowFilter) locks
+                        // its column to the one value RLS will accept.
+                        const lockedToRowFilter =
+                          !!sportsRowFilter && col.name === sportsRowFilter.column;
+                        const options = lockedToRowFilter
+                          ? tableFields![col.name]!.options!.filter(
+                              (o) => o.value === sportsRowFilter!.value
+                            )
+                          : tableFields![col.name]!.options!;
+                        const current = formValues[col.name];
+                        // Keep a value that predates this dropdown (or was
+                        // since removed from the list) selectable instead of
+                        // silently blanking it on save.
+                        const list =
+                          !current || options.some((o) => o.value === current)
+                            ? options
+                            : [{ value: current, label: formatLabel(current) }, ...options];
+                        return (
+                          <select
+                            value={current ?? ''}
+                            onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                            required={!col.is_nullable}
+                            disabled={lockedToRowFilter}
+                            className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
+                          >
+                            <option value="">{col.is_nullable ? '-- None --' : '-- Select --'}</option>
+                            {list.map((o) => (
+                              <option key={o.value} value={o.value}>{o.label}</option>
+                            ))}
+                          </select>
+                        );
+                      })()
+                    ) : col.name === 'description' || col.name === 'bio' || col.name === 'content' || col.name === 'principal_message' ? (
+                      <textarea
+                        value={formValues[col.name] || ''}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        rows={col.name === 'principal_message' ? 6 : 3}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                      />
+                    ) : col.type.startsWith('timestamp') || col.type === 'date' ? (
+                      <input
+                        type="date"
+                        value={formValues[col.name] ? formValues[col.name].split('T')[0] : ''}
+                        onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                        required={!col.is_nullable}
+                        className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none"
+                      />
+                    ) : (
+                      <div className="space-y-1 w-full">
+                        <input
+                          type={col.type.startsWith('integer') || col.type === 'numeric' ? 'number' : 'text'}
+                          placeholder={col.type === 'ARRAY' ? 'e.g. news, engineering, academic' : ''}
+                          value={formValues[col.name] ?? ''}
+                          onChange={(e) => handleFieldChange(col.name, e.target.value)}
+                          required={!col.is_nullable}
+                          className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50"
+                        />
+                        {col.type === 'ARRAY' && <p className="text-[10px] text-slate-500 font-medium">Enter multiple tags separated by commas.</p>}
+                        {autoFields.has(col.name) && (
+                          <p className="text-[10px] text-slate-500 font-medium">
+                            Auto-generated from {TABLE_CONFIGS[tableId]?.fields?.[col.name]?.autoGenerateFrom?.source} — edit to override.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+
+              {/* Action Buttons */}
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-200">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="rounded border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-600 hover:text-navy hover:bg-slate-50 transition">
+                  Cancel
+                </button>
+                <button type="submit" disabled={mutating} className="flex items-center gap-2 rounded bg-crimson px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-crimson/20 hover:bg-crimson/90 disabled:opacity-50 transition">
+                  {mutating && <Loader2 className="h-4 w-4 animate-spin" />}
+                  <span>{editingRecord ? 'Save Changes' : 'Create Record'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Floating Bulk Action Bar */}
+      {canShowRowActions && Object.keys(rowSelection).length > 0 && (
+        <div className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-4 rounded-xl border border-crimson/35 bg-white p-4 shadow-2xl shadow-black/30 animate-in slide-in-from-bottom duration-300">
+          <div className="text-xs font-semibold text-slate-600">
+            Selected <span className="text-crimson font-bold">{Object.keys(rowSelection).length}</span> rows
+          </div>
+
+          <div className="h-4 w-px border-slate-200" />
+
+          <div className="flex gap-2">
+            {writePermissions.update && schema.columns.some((c: any) => c.name === 'status') && (
+              <>
+                <button
+                  onClick={async () => {
+                    if (!schema) return;
+                    const selectedRows = table.getSelectedRowModel().flatRows.map((r: any) => r.original);
+                    const selectedIds = selectedRows.map((r: any) => r[schema.primary_key]);
+                    if (selectedIds.length === 0) return;
+                    setDataLoading(true);
+                    try {
+                      const alreadyPublished = selectedRows.filter((r: any) => r.status === 'published').length;
+                      const { error } = await supabaseClient.from(tableId).update({ status: 'published', updated_by: admin.id }).in(schema.primary_key, selectedIds);
+                      if (error) throw error;
+                      if (alreadyPublished === selectedIds.length) {
+                        toast.info(`All ${selectedIds.length} selected records were already published — nothing changed.`);
+                      } else {
+                        toast.success(`Successfully published ${selectedIds.length} records!`);
+                      }
+                      const auditRows = selectedRows.map((row: any) => ({
+                        user_id: admin.id,
+                        action: 'UPDATE' as const,
+                        table_name: tableId,
+                        record_id: row[schema.primary_key],
+                        old_values: row,
+                        new_values: { status: 'published', updated_by: admin.id },
+                      }));
+                      try {
+                        await supabase.from('audit_logs').insert(auditRows as any);
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
+                      setRowSelection({});
+                      loadData();
+                    } catch (err: any) {
+                      toast.error(`Bulk status update failed: ${err.message}`);
+                    } finally {
+                      setDataLoading(false);
+                    }
+                  }}
+                  className="rounded bg-emerald-100 px-2.5 py-1.5 text-xs font-bold text-emerald-700 border border-emerald-300 hover:bg-emerald-200 transition"
+                >
+                  Publish
+                </button>
+                <button
+                  onClick={async () => {
+                    if (!schema) return;
+                    const selectedRows = table.getSelectedRowModel().flatRows.map((r: any) => r.original);
+                    const selectedIds = selectedRows.map((r: any) => r[schema.primary_key]);
+                    if (selectedIds.length === 0) return;
+                    setDataLoading(true);
+                    try {
+                      const alreadyDraft = selectedRows.filter((r: any) => r.status === 'draft').length;
+                      const { error } = await supabaseClient.from(tableId).update({ status: 'draft', updated_by: admin.id }).in(schema.primary_key, selectedIds);
+                      if (error) throw error;
+                      if (alreadyDraft === selectedIds.length) {
+                        toast.info(`All ${selectedIds.length} selected records were already drafts — nothing changed.`);
+                      } else {
+                        toast.success(`Successfully set ${selectedIds.length} records to Draft!`);
+                      }
+                      const auditRows = selectedRows.map((row: any) => ({
+                        user_id: admin.id,
+                        action: 'UPDATE' as const,
+                        table_name: tableId,
+                        record_id: row[schema.primary_key],
+                        old_values: row,
+                        new_values: { status: 'draft', updated_by: admin.id },
+                      }));
+                      try {
+                        await supabase.from('audit_logs').insert(auditRows as any);
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
+                      setRowSelection({});
+                      loadData();
+                    } catch (err: any) {
+                      toast.error(`Bulk status update failed: ${err.message}`);
+                    } finally {
+                      setDataLoading(false);
+                    }
+                  }}
+                  className="rounded bg-amber-100 px-2.5 py-1.5 text-xs font-bold text-amber-700 border border-amber-300 hover:bg-amber-200 transition"
+                >
+                  Draft
+                </button>
+              </>
+            )}
+
+            {writePermissions.delete && (
+              <button
+                onClick={async () => {
+                  if (!schema) return;
+                  const selectedRows = table.getSelectedRowModel().flatRows.map((r: any) => r.original);
+                  const selectedIds = selectedRows.map((r: any) => r[schema.primary_key]);
+                  if (selectedIds.length === 0) return;
+                  const isSoftDelete = schema.columns.some((c: any) => c.name === 'deleted_at');
+                  const hasStatusCol = schema.columns.some((c: any) => c.name === 'status');
+                  const confirmed = window.confirm(
+                    `Are you sure you want to delete these ${selectedIds.length} records?${isSoftDelete ? ' (They will move to the trash bin).' : ' (This action is permanent).'}`
+                  );
+                  if (!confirmed) return;
+                  setDataLoading(true);
+                  try {
+                    if (isSoftDelete) {
+                      const { error } = await supabaseClient
+                        .from(tableId)
+                        .update({
+                          deleted_at: new Date().toISOString(),
+                          deleted_by: admin.id,
+                          ...(hasStatusCol ? { status: 'archived' } : {}),
+                        })
+                        .in(schema.primary_key, selectedIds);
+                      if (error) throw error;
+                      toast.success(`Successfully soft-deleted ${selectedIds.length} records!`);
+                      const deletedAt = new Date().toISOString();
+                      const auditRows = selectedRows.map((row: any) => ({
+                        user_id: admin.id,
+                        action: 'DELETE' as const,
+                        table_name: tableId,
+                        record_id: row[schema.primary_key],
+                        old_values: row,
+                        new_values: { deleted_at: deletedAt },
+                      }));
+                      try {
+                        await supabase.from('audit_logs').insert(auditRows as any);
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
+                    } else {
+                      const { error } = await supabaseClient.from(tableId).delete().in(schema.primary_key, selectedIds);
+                      if (error) throw error;
+                      toast.success(`Successfully permanently deleted ${selectedIds.length} records!`);
+                      const auditRows = selectedRows.map((row: any) => ({
+                        user_id: admin.id,
+                        action: 'DELETE' as const,
+                        table_name: tableId,
+                        record_id: row[schema.primary_key],
+                        old_values: row,
+                        new_values: null,
+                      }));
+                      try {
+                        await supabase.from('audit_logs').insert(auditRows as any);
+                      } catch (err) {
+                        // Audit logging is best-effort so it never blocks the
+                        // action, but a silent failure hides a broken audit trail.
+                        console.error('Failed to write audit log', err);
+                      }
+                    }
+                    setRowSelection({});
+                    loadData();
+                  } catch (err: any) {
+                    toast.error(`Bulk delete failed: ${err.message}`);
+                  } finally {
+                    setDataLoading(false);
+                  }
+                }}
+                className="rounded bg-rose-100 px-2.5 py-1.5 text-xs font-bold text-rose-700 border border-rose-300 hover:bg-rose-200 transition"
+              >
+                Bulk Delete
+              </button>
+            )}
+
+            <button onClick={() => setRowSelection({})} className="rounded border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:text-navy transition">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

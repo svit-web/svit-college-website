@@ -1,0 +1,140 @@
+[
+  {
+    "key": "image_compression_mode",
+    "value": "client",
+    "updated_at": "2026-07-30T04:43:06.243588+00:00",
+    "updated_by": null,
+    "admin_section_id": null
+  },
+  {
+    "key": "contact_info",
+    "value": {
+      "email": "contact@svitvasad.ac.in",
+      "phone": "+91 95107 82981",
+      "address": "B/h. S.T. Bus Depo, Anand District, Vasad, Gujarat 388306",
+      "full_name": "Sardar Vallabhbhai Institute of Technology",
+      "website_url": "https://svitvasad.ac.in",
+      "office_hours": {
+        "sunday": "Closed",
+        "saturday": "9:00 – 13:00",
+        "weekdays": "9:00 – 17:00"
+      },
+      "social_links": {
+        "Twitter": "https://twitter.com/SVITOfficial",
+        "Facebook": "https://www.facebook.com/SVIT.Vasad.Official",
+        "LinkedIn": "https://www.linkedin.com/school/svitvasad/",
+        "Instagram": "https://www.instagram.com/svitvasad_official/"
+      },
+      "institute_name": "SVIT",
+      "map_iframe_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3686.9332687608753!2d73.07379517554648!3d22.469141836753785!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395fb55277d1e457%3A0xaf7e43a3d29561b!2sSardar%20Vallabhbhai%20Patel%20Institute%20of%20Technology!5e0!3m2!1sen!2sin!4v1785960269487!5m2!1sen!2sin"
+    },
+    "updated_at": "2026-08-05T20:05:46.232+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "admission_year",
+    "value": "2026-27",
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "year_established",
+    "value": 1997,
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "antiragging_email",
+    "value": "antiragging@svitvasad.ac.in",
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "it_support_email",
+    "value": "itsupport@svitvasad.ac.in",
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "ugc_helpline",
+    "value": "1800-111-656",
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "og_description",
+    "value": "Empowering minds, inspiring innovation. Admissions open for 2026-27.",
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "og_image_url",
+    "value": "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/logos/svit.png",
+    "updated_at": "2026-08-05T20:14:09.99+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": null
+  },
+  {
+    "key": "placement_percentage",
+    "value": 95,
+    "updated_at": "2026-08-05T20:21:48.774729+00:00",
+    "updated_by": null,
+    "admin_section_id": null
+  },
+  {
+    "key": "recruiter_count",
+    "value": 200,
+    "updated_at": "2026-08-05T20:21:48.774729+00:00",
+    "updated_by": null,
+    "admin_section_id": null
+  },
+  {
+    "key": "campus_size_acres",
+    "value": 15,
+    "updated_at": "2026-08-05T20:21:48.774729+00:00",
+    "updated_by": null,
+    "admin_section_id": null
+  },
+  {
+    "key": "meta_description",
+    "value": "AICTE-approved engineering, management and applied sciences programmes on a 15-acre campus in Vasad, Gujarat. 95% placements, modern labs, vibrant campus life.",
+    "updated_at": "2026-08-05T20:21:48.774729+00:00",
+    "updated_by": null,
+    "admin_section_id": null
+  },
+  {
+    "key": "colleges_label",
+    "value": "Institutes",
+    "updated_at": "2026-08-08T08:23:23.967992+00:00",
+    "updated_by": null,
+    "admin_section_id": null
+  },
+  {
+    "key": "hero_appearance",
+    "value": {
+      "aboutPhoto": null,
+      "heroBlurPx": 5,
+      "heroTextColor": "#ffffff",
+      "homepagePhotos": [
+        "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1789713710836-mdhr6a.webp",
+        "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1789814057746-0ckaid.png",
+        "https://agezrfclusigfqysbxwb.supabase.co/storage/v1/object/public/media/images/1789814061841-d5o5pu.png"
+      ],
+      "campusLifePhoto": null,
+      "heroImageOpacity": 100,
+      "heroOverlayColor": null,
+      "heroSliderEnabled": false,
+      "heroOverlayOpacity": 5
+    },
+    "updated_at": "2026-09-19T10:34:33.796+00:00",
+    "updated_by": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+    "admin_section_id": "212c443e-ed5d-48c2-ad40-ab2eb9ea41a0"
+  }
+]

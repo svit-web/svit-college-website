@@ -1,0 +1,74 @@
+[
+  {
+    "college_code": "overview",
+    "id": "f2c0d7f4-5339-4511-847b-646811efcbe9",
+    "testimonials": [
+      {
+        "id": "t1",
+        "quote": "The T&P Cell at SVIT conducted rigorous mock interviews and competitive programming bootcamps. The structured placement drives gave me the confidence to crack the Google interview!",
+        "rating": 5,
+        "photoUrl": null,
+        "batchYear": "2024",
+        "companyName": "Google",
+        "designation": "Software Engineer",
+        "studentName": "Aarav Sharma",
+        "departmentName": "Computer Engineering"
+      },
+      {
+        "id": "t2",
+        "quote": "From resume building workshops to soft skills mentorship, the placement cell guided us at every step. I am immensely grateful for the continuous corporate exposure provided at SVIT Vasad.",
+        "rating": 5,
+        "photoUrl": null,
+        "batchYear": "2024",
+        "companyName": "TCS Ninja",
+        "designation": "Systems Engineer",
+        "studentName": "Priya Patel",
+        "departmentName": "Information Technology"
+      },
+      {
+        "id": "t3",
+        "quote": "SVIT COA helped connect our portfolio directly with top architectural consultancies. The campus recruitment drives were smooth, professional, and career-defining.",
+        "rating": 5,
+        "photoUrl": null,
+        "batchYear": "2024",
+        "companyName": "Sthapati Studio",
+        "designation": "Architectural Designer",
+        "studentName": "Kavya Soni",
+        "departmentName": "College of Architecture"
+      },
+      {
+        "id": "t4",
+        "quote": "The hands-on technical labs and dedicated placement training helped me secure an excellent package right in my final semester. SVIT's placement support is top-notch!",
+        "rating": 5,
+        "photoUrl": null,
+        "batchYear": "2024",
+        "companyName": "HCLTech",
+        "designation": "Associate Analyst",
+        "studentName": "Riddhi Shah",
+        "departmentName": "Computer Applications (SVICA)"
+      },
+      {
+        "id": "t5",
+        "quote": "Our clinical internships combined with on-campus healthcare recruitment allowed me to start my nursing career at Apollo Hospitals immediately upon graduation.",
+        "rating": 5,
+        "photoUrl": null,
+        "batchYear": "2024",
+        "companyName": "Apollo Hospitals",
+        "designation": "Staff Nurse",
+        "studentName": "Meera Patel",
+        "departmentName": "Institute of Nursing (SVION)"
+      },
+      {
+        "id": "t6",
+        "quote": "SVIT Vasad provides world-class infrastructure and industry partnerships. The T&P mentors helped me refine my technical problem solving and soft skills to land my dream job.",
+        "rating": 5,
+        "photoUrl": null,
+        "batchYear": "2024",
+        "companyName": "Microsoft",
+        "designation": "Cloud Consultant",
+        "studentName": "Ananya Desai",
+        "departmentName": "Electronics & Communication"
+      }
+    ]
+  }
+]

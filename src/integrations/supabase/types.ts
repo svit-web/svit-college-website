@@ -14,82 +14,1708 @@ export type Database = {
   }
   public: {
     Tables: {
-      colleges: {
+      accreditations: {
         Row: {
+          accreditation_body: string | null
           created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          document_url: string | null
+          expiry_date: string | null
           id: string
-          logo_url: string | null
-          name: string
-          short_code: string
-          slug: string
-          sort_order: number
-          tagline: string | null
+          metadata: Json
+          organization: string
+          received_year: number
+          status: Database["public"]["Enums"]["content_status"]
           updated_at: string
+          updated_by: string | null
+          value: string
         }
         Insert: {
+          accreditation_body?: string | null
           created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          document_url?: string | null
+          expiry_date?: string | null
           id?: string
-          logo_url?: string | null
-          name: string
-          short_code: string
-          slug: string
-          sort_order?: number
-          tagline?: string | null
+          metadata?: Json
+          organization: string
+          received_year: number
+          status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
+          updated_by?: string | null
+          value: string
         }
         Update: {
+          accreditation_body?: string | null
           created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          document_url?: string | null
+          expiry_date?: string | null
           id?: string
-          logo_url?: string | null
-          name?: string
-          short_code?: string
-          slug?: string
-          sort_order?: number
-          tagline?: string | null
+          metadata?: Json
+          organization?: string
+          received_year?: number
+          status?: Database["public"]["Enums"]["content_status"]
           updated_at?: string
+          updated_by?: string | null
+          value?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "accreditations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accreditations_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "accreditations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      achievements: {
+        Row: {
+          album_id: string | null
+          card_photo_url: string | null
+          category: string
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          description: string | null
+          has_detail_page: boolean
+          id: string
+          metadata: Json
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          album_id?: string | null
+          card_photo_url?: string | null
+          category: string
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          date: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          has_detail_page?: boolean
+          id?: string
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          album_id?: string | null
+          card_photo_url?: string | null
+          category?: string
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          has_detail_page?: boolean
+          id?: string
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "achievements_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "achievements_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "achievements_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "achievements_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "achievements_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      admin_sections: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          name: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
-      events: {
+      app_settings: {
+        Row: {
+          admin_section_id: string | null
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          admin_section_id?: string | null
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          admin_section_id?: string | null
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_settings_admin_section_id_fkey"
+            columns: ["admin_section_id"]
+            isOneToOne: false
+            referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "app_settings_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audit_logs: {
+        Row: {
+          action: string
+          client_ip: string | null
+          created_at: string
+          id: string
+          new_values: Json | null
+          old_values: Json | null
+          record_id: string
+          table_name: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          client_ip?: string | null
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id: string
+          table_name: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          client_ip?: string | null
+          created_at?: string
+          id?: string
+          new_values?: Json | null
+          old_values?: Json | null
+          record_id?: string
+          table_name?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audit_logs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      board_members: {
+        Row: {
+          college_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          designation: string
+          id: string
+          metadata: Json
+          name: string
+          photo_url: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation: string
+          id?: string
+          metadata?: Json
+          name: string
+          photo_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string
+          id?: string
+          metadata?: Json
+          name?: string
+          photo_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "board_members_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_members_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_members_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "board_members_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      centers: {
+        Row: {
+          accent_color: string | null
+          album_id: string | null
+          card_photo_url: string | null
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          has_detail_page: boolean
+          id: string
+          institute_id: string | null
+          metadata: Json
+          name: string
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          subtitle: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          has_detail_page?: boolean
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          name: string
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          has_detail_page?: boolean
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          name?: string
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "centers_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "centers_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "centers_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      colleges: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          hero_kicker: string | null
+          hero_subhead: string | null
+          id: string
+          institute_id: string
+          logo_url: string | null
+          metadata: Json
+          name: string
+          nav_label: string | null
+          show_in_navigation: boolean
+          slug: string
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          tagline: string | null
+          updated_at: string
+          updated_by: string | null
+          website_url: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          hero_kicker?: string | null
+          hero_subhead?: string | null
+          id?: string
+          institute_id: string
+          logo_url?: string | null
+          metadata?: Json
+          name: string
+          nav_label?: string | null
+          show_in_navigation?: boolean
+          slug: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          hero_kicker?: string | null
+          hero_subhead?: string | null
+          id?: string
+          institute_id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name?: string
+          nav_label?: string | null
+          show_in_navigation?: boolean
+          slug?: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "colleges_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colleges_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colleges_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "colleges_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      committee_members: {
+        Row: {
+          college_id: string
+          committee_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          designation: string | null
+          email: string | null
+          id: string
+          metadata: Json
+          name: string
+          phone: string | null
+          position: string | null
+          sort_order: number
+          staff_profile_id: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id: string
+          committee_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string | null
+          email?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          phone?: string | null
+          position?: string | null
+          sort_order?: number
+          staff_profile_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string
+          committee_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string | null
+          email?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          phone?: string | null
+          position?: string | null
+          sort_order?: number
+          staff_profile_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committee_members_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_committee_id_fkey"
+            columns: ["committee_id"]
+            isOneToOne: false
+            referencedRelation: "committees"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_staff_profile_id_fkey"
+            columns: ["staff_profile_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "committee_members_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      committees: {
+        Row: {
+          college_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          name: string
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "committees_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_categories: {
         Row: {
           created_at: string
-          description: string | null
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
-          registration_link: string | null
-          sort_order: number
-          start_date: string | null
+          metadata: Json
+          module_type: string
+          name: string
+          slug: string
           status: Database["public"]["Enums"]["content_status"]
-          tag: string | null
-          title: string
+          updated_at: string
+          updated_by: string | null
         }
         Insert: {
           created_at?: string
-          description?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
-          registration_link?: string | null
-          sort_order?: number
-          start_date?: string | null
+          metadata?: Json
+          module_type: string
+          name: string
+          slug: string
           status?: Database["public"]["Enums"]["content_status"]
-          tag?: string | null
-          title: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           created_at?: string
-          description?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           id?: string
-          registration_link?: string | null
-          sort_order?: number
-          start_date?: string | null
+          metadata?: Json
+          module_type?: string
+          name?: string
+          slug?: string
           status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_categories_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_categories_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_categories_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      courses: {
+        Row: {
+          accent: string | null
+          brochure_file_url: string | null
+          code: string
+          color: string | null
+          created_at: string
+          created_by: string | null
+          degree_level: Database["public"]["Enums"]["degree_level"]
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          description: string | null
+          duration: string | null
+          duration_years: number | null
+          eligibility: string | null
+          fees_per_semester: string | null
+          full_name: string | null
+          id: string
+          intake: number | null
+          is_programme: boolean | null
+          metadata: Json
+          name: string
+          short_name: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          tagline: string | null
+          updated_at: string
+          updated_by: string | null
+          year_started: number | null
+        }
+        Insert: {
+          accent?: string | null
+          brochure_file_url?: string | null
+          code: string
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          degree_level: Database["public"]["Enums"]["degree_level"]
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          duration?: string | null
+          duration_years?: number | null
+          eligibility?: string | null
+          fees_per_semester?: string | null
+          full_name?: string | null
+          id?: string
+          intake?: number | null
+          is_programme?: boolean | null
+          metadata?: Json
+          name: string
+          short_name?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          year_started?: number | null
+        }
+        Update: {
+          accent?: string | null
+          brochure_file_url?: string | null
+          code?: string
+          color?: string | null
+          created_at?: string
+          created_by?: string | null
+          degree_level?: Database["public"]["Enums"]["degree_level"]
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          duration?: string | null
+          duration_years?: number | null
+          eligibility?: string | null
+          fees_per_semester?: string | null
+          full_name?: string | null
+          id?: string
+          intake?: number | null
+          is_programme?: boolean | null
+          metadata?: Json
+          name?: string
+          short_name?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          tagline?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          year_started?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "courses_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "courses_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      departments: {
+        Row: {
+          about: string | null
+          code: string
+          college_id: string
+          created_at: string
+          created_by: string | null
+          degree_type: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          established_year: number | null
+          head_of_department_id: string | null
+          id: string
+          intake_pg: number | null
+          intake_ug: number | null
+          level: string | null
+          logo_url: string | null
+          metadata: Json
+          mission: string | null
+          name: string
+          overview: string | null
+          short_name: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          theme_color: string | null
+          updated_at: string
+          updated_by: string | null
+          vision: string | null
+        }
+        Insert: {
+          about?: string | null
+          code: string
+          college_id: string
+          created_at?: string
+          created_by?: string | null
+          degree_type?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          established_year?: number | null
+          head_of_department_id?: string | null
+          id?: string
+          intake_pg?: number | null
+          intake_ug?: number | null
+          level?: string | null
+          logo_url?: string | null
+          metadata?: Json
+          mission?: string | null
+          name: string
+          overview?: string | null
+          short_name?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          theme_color?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          vision?: string | null
+        }
+        Update: {
+          about?: string | null
+          code?: string
+          college_id?: string
+          created_at?: string
+          created_by?: string | null
+          degree_type?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          established_year?: number | null
+          head_of_department_id?: string | null
+          id?: string
+          intake_pg?: number | null
+          intake_ug?: number | null
+          level?: string | null
+          logo_url?: string | null
+          metadata?: Json
+          mission?: string | null
+          name?: string
+          overview?: string | null
+          short_name?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          theme_color?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          vision?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "departments_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_head_of_department_id_fkey"
+            columns: ["head_of_department_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "departments_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      designations: {
+        Row: {
+          category: Database["public"]["Enums"]["designation_category"] | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_selectable: boolean
+          metadata: Json
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["designation_category"] | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_selectable?: boolean
+          metadata?: Json
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["designation_category"] | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_selectable?: boolean
+          metadata?: Json
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "designations_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "designations_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "designations_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      downloads: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          file_size: number | null
+          file_type: string | null
+          file_url: string
+          id: string
+          metadata: Json
+          publish_date: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url: string
+          id?: string
+          metadata?: Json
+          publish_date?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          file_size?: number | null
+          file_type?: string | null
+          file_url?: string
+          id?: string
+          metadata?: Json
+          publish_date?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "downloads_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "downloads_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "downloads_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          accent_color: string | null
+          album_id: string | null
+          card_photo_url: string | null
+          club_id: string | null
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          description: string | null
+          end_date: string | null
+          event_type: Database["public"]["Enums"]["event_type_enum"] | null
+          featured_at: string | null
+          featured_by: string | null
+          has_detail_page: boolean
+          id: string
+          is_featured: boolean
+          location: string | null
+          map_url: string | null
+          metadata: Json
+          registration_link: string | null
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          seo_id: string | null
+          slug: string
+          sort_order: number
+          start_date: string
+          status: Database["public"]["Enums"]["event_status"]
+          subtitle: string | null
+          tag: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          club_id?: string | null
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type_enum"] | null
+          featured_at?: string | null
+          featured_by?: string | null
+          has_detail_page?: boolean
+          id?: string
+          is_featured?: boolean
+          location?: string | null
+          map_url?: string | null
+          metadata?: Json
+          registration_link?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          seo_id?: string | null
+          slug: string
+          sort_order?: number
+          start_date: string
+          status?: Database["public"]["Enums"]["event_status"]
+          subtitle?: string | null
+          tag?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          club_id?: string | null
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          end_date?: string | null
+          event_type?: Database["public"]["Enums"]["event_type_enum"] | null
+          featured_at?: string | null
+          featured_by?: string | null
+          has_detail_page?: boolean
+          id?: string
+          is_featured?: boolean
+          location?: string | null
+          map_url?: string | null
+          metadata?: Json
+          registration_link?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          seo_id?: string | null
+          slug?: string
+          sort_order?: number
+          start_date?: string
+          status?: Database["public"]["Enums"]["event_status"]
+          subtitle?: string | null
           tag?: string | null
           title?: string
+          updated_at?: string
+          updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "events_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_club_id_fkey"
+            columns: ["club_id"]
+            isOneToOne: false
+            referencedRelation: "student_clubs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_featured_by_fkey"
+            columns: ["featured_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_seo_id_fkey"
+            columns: ["seo_id"]
+            isOneToOne: false
+            referencedRelation: "seo_metadata"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "events_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      facilities: {
+        Row: {
+          accent_color: string | null
+          address: string | null
+          admin_section_id: string | null
+          album_id: string | null
+          card_photo_url: string | null
+          category: string | null
+          code: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          description: string | null
+          facility_type: Database["public"]["Enums"]["facility_type"]
+          has_detail_page: boolean
+          id: string
+          institute_id: string | null
+          metadata: Json
+          name: string
+          parent_id: string | null
+          room_number: string | null
+          slug: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          subtitle: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          address?: string | null
+          admin_section_id?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          category?: string | null
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          facility_type: Database["public"]["Enums"]["facility_type"]
+          has_detail_page?: boolean
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          name: string
+          parent_id?: string | null
+          room_number?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          address?: string | null
+          admin_section_id?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          category?: string | null
+          code?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          facility_type?: Database["public"]["Enums"]["facility_type"]
+          has_detail_page?: boolean
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          name?: string
+          parent_id?: string | null
+          room_number?: string | null
+          slug?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "facilities_admin_section_id_fkey"
+            columns: ["admin_section_id"]
+            isOneToOne: false
+            referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "facilities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_albums: {
+        Row: {
+          college_id: string | null
+          cover_image_url: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          description: string | null
+          id: string
+          metadata: Json
+          owner_table: string | null
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          show_in_public_gallery: boolean
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json
+          owner_table?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          show_in_public_gallery?: boolean
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          id?: string
+          metadata?: Json
+          owner_table?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          show_in_public_gallery?: boolean
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_albums_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_albums_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_albums_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_albums_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_albums_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gallery_media: {
+        Row: {
+          album_id: string
+          caption: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_cover: boolean
+          media_type: string
+          metadata: Json
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+          url: string
+        }
+        Insert: {
+          album_id: string
+          caption?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_cover?: boolean
+          media_type: string
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          url: string
+        }
+        Update: {
+          album_id?: string
+          caption?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_cover?: boolean
+          media_type?: string
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gallery_media_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_media_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_media_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gallery_media_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       homepage_items: {
         Row: {
           body: string | null
+          college_id: string | null
           created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           department_id: string | null
           eyebrow: string | null
           icon_name: string | null
@@ -97,9 +1723,12 @@ export type Database = {
           image_url: string | null
           is_active: boolean
           item_type: string
+          link_entity_id: string | null
+          link_entity_type: string | null
           link_href: string | null
           link_label: string | null
           metadata: Json
+          pretitle: string | null
           scope_type: Database["public"]["Enums"]["scope_level"]
           secondary_link_href: string | null
           secondary_link_label: string | null
@@ -109,10 +1738,15 @@ export type Database = {
           title: string
           title_accent: string | null
           updated_at: string
+          updated_by: string | null
         }
         Insert: {
           body?: string | null
+          college_id?: string | null
           created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           department_id?: string | null
           eyebrow?: string | null
           icon_name?: string | null
@@ -120,9 +1754,12 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           item_type: string
+          link_entity_id?: string | null
+          link_entity_type?: string | null
           link_href?: string | null
           link_label?: string | null
           metadata?: Json
+          pretitle?: string | null
           scope_type?: Database["public"]["Enums"]["scope_level"]
           secondary_link_href?: string | null
           secondary_link_label?: string | null
@@ -132,10 +1769,15 @@ export type Database = {
           title: string
           title_accent?: string | null
           updated_at?: string
+          updated_by?: string | null
         }
         Update: {
           body?: string | null
+          college_id?: string | null
           created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
           department_id?: string | null
           eyebrow?: string | null
           icon_name?: string | null
@@ -143,9 +1785,12 @@ export type Database = {
           image_url?: string | null
           is_active?: boolean
           item_type?: string
+          link_entity_id?: string | null
+          link_entity_type?: string | null
           link_href?: string | null
           link_label?: string | null
           metadata?: Json
+          pretitle?: string | null
           scope_type?: Database["public"]["Enums"]["scope_level"]
           secondary_link_href?: string | null
           secondary_link_label?: string | null
@@ -155,76 +1800,2463 @@ export type Database = {
           title?: string
           title_accent?: string | null
           updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homepage_items_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homepage_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homepage_items_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homepage_items_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homepage_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inquiry_forms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          fields_config: Json
+          form_name: string
+          id: string
+          metadata: Json
+          recipient_emails: string[]
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          fields_config?: Json
+          form_name: string
+          id?: string
+          metadata?: Json
+          recipient_emails?: string[]
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          fields_config?: Json
+          form_name?: string
+          id?: string
+          metadata?: Json
+          recipient_emails?: string[]
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_forms_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_forms_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_forms_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      inquiry_submissions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          form_id: string
+          id: string
+          metadata: Json
+          notes: string | null
+          reference_number: string | null
+          status: Database["public"]["Enums"]["submission_status"]
+          submitted_data: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          form_id: string
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          reference_number?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          submitted_data: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          form_id?: string
+          id?: string
+          metadata?: Json
+          notes?: string | null
+          reference_number?: string | null
+          status?: Database["public"]["Enums"]["submission_status"]
+          submitted_data?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "inquiry_submissions_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_submissions_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_submissions_form_id_fkey"
+            columns: ["form_id"]
+            isOneToOne: false
+            referencedRelation: "inquiry_forms"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "inquiry_submissions_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      institutes: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          logo_url: string | null
+          metadata: Json
+          name: string
+          slug: string
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          trust_id: string
+          updated_at: string
+          updated_by: string | null
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name: string
+          slug: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id: string
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name?: string
+          slug?: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "institutes_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "institutes_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "institutes_trust_id_fkey"
+            columns: ["trust_id"]
+            isOneToOne: false
+            referencedRelation: "trusts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "institutes_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      media_files: {
+        Row: {
+          alt_text: string | null
+          caption: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          file_path: string
+          file_size: number
+          filename: string
+          folder_id: string | null
+          id: string
+          metadata: Json
+          mime_type: string
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          status: Database["public"]["Enums"]["content_status"]
+          tags: string[]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          file_path: string
+          file_size: number
+          filename: string
+          folder_id?: string | null
+          id?: string
+          metadata?: Json
+          mime_type: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          status?: Database["public"]["Enums"]["content_status"]
+          tags?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          alt_text?: string | null
+          caption?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          file_path?: string
+          file_size?: number
+          filename?: string
+          folder_id?: string | null
+          id?: string
+          metadata?: Json
+          mime_type?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          status?: Database["public"]["Enums"]["content_status"]
+          tags?: string[]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_files_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_files_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_files_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_files_folder_id_fkey"
+            columns: ["folder_id"]
+            isOneToOne: false
+            referencedRelation: "media_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_files_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      media_folders: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          id: string
+          metadata: Json
+          name: string
+          parent_id: string | null
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          parent_id?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          parent_id?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "media_folders_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_folders_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_folders_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_folders_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "media_folders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "media_folders_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menu_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          icon: string | null
+          id: string
+          link_type: Database["public"]["Enums"]["link_type"]
+          menu_id: string
+          menu_type: string | null
+          metadata: Json
+          page_id: string | null
+          parent_id: string | null
+          permissions_required: string[]
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+          url: string | null
+          visibility_rules: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          icon?: string | null
+          id?: string
+          link_type: Database["public"]["Enums"]["link_type"]
+          menu_id: string
+          menu_type?: string | null
+          metadata?: Json
+          page_id?: string | null
+          parent_id?: string | null
+          permissions_required?: string[]
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          url?: string | null
+          visibility_rules?: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          icon?: string | null
+          id?: string
+          link_type?: Database["public"]["Enums"]["link_type"]
+          menu_id?: string
+          menu_type?: string | null
+          metadata?: Json
+          page_id?: string | null
+          parent_id?: string | null
+          permissions_required?: string[]
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          url?: string | null
+          visibility_rules?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menu_items_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_menu_id_fkey"
+            columns: ["menu_id"]
+            isOneToOne: false
+            referencedRelation: "menus"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_page_id_fkey"
+            columns: ["page_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "menu_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menu_items_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      menus: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          name: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "menus_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menus_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "menus_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mous: {
+        Row: {
+          activities: string[] | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_name: string | null
+          expiry_date: string | null
+          id: string
+          location: string | null
+          logo_url: string | null
+          metadata: Json
+          partner_organization: string
+          purpose: string | null
+          signed_date: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          activities?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_name?: string | null
+          expiry_date?: string | null
+          id?: string
+          location?: string | null
+          logo_url?: string | null
+          metadata?: Json
+          partner_organization: string
+          purpose?: string | null
+          signed_date: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          activities?: string[] | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_name?: string | null
+          expiry_date?: string | null
+          id?: string
+          location?: string | null
+          logo_url?: string | null
+          metadata?: Json
+          partner_organization?: string
+          purpose?: string | null
+          signed_date?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mous_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mous_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mous_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pages: {
+        Row: {
+          content: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_homepage: boolean
+          metadata: Json
+          page_type: string | null
+          parent_id: string | null
+          schema_version: number | null
+          seo_id: string | null
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_homepage?: boolean
+          metadata?: Json
+          page_type?: string | null
+          parent_id?: string | null
+          schema_version?: number | null
+          seo_id?: string | null
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          content?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_homepage?: boolean
+          metadata?: Json
+          page_type?: string | null
+          parent_id?: string | null
+          schema_version?: number | null
+          seo_id?: string | null
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pages_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pages_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pages_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "pages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pages_seo_id_fkey"
+            columns: ["seo_id"]
+            isOneToOne: false
+            referencedRelation: "seo_metadata"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pages_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      placed_students: {
+        Row: {
+          batch_year: string | null
+          college_id: string
+          company_name: string
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          id: string
+          package_lpa: number | null
+          photo_url: string | null
+          status: string
+          student_name: string
+          updated_at: string
+        }
+        Insert: {
+          batch_year?: string | null
+          college_id: string
+          company_name: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          package_lpa?: number | null
+          photo_url?: string | null
+          status?: string
+          student_name?: string
+          updated_at?: string
+        }
+        Update: {
+          batch_year?: string | null
+          college_id?: string
+          company_name?: string
+          created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          package_lpa?: number | null
+          photo_url?: string | null
+          status?: string
+          student_name?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "placed_students_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placed_students_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "placed_students_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      placement_cells: {
+        Row: {
+          about_text: string
+          college_code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          hero_subtitle: string | null
+          hero_title: string | null
+          id: string
+          metadata: Json
+          officer_designation: string
+          officer_email: string
+          officer_name: string
+          officer_phone: string
+          officer_photo_url: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          about_text?: string
+          college_code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          metadata?: Json
+          officer_designation?: string
+          officer_email?: string
+          officer_name?: string
+          officer_phone?: string
+          officer_photo_url?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          about_text?: string
+          college_code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          hero_subtitle?: string | null
+          hero_title?: string | null
+          id?: string
+          metadata?: Json
+          officer_designation?: string
+          officer_email?: string
+          officer_name?: string
+          officer_phone?: string
+          officer_photo_url?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      principal_messages: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          content: string
+          metadata: Json
+          name: string
+          photo_url: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          content?: string
+          metadata?: Json
+          name: string
+          photo_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          content?: string
+          metadata?: Json
+          name?: string
+          photo_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
       }
       posts: {
         Row: {
+          album_id: string | null
+          card_photo_url: string | null
+          category_id: string | null
+          college_id: string | null
+          content: string | null
           created_at: string
-          featured_image_url: string | null
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          expires_at: string | null
           id: string
+          is_featured: boolean
+          metadata: Json
           published_at: string | null
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          seo_id: string | null
           slug: string
           status: Database["public"]["Enums"]["content_status"]
           summary: string | null
           title: string
+          updated_at: string
+          updated_by: string | null
         }
         Insert: {
+          album_id?: string | null
+          card_photo_url?: string | null
+          category_id?: string | null
+          college_id?: string | null
+          content?: string | null
           created_at?: string
-          featured_image_url?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          expires_at?: string | null
           id?: string
+          is_featured?: boolean
+          metadata?: Json
           published_at?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          seo_id?: string | null
           slug: string
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
           title: string
+          updated_at?: string
+          updated_by?: string | null
         }
         Update: {
+          album_id?: string | null
+          card_photo_url?: string | null
+          category_id?: string | null
+          college_id?: string | null
+          content?: string | null
           created_at?: string
-          featured_image_url?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          expires_at?: string | null
           id?: string
+          is_featured?: boolean
+          metadata?: Json
           published_at?: string | null
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          seo_id?: string | null
           slug?: string
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
           title?: string
+          updated_at?: string
+          updated_by?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "posts_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "content_categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_seo_id_fkey"
+            columns: ["seo_id"]
+            isOneToOne: false
+            referencedRelation: "seo_metadata"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "posts_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       recruiters: {
         Row: {
+          company_name: string
           created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
           id: string
           logo_url: string | null
-          name: string
+          metadata: Json
           sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recruiters_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recruiters_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recruiters_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      roles: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          metadata: Json
+          name: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          metadata?: Json
+          name?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "roles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roles_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "roles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      scholarships: {
+        Row: {
+          amount: string | null
+          created_at: string | null
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          eligibility: string | null
+          id: string
+          name: string
+          provider: string | null
+          sort_order: number | null
+          status: string
+          type: string
+          updated_at: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          amount?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          eligibility?: string | null
+          id?: string
+          name: string
+          provider?: string | null
+          sort_order?: number | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          amount?: string | null
+          created_at?: string | null
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          eligibility?: string | null
+          id?: string
+          name?: string
+          provider?: string | null
+          sort_order?: number | null
+          status?: string
+          type?: string
+          updated_at?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scholarships_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      seo_metadata: {
+        Row: {
+          canonical_url: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          meta_description: string | null
+          meta_keywords: string[]
+          meta_title: string | null
+          metadata: Json
+          og_description: string | null
+          og_image_url: string | null
+          og_title: string | null
+          robots_directives: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          structured_data: Json
+          twitter_card: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          canonical_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string[]
+          meta_title?: string | null
+          metadata?: Json
+          og_description?: string | null
+          og_image_url?: string | null
+          og_title?: string | null
+          robots_directives?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          structured_data?: Json
+          twitter_card?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          canonical_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          meta_description?: string | null
+          meta_keywords?: string[]
+          meta_title?: string | null
+          metadata?: Json
+          og_description?: string | null
+          og_image_url?: string | null
+          og_title?: string | null
+          robots_directives?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          structured_data?: Json
+          twitter_card?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "seo_metadata_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seo_metadata_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "seo_metadata_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      sports: {
+        Row: {
+          achievements_count: number | null
+          album_id: string | null
+          card_photo_url: string | null
+          category: string
+          coach_image_url: string | null
+          coach_name: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          has_detail_page: boolean
+          id: string
+          is_active: boolean
+          metadata: Json
+          name: string
+          players_count: number | null
+          slug: string
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          achievements_count?: number | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          category?: string
+          coach_image_url?: string | null
+          coach_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          has_detail_page?: boolean
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name: string
+          players_count?: number | null
+          slug: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          achievements_count?: number | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          category?: string
+          coach_image_url?: string | null
+          coach_name?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          has_detail_page?: boolean
+          id?: string
+          is_active?: boolean
+          metadata?: Json
+          name?: string
+          players_count?: number | null
+          slug?: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sports_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sports_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sports_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sports_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_achievements: {
+        Row: {
+          created_at: string
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          extra: Json | null
+          id: string
+          staff_id: string
+          title: string
+          type: string
+          updated_at: string
+          updated_by: string | null
+          year: number | null
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          extra?: Json | null
           id?: string
-          logo_url?: string | null
-          name: string
-          sort_order?: number
+          staff_id: string
+          title: string
+          type: string
+          updated_at?: string
+          updated_by?: string | null
+          year?: number | null
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          extra?: Json | null
+          id?: string
+          staff_id?: string
+          title?: string
+          type?: string
+          updated_at?: string
+          updated_by?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_achievements_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_achievements_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_achievements_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_department_assignments: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string
+          designation_id: string
+          designation_override: string | null
+          id: string
+          is_primary: boolean
+          metadata: Json
+          post_ids: string[]
+          rank_group: string | null
+          staff_id: string
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id: string
+          designation_id: string
+          designation_override?: string | null
+          id?: string
+          is_primary?: boolean
+          metadata?: Json
+          post_ids?: string[]
+          rank_group?: string | null
+          staff_id: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string
+          designation_id?: string
+          designation_override?: string | null
+          id?: string
+          is_primary?: boolean
+          metadata?: Json
+          post_ids?: string[]
+          rank_group?: string | null
+          staff_id?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_department_assignments_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_department_assignments_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_department_assignments_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_department_assignments_designation_id_fkey"
+            columns: ["designation_id"]
+            isOneToOne: false
+            referencedRelation: "designations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_department_assignments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_department_assignments_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_posts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          is_department_head: boolean
+          metadata: Json
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_department_head?: boolean
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          is_department_head?: boolean
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_posts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_posts_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_posts_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          designation: string | null
+          email: string | null
+          employee_code: string | null
+          expertise: string[]
+          first_name: string
+          gender: string | null
+          id: string
+          last_name: string
+          metadata: Json
+          middle_name: string | null
+          muster_number: number | null
+          office_hours: Json
+          phone: string | null
+          photo_url: string | null
+          qualification: string | null
+          rank_group: string | null
+          social_links: Json
+          status: Database["public"]["Enums"]["content_status"]
+          title: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string | null
+          email?: string | null
+          employee_code?: string | null
+          expertise?: string[]
+          first_name: string
+          gender?: string | null
+          id?: string
+          last_name: string
+          metadata?: Json
+          middle_name?: string | null
+          muster_number?: number | null
+          office_hours?: Json
+          phone?: string | null
+          photo_url?: string | null
+          qualification?: string | null
+          rank_group?: string | null
+          social_links?: Json
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          designation?: string | null
+          email?: string | null
+          employee_code?: string | null
+          expertise?: string[]
+          first_name?: string
+          gender?: string | null
+          id?: string
+          last_name?: string
+          metadata?: Json
+          middle_name?: string | null
+          muster_number?: number | null
+          office_hours?: Json
+          phone?: string | null
+          photo_url?: string | null
+          qualification?: string | null
+          rank_group?: string | null
+          social_links?: Json
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_profiles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_profiles_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_profiles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_profiles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      staff_work_experience: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          end_month: number | null
+          end_year: number | null
+          id: string
+          is_current: boolean
+          organization: string
+          position: string
+          staff_id: string
+          start_month: number
+          start_year: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          end_month?: number | null
+          end_year?: number | null
+          id?: string
+          is_current?: boolean
+          organization: string
+          position: string
+          staff_id: string
+          start_month: number
+          start_year: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          end_month?: number | null
+          end_year?: number | null
+          id?: string
+          is_current?: boolean
+          organization?: string
+          position?: string
+          staff_id?: string
+          start_month?: number
+          start_year?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_work_experience_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_experience_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_experience_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_work_experience_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      student_clubs: {
+        Row: {
+          accent_color: string | null
+          album_id: string | null
+          card_photo_url: string | null
+          coordinator_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          description: string | null
+          featured: boolean | null
+          has_detail_page: boolean
+          id: string
+          logo_url: string | null
+          metadata: Json
+          name: string
+          slug: string
+          status: Database["public"]["Enums"]["content_status"]
+          student_coordinator_name: string | null
+          subtitle: string | null
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          coordinator_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          featured?: boolean | null
+          has_detail_page?: boolean
           id?: string
           logo_url?: string | null
+          metadata?: Json
+          name: string
+          slug: string
+          status?: Database["public"]["Enums"]["content_status"]
+          student_coordinator_name?: string | null
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          accent_color?: string | null
+          album_id?: string | null
+          card_photo_url?: string | null
+          coordinator_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          description?: string | null
+          featured?: boolean | null
+          has_detail_page?: boolean
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
           name?: string
+          slug?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          student_coordinator_name?: string | null
+          subtitle?: string | null
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_clubs_album_id_fkey"
+            columns: ["album_id"]
+            isOneToOne: false
+            referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_coordinator_id_fkey"
+            columns: ["coordinator_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_clubs_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trusts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          logo_url: string | null
+          metadata: Json
+          name: string
+          slug: string
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name: string
+          slug: string
           sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name?: string
+          slug?: string
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trusts_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trusts_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trusts_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          metadata: Json
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          metadata?: Json
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          metadata?: Json
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
         }
         Relationships: []
+      }
+      user_roles: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          id: string
+          institute_id: string | null
+          metadata: Json
+          role_id: string
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          status: Database["public"]["Enums"]["content_status"]
+          trust_id: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          role_id: string
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          role_id?: string
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_deleted_by_fkey"
+            columns: ["deleted_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_department_id_fkey"
+            columns: ["department_id"]
+            isOneToOne: false
+            referencedRelation: "departments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_institute_id_fkey"
+            columns: ["institute_id"]
+            isOneToOne: false
+            referencedRelation: "institutes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_trust_id_fkey"
+            columns: ["trust_id"]
+            isOneToOne: false
+            referencedRelation: "trusts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_section_grants: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          department_id: string | null
+          id: string
+          institute_id: string | null
+          metadata: Json
+          scope_type: Database["public"]["Enums"]["scope_level"]
+          section_id: string
+          status: Database["public"]["Enums"]["content_status"]
+          trust_id: string | null
+          updated_at: string
+          updated_by: string | null
+          user_id: string
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          section_id: string
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id: string
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          department_id?: string | null
+          id?: string
+          institute_id?: string | null
+          metadata?: Json
+          scope_type?: Database["public"]["Enums"]["scope_level"]
+          section_id?: string
+          status?: Database["public"]["Enums"]["content_status"]
+          trust_id?: string | null
+          updated_at?: string
+          updated_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_section_grants_section_id_fkey"
+            columns: ["section_id"]
+            isOneToOne: false
+            referencedRelation: "admin_sections"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_write_entry_album: {
+        Args: { target_album_id: string }
+        Returns: boolean
+      }
+      can_write_event: {
+        Args: {
+          p_college_id: string
+          p_department_id: string
+          p_scope_type: Database["public"]["Enums"]["scope_level"]
+        }
+        Returns: boolean
+      }
+      can_write_scoped_record: {
+        Args: {
+          p_college_id?: string
+          p_department_id?: string
+          p_institute_id?: string
+          p_trust_id?: string
+        }
+        Returns: boolean
+      }
+      can_write_section: {
+        Args: {
+          p_college_id?: string
+          p_department_id?: string
+          p_institute_id?: string
+          p_section_code: string
+        }
+        Returns: boolean
+      }
+      get_table_schema_info: { Args: { target_table: string }; Returns: Json }
+      is_any_admin: { Args: never; Returns: boolean }
+      is_global_admin: { Args: never; Returns: boolean }
+      save_placement_content: {
+        Args: { p_cell: Json; p_recruiters: Json; p_students: Json }
+        Returns: undefined
+      }
     }
     Enums: {
       content_status: "draft" | "published" | "archived"
+      degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate"
+      designation_category:
+        | "teaching"
+        | "technical"
+        | "administrative"
+        | "support"
+      event_status: "draft" | "published" | "cancelled" | "archived"
+      event_type_enum:
+        | "fest"
+        | "cultural"
+        | "technical"
+        | "sports"
+        | "workshop"
+        | "seminar"
+        | "expert_session"
+        | "sttp"
+        | "fdp"
+        | "industrial_visit"
+        | "competition"
+        | "other"
+      facility_type: "campus" | "building" | "laboratory"
+      link_type: "internal" | "external"
       scope_level: "global" | "trust" | "institute" | "college" | "department"
+      staff_type: "faculty" | "office_staff"
+      submission_status: "unread" | "read" | "replied"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -240,12 +4272,12 @@ export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -269,11 +4301,11 @@ export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -294,11 +4326,11 @@ export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
-  TableName extends DefaultSchemaTableNameOrOptions extends {
+  TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaTableNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -319,11 +4351,11 @@ export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
-  EnumName extends DefaultSchemaEnumNameOrOptions extends {
+  EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
-    : never = never,
+    : never) = never,
 > = DefaultSchemaEnumNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -336,11 +4368,11 @@ export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
-  CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
+  CompositeTypeName extends (PublicCompositeTypeNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
-    : never = never,
+    : never) = never,
 > = PublicCompositeTypeNameOrOptions extends {
   schema: keyof DatabaseWithoutInternals
 }
@@ -353,7 +4385,33 @@ export const Constants = {
   public: {
     Enums: {
       content_status: ["draft", "published", "archived"],
+      degree_level: ["undergraduate", "graduate", "doctorate", "certificate"],
+      designation_category: [
+        "teaching",
+        "technical",
+        "administrative",
+        "support",
+      ],
+      event_status: ["draft", "published", "cancelled", "archived"],
+      event_type_enum: [
+        "fest",
+        "cultural",
+        "technical",
+        "sports",
+        "workshop",
+        "seminar",
+        "expert_session",
+        "sttp",
+        "fdp",
+        "industrial_visit",
+        "competition",
+        "other",
+      ],
+      facility_type: ["campus", "building", "laboratory"],
+      link_type: ["internal", "external"],
       scope_level: ["global", "trust", "institute", "college", "department"],
+      staff_type: ["faculty", "office_staff"],
+      submission_status: ["unread", "read", "replied"],
     },
   },
 } as const

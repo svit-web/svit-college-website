@@ -1,0 +1,106 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
+import { EventsNewsSlider, type EventSlide } from "@/components/site-next/EventsNewsSlider";
+import { getAllStudentClubs, getStudentClubBySlug, getClubEvents } from "@/lib/clubs.functions";
+import { getEntryAlbum } from "@/lib/gallery.functions";
+import { getEntryImageFit } from "@/lib/entry-image-fit";
+import { metaDescription } from "@/lib/seo";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const clubs = await getAllStudentClubs().catch(() => []);
+  return clubs.filter((c) => c.has_detail_page).map((c) => ({ slug: c.slug }));
+}
+
+async function loadClub(slug: string) {
+  const item = await getStudentClubBySlug(slug);
+  if (!item || !item.has_detail_page) return null;
+  const [{ events, total: eventsTotal }, album, imageFit] = await Promise.all([
+    getClubEvents(item.id),
+    getEntryAlbum(item.album_id),
+    getEntryImageFit("student_clubs", item.id),
+  ]);
+  return { item, events, eventsTotal, album, imageFit };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const result = await loadClub(slug);
+  if (!result?.item) return { title: "Club — SVIT Vasad", robots: { index: false } };
+  return {
+    title: `${result.item.name} — Clubs — SVIT Vasad`,
+    description: metaDescription(result.item.description),
+    alternates: { canonical: `/campus-life/clubs/${result.item.slug}` },
+  };
+}
+
+export default async function ClubLeaf({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const result = await loadClub(slug);
+  if (!result) notFound();
+
+  const { item, events, eventsTotal, album, imageFit } = result;
+
+  const slides: EventSlide[] = events.map((e) => ({
+    id: e.id,
+    slug: e.hasDetailPage ? e.slug : null,
+    title: e.title,
+    tag: "Event",
+    date: new Date(e.eventDate).toLocaleDateString("en-GB", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
+    }),
+    imageUrl: e.imageUrl,
+  }));
+
+  return (
+    <div>
+      <DetailPageLayout
+        entry={{
+          title: item.name,
+          subtitle: item.subtitle,
+          accent: item.accent_color || "Club",
+          description: item.description,
+          cardPhotoUrl: album?.coverUrl ?? null,
+          album,
+          fallbackLogoUrl: item.logo_url,
+          imageFit,
+        }}
+      />
+
+      {slides.length > 0 && (
+        <div className="mt-12">
+          <SectionHeading eyebrow={item.name} title="Recent Events" variant="eyebrow" />
+          <div className="mt-8">
+            <EventsNewsSlider items={slides} />
+          </div>
+          {eventsTotal > slides.length && (
+            <div className="mt-6 text-center">
+              <Link
+                href={`/campus-life/clubs/${item.slug}/events`}
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border border-line-strong px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-navy transition-all hover:border-navy"
+              >
+                View more events →
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

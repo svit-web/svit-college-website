@@ -1,0 +1,321 @@
+[
+  {
+    "id": "d9679396-0f79-48a4-bb2e-d39100a3a20d",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "Google Developer Groups (GDG)",
+    "slug": "gdg",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "Study jams",
+          "description": "Regular hands-on sessions on Google tech."
+        },
+        {
+          "title": "DevFest",
+          "description": "Annual community developer festival."
+        },
+        {
+          "title": "Mentorship",
+          "description": "Alumni & industry mentors from Google ecosystem partners."
+        },
+        {
+          "title": "Certifications",
+          "description": "Guidance for Google Cloud and Android certifications."
+        }
+      ]
+    },
+    "subtitle": "Student-led Google technologies chapter",
+    "description": "The GDG chapter at SVIT runs study jams, DevFests and workshops on Google technologies — Android, Firebase, Cloud, Flutter and Web.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "e7d18ff6-d71f-4355-b798-969fe0ac1463",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "ISTE Student Chapter",
+    "slug": "iste-student",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "Technical talks",
+          "description": "Guest lectures from academia and industry."
+        },
+        {
+          "title": "Workshops",
+          "description": "Hands-on sessions across disciplines."
+        },
+        {
+          "title": "Student conferences",
+          "description": "Paper presentations and poster events."
+        },
+        {
+          "title": "Networking",
+          "description": "Connect with other ISTE chapters nationwide."
+        }
+      ]
+    },
+    "subtitle": "Indian Society for Technical Education",
+    "description": "Student chapter of ISTE — organises technical talks, workshops and student conferences that build wider engineering community.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "66f8c2b3-accc-487c-b56e-f788520e3854",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "Centre of Excellence (CoE)",
+    "slug": "coe",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-09-12T08:44:38.284654+00:00",
+    "created_by": null,
+    "updated_by": "af277c25-d8be-4e29-9384-5d997065ace4",
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "Industry projects",
+          "description": "Live problems from partner companies."
+        },
+        {
+          "title": "Advanced labs",
+          "description": "Access to specialised hardware and software."
+        },
+        {
+          "title": "Research",
+          "description": "Publication and patent support."
+        },
+        {
+          "title": "Student fellowships",
+          "description": "Selected students work as research assistants."
+        }
+      ]
+    },
+    "subtitle": "Applied research & industry projects",
+    "description": "The Centre of Excellence hosts advanced project work with industry partners in areas like AI, IoT, sustainability and cyber-security.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "6050d9c5-93f4-4691-a910-db530a334f7c",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "ISTE Faculty Chapter",
+    "slug": "iste-faculty",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "FDPs",
+          "description": "Regular AICTE- and university-approved FDPs."
+        },
+        {
+          "title": "Pedagogy",
+          "description": "Modern teaching-learning workshops."
+        },
+        {
+          "title": "Research",
+          "description": "Collaborative research and publications."
+        },
+        {
+          "title": "Awards",
+          "description": "Best-teacher and research recognitions."
+        }
+      ]
+    },
+    "subtitle": "Faculty development & pedagogy",
+    "description": "Faculty chapter that drives Faculty Development Programmes (FDPs), pedagogy workshops and academic research collaborations.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "da5302c7-6533-4473-8afb-5b030b2982a6",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "Industry-Institute Partnership Cell (IIPC)",
+    "slug": "iipc",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "MOUs",
+          "description": "Formal partnerships with industry leaders."
+        },
+        {
+          "title": "Internships",
+          "description": "Structured internship pipelines."
+        },
+        {
+          "title": "Consultancy",
+          "description": "Consulting projects for partner companies."
+        },
+        {
+          "title": "Expert lectures",
+          "description": "Regular sessions from senior industry professionals."
+        }
+      ]
+    },
+    "subtitle": "Industry engagement",
+    "description": "IIPC drives industry engagement — MOUs, expert lectures, industrial visits, internships and consultancy projects.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "cdb91f96-b4f0-415c-b3dc-b741ea2b8cd1",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "Entrepreneurship Development Cell (EDC)",
+    "slug": "edc",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "Ideation",
+          "description": "Design-thinking and ideation sprints."
+        },
+        {
+          "title": "Mentorship",
+          "description": "Founders and investors on the mentor panel."
+        },
+        {
+          "title": "Incubation",
+          "description": "Physical incubation space and infrastructure."
+        },
+        {
+          "title": "Pitch events",
+          "description": "Demo days and investor connect."
+        }
+      ]
+    },
+    "subtitle": "Startup mentorship & incubation",
+    "description": "EDC mentors student entrepreneurs from ideation to pitch — with incubation support, mentor networks and pitch events.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "c6029496-9346-4de9-8cbe-9aae7cfdf06e",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "Student Startup & Innovation Policy (SSIP)",
+    "slug": "ssip",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "Grants",
+          "description": "Seed grants for student innovators."
+        },
+        {
+          "title": "IP support",
+          "description": "Patent and copyright filing assistance."
+        },
+        {
+          "title": "State schemes",
+          "description": "Access to state startup and innovation policies."
+        },
+        {
+          "title": "Prototyping",
+          "description": "Prototyping labs and tools."
+        }
+      ]
+    },
+    "subtitle": "Government-backed innovation grants",
+    "description": "SSIP supports student innovators with grants, IP support and access to state-level startup schemes.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "28f4c01b-4ea6-40ca-bb13-6355c072c8e9",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "SC/ST Cell",
+    "slug": "sc-st",
+    "created_at": "2026-07-22T12:34:47.879123+00:00",
+    "updated_at": "2026-08-05T18:29:03.200907+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "highlights": [
+        {
+          "title": "Scholarships",
+          "description": "Assistance with government scholarships and forms."
+        },
+        {
+          "title": "Mentoring",
+          "description": "Academic and personal mentoring."
+        },
+        {
+          "title": "Grievance redressal",
+          "description": "Confidential support channel."
+        },
+        {
+          "title": "Awareness",
+          "description": "Regular awareness and inclusion sessions."
+        }
+      ]
+    },
+    "subtitle": "Inclusive support & mentoring",
+    "description": "The SC/ST Cell ensures inclusive support, scholarships, mentoring and grievance redressal for SC/ST students on campus.",
+    "accent_color": "Centre"
+  },
+  {
+    "id": "783adc6b-b028-4fdc-80ec-81d3320aa9d2",
+    "college_id": "5b2d6308-f93f-47dd-816d-fad491f30019",
+    "institute_id": null,
+    "name": "NSS / NCC",
+    "slug": "nss-ncc",
+    "created_at": "2026-09-11T04:53:38.931441+00:00",
+    "updated_at": "2026-09-11T04:57:19.807359+00:00",
+    "created_by": null,
+    "updated_by": null,
+    "deleted_at": null,
+    "deleted_by": null,
+    "status": "published",
+    "metadata": {
+      "gallery": {
+        "images": [],
+        "aspectRatio": "4/3"
+      }
+    },
+    "subtitle": "National Service Scheme & National Cadet Corps",
+    "description": "SVIT's NSS and NCC units give students a way to serve the community and build discipline, leadership and civic responsibility alongside their academics — through camps, drives, parades and outreach programs.",
+    "accent_color": "Centre"
+  }
+]

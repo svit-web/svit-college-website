@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Faculty Profile — Layout Mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: oklch(0.32 0.14 268);
+    --navy-light: oklch(0.42 0.15 268);
+    --navy-deep: oklch(0.22 0.11 268);
+    --crimson: oklch(0.55 0.22 27);
+    --gold: oklch(0.82 0.16 82);
+    --gold-soft: oklch(0.92 0.09 85);
+    --gold-strong: oklch(0.62 0.14 80);
+    --cream: oklch(0.985 0.008 85);
+    --ink: oklch(0.18 0.02 260);
+    --muted: oklch(0.554 0.046 257.417);
+    --secondary: oklch(0.968 0.007 247.896);
+    --border: oklch(0.9 0.008 260);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-family: "Playfair Display", "Times New Roman", serif; letter-spacing: -0.01em; margin: 0; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Fake top nav strip, just for orientation — not part of the redesign */
+  .fake-nav {
+    background: var(--navy);
+    color: rgba(255,255,255,0.55);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .container-page {
+    width: 100%;
+    max-width: 80rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .container-page { padding-inline: 2rem; }
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 24px 0 8px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .breadcrumb a:hover { color: var(--navy); }
+  .breadcrumb .current { color: var(--navy); font-weight: 600; }
+
+  /* Department heading strip */
+  .dept-heading {
+    border-bottom: 1px solid rgba(24,20,60,0.08);
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+  .dept-heading .eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--crimson);
+    margin-bottom: 4px;
+  }
+  .dept-heading h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  @media (min-width: 768px) {
+    .dept-heading h1 { font-size: 2.5rem; }
+  }
+
+  /* Two column grid */
+  .profile-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding-bottom: 64px;
+  }
+  @media (min-width: 1024px) {
+    .profile-grid { grid-template-columns: 280px minmax(0,1fr); }
+  }
+
+  /* LEFT column */
+  .identity {
+    position: sticky;
+    top: 24px;
+    align-self: start;
+  }
+  .identity img.photo {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    object-position: top;
+    border-radius: 1rem;
+    box-shadow: 0 12px 30px -12px rgba(24,20,60,0.35);
+    display: block;
+  }
+  .hod-badge {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--gold) 20%, transparent);
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--gold-strong);
+    margin-top: 18px;
+    margin-bottom: 4px;
+  }
+  .identity h2.name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-top: 14px;
+  }
+  .identity .designation {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--crimson);
+  }
+  .identity .qualification {
+    margin-top: 4px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .contact-block {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .contact-block a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--navy);
+  }
+  .contact-block a:hover { color: var(--crimson); }
+  .contact-block svg { flex-shrink: 0; width: 14px; height: 14px; }
+
+  .divider-block {
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .social-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .social-row a {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .social-row a:hover { color: var(--navy); }
+  .social-row svg { width: 14px; height: 14px; }
+
+  .office-hours .label,
+  .side-label {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--crimson);
+    margin-bottom: 8px;
+  }
+  .office-hours ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .office-hours li { font-size: 12px; color: var(--ink); }
+  .office-hours .day { font-weight: 600; color: var(--navy); }
+
+  .back-link {
+    font-size: 12px;
+    font-weight: 600;
+    color: color-mix(in oklab, var(--navy) 45%, transparent);
+  }
+  .back-link:hover { color: var(--navy); }
+
+  /* RIGHT column */
+  .expertise-line {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    margin-bottom: 28px;
+  }
+  .expertise-line .label {
+    font-weight: 700;
+    color: var(--navy);
+  }
+
+  .accordion {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .accordion details {
+    border-bottom: 1px solid var(--border);
+    padding: 18px 0;
+  }
+  .accordion details:last-child { border-bottom: none; }
+  .accordion summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .accordion summary::-webkit-details-marker { display: none; }
+  .accordion summary h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .accordion summary .chev {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    color: var(--crimson);
+    transition: transform 0.2s ease;
+  }
+  .accordion details[open] summary .chev { transform: rotate(180deg); }
+  .accordion .body {
+    padding-top: 12px;
+    font-size: 0.9rem;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+  .accordion .body p { margin: 0 0 10px; }
+  .accordion .body p:last-child { margin-bottom: 0; }
+  .accordion .body ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .accordion .body li strong { color: var(--navy); }
+  .accordion .body .meta { color: var(--muted); }
+
+  /* Annotation callouts to explain the mockup — remove in real build */
+  .note {
+    position: absolute;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--crimson);
+    background: color-mix(in oklab, var(--crimson) 8%, white);
+    border: 1px dashed var(--crimson);
+    border-radius: 6px;
+    padding: 3px 8px;
+    white-space: nowrap;
+  }
+</style>
+</head>
+<body>
+
+  <div class="fake-nav">SVIT — site header / nav goes here (not part of this mockup)</div>
+
+  <div class="container-page">
+    <div class="breadcrumb">
+      <a href="#">Home</a>
+      <span>/</span>
+      <a href="#">Computer Engineering</a>
+      <span>/</span>
+      <a href="#">Staff</a>
+      <span>/</span>
+      <span class="current">Dr. Anjali Mehta</span>
+    </div>
+
+    <div class="dept-heading">
+      <div class="eyebrow">Department</div>
+      <h1>Computer Engineering</h1>
+    </div>
+
+    <div class="profile-grid">
+
+      <!-- LEFT: identity + contact -->
+      <aside class="identity">
+        <img class="photo" src="https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=533&fit=crop&crop=faces" alt="Dr. Anjali Mehta">
+
+        <div class="hod-badge">Head of Department</div>
+
+        <h2 class="name">Dr. Anjali Mehta</h2>
+        <p class="designation">Professor &amp; Head, Computer Engineering</p>
+        <p class="qualification">PhD (Computer Science), IIT Bombay</p>
+
+        <div class="contact-block">
+          <a href="mailto:anjali.mehta@svitvasad.ac.in">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            <span>anjali.mehta@svitvasad.ac.in</span>
+          </a>
+        </div>
+
+        <div class="divider-block">
+          <div class="social-row">
+            <a href="#" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.94 5a2 2 0 1 1-4-.002 2 2 0 0 1 4 .002ZM7 8.48H3V21h4V8.48Zm6.32 0H9.34V21h3.94v-6.57c0-3.66 4.77-4 4.77 0V21H22v-7.93c0-6.17-7.06-5.94-8.68-2.91V8.48Z"/></svg>
+              LinkedIn
+            </a>
+            <a href="#" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Scholar
+            </a>
+            <a href="#" target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>
+              ORCID
+            </a>
+          </div>
+        </div>
+
+        <div class="divider-block office-hours">
+          <div class="label">Office Hours</div>
+          <ul>
+            <li><span class="day">Monday:</span> 2:00 PM – 4:00 PM</li>
+            <li><span class="day">Thursday:</span> 11:00 AM – 1:00 PM</li>
+          </ul>
+        </div>
+
+        <div class="divider-block">
+          <a class="back-link" href="#">&larr; Back to Computer Engineering Staff</a>
+        </div>
+      </aside>
+
+      <!-- RIGHT: expertise + accordion -->
+      <div class="content">
+        <p class="expertise-line">
+          <span class="label">Areas of Expertise: </span>
+          Distributed Systems, Machine Learning, Human-Computer Interaction, Cloud Computing, Data Privacy
+        </p>
+
+        <div class="accordion">
+          <details open>
+            <summary>
+              <h3>Profile</h3>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="body">
+              <p>Dr. Anjali Mehta completed her PhD in Computer Science at IIT Bombay, specializing in distributed systems and large-scale data infrastructure. She has over 14 years of combined academic and industry experience, having previously worked as a Senior Engineer at a cloud infrastructure firm before transitioning to full-time academia. Her current research focuses on privacy-preserving machine learning and resilient distributed architectures.</p>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <h3>Qualifications</h3>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="body">
+              <ul>
+                <li><strong>PhD, Computer Science</strong> <span class="meta">(2014) — Indian Institute of Technology, Bombay</span></li>
+                <li><strong>M.Tech, Computer Engineering</strong> <span class="meta">(2009) — Dhirubhai Ambani Institute of Information and Communication Technology</span></li>
+                <li><strong>B.E., Computer Engineering</strong> <span class="meta">(2007) — Gujarat Technological University</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <h3>Research</h3>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="body">
+              <ul>
+                <li><strong>Privacy-Preserving Federated Learning for Edge Devices</strong> <span class="meta">(2023) — Ongoing, funded by AICTE research grant</span></li>
+                <li><strong>Fault-Tolerant Consensus in Resource-Constrained Networks</strong> <span class="meta">(2021) — Completed in collaboration with DA-IICT</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <h3>Publications</h3>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="body">
+              <ul>
+                <li><strong>Mehta, A., Rao, S.</strong> <span class="meta">(2023). "Federated Optimization Under Non-IID Constraints." IEEE Transactions on Neural Networks, 34(2).</span></li>
+                <li><strong>Mehta, A., Iyer, P., Shah, K.</strong> <span class="meta">(2021). "Byzantine-Resilient Consensus for IoT Clusters." Proceedings of ICDCS 2021.</span></li>
+              </ul>
+            </div>
+          </details>
+
+          <details>
+            <summary>
+              <h3>Awards &amp; Honors</h3>
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </summary>
+            <div class="body">
+              <ul>
+                <li><strong>Best Faculty Researcher Award</strong> <span class="meta">(2022) — SVIT Vasad Annual Faculty Excellence Awards</span></li>
+                <li><strong>IFCI Best Thesis Proposal Award</strong> <span class="meta">(2013) — IIT Bombay</span></li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</body>
+</html>

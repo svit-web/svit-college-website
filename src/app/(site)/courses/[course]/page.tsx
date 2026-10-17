@@ -1,0 +1,136 @@
+import type { Metadata } from "next";
+import { notFound } from "next/navigation";
+import Link from "next/link";
+import { PageHero } from "@/components/site-next/PageHero";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
+import { getAllProgrammes, getProgrammeBySlug } from "@/lib/programmes.functions";
+import { getAllRecruiters, type Recruiter } from "@/lib/placement.functions";
+import { DEFAULT_MISC, getMiscSettings } from "@/lib/site-settings.functions";
+import { pillPrimary } from "@/components/site-next/site-styles";
+import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
+import { metaDescription } from "@/lib/seo";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const programmes = await getAllProgrammes().catch(() => []);
+  // The [course] segment matches on `code`, not a `slug` field — see
+  // getProgrammeBySlug below, which (despite its name) looks up by `code`.
+  return programmes.map((p) => ({ course: p.code }));
+}
+
+async function loadCourse(slug: string) {
+  const programme = await getProgrammeBySlug(slug);
+  if (!programme) return null;
+  const [recruitersData, misc] = await Promise.all([
+    getAllRecruiters(),
+    getMiscSettings().catch(() => DEFAULT_MISC),
+  ]);
+  return {
+    course: programme,
+    recruiters: recruitersData.map((r: Recruiter) => r.company_name),
+    ctaLabel: misc.cta_button_label,
+  };
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ course: string }>;
+}): Promise<Metadata> {
+  const { course: slug } = await params;
+  const result = await loadCourse(slug);
+  if (!result) return { title: "Course — SVIT Vasad" };
+  return {
+    title: `${result.course.name} — SVIT Vasad`,
+    description:
+      metaDescription(result.course.description) ?? `${result.course.name} at SVIT Vasad.`,
+    alternates: { canonical: `/courses/${result.course.code}` },
+  };
+}
+
+export default async function CoursePage({
+  params,
+}: {
+  params: Promise<{ course: string }>;
+}) {
+  const { course: slug } = await params;
+  const result = await loadCourse(slug);
+  if (!result) notFound();
+
+  const { course, recruiters, ctaLabel } = result;
+  const m = course.metadata;
+
+  return (
+    <>
+      <PageHero title={course.name} accent={course.tagline} subtitle={course.description} crumbs={[{ label: "Home", to: "/" }, { label: "Courses", to: "/courses" }, { label: course.name }]} />
+
+      <section className="container-page py-20">
+        <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
+          <div className="space-y-12">
+            <div>
+              <SectionHeading eyebrow="Programme Highlights" title="What makes it different" />
+              <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                {m.highlights.map((h: string) => (
+                  <li key={h} className="flex items-start gap-3 border border-line bg-surface p-4">
+                    <Check className="mt-0.5 h-4 w-4 text-gold shrink-0" />
+                    <span className="text-sm">{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <SectionHeading eyebrow="Outcomes" title="Learning outcomes" />
+              <ul className="mt-8 space-y-3">
+                {m.outcomes.map((o: string) => (
+                  <li key={o} className="flex items-start gap-3">
+                    <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson shrink-0" />
+                    <span className="text-sm text-ink-soft">{o}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <aside className="space-y-4">
+            <div className="border border-line bg-paper-deep p-6">
+              <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">At a glance</div>
+              <dl className="mt-4 divide-y divide-line border-y border-line text-sm text-navy">
+                <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Full Name</dt><dd>{course.full_name}</dd></div>
+                <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Duration</dt><dd>{course.duration}</dd></div>
+                <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Eligibility</dt><dd>{course.eligibility}</dd></div>
+                <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Intake</dt><dd>{String(course.intake ?? "—")}</dd></div>
+              </dl>
+              <Link href="/admissions/inquiry" className={`mt-5 w-full ${pillPrimary}`}>
+                {ctaLabel}
+              </Link>
+            </div>
+            <div className="border border-line bg-surface p-6">
+              <h4 className="font-display font-medium text-navy">Quick Links</h4>
+              <ul className="mt-3 space-y-2 text-sm">
+                <li><Link href="/downloads" className="flex items-center gap-2 py-1 text-navy hover:text-crimson"><FileText className="h-4 w-4" /> Syllabus</Link></li>
+                <li><Link href="/admissions" className="flex items-center gap-2 py-1 text-navy hover:text-crimson"><ClipboardList className="h-4 w-4" /> Admissions</Link></li>
+                <li><Link href="/news" className="flex items-center gap-2 py-1 text-navy hover:text-crimson"><Calendar className="h-4 w-4" /> News</Link></li>
+              </ul>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section className="container-page py-20">
+        <SectionHeading center eyebrow="Recruiters" title="Where our graduates go" />
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
+          {recruiters.map((r) => (
+            <span key={r} className="font-display text-xl font-medium text-navy/50 hover:text-navy transition-colors">{r}</span>
+          ))}
+        </div>
+      </section>
+    </>
+  );
+}

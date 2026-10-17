@@ -1,0 +1,98 @@
+import type { NextConfig } from "next";
+import os from "node:os";
+import withBundleAnalyzerInit from "@next/bundle-analyzer";
+
+// Off by default — zero effect on `next build`/`next dev` normally. Run
+// `ANALYZE=true npm run build` to get an interactive treemap of what's
+// actually in each route's JS bundle (opens in the browser after the build).
+// See optimization_plan.md B5.
+const withBundleAnalyzer = withBundleAnalyzerInit({
+  enabled: process.env.ANALYZE === "true",
+});
+
+// Discover this machine's own LAN IP(s) at startup instead of hardcoding one.
+// A hardcoded IP only works on whoever's network it was written on — it
+// breaks the moment anyone else (a different network, a professor testing
+// the repo, a teammate) runs `next dev` from a different address. Without
+// this, requests to the dev server from any device other than the host
+// itself (including the host's own LAN IP, which is what a phone/second PC
+// on the same network sees) get 403'd by Next's dev-origin protection —
+// the page navigation still loads, but static assets like locally-imported
+// images fail, since they're fetched with a Referer that no longer matches.
+function localNetworkOrigins(): string[] {
+  const interfaces = os.networkInterfaces();
+  const addresses: string[] = [];
+  for (const entries of Object.values(interfaces)) {
+    for (const entry of entries ?? []) {
+      if (entry.family === "IPv4" && !entry.internal) {
+        addresses.push(entry.address);
+      }
+    }
+  }
+  return addresses;
+}
+
+const nextConfig: NextConfig = {
+  // Self-hosted production target. Skipped on Vercel: Vercel's build step
+  // expects the normal .next output (per-page .nft.json trace files), not
+  // the bundled standalone server — setting this there breaks the build
+  // with ENOENT on .next/next-server.js.nft.json.
+  ...(process.env.VERCEL ? {} : { output: "standalone" as const }),
+
+  // Image optimization for self-hosted
+  images: {
+    // Some networks resolve *.supabase.co over DNS64 to a NAT64 (64:ff9b::/96)
+    // address, which Next's SSRF guard misreads as a private IP and blocks.
+    // Safe to bypass here since remotePatterns below already locks fetches
+    // to trusted hostnames only.
+    dangerouslyAllowLocalIP: true,
+    // Several department/college logos are SVGs (e.g. dept-ce.svg). Next blocks
+    // SVG optimization by default (XSS risk from untrusted sources); the CSP
+    // below neutralizes that since all sources are our own trusted storage.
+    dangerouslyAllowSVG: true,
+    contentDispositionType: "attachment",
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.supabase.co",
+      },
+      {
+        protocol: "https",
+        hostname: "supabase.svit.qzz.io",
+      },
+      {
+        protocol: "https",
+        hostname: "db.svitvasad.ac.in",
+      },
+    ],
+  },
+
+  // Typed routes disabled during the route port: Header/Footer link to many
+  // pages that don't exist as Next.js routes yet (About/Admissions/Campus
+  // Life/etc sub-pages). Re-enable once nav coverage matches actual routes.
+  typedRoutes: false,
+
+  // Allow dev server access from localhost plus whatever LAN IP(s) this
+  // machine currently has, so other devices on the same network (a phone,
+  // another PC) can reach it too — see localNetworkOrigins() above.
+  allowedDevOrigins: ["localhost", "127.0.0.1", ...localNetworkOrigins()],
+
+  // Pages that moved or were merged away — keep the old URLs reachable.
+  async redirects() {
+    return [
+      // Clubs and Societies were combined into one Campus Life section.
+      { source: "/campus-life/clubs", destination: "/campus-life/student-groups", permanent: true },
+      { source: "/student-corner", destination: "/campus-life/student-groups", permanent: true },
+      { source: "/student-corner/coe", destination: "/coe", permanent: true },
+      // Central Facilities moved out of About into Campus Life.
+      { source: "/about/facilities", destination: "/campus-life/facilities", permanent: true },
+      // /campus was an orphaned page with no inbound links; its content lives in Campus Life now.
+      { source: "/campus", destination: "/campus-life/facilities", permanent: true },
+      // Alumni relations moved to a dedicated external portal.
+      { source: "/alumni", destination: "https://alumni.svitvasad.ac.in", permanent: true },
+    ];
+  },
+};
+
+export default withBundleAnalyzer(nextConfig);

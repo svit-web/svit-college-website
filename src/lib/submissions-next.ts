@@ -1,0 +1,50 @@
+// Next.js-safe version of submissions.ts — the original uses the Vite-only
+// `@/integrations/supabase/client`, whose SSR fallback reads
+// `process.env.SUPABASE_URL` (non-public), which Next.js never exposes to
+// the browser bundle. This uses the Phase 2 browser client instead
+// (NEXT_PUBLIC_-prefixed env vars, safe in client components).
+'use client';
+
+import { createClient } from '@/app/lib/supabase/client';
+
+const formIdCache = new Map<string, string>();
+
+async function getFormId(slug: string): Promise<string> {
+  const cached = formIdCache.get(slug);
+  if (cached) return cached;
+
+  const supabase = createClient();
+  const { data, error } = await supabase
+    .from('inquiry_forms')
+    .select('id')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .is('deleted_at', null)
+    .maybeSingle();
+
+  if (error) throw new Error('Could not load form configuration.');
+  if (!data) throw new Error(`Form "${slug}" not found.`);
+
+  formIdCache.set(slug, data.id);
+  return data.id;
+}
+
+export async function submitForm(
+  formSlug: string,
+  submittedData: Record<string, unknown>,
+  honeypot?: string
+): Promise<void> {
+  // Honeypot: a hidden field real visitors never see or fill. A bot that
+  // blindly fills every input trips it — pretend success without writing
+  // anything, so the bot has no signal to adapt against.
+  if (honeypot) return;
+
+  const formId = await getFormId(formSlug);
+
+  const supabase = createClient();
+  const { error } = await supabase
+    .from('inquiry_submissions')
+    .insert({ form_id: formId, submitted_data: submittedData } as any);
+
+  if (error) throw new Error(error.message?.includes('Too many') || error.message?.includes('too many') ? error.message : 'Submission failed. Please try again.');
+}

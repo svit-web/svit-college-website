@@ -1,0 +1,64 @@
+import type { Metadata } from "next";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
+import { Reveal } from "@/components/site-next/Reveal";
+import { CommitteeMembers } from "@/components/site-next/CommitteeMembers";
+import { getAllCommittees } from "@/lib/committees.functions";
+
+export const metadata: Metadata = {
+  title: "SVIT Committees — SVIT Vasad",
+  description:
+    "Governance committees at SVIT Vasad: Women Development Cell, Grievance Redressal, IQAC and more.",
+  alternates: { canonical: "/about/committees" },
+};
+
+export default async function CommitteesPage() {
+  const committees = await getAllCommittees().catch(() => []);
+
+  return (
+    <section className="container-page py-16 md:py-20">
+      <SectionHeading eyebrow="Governance" title="SVIT Committees" variant="eyebrow" />
+      <div className="mt-10 space-y-6">
+        {committees.map((cm, i) => (
+          <Reveal key={cm.id} delay={i * 0.05}>
+            <div className="border border-line bg-surface p-6">
+              <h3 className="font-display text-lg font-medium text-navy">{cm.name}</h3>
+              <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">
+                {cm.metadata?.description}
+              </p>
+              {cm.metadata?.vision && (
+                <p className="mt-3 text-sm text-ink-soft">
+                  <span className="font-semibold text-navy">Vision: </span>
+                  {cm.metadata.vision}
+                </p>
+              )}
+              {cm.metadata?.mission && (
+                <p className="mt-2 text-sm text-ink-soft">
+                  <span className="font-semibold text-navy">Mission: </span>
+                  {cm.metadata.mission}
+                </p>
+              )}
+              {cm.metadata.keyActivities && cm.metadata.keyActivities.length > 0 && (
+                <div className="mt-4">
+                  <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
+                    Key Activities
+                  </div>
+                  <ul className="mt-2 space-y-1.5">
+                    {cm.metadata.keyActivities.map((a, j) => (
+                      <li key={j} className="flex gap-2 text-sm text-ink-soft">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
+                        {a}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {cm.committee_members && cm.committee_members.length > 0 && (
+                <CommitteeMembers members={cm.committee_members} />
+              )}
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}

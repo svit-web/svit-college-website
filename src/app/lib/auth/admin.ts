@@ -1,0 +1,288 @@
+import { createClient } from '../supabase/server';
+import { FULL_ACCESS_ROLE_CODES } from '@/lib/admin-sections';
+
+export interface AdminRole {
+  code: string;
+  name: string;
+  scope_type: string;
+  trust_id?: string | null;
+  institute_id?: string | null;
+  college_id?: string | null;
+  department_id?: string | null;
+}
+
+export interface AdminSectionGrant {
+  code: string;
+  scope_type: string;
+  institute_id?: string | null;
+  college_id?: string | null;
+  department_id?: string | null;
+}
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  avatar_url: string | null;
+  roles: AdminRole[];
+  sections: AdminSectionGrant[];
+}
+
+// Allowed admin-level role codes — only these grant portal access.
+// Full-access codes (admin/editor, with department_admin/college_admin
+// reserved — see FULL_ACCESS_ROLE_CODES in src/lib/admin-sections.ts) carry
+// the ordinary scope-tier semantics; every scoped admin
+// (college/department/institute/trust) is granted the 'editor' code with a
+// scoped user_roles row. Section-scoped codes grant portal access limited
+// to the user's section grants: currently only 'sports_secretary' (Sports &
+// Athletics + sports-category achievements), which gets scope level
+// 'section' rather than a scope tier.
+const AUTHORIZED_ROLE_CODES = [...FULL_ACCESS_ROLE_CODES, 'sports_secretary'] as const;
+
+/**
+ * Get the current admin user with roles from server-side session.
+ * Returns null if not authenticated or not authorized.
+ */
+export async function getAdminUser(): Promise<AdminUser | null> {
+  const supabase = await createClient();
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  // Fetch profile, roles, and section grants in parallel
+  const [profileResult, rolesResult, sectionsResult] = await Promise.all([
+    supabase
+      .from('user_profiles')
+      .select('id, first_name, last_name, avatar_url')
+      .eq('id', user.id)
+      .maybeSingle(),
+    supabase
+      .from('user_roles')
+      .select(
+        `
+        scope_type,
+        trust_id,
+        institute_id,
+        college_id,
+        department_id,
+        role:role_id (
+          code,
+          name
+        )
+      `
+      )
+      .eq('user_id', user.id)
+      .eq('status', 'published')
+      .is('deleted_at', null),
+    supabase
+      .from('user_section_grants')
+      .select(
+        `
+        scope_type,
+        institute_id,
+        college_id,
+        department_id,
+        section:section_id (
+          code
+        )
+      `
+      )
+      .eq('user_id', user.id)
+      .eq('status', 'published')
+      .is('deleted_at', null),
+  ]);
+
+  const profile = profileResult.data;
+  const rolesData = (rolesResult.data as any[]) || [];
+  const sectionsData = (sectionsResult.data as any[]) || [];
+
+  const roles: AdminRole[] = rolesData.map((ur) => ({
+    code: ur.role?.code || '',
+    name: ur.role?.name || '',
+    scope_type: ur.scope_type,
+    trust_id: ur.trust_id,
+    institute_id: ur.institute_id,
+    college_id: ur.college_id,
+    department_id: ur.department_id,
+  }));
+
+  const sections: AdminSectionGrant[] = sectionsData
+    .filter((sg) => sg.section?.code)
+    .map((sg) => ({
+      code: sg.section.code,
+      scope_type: sg.scope_type,
+      institute_id: sg.institute_id,
+      college_id: sg.college_id,
+      department_id: sg.department_id,
+    }));
+
+  // Only authorize users with explicitly permitted role codes
+  const hasAuthorizedRole = roles.some((r) =>
+    (AUTHORIZED_ROLE_CODES as readonly string[]).includes(r.code)
+  );
+
+  if (!hasAuthorizedRole) return null;
+
+  return {
+    id: user.id,
+    email: user.email || '',
+    first_name: profile?.first_name || null,
+    last_name: profile?.last_name || null,
+    avatar_url: profile?.avatar_url || null,
+    roles,
+    sections,
+  };
+}
+
+/**
+ * Require admin access. Throws redirect to login if not authenticated.
+ * Use in Server Components and Server Actions.
+ */
+export async function requireAdmin(): Promise<AdminUser> {
+  const admin = await getAdminUser();
+
+  if (!admin) {
+    // In Server Components, this will be caught by Next.js and redirect
+    throw new Error('Unauthorized');
+  }
+
+  return admin;
+}
+
+/**
+ * Check if user has a specific role code
+ */
+export function hasRole(admin: AdminUser, roleCode: string): boolean {
+  return admin.roles.some((r) => r.code === roleCode);
+}
+
+/**
+ * Check if user has any of the specified role codes
+ */
+export function hasAnyRole(admin: AdminUser, roleCodes: string[]): boolean {
+  return admin.roles.some((r) => roleCodes.includes(r.code));
+}
+
+/**
+ * Check if user is a global admin
+ */
+export function isAdmin(admin: AdminUser): boolean {
+  return hasRole(admin, 'admin');
+}
+
+/**
+ * Check if user is an editor or admin
+ */
+export function isEditor(admin: AdminUser): boolean {
+  return hasAnyRole(admin, ['admin', 'editor']);
+}
+
+/**
+ * Check if a user has been granted write access to a content section
+ * (Home Page, News & Events, Placement, etc.) — orthogonal to the
+ * college/department scope tree. Global admins always pass.
+ */
+export function hasSectionAccess(admin: AdminUser, sectionCode: string): boolean {
+  if (isAdmin(admin)) return true;
+  return admin.sections.some((s) => s.code === sectionCode);
+}
+
+/**
+ * Get scope constraints for a user (for RLS-aware queries).
+ * Derived from each role's own scope_type, not the role code — a role
+ * code like "editor" can carry either a global or department-scoped grant.
+ */
+export function getScopeConstraints(admin: AdminUser): {
+  scopeType: string;
+  trustId?: string;
+  instituteId?: string;
+  collegeId?: string;
+  departmentId?: string;
+} | null {
+  // Global admin, or any role explicitly granted at global scope
+  if (hasRole(admin, 'admin') || admin.roles.some((r) => r.scope_type === 'global')) {
+    return null;
+  }
+
+  // Department-scoped role
+  const deptRole = admin.roles.find((r) => r.scope_type === 'department');
+  if (deptRole) {
+    return {
+      scopeType: 'department',
+      departmentId: deptRole.department_id || undefined,
+    };
+  }
+
+  // College-scoped role
+  const collegeRole = admin.roles.find((r) => r.scope_type === 'college');
+  if (collegeRole) {
+    return {
+      scopeType: 'college',
+      collegeId: collegeRole.college_id || undefined,
+    };
+  }
+
+  // Institute-scoped role — has no college/department to filter on, so
+  // callers should treat this the same as "no constraint" for
+  // college/department-owned tables, but can filter institute_id-owned
+  // tables (institutes itself, colleges) by instituteId.
+  const instituteRole = admin.roles.find((r) => r.scope_type === 'institute');
+  if (instituteRole) {
+    return { scopeType: 'institute', instituteId: instituteRole.institute_id || undefined };
+  }
+
+  // Trust-scoped role
+  const trustRole = admin.roles.find((r) => r.scope_type === 'trust');
+  if (trustRole) {
+    return {
+      scopeType: 'trust',
+      trustId: trustRole.trust_id || undefined,
+    };
+  }
+
+  return null;
+}
+
+const SCOPE_RANK: Record<string, number> = {
+  global: 0,
+  trust: 1,
+  institute: 1.5,
+  college: 2,
+  department: 3,
+};
+
+/**
+ * Get the broadest scope level a user holds — used for route/nav visibility
+ * (distinct from getScopeConstraints, which returns RLS filter values).
+ * A user holding multiple role grants is treated as operating at their
+ * widest one. Mirrors the client-side useUserScope() hook.
+ *
+ * Section-only users (no full-access role — e.g. a Sports Secretary) get
+ * 'section': their reach comes solely from section grants, and a scoped
+ * section-role row must never widen anyone's nav to its own scope tier
+ * (see isRouteAllowedForUser in src/lib/admin-sections.ts).
+ */
+export function getScopeLevel(
+  admin: AdminUser
+): 'global' | 'trust' | 'institute' | 'college' | 'department' | 'section' | 'none' {
+  if (admin.roles.length === 0) return 'none';
+
+  if (hasRole(admin, 'admin')) return 'global';
+
+  const fullAccessRoles = admin.roles.filter((r) =>
+    (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(r.code)
+  );
+  if (fullAccessRoles.length === 0) return 'section';
+
+  const best = fullAccessRoles.reduce((acc, r) => {
+    const rank = SCOPE_RANK[r.scope_type] ?? 99;
+    const bestRank = SCOPE_RANK[acc.scope_type] ?? 99;
+    return rank < bestRank ? r : acc;
+  }, fullAccessRoles[0]);
+
+  return (best.scope_type as 'global' | 'trust' | 'institute' | 'college' | 'department') || 'none';
+}

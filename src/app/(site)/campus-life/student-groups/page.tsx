@@ -1,0 +1,99 @@
+import { clubBlurb } from "@/lib/club-blurb";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { Building2 } from "lucide-react";
+import { PillTabs } from "@/components/site-next/PillTabs";
+import { Reveal } from "@/components/site-next/Reveal";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
+import { getAllStudentClubs } from "@/lib/clubs.functions";
+import { getVisibleCenters } from "@/lib/centers.functions";
+
+export const metadata: Metadata = {
+  title: "Student Groups — Campus Life — SVIT Vasad",
+  description: "Student clubs, societies and centres at SVIT Vasad.",
+  alternates: { canonical: "/campus-life/student-groups" },
+};
+
+export default async function StudentGroupsIndex() {
+  const [clubs, centers] = await Promise.all([
+    getAllStudentClubs().catch(() => []),
+    getVisibleCenters().catch(() => []),
+  ]);
+
+  return (
+    <div className="space-y-12">
+      <section>
+        <PillTabs
+          ariaLabel="Clubs"
+          items={clubs
+            .filter((c) => c.has_detail_page)
+            .map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
+        />
+        <SectionHeading eyebrow="Clubs" title="Find your tribe" />
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {clubs.map((c, i) => {
+            const body = (
+              <>
+                <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                  {c.accent_color || "Club"}
+                </div>
+                <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
+                {c.departmentName && (
+                  <div className="mt-1 flex items-center gap-1.5 text-xs font-semibold text-navy/60">
+                    <Building2 className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{c.departmentName}</span>
+                  </div>
+                )}
+                <p
+                  className={`mt-2 text-sm text-ink-soft ${clubBlurb(c).isFallback ? "line-clamp-2" : ""}`}
+                >
+                  {clubBlurb(c).text}
+                </p>
+              </>
+            );
+            return (
+              <Reveal key={c.slug} delay={i * 0.03}>
+                {c.has_detail_page ? (
+                  <Link
+                    href={`/campus-life/clubs/${c.slug}`}
+                    className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
+                  >
+                    {body}
+                  </Link>
+                ) : (
+                  <div className="block h-full border border-line bg-surface p-5">{body}</div>
+                )}
+              </Reveal>
+            );
+          })}
+        </div>
+      </section>
+
+      <section>
+        <PillTabs
+          ariaLabel="Centres"
+          items={centers.map((c) => ({ label: c.name.split("(")[0].trim(), to: `/student-corner/${c.slug}` }))}
+        />
+        <SectionHeading eyebrow="Societies" title="Where students grow beyond the syllabus" />
+        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {centers.map((c, i) => (
+            <Reveal key={c.slug} delay={i * 0.03}>
+              <Link
+                href={`/student-corner/${c.slug}`}
+                className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
+              >
+                <div className="text-xs font-bold uppercase tracking-widest text-crimson">
+                  {c.accent_color || "Centre"}
+                </div>
+                <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
+                <p className="mt-2 line-clamp-3 text-sm text-ink-soft">
+                  {c.subtitle || ""}
+                </p>
+              </Link>
+            </Reveal>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}

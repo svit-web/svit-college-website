@@ -1,0 +1,96 @@
+// Server functions for colleges data from Supabase
+import { publicSupabase, unwrap } from "@/lib/supabase-public";
+
+export interface College {
+  id: string;
+  name: string;
+  slug: string;
+  code: string;
+  logo_url: string | null;
+  website_url: string | null;
+  sort_order: number;
+  status: "draft" | "published" | "archived";
+  tagline: string | null;
+  hero_kicker: string | null;
+  hero_subhead: string | null;
+  principal_name: string | null;
+  principal_title: string | null;
+  principal_message: string | null;
+  principal_photo_url: string | null;
+  metadata: Record<string, any>;
+  created_at: string;
+  updated_at: string;
+}
+
+/**
+ * Fetch all published colleges ordered by sort_order
+ */
+export async function getAllColleges() {
+  const supabase = publicSupabase();
+  const result = await supabase
+    .from("colleges")
+    .select("*")
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .order("sort_order", { ascending: true });
+
+  return unwrap<College[]>(result as any, "colleges");
+}
+
+/**
+ * Fetch departments for a college by college slug
+ */
+export async function getDepartmentsByCollegeSlug(slug: string) {
+  const supabase = publicSupabase();
+  // First get the college id
+  const { data: college, error: cErr } = await supabase
+    .from("colleges")
+    .select("id")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .maybeSingle();
+  if (cErr || !college)
+    return [] as {
+      id: string;
+      name: string;
+      code: string;
+      logo_url: string | null;
+      metadata: any;
+    }[];
+
+  const { data, error } = await supabase
+    .from("departments")
+    .select("id, name, code, logo_url, metadata")
+    .eq("college_id", college.id)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .order("name");
+  if (error) return [] as { id: string; name: string; code: string; metadata: any }[];
+
+  return (data ?? []) as {
+    id: string;
+    name: string;
+    code: string;
+    logo_url: string | null;
+    metadata: any;
+  }[];
+}
+
+/**
+ * Fetch a single college by slug
+ */
+export async function getCollegeBySlug(slug: string) {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from("colleges")
+    .select("*")
+    .eq("slug", slug)
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .maybeSingle();
+
+  if (error) throw error;
+
+  return data as College | null;
+}
