@@ -52,7 +52,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }} />
       </head>
-      <body className="antialiased">
+      <body className="antialiased" suppressHydrationWarning>
         <ScrollEngineProvider />
         {children}
         <Toaster position="top-right" richColors />

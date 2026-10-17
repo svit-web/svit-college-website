@@ -1,5 +1,6 @@
 import { Header } from "@/components/site-next/Header";
 import { Footer } from "@/components/site-next/Footer";
+import { PageTransition } from "@/components/site-next/PageTransition";
 import { getCollegesGrid } from "@/lib/homepage.functions";
 import { DEFAULT_CONTACT, getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
 import { getAllDepartments } from "@/lib/departments.functions";
@@ -13,6 +14,17 @@ import { getHeroAppearance } from "@/lib/theme.functions";
 import { DEFAULT_HERO_APPEARANCE, heroTextVars } from "@/lib/theme";
 import { organizationJsonLd } from "@/lib/seo";
 import { JsonLd } from "@/components/site-next/JsonLd";
+
+// ISR: this layout alone runs ~12 parallel Supabase queries (nav, footer,
+// hero chrome) and previously did so on every single page, every navigation,
+// since none of them use Next's fetch() (supabase-js isn't cacheable by
+// Next's Data Cache). This is identical data on every page, so it's the
+// single highest-value caching target on the site. revalidate here sets a
+// floor for every page under (site) — admin writes still invalidate
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts); this window is only the periodic fallback.
+// See optimization_plan.md A2.
+export const revalidate = 300; // seconds
 
 export default async function SiteLayout({
   children,
@@ -66,7 +78,9 @@ export default async function SiteLayout({
         centers={centers}
         logoUrl={logoUrl}
       />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <PageTransition>{children}</PageTransition>
+      </main>
       <Footer contactInfo={contactInfo} misc={misc} logoUrl={logoUrl} />
       <JsonLd
         data={organizationJsonLd({
