@@ -9,6 +9,19 @@ import { getVisibleCenters, getCenterBySlug } from "@/lib/centers.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 import { metaDescription } from "@/lib/seo";
 
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const centers = await getVisibleCenters().catch(() => []);
+  return centers.map((c) => ({ slug: c.slug }));
+}
+
 async function loadCentre(slug: string) {
   const [item, allCenters] = await Promise.all([getCenterBySlug(slug), getVisibleCenters()]);
   if (!item || !item.has_detail_page) return null;

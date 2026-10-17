@@ -40,7 +40,11 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
-  ],
+  // Scoped to /admin: this middleware's only job is refreshing the Supabase
+  // auth session, which only admin routes (login, the dashboard, the OAuth
+  // callback) ever need. It previously ran on every public request too —
+  // every page, every navigation — paying a Supabase auth round-trip for
+  // visitors who are never signed in. See optimization_plan.md A1 /
+  // PERFORMANCE_REPORT.md.
+  matcher: ['/admin/:path*'],
 };

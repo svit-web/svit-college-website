@@ -1,5 +1,14 @@
 import type { NextConfig } from "next";
 import os from "node:os";
+import withBundleAnalyzerInit from "@next/bundle-analyzer";
+
+// Off by default — zero effect on `next build`/`next dev` normally. Run
+// `ANALYZE=true npm run build` to get an interactive treemap of what's
+// actually in each route's JS bundle (opens in the browser after the build).
+// See optimization_plan.md B5.
+const withBundleAnalyzer = withBundleAnalyzerInit({
+  enabled: process.env.ANALYZE === "true",
+});
 
 // Discover this machine's own LAN IP(s) at startup instead of hardcoding one.
 // A hardcoded IP only works on whoever's network it was written on — it
@@ -86,4 +95,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

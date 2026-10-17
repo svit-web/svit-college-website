@@ -5,11 +5,32 @@ import Link from "next/link";
 import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
-import { getDepartmentByCode } from "@/lib/departments.functions";
-import { getLabBySlug } from "@/lib/facilities.functions";
+import { getAllDepartments, getDepartmentByCode } from "@/lib/departments.functions";
+import { getLabBySlug, getLabsByDepartmentId } from "@/lib/facilities.functions";
 import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 import { metaDescription } from "@/lib/seo";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const departments = await getAllDepartments().catch(() => []);
+  const perDept = await Promise.all(
+    departments.map(async (d) => {
+      const labs = await getLabsByDepartmentId(d.id).catch(() => []);
+      return labs
+        .filter((l) => l.has_detail_page && typeof l.slug === "string" && l.slug.length > 0)
+        .map((l) => ({ dept: d.code, slug: l.slug }));
+    }),
+  );
+  return perDept.flat();
+}
 
 // Per-request dedupe between generateMetadata and the page.
 const loadLab = cache(async (deptCode: string, slug: string) => {

@@ -5,6 +5,17 @@ import { ArrowLeft } from "lucide-react";
 import { PageHero } from "@/components/site-next/PageHero";
 import { getCourseWithDept } from "@/lib/departments.functions";
 
+// NOTE: `revalidate` alone does nothing on a dynamic-segment page — verified
+// empirically (Cache-Control came back `no-store` without a matching
+// generateStaticParams; see PERFORMANCE_REPORT.md). It's left set here for
+// when generateStaticParams is added, but is NOT currently caching this
+// route. Deliberately deferred: getCourseWithDept looks up by id, and there's
+// no existing flat "every course id" function — enumerating them means a new
+// aggregate query across every department's courses plus top-level
+// programmes. Worth doing, but as its own reviewed change, not folded into
+// this pass. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
 const DEGREE_LABEL: Record<string, string> = {
   undergraduate: "Undergraduate (UG)",
   graduate: "Postgraduate (PG)",

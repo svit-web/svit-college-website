@@ -8,8 +8,22 @@ import { ChevronRight } from "lucide-react";
 import {
   achievementCategoryLabel,
   getAchievementDetailBySlug,
+  getAllAchievements,
 } from "@/lib/achievements.functions";
 import { metaDescription } from "@/lib/seo";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const achievements = await getAllAchievements().catch(() => []);
+  return achievements.map((a) => ({ slug: a.slug }));
+}
 
 // Per-request dedupe between generateMetadata and the page.
 const loadAchievement = cache((slug: string) =>

@@ -3,12 +3,27 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { PageHero } from "@/components/site-next/PageHero";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
-import { getProgrammeBySlug } from "@/lib/programmes.functions";
+import { getAllProgrammes, getProgrammeBySlug } from "@/lib/programmes.functions";
 import { getAllRecruiters, type Recruiter } from "@/lib/placement.functions";
 import { DEFAULT_MISC, getMiscSettings } from "@/lib/site-settings.functions";
 import { pillPrimary } from "@/components/site-next/site-styles";
 import { Check, FileText, ClipboardList, Calendar } from "lucide-react";
 import { metaDescription } from "@/lib/seo";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const programmes = await getAllProgrammes().catch(() => []);
+  // The [course] segment matches on `code`, not a `slug` field — see
+  // getProgrammeBySlug below, which (despite its name) looks up by `code`.
+  return programmes.map((p) => ({ course: p.code }));
+}
 
 async function loadCourse(slug: string) {
   const programme = await getProgrammeBySlug(slug);

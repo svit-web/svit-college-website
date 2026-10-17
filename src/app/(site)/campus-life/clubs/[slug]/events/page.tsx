@@ -3,9 +3,22 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { EntryEventsGrid } from "@/components/site-next/EntryEventsGrid";
-import { getStudentClubBySlug, getAllClubEvents } from "@/lib/clubs.functions";
+import { getAllStudentClubs, getStudentClubBySlug, getAllClubEvents } from "@/lib/clubs.functions";
 import { getEntryAlbums } from "@/lib/gallery.functions";
 import type { EntryCardData } from "@/lib/entry";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const clubs = await getAllStudentClubs().catch(() => []);
+  return clubs.filter((c) => c.has_detail_page).map((c) => ({ slug: c.slug }));
+}
 
 async function loadClubEvents(slug: string) {
   const club = await getStudentClubBySlug(slug);

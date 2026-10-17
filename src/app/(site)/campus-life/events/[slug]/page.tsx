@@ -6,11 +6,24 @@ import { ArrowLeft, Calendar, MapPin, Ticket } from "lucide-react";
 import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
-import { getEventBySlug } from "@/lib/events.functions";
+import { getAllEvents, getEventBySlug } from "@/lib/events.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 import { eventTypeLabel, formatEventDates } from "@/lib/event-types";
 import { eventJsonLd, metaDescription, parseRobots, siteOpenGraph } from "@/lib/seo";
 import { JsonLd } from "@/components/site-next/JsonLd";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const events = await getAllEvents().catch(() => []);
+  return events.map((e) => ({ slug: e.slug }));
+}
 
 // Per-request dedupe between generateMetadata and the page.
 const loadEvent = cache(async (slug: string) => {

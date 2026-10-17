@@ -1,8 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { GalleryAlbumView } from "@/components/site-next/GalleryAlbumView";
-import { getGalleryAlbumWithMedia } from "@/lib/gallery.functions";
+import { getAllGalleryAlbums, getGalleryAlbumWithMedia } from "@/lib/gallery.functions";
 import { metaDescription } from "@/lib/seo";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const albums = await getAllGalleryAlbums().catch(() => []);
+  return albums.map((a) => ({ slug: a.slug }));
+}
 
 export async function generateMetadata({
   params,
