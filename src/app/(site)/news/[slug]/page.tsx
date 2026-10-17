@@ -4,18 +4,36 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { DetailPageLayout } from "@/components/site-next/DetailPageLayout";
 import { formatDate } from "@/components/site-next/DepartmentSections";
-import { getPostBySlug } from "@/lib/posts.functions";
+import { getAllPosts, getPostBySlug } from "@/lib/posts.functions";
 import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
 import { metaDescription, newsArticleJsonLd, parseRobots, siteOpenGraph } from "@/lib/seo";
 import { JsonLd } from "@/components/site-next/JsonLd";
+
+// ISR: this page reads from Supabase (not Next's fetch()), so without this
+// it re-queries the DB on every single request. Caching the render for 5
+// minutes removes that from the hot path; admin writes still show up
+// immediately via revalidatePublicSite()'s revalidatePath('/', 'layout')
+// (src/app/admin/actions.ts), which invalidates this on-demand regardless
+// of the window below. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
+export async function generateStaticParams() {
+  const posts = await getAllPosts().catch(() => []);
+  return posts.map((p) => ({ slug: p.slug }));
+}
 
 // Per-request dedupe between generateMetadata and the page.
 const loadPost = cache(async (slug: string) => {
   const post = await getPostBySlug(slug).catch(() => null);
   if (!post) return null;
   const album = await getEntryAlbum(post.album_id).catch(() => null);
-  return { post, album };
+  // card_photo_url is a legacy column the admin's Photos editor doesn't
+  // write to any more (it manages album_id/gallery_media instead — see
+  // AdminCrudManager's ENTRY_PHOTO_FIELDS) — fall back to the album's
+  // cover so a photo added via admin actually shows up here.
+  const coverPhoto = post.card_photo_url ?? album?.coverUrl ?? null;
+  return { post, album, coverPhoto };
 });
 
 export async function generateMetadata({
@@ -26,10 +44,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const loaded = await loadPost(slug);
   if (!loaded) return { title: "News not found — SVIT Vasad", robots: { index: false } };
-  const { post } = loaded;
+  const { post, coverPhoto } = loaded;
   const seo = post.seo;
   const description = seo?.meta_description || metaDescription(post.summary ?? post.content);
-  const image = seo?.og_image_url || post.card_photo_url;
+  const image = seo?.og_image_url || coverPhoto;
   const base = await siteOpenGraph();
   return {
     title: seo?.meta_title || `${post.title} — News — SVIT Vasad`,
@@ -57,7 +75,7 @@ export default async function NewsDetailPage({
   const loaded = await loadPost(slug);
   if (!loaded) notFound();
 
-  const { post, album } = loaded;
+  const { post, album, coverPhoto } = loaded;
 
   return (
     <div className="bg-paper">
@@ -66,7 +84,7 @@ export default async function NewsDetailPage({
           title: post.title,
           url: `/news/${post.slug}`,
           description: metaDescription(post.summary ?? post.content),
-          image: post.card_photo_url,
+          image: coverPhoto,
           publishedAt: post.published_at,
           updatedAt: post.updated_at,
         })}

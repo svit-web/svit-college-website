@@ -43,7 +43,7 @@ export default async function StudentGroupsIndex() {
                     <span className="truncate">{c.departmentName}</span>
                   </div>
                 )}
-                <p className="mt-2 text-sm text-ink-soft">
+                <p className="mt-2 line-clamp-3 text-sm text-ink-soft">
                   {c.subtitle || c.description}
                 </p>
               </>
@@ -83,7 +83,7 @@ export default async function StudentGroupsIndex() {
                   {c.accent_color || "Centre"}
                 </div>
                 <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
-                <p className="mt-2 text-sm text-ink-soft">
+                <p className="mt-2 line-clamp-3 text-sm text-ink-soft">
                   {c.subtitle || ""}
                 </p>
               </Link>

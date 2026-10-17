@@ -202,7 +202,7 @@ export async function getLatestEvents() {
   const { data, error } = await supabase
     .from("events")
     .select(
-      "id, slug, title, tag, start_date, end_date, description, card_photo_url, album_id, registration_link, sort_order",
+      "id, slug, title, tag, start_date, end_date, description, card_photo_url, album_id, registration_link, sort_order, has_detail_page",
     )
     .eq("status", "published")
     .eq("is_featured", true)
@@ -211,8 +211,15 @@ export async function getLatestEvents() {
     .limit(8);
   if (error) throw new Error(error.message);
   const rows = data ?? [];
-  const albums = await getEntryAlbums(rows.map((r) => r.album_id));
-  return rows.map(({ album_id, ...row }) => ({
+  // "Featured" alone doesn't mean upcoming — a featured event never stops
+  // being featured on its own, so without this an event stays on the
+  // homepage forever after it's happened. A multi-day event still counts as
+  // upcoming/current until its end_date (falling back to start_date for
+  // single-day events) has passed.
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const upcoming = rows.filter((r) => (r.end_date ?? r.start_date) >= todayISO);
+  const albums = await getEntryAlbums(upcoming.map((r) => r.album_id));
+  return upcoming.map(({ album_id, ...row }) => ({
     ...row,
     card_photo_url: albums.get(album_id ?? "")?.coverUrl ?? null,
   }));

@@ -61,7 +61,7 @@ export default async function CampusLifeOverview() {
               >
                 <div className="text-xs font-bold uppercase tracking-widest text-crimson">{e.accent_color ?? e.tag}</div>
                 <h3 className="mt-2 font-display text-xl font-medium text-navy">{e.title}</h3>
-                <p className="mt-2 text-sm text-ink-soft">{e.subtitle ?? e.description}</p>
+                <p className="mt-2 line-clamp-3 text-sm text-ink-soft">{e.subtitle ?? e.description}</p>
               </Link>
             </Reveal>
           ))}
@@ -79,12 +79,12 @@ export default async function CampusLifeOverview() {
                   className="block h-full border border-line bg-surface p-5 transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
                 >
                   <h4 className="font-display font-medium text-navy">{c.name}</h4>
-                  <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
                 </Link>
               ) : (
                 <div className="block h-full border border-line bg-surface p-5">
                   <h4 className="font-display font-medium text-navy">{c.name}</h4>
-                  <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
+                  <p className="mt-2 line-clamp-3 text-sm text-ink-soft">{c.subtitle ?? c.description}</p>
                 </div>
               )}
             </Reveal>
@@ -105,7 +105,7 @@ export default async function CampusLifeOverview() {
                   {c.accent_color ?? "Centre"}
                 </div>
                 <h4 className="mt-1 font-display font-medium text-navy">{c.name}</h4>
-                <p className="mt-2 text-sm text-ink-soft">{c.subtitle ?? ""}</p>
+                <p className="mt-2 line-clamp-3 text-sm text-ink-soft">{c.subtitle ?? ""}</p>
               </Link>
             </Reveal>
           ))}

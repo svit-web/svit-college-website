@@ -3,6 +3,7 @@
 // itself something to attend" — kept separate from Events. Mirrors
 // events.functions.ts's conventions.
 import { publicSupabase } from '@/lib/supabase-public';
+import { getEntryAlbums } from '@/lib/gallery.functions';
 import { SEO_OVERRIDE_SELECT, type SeoOverride } from '@/lib/seo';
 
 export interface Post {
@@ -34,6 +35,19 @@ const POST_SELECT = [
   SEO_OVERRIDE_SELECT,
 ].join(', ');
 
+// card_photo_url is a legacy column the admin's Photos editor doesn't write
+// to any more (it manages album_id/gallery_media instead — see
+// AdminCrudManager's ENTRY_PHOTO_FIELDS, same as events.functions.ts's
+// getLatestEvents). Fall back to the album's cover photo so a photo added
+// via admin actually shows up in these list views.
+async function withCoverPhotos(posts: Post[]): Promise<Post[]> {
+  const albums = await getEntryAlbums(posts.map((p) => p.album_id));
+  return posts.map((post) => ({
+    ...post,
+    card_photo_url: post.card_photo_url ?? albums.get(post.album_id ?? '')?.coverUrl ?? null,
+  }));
+}
+
 /**
  * Fetch all published, non-expired posts newest-first for the public
  * News listing.
@@ -50,7 +64,7 @@ export async function getAllPosts() {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return data as unknown as Post[];
+  return withCoverPhotos(data as unknown as Post[]);
 }
 
 /**
@@ -89,5 +103,5 @@ export async function getFeaturedPosts(limit = 6) {
     .limit(limit);
 
   if (error) throw error;
-  return data as unknown as Post[];
+  return withCoverPhotos(data as unknown as Post[]);
 }
