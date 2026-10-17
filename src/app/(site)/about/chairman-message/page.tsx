@@ -21,7 +21,7 @@ export default async function ChairmanMessagePage() {
           <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
             <Quote className="h-4 w-4" /> Chairman&rsquo;s Message
           </div>
-          <blockquote className="text-navy leading-relaxed italic">
+          <blockquote className="text-justify text-navy leading-relaxed italic">
             "{c?.leadership?.chairman?.quote}"
           </blockquote>
           <div className="mt-4 flex items-center gap-4">
@@ -44,7 +44,7 @@ export default async function ChairmanMessagePage() {
               <div className="text-xs font-semibold uppercase tracking-wider text-navy">
                 Strategic Plan
               </div>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+              <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">
                 {c.leadership.chairman.strategicPlanText}
               </p>
             </div>

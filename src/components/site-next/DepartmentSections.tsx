@@ -91,7 +91,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
         <SectionHeading eyebrow="About Us" title={`About the Department of ${department.name}`} />
         <div className="mt-6 space-y-6">
           <Reveal>
-            <p className="text-base leading-relaxed text-ink">
+            <p className="text-justify text-base leading-relaxed text-ink">
               {aboutText ??
                 `The Department of ${department.name} is committed to delivering quality education, cultivating research aptitude and preparing students for meaningful careers in industry and academia.`}
             </p>
@@ -103,7 +103,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
                   <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
                     Vision
                   </div>
-                  <p className="mt-2 text-sm leading-relaxed text-ink">{vision}</p>
+                  <p className="mt-2 text-justify text-sm leading-relaxed text-ink">{vision}</p>
                 </div>
               )}
               {missionLines.length > 0 && (
@@ -112,7 +112,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
                     Mission
                   </div>
                   {missionLines.length === 1 ? (
-                    <p className="mt-2 text-sm leading-relaxed text-ink">{missionLines[0]}</p>
+                    <p className="mt-2 text-justify text-sm leading-relaxed text-ink">{missionLines[0]}</p>
                   ) : (
                     <ul className="mt-2 space-y-1.5 text-sm leading-relaxed text-ink list-disc list-inside">
                       {missionLines.map((l, i) => (
@@ -424,7 +424,7 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
                       <div className="font-display font-medium text-navy">{c.name}</div>
                     </div>
                     {c.description && (
-                      <p className="mt-2 text-xs text-ink-soft leading-relaxed">
+                      <p className="mt-2 text-justify text-xs text-ink-soft leading-relaxed">
                         {c.description}
                       </p>
                     )}

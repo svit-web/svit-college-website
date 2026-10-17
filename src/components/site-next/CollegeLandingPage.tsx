@@ -270,7 +270,7 @@ function WhySection({
                 <div className="h-full p-6 md:p-8">
                   <Icon className="h-6 w-6 text-navy" strokeWidth={1.5} />
                   <h3 className="mt-5 font-display text-xl font-medium text-navy">{w.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{w.desc}</p>
+                  <p className="mt-2 text-justify text-sm leading-relaxed text-ink-soft">{w.desc}</p>
                 </div>
               </Reveal>
             );
@@ -307,7 +307,7 @@ function PrincipalSection({ college }: { college: College }) {
             <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-crimson">
               <Quote className="h-4 w-4" /> Principal&rsquo;s Message
             </div>
-            <blockquote className="whitespace-pre-line text-navy leading-relaxed">
+            <blockquote className="whitespace-pre-line text-justify text-navy leading-relaxed">
               {p.message}
             </blockquote>
             <div className="mt-4 text-sm font-semibold text-navy">{p.name}</div>

@@ -34,7 +34,7 @@ export default async function MediaPage() {
         {(c?.media?.publications ?? []).map((p) => (
           <div key={p.name} className="border border-line bg-surface p-6">
             <h3 className="font-display text-lg font-medium text-navy">{p.name}</h3>
-            <p className="mt-2 text-sm text-ink-soft leading-relaxed">{p.description}</p>
+            <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">{p.description}</p>
           </div>
         ))}
       </div>

@@ -92,7 +92,7 @@ export function EntryCard({
           {entry.title}
         </h4>
         {entry.description && (
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
+          <p className="mt-2 line-clamp-3 text-justify text-sm leading-relaxed text-ink-soft">
             {entry.description}
           </p>
         )}

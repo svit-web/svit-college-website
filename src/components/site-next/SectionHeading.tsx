@@ -29,7 +29,7 @@ export function SectionHeading({
         {subtitle && (
           <p
             className={cn(
-              "mt-4 text-base leading-relaxed text-ink-soft md:text-lg",
+              "mt-4 text-justify text-base leading-relaxed text-ink-soft md:text-lg",
               center && "mx-auto",
             )}
           >

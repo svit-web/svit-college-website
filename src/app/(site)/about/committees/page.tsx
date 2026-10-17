@@ -22,7 +22,7 @@ export default async function CommitteesPage() {
           <Reveal key={cm.id} delay={i * 0.05}>
             <div className="border border-line bg-surface p-6">
               <h3 className="font-display text-lg font-medium text-navy">{cm.name}</h3>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+              <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">
                 {cm.metadata?.description}
               </p>
               {cm.metadata?.vision && (

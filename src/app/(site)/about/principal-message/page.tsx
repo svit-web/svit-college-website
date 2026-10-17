@@ -37,7 +37,7 @@ export default async function PrincipalMessagePage() {
               </div>
             </div>
             {p.content && (
-              <p className="mt-6 whitespace-pre-line border-t border-line pt-6 leading-relaxed text-navy">
+              <p className="mt-6 whitespace-pre-line border-t border-line pt-6 text-justify leading-relaxed text-navy">
                 {p.content}
               </p>
             )}

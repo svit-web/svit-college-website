@@ -46,7 +46,7 @@ export function CTABanner({
             {title}
           </h2>
           {resolvedSubtitle && (
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-ink-soft md:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-justify text-base leading-relaxed text-ink-soft md:text-lg">
               {resolvedSubtitle}
             </p>
           )}

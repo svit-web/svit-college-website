@@ -84,7 +84,7 @@ export function HeroNew({ items, misc, appearance }: HeroNewProps) {
         </div>
 
         <div className="mr-auto grid max-w-[36ch] justify-items-start gap-[1.4rem] text-left">
-          <p className="text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-[var(--hero-text)]">
+          <p className="text-justify text-[clamp(1rem,1.35vw,1.18rem)] font-medium leading-[1.55] text-[var(--hero-text)]">
             {subtitle}
           </p>
           <div className="flex flex-wrap justify-start gap-[0.7rem]">

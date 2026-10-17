@@ -399,7 +399,7 @@ function WhySection({ items }: { items: HomepageItem[] }) {
                 <div className="h-full p-6 md:p-8">
                   <Icon className="h-6 w-6 text-navy" strokeWidth={1.5} />
                   <h3 className="mt-5 font-display text-xl font-medium text-navy">{w.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-ink-soft">{w.desc}</p>
+                  <p className="mt-2 text-justify text-sm leading-relaxed text-ink-soft">{w.desc}</p>
                 </div>
               </Reveal>
             );

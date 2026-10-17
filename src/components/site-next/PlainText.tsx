@@ -75,7 +75,7 @@ export function PlainText({
   return (
     <div className={className ?? "space-y-4 leading-relaxed text-muted-foreground"}>
       {paragraphs.map((p, i) => (
-        <p key={i}>
+        <p key={i} className="text-justify">
           <Linkified text={p} />
         </p>
       ))}

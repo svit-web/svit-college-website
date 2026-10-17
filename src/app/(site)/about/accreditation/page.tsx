@@ -60,7 +60,7 @@ export default async function AccreditationPage() {
                     <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                       {acc.organization}
                     </div>
-                    <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+                    <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">
                       {acc.description}
                     </p>
                   </div>
@@ -73,7 +73,7 @@ export default async function AccreditationPage() {
               <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                 Academic Regulations (GTU)
               </div>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+              <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">
                 {c?.accreditation?.academicRegulationsText}
               </p>
               <ul className="mt-4 space-y-2">
@@ -89,7 +89,7 @@ export default async function AccreditationPage() {
               <div className="text-xs font-semibold uppercase tracking-wider text-crimson">
                 Mandatory Disclosure &amp; Code of Conduct
               </div>
-              <p className="mt-2 text-sm text-ink-soft leading-relaxed">
+              <p className="mt-2 text-justify text-sm text-ink-soft leading-relaxed">
                 {c?.accreditation?.mandatoryDisclosureText}
               </p>
               <ul className="mt-4 space-y-2">

@@ -16,7 +16,7 @@ export default async function HistoryVisionMissionPage() {
     <section className="bg-paper-deep py-16 md:py-20">
       <div className="container-page">
         <SectionHeading eyebrow="Our journey" title="History, Vision & Mission" variant="eyebrow" />
-        <p className="mt-6 max-w-4xl text-ink-soft leading-relaxed">
+        <p className="mt-6 max-w-4xl text-justify text-ink-soft leading-relaxed">
           {c?.history?.introText}
         </p>
         <ol className="mt-10 space-y-4">
@@ -30,7 +30,7 @@ export default async function HistoryVisionMissionPage() {
           ))}
         </ol>
         {c?.history?.closingText && (
-          <p className="mt-8 max-w-4xl text-ink-soft leading-relaxed italic">
+          <p className="mt-8 max-w-4xl text-justify text-ink-soft leading-relaxed italic">
             {c.history.closingText}
           </p>
         )}
@@ -40,7 +40,7 @@ export default async function HistoryVisionMissionPage() {
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
               Vision
             </div>
-            <blockquote className="mt-4 font-display text-xl md:text-2xl text-navy leading-snug">
+            <blockquote className="mt-4 text-justify font-display text-xl md:text-2xl text-navy leading-snug">
               &quot;{c?.vision?.visionText}&quot;
             </blockquote>
           </div>

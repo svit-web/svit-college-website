@@ -105,7 +105,7 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
                   {slide.title}
                 </h2>
                 {slide.subtitle && (
-                  <p className="mt-4 text-base leading-relaxed text-ink-soft md:text-lg">
+                  <p className="mt-4 text-justify text-base leading-relaxed text-ink-soft md:text-lg">
                     {slide.subtitle}
                   </p>
                 )}

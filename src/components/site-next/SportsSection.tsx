@@ -142,7 +142,7 @@ export function SportsSection({
         <section className="border border-line bg-paper-deep p-6 md:p-10">
           <div className={`mb-3 ${eyebrow}`}>Sports & Athletics</div>
           <h2 className={sectionH2}>Champions On and Off the Field</h2>
-          <p className="mt-4 max-w-3xl text-sm leading-relaxed text-ink-soft md:text-base">
+          <p className="mt-4 max-w-3xl text-justify text-sm leading-relaxed text-ink-soft md:text-base">
             SVIT believes sports build character as much as academics. Our state-of-the-art
             grounds and courts have produced university, state, and national-level athletes.
           </p>
@@ -170,7 +170,7 @@ export function SportsSection({
           <div>
             <div className={`mb-3 ${eyebrow}`}>Sports & Athletics</div>
             <h2 className={sectionH2}>Champions On and Off the Field</h2>
-            <p className="mt-4 max-w-3xl text-base leading-relaxed text-ink-soft md:text-lg">
+            <p className="mt-4 max-w-3xl text-justify text-base leading-relaxed text-ink-soft md:text-lg">
               SVIT believes sports build character as much as academics. Our state-of-the-art
               grounds and courts have produced university, state, and national-level athletes.
             </p>

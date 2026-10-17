@@ -24,7 +24,7 @@ export default async function AntiRagging() {
             <AlertTriangle className="h-6 w-6 text-crimson shrink-0" />
             <div>
               <h3 className="font-display font-medium text-crimson">Ragging is a criminal offence</h3>
-              <p className="mt-1 text-sm">Any act of physical or mental abuse, targeted at another student, is punishable under Indian law and SVIT's Code of Conduct.</p>
+              <p className="mt-1 text-sm text-justify">Any act of physical or mental abuse, targeted at another student, is punishable under Indian law and SVIT's Code of Conduct.</p>
             </div>
           </div>
 

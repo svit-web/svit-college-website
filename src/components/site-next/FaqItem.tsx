@@ -21,7 +21,7 @@ export function FaqItem({ q, a }: { q: string; a: string }) {
           className={`h-4 w-4 shrink-0 text-navy transition-transform ${open ? "rotate-180" : ""}`}
         />
       </button>
-      {open && <div className="pb-5 text-sm leading-relaxed text-ink-soft md:text-base">{a}</div>}
+      {open && <div className="pb-5 text-justify text-sm leading-relaxed text-ink-soft md:text-base">{a}</div>}
     </div>
   );
 }

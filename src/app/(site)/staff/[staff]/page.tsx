@@ -7,6 +7,17 @@ import { Mail, ExternalLink, Linkedin, BookOpen, ChevronDown, ChevronRight } fro
 import { getStaffByEmployeeCode } from "@/lib/staff.functions";
 import { metaDescription } from "@/lib/seo";
 
+// NOTE: `revalidate` alone does nothing on a dynamic-segment page — verified
+// empirically (Cache-Control came back `no-store` without a matching
+// generateStaticParams; see PERFORMANCE_REPORT.md). It's left set here for
+// when generateStaticParams is added, but is NOT currently caching this
+// route. Deliberately deferred: ~368 staff pages (sitemap count) and no
+// existing "list all staff" function — adding generateStaticParams here
+// means either a new aggregate query or 368 individual builds. Worth doing,
+// but as its own reviewed change given the build-time/Supabase-load cost,
+// not folded into this pass. See optimization_plan.md A3/A4.
+export const revalidate = 300; // seconds
+
 function initials(name: string) {
   const clean = name.replace(/^(dr\.?|mr\.?|mrs\.?|ms\.?)\s+/i, "").trim();
   const parts = clean.split(/\s+/);
@@ -80,7 +91,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
     sections.push({
       key: "profile",
       title: "Profile",
-      body: <p className="text-sm leading-relaxed text-ink">{profile.bio}</p>,
+      body: <p className="text-sm text-justify leading-relaxed text-ink">{profile.bio}</p>,
     });
   }
 
@@ -101,7 +112,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
                   {w.category === "teaching" ? "Teaching" : "Industry"}
                 </span>
               </p>
-              {w.description && <p className="mt-1 text-sm leading-relaxed text-ink-soft">{w.description}</p>}
+              {w.description && <p className="mt-1 text-sm text-justify leading-relaxed text-ink-soft">{w.description}</p>}
             </li>
           ))}
         </ol>
@@ -294,7 +305,7 @@ export default async function StaffProfilePage({ params }: { params: Promise<{ s
           {/* RIGHT — expertise + accordion */}
           <div className="min-w-0">
             {profile.expertise.length > 0 && (
-              <p className="mb-7 text-sm leading-relaxed text-ink">
+              <p className="mb-7 text-sm text-justify leading-relaxed text-ink">
                 <span className="font-bold text-navy">Areas of Expertise: </span>
                 {profile.expertise.join(", ")}
               </p>

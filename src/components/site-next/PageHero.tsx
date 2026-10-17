@@ -87,7 +87,7 @@ export function PageHero({
               {title}
             </h1>
             {subtitle && (
-              <p className="mt-3 max-w-2xl text-[0.95rem] font-medium leading-[1.55] text-[color-mix(in_oklab,var(--hero-text,var(--navy))_78%,var(--paper))]">
+              <p className="mt-3 max-w-2xl text-justify text-[0.95rem] font-medium leading-[1.55] text-[color-mix(in_oklab,var(--hero-text,var(--navy))_78%,var(--paper))]">
                 {subtitle}
               </p>
             )}

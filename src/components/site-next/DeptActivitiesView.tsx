@@ -63,7 +63,7 @@ function ActivityCard({ item, i }: { item: DeptActivity; i: number }) {
           {item.endDate && item.endDate !== item.startDate && <> — {formatDate(item.endDate)}</>}
         </p>
         {item.notes && (
-          <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-ink-soft">{item.notes}</p>
+          <p className="mt-2 line-clamp-2 text-justify text-sm leading-relaxed text-ink-soft">{item.notes}</p>
         )}
         {linked && (
           <span className="mt-auto flex items-center gap-1 pt-4 text-xs font-semibold text-navy transition-colors group-hover:text-crimson">

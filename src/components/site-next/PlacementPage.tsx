@@ -185,7 +185,7 @@ export function PlacementPage({ data }: PlacementPageProps) {
                   <div className="flex flex-col justify-between border border-line bg-paper-deep p-6 md:p-8">
                     <div>
                       <div className={`mb-3 ${eyebrow}`}>Institutional Overview</div>
-                      <p className="text-sm leading-relaxed text-ink-soft md:text-base">
+                      <p className="text-justify text-sm leading-relaxed text-ink-soft md:text-base">
                         {aboutText}
                       </p>
                     </div>

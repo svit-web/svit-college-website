@@ -41,7 +41,7 @@ function ScholarshipCard({ s }: { s: Scholarship }) {
         <h3 className="font-display text-lg font-medium text-navy leading-snug">{s.name}</h3>
         {s.provider && <p className="mt-0.5 text-xs text-ink-soft">{s.provider}</p>}
       </div>
-      {s.description && <p className="text-sm text-ink/70 leading-relaxed flex-1">{s.description}</p>}
+      {s.description && <p className="text-sm text-ink/70 text-justify leading-relaxed flex-1">{s.description}</p>}
       {s.eligibility && (
         <div className="bg-paper-deep px-4 py-3">
           <p className="text-xs font-bold uppercase tracking-wider text-ink-soft mb-1">Eligibility</p>
