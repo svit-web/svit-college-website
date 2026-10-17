@@ -6,6 +6,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { EventsNewsSlider, type EventSlide } from "@/components/site-next/EventsNewsSlider";
 import { getAllStudentClubs, getStudentClubBySlug, getClubEvents } from "@/lib/clubs.functions";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { getEntryImageFit } from "@/lib/entry-image-fit";
 import { metaDescription } from "@/lib/seo";
 
 // ISR: this page reads from Supabase (not Next's fetch()), so without this
@@ -24,11 +25,12 @@ export async function generateStaticParams() {
 async function loadClub(slug: string) {
   const item = await getStudentClubBySlug(slug);
   if (!item || !item.has_detail_page) return null;
-  const [{ events, total: eventsTotal }, album] = await Promise.all([
+  const [{ events, total: eventsTotal }, album, imageFit] = await Promise.all([
     getClubEvents(item.id),
     getEntryAlbum(item.album_id),
+    getEntryImageFit("student_clubs", item.id),
   ]);
-  return { item, events, eventsTotal, album };
+  return { item, events, eventsTotal, album, imageFit };
 }
 
 export async function generateMetadata({
@@ -51,7 +53,7 @@ export default async function ClubLeaf({ params }: { params: Promise<{ slug: str
   const result = await loadClub(slug);
   if (!result) notFound();
 
-  const { item, events, eventsTotal, album } = result;
+  const { item, events, eventsTotal, album, imageFit } = result;
 
   const slides: EventSlide[] = events.map((e) => ({
     id: e.id,
@@ -77,6 +79,7 @@ export default async function ClubLeaf({ params }: { params: Promise<{ slug: str
           cardPhotoUrl: album?.coverUrl ?? null,
           album,
           fallbackLogoUrl: item.logo_url,
+          imageFit,
         }}
       />
 

@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
@@ -27,8 +28,6 @@ import {
   type HomepageItem,
   type CollegeRow,
   type RecruiterRow,
-  type EventRow,
-  type PostRow,
 } from "@/lib/homepage";
 import {
   getGlobalHomepageItems,
@@ -42,6 +41,8 @@ import { getHeroAppearance, DEFAULT_HERO_APPEARANCE } from "@/lib/theme.function
 import { DEFAULT_MISC, getMiscSettings, type MiscSettings } from "@/lib/site-settings.functions";
 import { getLiveStats, type LiveStats } from "@/lib/stats.functions";
 import { getHomePopup } from "@/lib/home-popup.functions";
+import { getHomepageLayout } from "@/lib/homepage-layout.functions";
+import { DEFAULT_HOMEPAGE_LAYOUT, type HomepageSectionId } from "@/lib/homepage-layout";
 import { HomePopup } from "@/components/site-next/HomePopup";
 import { sectionSpacing } from "@/components/site-next/site-styles";
 import { siteOpenGraph } from "@/lib/seo";
@@ -73,7 +74,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats, popup] =
+  const [items, colleges, recruiters, events, posts, appearance, misc, liveStats, popup, layout] =
     await Promise.all([
       getGlobalHomepageItems().catch(() => []),
       getCollegesGrid().catch(() => []),
@@ -84,6 +85,7 @@ export default async function Home() {
       getMiscSettings().catch(() => null),
       getLiveStats().catch(() => null),
       getHomePopup().catch(() => null),
+      getHomepageLayout().catch(() => DEFAULT_HOMEPAGE_LAYOUT),
     ]);
 
   const campusLifeTiles = byType(items, "campus_life_tile");
@@ -91,17 +93,27 @@ export default async function Home() {
     () => new Map<string, string | null>(),
   );
 
+  // Hero stays pinned first; the rest follow the admin-set order and visibility.
+  const sections: Record<HomepageSectionId, React.ReactNode> = {
+    colleges: <CollegesSection colleges={colleges} misc={misc} />,
+    carousel: <HomeCarouselSection items={items} />,
+    stats: <StatsStrip items={items} liveStats={liveStats} />,
+    campus_life: <CampusLifeSection tiles={campusLifeTiles} tileLinks={campusLifeTileLinks} />,
+    why: <WhySection items={items} />,
+    trust: <TrustBand items={items} />,
+    news_events: <NewsEventsSection events={events} posts={posts} />,
+    recruiters: <RecruitersSection recruiters={recruiters} />,
+    cta: <CTABannerSection items={items} misc={misc} />,
+  };
+
   return (
     <>
       <HeroNew items={items} misc={misc} appearance={appearance} />
-      <CollegesSection colleges={colleges} misc={misc} />
-      <HomeCarouselSection items={items} />
-      <StatsStrip items={items} liveStats={liveStats} />
-      <CampusLifeSection tiles={campusLifeTiles} tileLinks={campusLifeTileLinks} />
-      <WhySection items={items} />
-      <TrustBand items={items} />
-      <EventsAndEnquiry events={events} posts={posts} recruiters={recruiters} />
-      <CTABannerSection items={items} misc={misc} />
+      {layout
+        .filter((entry) => entry.visible)
+        .map((entry) => (
+          <Fragment key={entry.id}>{sections[entry.id]}</Fragment>
+        ))}
       {popup && <HomePopup popup={popup} />}
     </>
   );
@@ -450,26 +462,16 @@ function CTABannerSection({ items, misc }: { items: HomepageItem[]; misc: MiscSe
   );
 }
 
-function EventsAndEnquiry({
-  events,
-  posts,
-  recruiters,
-}: {
-  events: EventRow[];
-  posts: PostRow[];
-  recruiters: RecruiterRow[];
-}) {
+function RecruitersSection({ recruiters }: { recruiters: RecruiterRow[] }) {
+  if (recruiters.length === 0) return null;
   return (
-    <>
-      <NewsEventsSection events={events} posts={posts} />
-      <section className="container-page pb-20">
-        <Reveal>
-          <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-            Our Recruiters
-          </div>
-          <RecruitersMarquee recruiters={recruiters} />
-        </Reveal>
-      </section>
-    </>
+    <section className="container-page pb-20">
+      <Reveal>
+        <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+          Our Recruiters
+        </div>
+        <RecruitersMarquee recruiters={recruiters} />
+      </Reveal>
+    </section>
   );
 }

@@ -44,6 +44,7 @@ import {
   KeyRound,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { NEW_ENTRY_IMAGE_FIT } from '@/lib/entry';
 
 function formatLabel(str: string): string {
   return str
@@ -174,7 +175,7 @@ const PLAIN_TEXT_FIELD_COLUMNS = new Set(['file_type']);
 const ENTRY_PHOTO_FIELDS: Record<string, TableFieldConfig> = {
   card_photo_url: { render: 'entry-photos' },
 };
-const ENTRY_PHOTOS_OWNED_COLUMNS = new Set(['album_id', 'has_detail_page']);
+const ENTRY_PHOTOS_OWNED_COLUMNS = new Set(['album_id', 'has_detail_page', 'image_fit']);
 
 interface TableConfig {
   scope?: {
@@ -314,6 +315,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   achievements: {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
+      image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
       scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
       college_id: { renderAfter: 'scope_type' },
       category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
@@ -329,12 +331,14 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
   student_clubs: {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
+      image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
       slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
     },
   },
   posts: {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
+      image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
     },
   },
@@ -1477,6 +1481,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                       values={formValues}
                       onChange={handleFieldChange}
                       hasDetailPageField={schema.columns.some((c: any) => c.name === 'has_detail_page')}
+                      hasImageFitField={schema.columns.some((c: any) => c.name === 'image_fit')}
                       onRequireSave={ensureSaved}
                     />
                   );

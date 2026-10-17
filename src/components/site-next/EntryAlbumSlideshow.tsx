@@ -2,12 +2,20 @@
 
 import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
-import type { EntryPhoto } from "@/lib/entry";
+import type { EntryImageFit, EntryPhoto } from "@/lib/entry";
 import { PhotoSlider } from "./PhotoSlider";
 import { PhotoLightbox } from "./PhotoLightbox";
 
 /** Detail page slideshow: the shared PhotoSlider, opening the shared lightbox on click. */
-export function EntryAlbumSlideshow({ photos, title }: { photos: EntryPhoto[]; title: string }) {
+export function EntryAlbumSlideshow({
+  photos,
+  title,
+  fit = "fill",
+}: {
+  photos: EntryPhoto[];
+  title: string;
+  fit?: EntryImageFit;
+}) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (
@@ -17,6 +25,7 @@ export function EntryAlbumSlideshow({ photos, title }: { photos: EntryPhoto[]; t
         ariaLabel={`${title} photos`}
         photoAlt={title}
         aspectRatio="16/9"
+        fit={fit}
         onPhotoClick={setLightboxIndex}
       />
       <AnimatePresence>

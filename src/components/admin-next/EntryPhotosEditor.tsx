@@ -36,6 +36,8 @@ interface EntryPhotosEditorProps {
   values: Record<string, any>;
   onChange: (name: string, value: any) => void;
   hasDetailPageField: boolean;
+  // Only the club / news / achievement tables carry image_fit.
+  hasImageFitField?: boolean;
   // Called instead of blocking the upload when recordId is null: validates
   // the form's required fields (surfacing the browser's own "please fill
   // this in" UI if any are missing, which rejects), then silently saves the
@@ -68,7 +70,7 @@ function sortCoverFirst(photos: AlbumPhoto[]): AlbumPhoto[] {
   return [...photos].sort((a, b) => Number(b.isCover) - Number(a.isCover) || a.sort_order - b.sort_order);
 }
 
-export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onChange, hasDetailPageField, onRequireSave }: EntryPhotosEditorProps) {
+export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onChange, hasDetailPageField, hasImageFitField, onRequireSave }: EntryPhotosEditorProps) {
   const supabase = useMemo(() => createClient() as any, []);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -492,6 +494,26 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
             </div>
           </>
       </div>
+
+      {hasImageFitField && (
+        <div className="space-y-1.5">
+          <label htmlFor="image_fit" className="text-xs font-semibold text-slate-900 uppercase tracking-wider">
+            Detail page image
+          </label>
+          <select
+            id="image_fit"
+            value={values.image_fit === 'fit' ? 'fit' : 'fill'}
+            onChange={(e) => onChange('image_fit', e.target.value)}
+            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700"
+          >
+            <option value="fit">Fit: show the whole photo</option>
+            <option value="fill">Fill: crop to the frame</option>
+          </select>
+          <p className="text-xs text-slate-400">
+            Only affects this item's own page. Cards and lists always crop to a uniform size.
+          </p>
+        </div>
+      )}
 
       {hasDetailPageField && (
         <div className="flex items-center">

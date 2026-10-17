@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
-import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone } from 'lucide-react';
+import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone, ListOrdered } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { MetadataEditor } from '@/components/admin-next/MetadataEditor';
@@ -11,18 +11,23 @@ import type { AdminUser } from '@/app/lib/auth/admin';
 import type { HeroAppearance } from '@/lib/theme';
 import { HomePopupPanel } from '@/components/admin-next/pages/HomePopupPanel';
 import type { HomePopup } from '@/lib/home-popup';
+import { HomepageLayoutPanel } from '@/components/admin-next/pages/HomepageLayoutPanel';
+import type { HomepageLayoutEntry } from '@/lib/homepage-layout';
 
 export function AdminHomepagePage({
   admin,
   initialAppearance,
   initialPopup,
+  initialLayout,
 }: {
   admin: AdminUser;
   initialAppearance: HeroAppearance;
   /** Only passed for global admins — the only role app_settings' RLS lets write it. */
   initialPopup: HomePopup | null;
+  /** Only passed for global admins, like the popup. */
+  initialLayout: HomepageLayoutEntry[] | null;
 }) {
-  const [activeTab, setActiveTab] = useState<'items' | 'appearance' | 'popup'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'appearance' | 'popup' | 'layout'>('items');
 
   return (
     <div className="space-y-6">
@@ -49,6 +54,15 @@ export function AdminHomepagePage({
           <Palette className="h-4 w-4" />
           <span>Hero Appearance</span>
         </button>
+        {initialLayout && (
+          <button
+            onClick={() => setActiveTab('layout')}
+            className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === 'layout' ? 'border-crimson text-navy' : 'border-transparent text-slate-600 hover:text-slate-900'}`}
+          >
+            <ListOrdered className="h-4 w-4" />
+            <span>Layout</span>
+          </button>
+        )}
         {initialPopup && (
           <button
             onClick={() => setActiveTab('popup')}
@@ -63,6 +77,7 @@ export function AdminHomepagePage({
       <div>
         {activeTab === 'items' && <HomepageItemsManager userId={admin.id} />}
         {activeTab === 'appearance' && <HeroAppearancePanel initialAppearance={initialAppearance} />}
+        {activeTab === 'layout' && initialLayout && <HomepageLayoutPanel initialLayout={initialLayout} userId={admin.id} />}
         {activeTab === 'popup' && initialPopup && <HomePopupPanel initialPopup={initialPopup} userId={admin.id} />}
       </div>
     </div>

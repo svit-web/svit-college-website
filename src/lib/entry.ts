@@ -51,3 +51,12 @@ export function entryHasMoreToShow(entry: Pick<EntryCardData, "album" | "descrip
     (entry.description?.trim().length ?? 0) > CARD_DESCRIPTION_CLAMP_CHARS
   );
 }
+
+/**
+ * How a Detail page shows its photos: `fill` crops to the stage (object-cover),
+ * `fit` shows the whole photo (object-contain). Cards and grids always fill.
+ */
+export type EntryImageFit = "fill" | "fit";
+
+/** What the admin form pre-selects for a new Entry; the database default stays `fill`. */
+export const NEW_ENTRY_IMAGE_FIT: EntryImageFit = "fit";

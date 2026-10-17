@@ -7,6 +7,7 @@ import { formatDate } from "@/components/site-next/DepartmentSections";
 import { getAllPosts, getPostBySlug } from "@/lib/posts.functions";
 import { ChevronRight } from "lucide-react";
 import { getEntryAlbum } from "@/lib/gallery.functions";
+import { getEntryImageFit } from "@/lib/entry-image-fit";
 import { metaDescription, newsArticleJsonLd, parseRobots, siteOpenGraph } from "@/lib/seo";
 import { JsonLd } from "@/components/site-next/JsonLd";
 
@@ -27,13 +28,16 @@ export async function generateStaticParams() {
 const loadPost = cache(async (slug: string) => {
   const post = await getPostBySlug(slug).catch(() => null);
   if (!post) return null;
-  const album = await getEntryAlbum(post.album_id).catch(() => null);
+  const [album, imageFit] = await Promise.all([
+    getEntryAlbum(post.album_id).catch(() => null),
+    getEntryImageFit("posts", post.id),
+  ]);
   // card_photo_url is a legacy column the admin's Photos editor doesn't
   // write to any more (it manages album_id/gallery_media instead — see
   // AdminCrudManager's ENTRY_PHOTO_FIELDS) — fall back to the album's
   // cover so a photo added via admin actually shows up here.
   const coverPhoto = post.card_photo_url ?? album?.coverUrl ?? null;
-  return { post, album, coverPhoto };
+  return { post, album, coverPhoto, imageFit };
 });
 
 export async function generateMetadata({
@@ -75,7 +79,7 @@ export default async function NewsDetailPage({
   const loaded = await loadPost(slug);
   if (!loaded) notFound();
 
-  const { post, album, coverPhoto } = loaded;
+  const { post, album, coverPhoto, imageFit } = loaded;
 
   return (
     <div className="bg-paper">
@@ -118,6 +122,7 @@ export default async function NewsDetailPage({
             description: post.content ?? post.summary,
             cardPhotoUrl: post.card_photo_url,
             album,
+            imageFit,
           }}
         />
       </div>
