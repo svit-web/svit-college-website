@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MenuTopItem } from "@/lib/menus.functions";
-import type { ReactNode } from "react";
+import type { MouseEvent, ReactNode } from "react";
 
 // Deliberately not `position:relative` on the <li> — the mega panel below
 // needs to size against the whole nav bar (its nearest positioned ancestor),
@@ -20,20 +20,31 @@ export function DesktopNavItem({
   isOpen,
   onOpen,
   onClose,
+  onNavigate,
   children,
 }: {
   item: MenuTopItem;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  onNavigate: () => void;
   children?: ReactNode;
 }) {
   const hasMega = Boolean(children);
+
+  // Mega panels mix real links with non-navigating controls (e.g.
+  // CampusMegaPanel's category-switcher buttons) — only close on a click
+  // that actually lands on (or inside) an <a>, so switching tabs inside the
+  // panel doesn't slam it shut.
+  function handlePanelClick(e: MouseEvent<HTMLDivElement>) {
+    if ((e.target as HTMLElement).closest("a")) onNavigate();
+  }
 
   return (
     <li className="flex h-full items-center" onMouseEnter={onOpen} onMouseLeave={onClose}>
       <Link
         href={item.url ?? "#"}
+        onClick={onNavigate}
         className={cn(
           "inline-block whitespace-nowrap px-[15px] py-3 text-sm font-medium tracking-[0.01em] text-ink transition-all",
           "bg-gradient-to-b from-crimson to-crimson bg-[length:0%_2px] bg-left-bottom bg-no-repeat hover:bg-[length:100%_2px] hover:text-crimson",
@@ -50,6 +61,7 @@ export function DesktopNavItem({
           // the gap between the trigger and the panel and slam it shut.
           onMouseEnter={onOpen}
           onMouseLeave={onClose}
+          onClick={handlePanelClick}
           className={cn(
             "absolute inset-x-0 top-full z-40 border-y border-line bg-paper shadow-[0_24px_40px_-28px_rgba(29,31,43,0.35)] transition-all duration-200",
             isOpen
