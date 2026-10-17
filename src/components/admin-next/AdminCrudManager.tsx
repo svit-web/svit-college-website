@@ -280,15 +280,36 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     },
   },
   facilities: {
+    // The generic Tables UI only creates campus/building facilities (it
+    // excludes facility_type 'laboratory' below), and those have no
+    // department_id — so the generic department_id-based rule in
+    // writePermissions would wrongly grant department scope write access
+    // it can never actually use (RLS rejects it, surfacing as a raw "row
+    // violates row-level security policy" error). College scope is fine:
+    // facilities.college_id (see migration
+    // 20261017120000_facilities_college_scoping.sql) lets a college admin
+    // own a facility outright, and the generic column-based rule already
+    // covers that. Institute isn't covered by the generic rule at all, so
+    // it needs an explicit grant.
+    writePermissions: {
+      resolve: (level) =>
+        level === 'institute'
+          ? { insert: true, update: true, delete: true }
+          : level === 'department'
+            ? { insert: false, update: false, delete: false }
+            : undefined,
+    },
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       slug: { autoGenerateFrom: { source: 'name', variant: 'slug' } },
       code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
       category: { options: FACILITY_CATEGORY_OPTIONS },
       // check_facility_fields ties facility_type to its FK: campus needs
-      // institute_id (auto-filled, never shown — there is one institute and
-      // campus-wide facilities belong to it, not to a college), building needs
-      // parent_id, laboratory needs department_id (created on the Labs page).
+      // institute_id (auto-filled, never shown — there is one institute),
+      // building needs parent_id, laboratory needs department_id (created
+      // on the Labs page). college_id is independent of facility_type —
+      // leave it blank for institute-wide shared infrastructure, or set it
+      // to make a campus/building facility belong to one college.
       facility_type: {
         defaultValue: 'campus',
         excludeOptions: ['laboratory'],

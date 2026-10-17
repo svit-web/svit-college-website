@@ -1391,6 +1391,7 @@ export type Database = {
           card_photo_url: string | null
           category: string | null
           code: string | null
+          college_id: string | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
@@ -1419,6 +1420,7 @@ export type Database = {
           card_photo_url?: string | null
           category?: string | null
           code?: string | null
+          college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1447,6 +1449,7 @@ export type Database = {
           card_photo_url?: string | null
           category?: string | null
           code?: string | null
+          college_id?: string | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
@@ -1480,6 +1483,13 @@ export type Database = {
             columns: ["album_id"]
             isOneToOne: false
             referencedRelation: "gallery_albums"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facilities_college_id_fkey"
+            columns: ["college_id"]
+            isOneToOne: false
+            referencedRelation: "colleges"
             referencedColumns: ["id"]
           },
           {
