@@ -422,6 +422,11 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   const [sorting, setSorting] = useState<SortingState>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  // Admin-wide, not events-only: any table with these columns (events,
+  // achievements, posts, ...) gets the dropdown — see the toolbar render
+  // below, which only shows a filter when the column actually exists.
+  const [departmentFilter, setDepartmentFilter] = useState('');
+  const [scopeTypeFilter, setScopeTypeFilter] = useState('');
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any | null>(null);
@@ -480,6 +485,8 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         setPage(0);
         setSorting([]);
         setSearchQuery('');
+        setDepartmentFilter('');
+        setScopeTypeFilter('');
         setRowSelection({});
       } catch (err: any) {
         console.error('Failed to load schema:', err);
@@ -601,6 +608,13 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         query = query.eq(sportsRowFilter.column, sportsRowFilter.value);
       }
 
+      if (departmentFilter && cols.includes('department_id')) {
+        query = query.eq('department_id', departmentFilter);
+      }
+      if (scopeTypeFilter && cols.includes('scope_type')) {
+        query = query.eq('scope_type', scopeTypeFilter);
+      }
+
       if (cols.includes('deleted_at')) {
         query = query.is('deleted_at', null);
       }
@@ -650,7 +664,13 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schema, page, pageSize, sorting, debouncedSearch, userScope]);
+  }, [schema, page, pageSize, sorting, debouncedSearch, departmentFilter, scopeTypeFilter, userScope]);
+
+  // Changing a filter mid-list should land back on page 1, same as a new
+  // search term does above.
+  useEffect(() => {
+    setPage(0);
+  }, [departmentFilter, scopeTypeFilter]);
 
   const handleOpenModal = (record: any = null) => {
     setEditingRecord(record);
@@ -1202,6 +1222,9 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     );
   }
 
+  const scopeTypeColumn = schema.columns.find((c: any) => c.name === 'scope_type');
+  const hasDepartmentColumn = schema.columns.some((c: any) => c.name === 'department_id');
+
   return (
     <div className="space-y-6">
       {/* Title + Search + Add — single compact row */}
@@ -1212,6 +1235,34 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         </div>
 
         <div className="flex items-center gap-2">
+          {hasDepartmentColumn && (
+            <select
+              value={departmentFilter}
+              onChange={(e) => setDepartmentFilter(e.target.value)}
+              className="rounded border border-slate-200 bg-white py-1.5 pl-2 pr-6 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+              title="Filter by department"
+            >
+              <option value="">All departments</option>
+              {fkOptions['departments']?.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+          )}
+
+          {scopeTypeColumn?.enum_values && (
+            <select
+              value={scopeTypeFilter}
+              onChange={(e) => setScopeTypeFilter(e.target.value)}
+              className="rounded border border-slate-200 bg-white py-1.5 pl-2 pr-6 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+              title="Filter by scope type"
+            >
+              <option value="">All scope types</option>
+              {scopeTypeColumn.enum_values.map((v: string) => (
+                <option key={v} value={v}>{formatLabel(v)}</option>
+              ))}
+            </select>
+          )}
+
           <div className="relative">
             <Search className="absolute top-2 left-2.5 h-3.5 w-3.5 text-slate-400" />
             <input
