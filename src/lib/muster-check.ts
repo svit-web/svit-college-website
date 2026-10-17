@@ -2,24 +2,25 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
 /**
- * Muster numbers are unique per college. A person's college comes from their department
- * assignments, so this looks for another live staff member holding `musterNumber` who is
- * assigned to a department in any of `collegeIds`. Returns that person's name, or null.
- * Not enforced in the DB (see the add_staff_muster_number migration).
+ * Muster numbers are unique per department. This looks for another live staff member
+ * holding `musterNumber` who is assigned to any of `departmentIds`. Returns that
+ * person's name, or null. Not enforced in the DB (see the add_staff_muster_number
+ * migration) — a person's departments come from staff_department_assignments and a
+ * DB-level constraint would need a trigger rather than a plain unique index.
  */
 export async function findMusterConflict(
   supabase: SupabaseClient<Database>,
   musterNumber: number,
-  collegeIds: string[],
+  departmentIds: string[],
   excludeStaffId?: string,
 ): Promise<string | null> {
-  if (collegeIds.length === 0) return null;
+  if (departmentIds.length === 0) return null;
   let query = supabase
     .from("staff_department_assignments")
-    .select("staff_id, staff_profiles!inner(first_name, last_name), departments!inner(college_id)")
+    .select("staff_id, staff_profiles!inner(first_name, last_name)")
     .eq("staff_profiles.muster_number", musterNumber)
     .is("staff_profiles.deleted_at", null)
-    .in("departments.college_id", collegeIds)
+    .in("department_id", departmentIds)
     .is("deleted_at", null)
     .limit(1);
   if (excludeStaffId) query = query.neq("staff_id", excludeStaffId);

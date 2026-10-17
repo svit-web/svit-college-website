@@ -384,16 +384,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         return;
       }
       if (musterNumber !== null) {
-        const collegeIds = [
-          ...new Set(
-            assignments
-              .map((a) => departments.find((d) => d.id === a.department_id)?.college_id)
-              .filter((id): id is string => Boolean(id))
-          ),
-        ];
-        const clash = await findMusterConflict(supabase, musterNumber, collegeIds, selectedId);
+        const departmentIds = [...new Set(assignments.map((a) => a.department_id).filter(Boolean))];
+        const clash = await findMusterConflict(supabase, musterNumber, departmentIds, selectedId);
         if (clash) {
-          toast.error(`Muster number ${musterNumber} is already assigned to ${clash} in the same college.`);
+          toast.error(`Muster number ${musterNumber} is already assigned to ${clash} in the same department.`);
           return;
         }
       }
@@ -449,11 +443,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     if (!selectedId) return;
     try {
       const { data: current } = await supabase.from('staff_profiles').select('muster_number').eq('id', selectedId).maybeSingle();
-      const collegeId = departments.find((d) => d.id === newAssignment.department_id)?.college_id;
-      if (current?.muster_number != null && collegeId) {
-        const clash = await findMusterConflict(supabase, current.muster_number, [collegeId], selectedId);
+      if (current?.muster_number != null && newAssignment.department_id) {
+        const clash = await findMusterConflict(supabase, current.muster_number, [newAssignment.department_id], selectedId);
         if (clash) {
-          toast.error(`Muster number ${current.muster_number} is already assigned to ${clash} in that college. Change it in General first.`);
+          toast.error(`Muster number ${current.muster_number} is already assigned to ${clash} in that department. Change it in General first.`);
           return;
         }
       }
