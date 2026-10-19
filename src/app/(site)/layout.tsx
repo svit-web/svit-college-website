@@ -1,6 +1,7 @@
 import { Header } from "@/components/site-next/Header";
 import { Footer } from "@/components/site-next/Footer";
 import { PageTransition } from "@/components/site-next/PageTransition";
+import { ScrollEngineProvider } from "@/components/site-next/ScrollEngineProvider";
 import { getCollegesGrid } from "@/lib/homepage.functions";
 import { DEFAULT_CONTACT, getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
 import { getAllDepartments } from "@/lib/departments.functions";
@@ -65,6 +66,7 @@ export default async function SiteLayout({
     // --hero-text (admin "Text Color") is set here once so every hero — including
     // PageHero rendered inside client components — follows the setting.
     <div className="flex min-h-screen flex-col" style={heroTextVars(heroAppearance)}>
+      <ScrollEngineProvider />
       <Header
         mainNav={mainNav}
         utilityNav={utilityNav}
