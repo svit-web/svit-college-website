@@ -4,11 +4,19 @@ import { SITE_URL } from "@/lib/seo";
 import { CENTERS_WITH_OWN_PAGE } from "@/lib/centers.functions";
 import { ACTIVITY_EVENT_TYPES } from "@/lib/department-content.functions";
 
-// Built per request from Supabase so content published in the admin panel
-// shows up immediately. Each query mirrors the filters of the page's own
-// loader (published, not deleted, has_detail_page where the route needs it)
-// so the sitemap never lists a URL that 404s.
-export const dynamic = "force-dynamic";
+// Each query mirrors the filters of the page's own loader (published, not
+// deleted, has_detail_page where the route needs it) so the sitemap never
+// lists a URL that 404s.
+//
+// Cached for 5 minutes rather than rebuilt on every hit: this fires 14
+// concurrent Supabase queries, and /sitemap.xml is public, unauthenticated,
+// and the exact URL robots.ts hands to every crawler — a bot looping on it
+// was a real, unmetered amplification vector (see
+// docs/security/2026-10-19-traffic-incident-security-plan.md, Phase 1a).
+// Admin writes still show up immediately via revalidatePublicSite()'s
+// revalidatePath('/', 'layout') in src/app/admin/actions.ts; this window is
+// only the periodic fallback, same pattern as (site)/layout.tsx.
+export const revalidate = 300; // seconds
 
 type Entry = MetadataRoute.Sitemap[number];
 type ChangeFrequency = Entry["changeFrequency"];
