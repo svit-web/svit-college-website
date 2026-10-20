@@ -18,6 +18,9 @@ import { uploadMediaFile } from '@/lib/upload-media-next';
 //   2. UPDATE the Entry row's album_id (the Entry table's own write policy).
 //   3. Only then INSERT gallery_media — can_write_entry_album() looks for an Entry
 //      row pointing at the album, so it is false until step 2 has committed.
+//   4. If "Also show in Gallery" was already checked, flip show_in_public_gallery
+//      to true in its own UPDATE after step 2 — same reason as step 3, the INSERT
+//      itself must stay show_in_public_gallery=false or RLS rejects it outright.
 // Hence the album can only be created for an Entry that already has a primary key.
 
 interface AlbumPhoto {
@@ -155,9 +158,16 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
     const suffix = Math.random().toString(36).slice(2, 8);
     const slug = `${slugify(title) || tableId}-${suffix}`;
 
+    // The "Entry album insert" RLS policy only allows a scoped admin to
+    // create a hidden album (show_in_public_gallery = false) — a non-global
+    // admin creating it already visible fails RLS outright, since
+    // can_write_entry_album() can't be true yet (the Entry has no album_id
+    // to point at this album until the link step below runs). Always insert
+    // hidden, then flip visibility in a follow-up UPDATE once linked, which
+    // can_write_entry_album() allows.
     const { data: album, error: albumError } = await supabase
       .from('gallery_albums')
-      .insert({ title, slug, owner_table: tableId, show_in_public_gallery: showInGalleryRef.current, status: 'published' })
+      .insert({ title, slug, owner_table: tableId, show_in_public_gallery: false, status: 'published' })
       .select('id')
       .single();
     if (albumError) throw new Error(`Could not create album: ${albumError.message}`);
@@ -170,6 +180,18 @@ export function EntryPhotosEditor({ tableId, recordId, primaryKey, values, onCha
       .select(primaryKey);
     if (linkError) throw new Error(`Could not link album: ${linkError.message}`);
     if (!linked || linked.length === 0) throw new Error('Could not link album: you do not have permission to edit this entry');
+
+    if (showInGalleryRef.current) {
+      const { error: visibilityError } = await supabase
+        .from('gallery_albums')
+        .update({ show_in_public_gallery: true })
+        .eq('id', album.id);
+      if (visibilityError) {
+        showInGalleryRef.current = false;
+        setShowInGallery(false);
+        toast.error(`Could not update gallery visibility: ${visibilityError.message}`);
+      }
+    }
 
     // Keep the outer form in sync so its Save doesn't write album_id back to null.
     onChange('album_id', album.id);
