@@ -288,4 +288,9 @@ BEGIN
   RAISE NOTICE 'Successfully seeded 23 diploma faculty members across 6 departments';
   RAISE NOTICE 'Computer: 4, IT: 3, Electrical: 3, Mechanical: 5, Civil: 2, Applied Science & Humanities: 6';
 
+  -- employee_code was only ever written into metadata above; backfill the real column
+  UPDATE staff_profiles
+  SET employee_code = metadata->>'employee_code'
+  WHERE employee_code IS NULL AND metadata->>'employee_code' IS NOT NULL;
+
 END $$;
