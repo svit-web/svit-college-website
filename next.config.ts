@@ -91,6 +91,101 @@ const nextConfig: NextConfig = {
       { source: "/campus", destination: "/campus-life/facilities", permanent: true },
       // Alumni relations moved to a dedicated external portal.
       { source: "/alumni", destination: "https://alumni.svitvasad.ac.in", permanent: true },
+
+      // Pre-migration ASP.NET site (pre-2026). Google still has these indexed/crawling
+      // them (Search Console shows active crawl attempts) and they were 404ing, which
+      // both breaks visitors following old links/bookmarks and stops the old page's
+      // ranking signal from reaching its replacement. Mapped from a Wayback Machine
+      // crawl of svitvasad.ac.in 2023-2026. Only mapped where the destination is
+      // unambiguous; anything uncertain is left to 404 and age out of the index.
+      { source: "/Home", destination: "/", permanent: true },
+      { source: "/Home/Index", destination: "/", permanent: true },
+      { source: "/Home/Admissions", destination: "/admissions", permanent: true },
+      { source: "/Home/Career", destination: "/careers", permanent: true },
+      { source: "/Home/Facilities", destination: "/campus-life/facilities", permanent: true },
+      { source: "/Home/OnlineFees", destination: "/admissions/intake-fees", permanent: true },
+      { source: "/Home/Placement", destination: "/placement", permanent: true },
+      { source: "/Home/TheCollege", destination: "/about/history-vision-mission", permanent: true },
+      {
+        source: "/Home/AlumniRegistrationForm",
+        destination: "https://alumni.svitvasad.ac.in",
+        permanent: true,
+      },
+      // Numeric staff IDs don't map to the new employee_code-based /staff/[staff]
+      // slugs, so these go to the staff directory rather than a per-person guess.
+      { source: "/Home/StaffDetails/:id", destination: "/staff", permanent: true },
+
+      { source: "/arch.php", destination: "/colleges/svit-coa", permanent: true },
+      { source: "/Architecture", destination: "/colleges/svit-coa", permanent: true },
+      { source: "/Architecture/Index", destination: "/colleges/svit-coa", permanent: true },
+      { source: "/Architecture/TheCollege", destination: "/colleges/svit-coa", permanent: true },
+      { source: "/Architecture/Academics", destination: "/courses/architecture", permanent: true },
+      { source: "/Architecture/People", destination: "/departments/ARCH/staff", permanent: true },
+
+      { source: "/Engineering", destination: "/colleges/svit-degree", permanent: true },
+      { source: "/Engineering/Index", destination: "/colleges/svit-degree", permanent: true },
+      { source: "/Engineering/AboutUs", destination: "/colleges/svit-degree", permanent: true },
+      { source: "/Engineering/Civil", destination: "/departments/CIV", permanent: true },
+      { source: "/Engineering/Computer", destination: "/departments/CE", permanent: true },
+      { source: "/Engineering/Electrical", destination: "/departments/EE", permanent: true },
+      { source: "/Engineering/Mechanical", destination: "/departments/ME", permanent: true },
+      {
+        source: "/Engineering/InformationTechnology",
+        destination: "/departments/IT",
+        permanent: true,
+      },
+      {
+        source: "/Engineering/ElectronicsAndCommunication",
+        destination: "/departments/EC",
+        permanent: true,
+      },
+      { source: "/Engineering/Aeronautical", destination: "/departments/AE", permanent: true },
+      {
+        source: "/Engineering/AppliedScienceAndHumanities",
+        destination: "/departments/ASH01",
+        permanent: true,
+      },
+      { source: "/Engineering/Events", destination: "/campus-life/events", permanent: true },
+      { source: "/Engineering/Gallery", destination: "/gallery", permanent: true },
+      { source: "/Engineering/Placement", destination: "/placement", permanent: true },
+      {
+        source: "/Engineering/StudentActivity",
+        destination: "/campus-life/student-groups",
+        permanent: true,
+      },
+
+      { source: "/MCA", destination: "/colleges/svica", permanent: true },
+      { source: "/MCA/Index", destination: "/colleges/svica", permanent: true },
+      { source: "/MCA/AboutMCA", destination: "/colleges/svica", permanent: true },
+      { source: "/MCA/AboutSVIT", destination: "/about/history-vision-mission", permanent: true },
+      { source: "/MCA/Events", destination: "/campus-life/events", permanent: true },
+      { source: "/MCA/Placement", destination: "/placement", permanent: true },
+      {
+        source: "/MCA/StudentActivity",
+        destination: "/campus-life/student-groups",
+        permanent: true,
+      },
+
+      { source: "/MBA/AboutMBA", destination: "/colleges/svit-mba", permanent: true },
+      { source: "/MBA/Facilities", destination: "/campus-life/facilities", permanent: true },
+      { source: "/MBA/Gallery", destination: "/gallery", permanent: true },
+
+      { source: "/Diploma/AboutDiploma", destination: "/colleges/diploma", permanent: true },
+      { source: "/Diploma/Facilities", destination: "/campus-life/facilities", permanent: true },
+      { source: "/Diploma/Gallery", destination: "/gallery", permanent: true },
+
+      {
+        source: "/Nursing/AboutNursing",
+        destination: "/colleges/sardar-vallabhbhai-patel-institute-of-nursing",
+        permanent: true,
+      },
+      {
+        source: "/Nursing/AboutSVIT",
+        destination: "/about/history-vision-mission",
+        permanent: true,
+      },
+      { source: "/Nursing/Facilities", destination: "/campus-life/facilities", permanent: true },
+      { source: "/Nursing/Gallery", destination: "/gallery", permanent: true },
     ];
   },
 };
