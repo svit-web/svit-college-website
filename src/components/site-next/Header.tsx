@@ -66,6 +66,15 @@ export function Header({
     closeTimeout.current = setTimeout(() => setOpenKey(null), 200);
   }
 
+  // Clicking an actual link inside the mega panel should close it right
+  // away — the user is navigating away, not hovering, so there's no reason
+  // to wait for the mouse to leave.
+  function closeNavNow() {
+    if (closeTimeout.current) clearTimeout(closeTimeout.current);
+    closeTimeout.current = null;
+    setOpenKey(null);
+  }
+
   const displayColleges = useMemo(
     () =>
       (dbColleges ?? [])
@@ -133,6 +142,7 @@ export function Header({
                         isOpen={openKey === item.id}
                         onOpen={() => openNav(item.id)}
                         onClose={scheduleCloseNav}
+                        onNavigate={closeNavNow}
                       >
                         {mega}
                       </DesktopNavItem>

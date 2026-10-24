@@ -436,4 +436,9 @@ BEGIN
 
   RAISE NOTICE 'Successfully seeded 11 SVICA faculty members across 1 departments';
 
+  -- employee_code was only ever written into metadata above; backfill the real column
+  UPDATE staff_profiles
+  SET employee_code = metadata->>'employee_code'
+  WHERE employee_code IS NULL AND metadata->>'employee_code' IS NOT NULL;
+
 END $$;

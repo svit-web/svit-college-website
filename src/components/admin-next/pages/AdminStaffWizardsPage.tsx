@@ -119,10 +119,17 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   const [importFacultyOpen, setImportFacultyOpen] = useState(false);
   const [importAchievementsOpen, setImportAchievementsOpen] = useState(false);
 
-  const [unassignedStaff, setUnassignedStaff] = useState<any[]>([]);
+  const [allUnassignedStaff, setAllUnassignedStaff] = useState<any[]>([]);
   const [unassignedOpen, setUnassignedOpen] = useState(false);
+  const [showDeletedUnassigned, setShowDeletedUnassigned] = useState(false);
   const [claimingId, setClaimingId] = useState<string | null>(null);
   const [claimForm, setClaimForm] = useState({ department_id: '', designation_id: '' });
+  const [restoringId, setRestoringId] = useState<string | null>(null);
+
+  const unassignedStaff = useMemo(
+    () => (showDeletedUnassigned ? allUnassignedStaff : allUnassignedStaff.filter((s) => !s.deleted_at)),
+    [allUnassignedStaff, showDeletedUnassigned]
+  );
 
   useEffect(() => {
     loadStaffList();
@@ -186,11 +193,25 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
 
   async function loadUnassignedStaff() {
     try {
-      const { data, error } = await (supabase as any).rpc('list_unassigned_staff');
+      const { data, error } = await (supabase as any).rpc('list_unassigned_staff', { p_include_deleted: true });
       if (error) throw error;
-      setUnassignedStaff(data || []);
+      setAllUnassignedStaff(data || []);
     } catch (err) {
       console.error('Failed to load unassigned staff', err);
+    }
+  }
+
+  async function handleRestoreUnassigned(staffId: string) {
+    setRestoringId(staffId);
+    try {
+      const { error } = await (supabase as any).rpc('restore_unassigned_staff', { p_staff_id: staffId });
+      if (error) throw error;
+      toast.success('Restored. Assign a department to bring them back into the main list.');
+      await loadUnassignedStaff();
+    } catch (err: any) {
+      toast.error(err.message);
+    } finally {
+      setRestoringId(null);
     }
   }
 
@@ -384,16 +405,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         return;
       }
       if (musterNumber !== null) {
-        const collegeIds = [
-          ...new Set(
-            assignments
-              .map((a) => departments.find((d) => d.id === a.department_id)?.college_id)
-              .filter((id): id is string => Boolean(id))
-          ),
-        ];
-        const clash = await findMusterConflict(supabase, musterNumber, collegeIds, selectedId);
+        const departmentIds = [...new Set(assignments.map((a) => a.department_id).filter(Boolean))];
+        const clash = await findMusterConflict(supabase, musterNumber, departmentIds, selectedId);
         if (clash) {
-          toast.error(`Muster number ${musterNumber} is already assigned to ${clash} in the same college.`);
+          toast.error(`Muster number ${musterNumber} is already assigned to ${clash} in the same department.`);
           return;
         }
       }
@@ -449,11 +464,10 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     if (!selectedId) return;
     try {
       const { data: current } = await supabase.from('staff_profiles').select('muster_number').eq('id', selectedId).maybeSingle();
-      const collegeId = departments.find((d) => d.id === newAssignment.department_id)?.college_id;
-      if (current?.muster_number != null && collegeId) {
-        const clash = await findMusterConflict(supabase, current.muster_number, [collegeId], selectedId);
+      if (current?.muster_number != null && newAssignment.department_id) {
+        const clash = await findMusterConflict(supabase, current.muster_number, [newAssignment.department_id], selectedId);
         if (clash) {
-          toast.error(`Muster number ${current.muster_number} is already assigned to ${clash} in that college. Change it in General first.`);
+          toast.error(`Muster number ${current.muster_number} is already assigned to ${clash} in that department. Change it in General first.`);
           return;
         }
       }
@@ -734,7 +748,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
         </div>
       </div>
 
-      {unassignedStaff.length > 0 && (
+      {allUnassignedStaff.length > 0 && (
         <div className="rounded-xl border border-amber-300 bg-amber-50 overflow-hidden">
           <button
             type="button"
@@ -749,19 +763,44 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
           </button>
           {unassignedOpen && (
             <div className="divide-y divide-amber-200 border-t border-amber-200 bg-white">
-              <p className="px-4 py-2 text-xs text-slate-500">
-                These profiles aren&apos;t linked to any department, so they don&apos;t show up for department-scoped coordinators. Assign one
-                to your department, or delete it if it&apos;s a duplicate/test entry.
-              </p>
+              <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2">
+                <p className="text-xs text-slate-500">
+                  These profiles aren&apos;t linked to any department, so they don&apos;t show up for department-scoped coordinators. Assign
+                  one to your department, or delete it if it&apos;s a duplicate/test entry.
+                </p>
+                <label className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={showDeletedUnassigned}
+                    onChange={(e) => setShowDeletedUnassigned(e.target.checked)}
+                    className="h-3.5 w-3.5 rounded border-slate-300 text-crimson focus:ring-crimson"
+                  />
+                  Show deleted
+                </label>
+              </div>
               {unassignedStaff.map((s) => (
                 <div key={s.id} id={`unassigned-${s.id}`} className="flex flex-wrap items-center gap-2 p-3 scroll-mt-20">
                   <div className="min-w-[180px] flex-1">
                     <p className="text-sm font-medium text-slate-800">
                       {s.title} {s.first_name} {s.middle_name} {s.last_name}
+                      {s.deleted_at && (
+                        <span className="ml-2 rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-rose-600">
+                          Deleted
+                        </span>
+                      )}
                     </p>
                     <p className="text-xs text-slate-500">{s.employee_code || '—'} · {s.email || 'no email'}</p>
                   </div>
-                  {claimingId === s.id ? (
+                  {s.deleted_at ? (
+                    <button
+                      type="button"
+                      disabled={restoringId === s.id}
+                      onClick={() => handleRestoreUnassigned(s.id)}
+                      className="rounded-lg border border-emerald-300 px-3 py-1.5 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 transition disabled:opacity-50"
+                    >
+                      {restoringId === s.id ? 'Restoring…' : 'Restore'}
+                    </button>
+                  ) : claimingId === s.id ? (
                     <form
                       onSubmit={(e) => {
                         e.preventDefault();

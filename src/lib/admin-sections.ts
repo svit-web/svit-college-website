@@ -10,11 +10,13 @@
 // navigation) and AdminSidebar (link visibility).
 export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/homepage",
+  "/admin/tables/homepage_items",
   "/admin/tables/pages",
   "/admin/page-editors",
   "/admin/menus",
   "/admin/tables/menu_items",
   "/admin/posts",
+  "/admin/tables/posts",
   "/admin/tables/content_categories",
   "/admin/tnp-hub",
   "/admin/recruiters",
@@ -23,6 +25,8 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/accreditations",
   "/admin/tables/downloads",
   "/admin/media",
+  "/admin/tables/media_files",
+  "/admin/tables/media_folders",
   "/admin/sports",
   "/admin/tables/gallery_albums",
   "/admin/tables/gallery_media",
@@ -97,6 +101,8 @@ export function isRouteAllowedForScope(pathname: string, level: string): boolean
 // happens to carry a college_id/department_id column.
 export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "pages",
+  "homepage_items",
+  "posts",
   "menu_items",
   "content_categories",
   "board_members",
@@ -105,6 +111,8 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "downloads",
   "gallery_albums",
   "gallery_media",
+  "media_files",
+  "media_folders",
   "mous",
   "user_profiles",
   "user_roles",

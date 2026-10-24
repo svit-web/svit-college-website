@@ -162,9 +162,9 @@ export async function importFacultyCsv(
       if (findErr) throw findErr;
 
       if (musterNumber !== null) {
-        const clash = await findMusterConflict(supabase, musterNumber, [dept.college_id], existing?.id);
+        const clash = await findMusterConflict(supabase, musterNumber, [dept.id], existing?.id);
         if (clash) {
-          summary.errors.push({ row: rowNum, email, message: `muster_number ${musterNumber} is already assigned to ${clash} in the same college.` });
+          summary.errors.push({ row: rowNum, email, message: `muster_number ${musterNumber} is already assigned to ${clash} in the same department.` });
           continue;
         }
       }
