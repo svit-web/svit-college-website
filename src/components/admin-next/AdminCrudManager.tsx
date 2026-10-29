@@ -13,9 +13,12 @@ import { EVENT_TYPE_LABELS } from '@/lib/event-types';
 import type { AdminOption } from '@/lib/admin-option-sets';
 import {
   ACHIEVEMENT_CATEGORY_OPTIONS,
+  CONTACT_NUMBER_KIND_OPTIONS,
   DOWNLOAD_CATEGORY_OPTIONS,
   FACILITY_CATEGORY_OPTIONS,
   GALLERY_MEDIA_TYPE_OPTIONS,
+  LIBRARY_INFO_KIND_OPTIONS,
+  LIBRARY_RESOURCE_CATEGORY_OPTIONS,
   MENU_TYPE_OPTIONS,
   SPORT_CATEGORY_OPTIONS,
 } from '@/lib/admin-option-sets';
@@ -71,6 +74,9 @@ const HIDDEN_GRID_COLUMNS = [
   'featured_by',
   'map_url',
 ];
+
+// Toolbar filter value meaning "column IS NULL" (e.g. top-level menu items).
+const NONE_FILTER = '__none__';
 
 const STATUS_STYLES: Record<string, string> = {
   published: 'bg-emerald-100 text-emerald-700 border-emerald-300',
@@ -195,6 +201,10 @@ interface TableConfig {
   };
   rowActions?: { resetPassword?: boolean };
   fields?: Record<string, TableFieldConfig>;
+  // Columns offered as toolbar filter dropdowns, in this order. Options come
+  // from the column itself: FK -> the referenced rows, enum / `options` ->
+  // its values, boolean -> Yes/No. A nullable column also gets a "None" choice.
+  filters?: string[];
 }
 
 // Everything AdminCrudManager needs to know about a specific table's quirks,
@@ -232,6 +242,11 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     },
     fields: {
       code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+      show_in_menu: {
+        lockedForNonGlobal: true,
+        booleanLabel: 'Show in main menu (Colleges panel)',
+        lockedLabel: 'Show in main menu (global admin only)',
+      },
     },
   },
   courses: {
@@ -401,7 +416,38 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       category: { options: DOWNLOAD_CATEGORY_OPTIONS },
     },
   },
+  contact_numbers: {
+    fields: {
+      college_id: {
+        helpText: 'Leave empty for an institute-wide number; pick a college to list it under that college in the footer.',
+      },
+      label: { helpText: 'Shown before the number, e.g. "Admissions", "Principal Office".' },
+      kind: { options: CONTACT_NUMBER_KIND_OPTIONS },
+      show_in_footer: { booleanLabel: 'Show in website footer' },
+    },
+  },
+  library_resources: {
+    fields: {
+      category: { options: LIBRARY_RESOURCE_CATEGORY_OPTIONS },
+      website_url: { helpText: 'Full link starting with https:// — opens in a new tab on the Central Library page.' },
+      access_note: { helpText: 'Optional, e.g. "Login with your college email when off campus".' },
+      logo_url: { helpText: 'Optional square logo; a book icon is shown otherwise.' },
+    },
+  },
+  library_info_items: {
+    fields: {
+      kind: {
+        options: LIBRARY_INFO_KIND_OPTIONS,
+        helpText: 'Which section of the Central Library page this row appears in.',
+      },
+      value: {
+        helpText:
+          'Short right-hand text: hours ("9:00 AM – 6:00 PM"), a figure ("30,000+"), or an email/phone for contacts.',
+      },
+    },
+  },
   menu_items: {
+    filters: ['menu_id', 'parent_id', 'link_type', 'menu_type', 'status'],
     fields: {
       menu_type: { options: MENU_TYPE_OPTIONS },
     },
@@ -452,6 +498,8 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   // below, which only shows a filter when the column actually exists.
   const [departmentFilter, setDepartmentFilter] = useState('');
   const [scopeTypeFilter, setScopeTypeFilter] = useState('');
+  // Per-table filters from TABLE_CONFIGS[tableId].filters, keyed by column.
+  const [columnFilters, setColumnFilters] = useState<Record<string, string>>({});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<any | null>(null);
@@ -512,6 +560,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         setSearchQuery('');
         setDepartmentFilter('');
         setScopeTypeFilter('');
+        setColumnFilters({});
         setRowSelection({});
       } catch (err: any) {
         console.error('Failed to load schema:', err);
@@ -639,6 +688,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
       if (scopeTypeFilter && cols.includes('scope_type')) {
         query = query.eq('scope_type', scopeTypeFilter);
       }
+      for (const [column, value] of Object.entries(columnFilters)) {
+        if (!value || !cols.includes(column)) continue;
+        query = value === NONE_FILTER ? query.is(column, null) : query.eq(column, value);
+      }
 
       if (cols.includes('deleted_at')) {
         query = query.is('deleted_at', null);
@@ -689,13 +742,13 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   useEffect(() => {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [schema, page, pageSize, sorting, debouncedSearch, departmentFilter, scopeTypeFilter, userScope]);
+  }, [schema, page, pageSize, sorting, debouncedSearch, departmentFilter, scopeTypeFilter, columnFilters, userScope]);
 
   // Changing a filter mid-list should land back on page 1, same as a new
   // search term does above.
   useEffect(() => {
     setPage(0);
-  }, [departmentFilter, scopeTypeFilter]);
+  }, [departmentFilter, scopeTypeFilter, columnFilters]);
 
   const handleOpenModal = (record: any = null) => {
     setEditingRecord(record);
@@ -1259,7 +1312,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
           <span className="shrink-0 text-xs text-slate-500">{recordCount} rows</span>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {hasDepartmentColumn && (
             <select
               value={departmentFilter}
@@ -1287,6 +1340,40 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
               ))}
             </select>
           )}
+
+          {(TABLE_CONFIGS[tableId]?.filters ?? []).map((column) => {
+            const col = schema.columns.find((c: any) => c.name === column);
+            if (!col) return null;
+            const fk = schema.foreign_keys?.find((f: any) => f.column === column);
+            const options: { value: string; label: string }[] = fk
+              ? (fkOptions[fk.foreign_table] ?? [])
+              : TABLE_CONFIGS[tableId]?.fields?.[column]?.options
+              ? TABLE_CONFIGS[tableId]!.fields![column]!.options!
+              : col.enum_values
+              ? col.enum_values.map((v: string) => ({ value: v, label: formatLabel(v) }))
+              : col.type === 'boolean'
+              ? [
+                  { value: 'true', label: 'Yes' },
+                  { value: 'false', label: 'No' },
+                ]
+              : [];
+            const label = formatLabel(column);
+            return (
+              <select
+                key={column}
+                value={columnFilters[column] ?? ''}
+                onChange={(e) => setColumnFilters((prev) => ({ ...prev, [column]: e.target.value }))}
+                className="max-w-[160px] rounded border border-slate-200 bg-white py-1.5 pl-2 pr-6 text-xs text-slate-800 focus:border-crimson focus:outline-none"
+                title={`Filter by ${label.toLowerCase()}`}
+              >
+                <option value="">All {label.toLowerCase()}</option>
+                {col.is_nullable && <option value={NONE_FILTER}>None ({label.toLowerCase()} empty)</option>}
+                {options.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            );
+          })}
 
           <div className="relative">
             <Search className="absolute top-2 left-2.5 h-3.5 w-3.5 text-slate-400" />

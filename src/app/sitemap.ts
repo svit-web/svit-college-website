@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { publicSupabase } from "@/lib/supabase-public";
 import { SITE_URL } from "@/lib/seo";
 import { CENTERS_WITH_OWN_PAGE } from "@/lib/centers.functions";
+import { LIBRARY_FACILITY_SLUG } from "@/lib/library-paths";
 import { ACTIVITY_EVENT_TYPES } from "@/lib/department-content.functions";
 
 // Each query mirrors the filters of the page's own loader (published, not
@@ -44,6 +45,7 @@ const STATIC_ROUTES: Array<[path: string, priority: number, changeFrequency: Cha
   ["/campus-life/facilities", 0.6, "monthly"],
   ["/campus-life/student-groups", 0.6, "monthly"],
   ["/campus-life/nss-ncc", 0.5, "monthly"],
+  ["/campus-life/central-library", 0.5, "monthly"],
   ["/campus-life/sports-and-athletics", 0.5, "monthly"],
   ["/coe", 0.5, "monthly"],
   ["/downloads", 0.5, "weekly"],
@@ -203,6 +205,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const f of facilities) {
     if (f.category !== "academic" && f.category !== "amenities") continue;
+    if (f.slug === LIBRARY_FACILITY_SLUG) continue; // has its own page: /campus-life/central-library
     out.push(
       entry(`/campus-life/facilities/${f.category}/${f.slug}`, 0.5, "monthly", f.updated_at),
     );

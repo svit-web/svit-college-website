@@ -5,6 +5,7 @@ import { getAllFacilities } from "@/lib/facilities.functions";
 import type { Facility } from "@/lib/facilities.functions";
 import { getEntryAlbums } from "@/lib/gallery.functions";
 import type { EntryCardData } from "@/lib/entry";
+import { LIBRARY_FACILITY_SLUG, LIBRARY_PATH } from "@/lib/library-paths";
 
 export const metadata: Metadata = {
   title: "Facilities — Campus Life — SVIT Vasad",
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 function pathFor(category: "academic" | "amenities", slug: string) {
+  if (slug === LIBRARY_FACILITY_SLUG) return LIBRARY_PATH;
   if (category === "academic") return `/campus-life/facilities/academic/${slug}`;
   return `/campus-life/facilities/amenities/${slug}`;
 }
@@ -29,8 +31,12 @@ function toCard(
     subtitle: facility.subtitle,
     description: facility.description,
     cardPhotoUrl: facility.album_id ? (albums.get(facility.album_id)?.coverUrl ?? null) : null,
-    hasDetailPage: facility.has_detail_page,
-    detailHref: facility.has_detail_page ? pathFor(category, facility.slug) : null,
+    // The Central Library has a dedicated page regardless of has_detail_page.
+    hasDetailPage: facility.has_detail_page || facility.slug === LIBRARY_FACILITY_SLUG,
+    detailHref:
+      facility.has_detail_page || facility.slug === LIBRARY_FACILITY_SLUG
+        ? pathFor(category, facility.slug)
+        : null,
     album: facility.album_id ? (albums.get(facility.album_id) ?? null) : null,
   };
 }

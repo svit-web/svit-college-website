@@ -9,13 +9,22 @@ import {
   Linkedin,
   Mail,
   MapPin,
+  MessageCircle,
   Phone,
+  Printer,
+  Smartphone,
   Twitter,
   Youtube,
   ChevronDown,
 } from "lucide-react";
 import { Logo } from "./Logo";
-import type { MiscSettings, ContactInfo } from "@/lib/site-settings.functions";
+import type {
+  MiscSettings,
+  ContactInfo,
+  ContactNumber,
+  ContactNumberGroup,
+} from "@/lib/site-settings.functions";
+import type { MenuTopItem } from "@/lib/menus.functions";
 
 // Keep this in sync with the platform list in AdminSettingsPage's social
 // links form (Facebook, Instagram, LinkedIn, Twitter, Youtube) — a platform
@@ -30,11 +39,73 @@ const socialIconMap: Record<string, typeof Facebook> = {
 
 export interface FooterProps {
   contactInfo: ContactInfo | null;
+  /** contact_numbers, grouped by college; empty → falls back to contactInfo.phone. */
+  contactNumbers: ContactNumberGroup[];
+  /** 'footer_navigation' menu; empty → falls back to the default columns below. */
+  footerNav: MenuTopItem[];
   misc: MiscSettings | null;
   logoUrl: string | null;
 }
 
-export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
+type FooterColumn = {
+  title: string;
+  links: { label: string; to: string }[];
+  externalLinks: { label: string; href: string }[];
+};
+
+// Fallback columns while the 'footer_navigation' menu is missing or empty
+// (seeded with these same links by 20261029160000_footer_navigation_menu.sql).
+const DEFAULT_COLUMNS: FooterColumn[] = [
+  {
+    title: "Quick Links",
+    links: [
+      { label: "About Us", to: "/about" },
+      { label: "Admissions", to: "/admissions" },
+      { label: "Campus Life", to: "/campus-life" },
+      { label: "Placement", to: "/placement" },
+      { label: "News & Events", to: "/news" },
+    ],
+    externalLinks: [],
+  },
+  {
+    title: "Important",
+    links: [
+      { label: "Anti-Ragging", to: "/anti-ragging" },
+      { label: "Grievance Redressal", to: "/grievance" },
+      { label: "Downloads", to: "/downloads" },
+      { label: "Careers", to: "/careers" },
+    ],
+    externalLinks: [{ label: "Alumni", href: "https://alumni.svitvasad.ac.in" }],
+  },
+];
+
+// Brand block spans 2 tracks; one track per link column. Literal strings so
+// Tailwind sees every variant.
+const LG_GRID_COLS: Record<number, string> = {
+  1: "lg:grid-cols-3",
+  2: "lg:grid-cols-4",
+  3: "lg:grid-cols-5",
+  4: "lg:grid-cols-6",
+};
+
+function columnsFromMenu(menu: MenuTopItem[]): FooterColumn[] {
+  return menu
+    .map((col) => {
+      const children = col.children.filter((c) => c.url);
+      return {
+        title: col.title,
+        links: children
+          .filter((c) => !/^https?:\/\//i.test(c.url!))
+          .map((c) => ({ label: c.title, to: c.url! })),
+        externalLinks: children
+          .filter((c) => /^https?:\/\//i.test(c.url!))
+          .map((c) => ({ label: c.title, href: c.url! })),
+      };
+    })
+    .filter((c) => c.links.length + c.externalLinks.length > 0);
+}
+
+export function Footer({ contactInfo, contactNumbers, footerNav, misc, logoUrl }: FooterProps) {
   const site = {
     fullName: contactInfo?.full_name,
     email: contactInfo?.email,
@@ -44,28 +115,15 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
 
   const socialLinks = contactInfo?.social_links ?? {};
 
-  // Intentionally static, not CMS-driven: these are top-level site sections
-  // (not admin content), the same set `main_navigation` carries, so there's
-  // no `footer_navigation` menu code to wire up. Keep in sync with
-  // `main_navigation`'s top-level items by hand if that menu's routes change.
-  const quick = [
-    { label: "About Us", to: "/about" },
-    { label: "Admissions", to: "/admissions" },
-    { label: "Campus Life", to: "/campus-life" },
-    { label: "Placement", to: "/placement" },
-    { label: "News & Events", to: "/news" },
-  ];
-  const important = [
-    { label: "Anti-Ragging", to: "/anti-ragging" },
-    { label: "Grievance Redressal", to: "/grievance" },
-    { label: "Downloads", to: "/downloads" },
-    { label: "Careers", to: "/careers" },
-  ];
+  const menuColumns = columnsFromMenu(footerNav ?? []);
+  const columns = (menuColumns.length > 0 ? menuColumns : DEFAULT_COLUMNS).slice(0, 4);
 
   return (
     <footer className="border-t border-line bg-paper-deep text-ink-soft">
       <div className="container-page py-8 md:py-14">
-        <div className="grid gap-0 md:gap-10 md:grid-cols-2 lg:grid-cols-4">
+        <div
+          className={`grid gap-0 md:gap-10 md:grid-cols-2 ${LG_GRID_COLS[columns.length] ?? "lg:grid-cols-4"}`}
+        >
           <div className="lg:col-span-2 mb-2 md:mb-0">
             <Logo logoUrl={logoUrl} instituteName={site.fullName} />
             <p className="mt-4 text-sm text-ink-soft max-w-sm">
@@ -79,14 +137,19 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
                   <span>{site.address}</span>
                 </div>
               )}
-              {site.phone && (
-                <a
-                  href={`tel:${site.phone.replace(/\s/g, "")}`}
-                  className="flex items-center gap-2 py-1 hover:text-crimson"
-                >
-                  <Phone className="h-4 w-4 text-navy" /> {site.phone}
-                </a>
-              )}
+              {contactNumbers?.length > 0
+                ? // One flat list (institute-wide first, then college order); no college headings.
+                  contactNumbers
+                    .flatMap((g) => g.numbers)
+                    .map((n) => <ContactNumberLine key={n.id} number={n} />)
+                : site.phone && (
+                    <a
+                      href={`tel:${site.phone.replace(/\s/g, "")}`}
+                      className="flex items-center gap-2 py-1 hover:text-crimson"
+                    >
+                      <Phone className="h-4 w-4 text-navy" /> {site.phone}
+                    </a>
+                  )}
               {site.email && (
                 <a
                   href={`mailto:${site.email}`}
@@ -116,12 +179,14 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
             </div>
           </div>
 
-          <FooterCol title="Quick Links" links={quick} />
-          <FooterCol
-            title="Important"
-            links={important}
-            externalLinks={[{ label: "Alumni", href: "https://alumni.svitvasad.ac.in" }]}
-          />
+          {columns.map((c) => (
+            <FooterCol
+              key={c.title}
+              title={c.title}
+              links={c.links}
+              externalLinks={c.externalLinks}
+            />
+          ))}
         </div>
       </div>
       <div className="border-t border-line">
@@ -134,6 +199,40 @@ export function Footer({ contactInfo, misc, logoUrl }: FooterProps) {
         </div>
       </div>
     </footer>
+  );
+}
+
+const CONTACT_ICONS: Record<ContactNumber["kind"], typeof Phone> = {
+  phone: Phone,
+  mobile: Smartphone,
+  whatsapp: MessageCircle,
+  fax: Printer,
+};
+
+function ContactNumberLine({ number: n }: { number: ContactNumber }) {
+  const Icon = CONTACT_ICONS[n.kind] ?? Phone;
+  const digits = n.phone.replace(/[^\d+]/g, "");
+  const content = (
+    <>
+      <Icon className="h-4 w-4 shrink-0 text-navy" />
+      <span>
+        {n.phone}
+        {n.label && <span className="text-ink-mute"> ({n.label})</span>}
+      </span>
+    </>
+  );
+  // Fax numbers aren't dialable from a browser — plain text.
+  if (n.kind === "fax") return <div className="flex items-center gap-2 py-1">{content}</div>;
+  const href =
+    n.kind === "whatsapp" ? `https://wa.me/${digits.replace(/^\+/, "")}` : `tel:${digits}`;
+  return (
+    <a
+      href={href}
+      {...(n.kind === "whatsapp" ? { target: "_blank", rel: "noreferrer" } : {})}
+      className="flex items-center gap-2 py-1 hover:text-crimson"
+    >
+      {content}
+    </a>
   );
 }
 

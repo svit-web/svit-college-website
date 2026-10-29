@@ -3,7 +3,12 @@
 // are in site-settings-next.ts, RLS-gated to global admins — this file is
 // the public-read half of that seam.
 import { publicSupabase } from '@/lib/supabase-public';
-import { MISC_KEYS, DEFAULT_MISC, DEFAULT_CONTACT, type MiscSettings } from '@/lib/site-settings-types';
+import {
+  MISC_KEYS,
+  DEFAULT_MISC,
+  DEFAULT_CONTACT,
+  type MiscSettings,
+} from '@/lib/site-settings-types';
 
 export {
   MISC_KEYS,
@@ -79,4 +84,56 @@ export async function getMiscSettings(): Promise<MiscSettings> {
     cta_button_label:
       (map.cta_button_label as string | undefined)?.trim() || DEFAULT_MISC.cta_button_label,
   };
+}
+
+export interface ContactNumber {
+  id: string;
+  label: string;
+  phone: string;
+  kind: 'phone' | 'mobile' | 'whatsapp' | 'fax';
+}
+
+/** Footer contact block: institute-wide numbers first (collegeName null), then one group per college. */
+export interface ContactNumberGroup {
+  collegeId: string | null;
+  collegeName: string | null;
+  numbers: ContactNumber[];
+}
+
+/**
+ * Fetch published footer contact numbers (contact_numbers), grouped by college.
+ * An empty result means the footer falls back to contact_info.phone.
+ */
+export async function getFooterContactNumbers(): Promise<ContactNumberGroup[]> {
+  const supabase = publicSupabase();
+  const { data, error } = await supabase
+    .from('contact_numbers')
+    .select('id, college_id, label, phone, kind, sort_order, colleges(name, sort_order)')
+    .eq('status', 'published')
+    .eq('show_in_footer', true)
+    .is('deleted_at', null)
+    .order('sort_order', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching contact numbers:', error);
+    throw error;
+  }
+
+  const groups = new Map<string, ContactNumberGroup & { order: number }>();
+  for (const row of (data ?? []) as any[]) {
+    const college = Array.isArray(row.colleges) ? row.colleges[0] : row.colleges;
+    // A number for an unpublished/hidden college comes back without its college — skip it.
+    if (row.college_id && !college) continue;
+    const key = row.college_id ?? '';
+    const group = groups.get(key) ?? {
+      collegeId: row.college_id,
+      collegeName: college?.name ?? null,
+      numbers: [] as ContactNumber[],
+      order: row.college_id ? (college?.sort_order ?? 0) : -1,
+    };
+    group.numbers.push({ id: row.id, label: row.label, phone: row.phone, kind: row.kind });
+    groups.set(key, group);
+  }
+
+  return [...groups.values()].sort((a, b) => a.order - b.order).map(({ order: _order, ...g }) => g);
 }

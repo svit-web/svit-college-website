@@ -3,13 +3,23 @@
 import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
-import { Award, Building2, CalendarDays, ChevronRight, Shield, Trophy, Users } from "lucide-react";
+import {
+  Award,
+  Building2,
+  CalendarDays,
+  ChevronRight,
+  LibraryBig,
+  Shield,
+  Trophy,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { Facility } from "@/lib/facilities.functions";
 import type { StudentClub } from "@/lib/clubs.functions";
 import type { CampusEvent } from "@/lib/events.functions";
 import type { Sport } from "@/lib/sports.functions";
 import type { Center } from "@/lib/centers.functions";
+import { LIBRARY_FACILITY_SLUG, LIBRARY_PATH } from "@/lib/library-paths";
 
 type MegaItem = { label: string; to: string };
 export type CampusMegaCategory = {
@@ -34,8 +44,12 @@ export function useCampusCategories({
   sports: Sport[];
   centers: Center[];
 }): CampusMegaCategory[] {
-  return useMemo(
-    () => [
+  return useMemo(() => {
+    const facilityHref = (f: Facility) =>
+      f.slug === LIBRARY_FACILITY_SLUG
+        ? LIBRARY_PATH
+        : `/campus-life/facilities/${f.category ?? "academic"}/${f.slug}`;
+    return [
       {
         key: "facilities",
         title: "Facilities",
@@ -46,8 +60,16 @@ export function useCampusCategories({
           .filter((f) => f.category !== "sports")
           .map((f) => ({
             label: f.name,
-            to: `/campus-life/facilities/${f.category ?? "academic"}/${f.slug}`,
+            to: facilityHref(f),
           })),
+      },
+      {
+        key: "central-library",
+        title: "Central Library",
+        icon: LibraryBig,
+        allLabel: "Central Library",
+        allTo: LIBRARY_PATH,
+        items: [],
       },
       {
         key: "sports",
@@ -106,9 +128,8 @@ export function useCampusCategories({
         allTo: "/campus-life/nss-ncc",
         items: [],
       },
-    ],
-    [facilities, featuredClubs, events, sports, centers],
-  );
+    ];
+  }, [facilities, featuredClubs, events, sports, centers]);
 }
 
 export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory[] }) {

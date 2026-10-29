@@ -25,6 +25,7 @@ export const DOWNLOAD_CATEGORY_OPTIONS: AdminOption[] = toOptions({
   notice: "Notice",
   syllabus: "Syllabus",
   form: "Form",
+  library: "Library (shown on Central Library page)",
   other: "Other",
 });
 
@@ -44,6 +45,34 @@ export const MENU_TYPE_OPTIONS: AdminOption[] = toOptions({
 export const FACILITY_CATEGORY_OPTIONS: AdminOption[] = toOptions({
   academic: "Academic",
   amenities: "Amenities",
+});
+
+/** library_resources.category — CHECK constraint. OPAC / Remote access rows render as
+ *  buttons at the top of /campus-life/central-library; the rest as grouped cards. */
+export const LIBRARY_RESOURCE_CATEGORY_OPTIONS: AdminOption[] = toOptions({
+  e_journal: "E-journal",
+  database: "Database",
+  digital_library: "Digital library",
+  opac: "Library catalogue (OPAC)",
+  remote_access: "Remote access portal",
+  other: "Other",
+});
+
+/** library_info_items.kind — CHECK constraint; picks the Central Library page section. */
+export const LIBRARY_INFO_KIND_OPTIONS: AdminOption[] = toOptions({
+  stat: "Key figure (top strip)",
+  timing: "Timing",
+  service: "Service",
+  rule: "Rule / code of conduct",
+  contact: "Contact",
+});
+
+/** contact_numbers.kind — CHECK constraint; picks the footer icon and link (tel: / wa.me / none for fax). */
+export const CONTACT_NUMBER_KIND_OPTIONS: AdminOption[] = toOptions({
+  phone: "Phone (landline)",
+  mobile: "Mobile",
+  whatsapp: "WhatsApp",
+  fax: "Fax",
 });
 
 /** sports.category — the public SportsSection labels and tallies these. */

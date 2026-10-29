@@ -414,6 +414,14 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
         </button>
       </div>
 
+      {menusList.find((m) => m.id === selectedMenuId)?.code === 'footer_navigation' && (
+        <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+          <strong>Footer menu:</strong> each root link is a footer column heading (up to 4 columns),
+          and its child links are the links in that column. Links starting with https:// open in a
+          new tab. If this menu is empty, the footer shows its built-in default links.
+        </div>
+      )}
+
       <div className="flex-1 rounded-xl border border-slate-200 bg-white p-6 shadow-xl min-h-[400px]">
         {loadingItems ? (
           <div className="flex h-64 items-center justify-center">

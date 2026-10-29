@@ -87,6 +87,12 @@ const nextConfig: NextConfig = {
       { source: "/student-corner/coe", destination: "/coe", permanent: true },
       // Central Facilities moved out of About into Campus Life.
       { source: "/about/facilities", destination: "/campus-life/facilities", permanent: true },
+      // Central Library got its own page; the generic facility leaf URL points there.
+      {
+        source: "/campus-life/facilities/:category/library",
+        destination: "/campus-life/central-library",
+        permanent: true,
+      },
       // /campus was an orphaned page with no inbound links; its content lives in Campus Life now.
       { source: "/campus", destination: "/campus-life/facilities", permanent: true },
       // Alumni relations moved to a dedicated external portal.
