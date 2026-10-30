@@ -82,6 +82,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Admissions Page', to: '/admin/page-editors/admissions' },
       { label: 'Menus / Nav', to: '/admin/menus' },
       { label: 'Menu Items', to: '/admin/tables/menu_items' },
+      { label: 'Footer Contact Numbers', to: '/admin/tables/contact_numbers' },
       { label: 'News', to: '/admin/posts' },
       { label: 'News Categories', to: '/admin/tables/content_categories' },
       { label: 'T&P Master Hub', to: '/admin/tnp-hub' },
@@ -111,6 +112,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Student Groups — Clubs', to: '/admin/tables/student_clubs' },
       { label: 'Student Groups — Societies', to: '/admin/tables/centers' },
       { label: 'MOUs', to: '/admin/tables/mous' },
+      { label: 'Central Library', to: '/admin/library' },
     ],
   },
   {

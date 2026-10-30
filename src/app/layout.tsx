@@ -3,7 +3,6 @@ import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
 import { getFontScaleInitScript } from "@/lib/font-scale";
-import { ScrollEngineProvider } from "@/components/site-next/ScrollEngineProvider";
 import {
   DEFAULT_MISC,
   DEFAULT_CONTACT,
@@ -53,7 +52,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }} />
       </head>
       <body className="antialiased" suppressHydrationWarning>
-        <ScrollEngineProvider />
         {children}
         <Toaster position="top-right" richColors />
         {GA4_ID && (

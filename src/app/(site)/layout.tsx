@@ -1,15 +1,25 @@
 import { Header } from "@/components/site-next/Header";
 import { Footer } from "@/components/site-next/Footer";
 import { PageTransition } from "@/components/site-next/PageTransition";
+import { ScrollEngineProvider } from "@/components/site-next/ScrollEngineProvider";
 import { getCollegesGrid } from "@/lib/homepage.functions";
-import { DEFAULT_CONTACT, getContactInfo, getMiscSettings } from "@/lib/site-settings.functions";
+import {
+  DEFAULT_CONTACT,
+  getContactInfo,
+  getFooterContactNumbers,
+  getMiscSettings,
+} from "@/lib/site-settings.functions";
 import { getAllDepartments } from "@/lib/departments.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getAllEvents } from "@/lib/events.functions";
 import { getSports } from "@/lib/sports.functions";
 import { getVisibleCenters } from "@/lib/centers.functions";
-import { getMainNavigation, getTopUtilityNavigation } from "@/lib/menus.functions";
+import {
+  getFooterNavigation,
+  getMainNavigation,
+  getTopUtilityNavigation,
+} from "@/lib/menus.functions";
 import { getHeroAppearance } from "@/lib/theme.functions";
 import { DEFAULT_HERO_APPEARANCE, heroTextVars } from "@/lib/theme";
 import { organizationJsonLd } from "@/lib/seo";
@@ -44,6 +54,8 @@ export default async function SiteLayout({
     mainNav,
     utilityNav,
     heroAppearance,
+    footerNav,
+    footerContacts,
   ] = await Promise.all([
     getCollegesGrid().catch(() => []),
     getContactInfo().catch(() => null),
@@ -57,6 +69,8 @@ export default async function SiteLayout({
     getMainNavigation().catch(() => []),
     getTopUtilityNavigation().catch(() => []),
     getHeroAppearance().catch(() => DEFAULT_HERO_APPEARANCE),
+    getFooterNavigation().catch(() => []),
+    getFooterContactNumbers().catch(() => []),
   ]);
 
   const logoUrl = colleges.find((c) => c.slug === "svit-degree")?.logo_url ?? null;
@@ -65,6 +79,7 @@ export default async function SiteLayout({
     // --hero-text (admin "Text Color") is set here once so every hero — including
     // PageHero rendered inside client components — follows the setting.
     <div className="flex min-h-screen flex-col" style={heroTextVars(heroAppearance)}>
+      <ScrollEngineProvider />
       <Header
         mainNav={mainNav}
         utilityNav={utilityNav}
@@ -81,7 +96,13 @@ export default async function SiteLayout({
       <main className="flex-1">
         <PageTransition>{children}</PageTransition>
       </main>
-      <Footer contactInfo={contactInfo} misc={misc} logoUrl={logoUrl} />
+      <Footer
+        contactInfo={contactInfo}
+        contactNumbers={footerContacts}
+        footerNav={footerNav}
+        misc={misc}
+        logoUrl={logoUrl}
+      />
       <JsonLd
         data={organizationJsonLd({
           phone: contactInfo?.phone ?? null,

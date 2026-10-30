@@ -2,13 +2,22 @@ import type { MetadataRoute } from "next";
 import { publicSupabase } from "@/lib/supabase-public";
 import { SITE_URL } from "@/lib/seo";
 import { CENTERS_WITH_OWN_PAGE } from "@/lib/centers.functions";
+import { LIBRARY_FACILITY_SLUG } from "@/lib/library-paths";
 import { ACTIVITY_EVENT_TYPES } from "@/lib/department-content.functions";
 
-// Built per request from Supabase so content published in the admin panel
-// shows up immediately. Each query mirrors the filters of the page's own
-// loader (published, not deleted, has_detail_page where the route needs it)
-// so the sitemap never lists a URL that 404s.
-export const dynamic = "force-dynamic";
+// Each query mirrors the filters of the page's own loader (published, not
+// deleted, has_detail_page where the route needs it) so the sitemap never
+// lists a URL that 404s.
+//
+// Cached for 5 minutes rather than rebuilt on every hit: this fires 14
+// concurrent Supabase queries, and /sitemap.xml is public, unauthenticated,
+// and the exact URL robots.ts hands to every crawler — a bot looping on it
+// was a real, unmetered amplification vector (see
+// docs/security/2026-10-19-traffic-incident-security-plan.md, Phase 1a).
+// Admin writes still show up immediately via revalidatePublicSite()'s
+// revalidatePath('/', 'layout') in src/app/admin/actions.ts; this window is
+// only the periodic fallback, same pattern as (site)/layout.tsx.
+export const revalidate = 300; // seconds
 
 type Entry = MetadataRoute.Sitemap[number];
 type ChangeFrequency = Entry["changeFrequency"];
@@ -36,6 +45,7 @@ const STATIC_ROUTES: Array<[path: string, priority: number, changeFrequency: Cha
   ["/campus-life/facilities", 0.6, "monthly"],
   ["/campus-life/student-groups", 0.6, "monthly"],
   ["/campus-life/nss-ncc", 0.5, "monthly"],
+  ["/campus-life/central-library", 0.5, "monthly"],
   ["/campus-life/sports-and-athletics", 0.5, "monthly"],
   ["/coe", 0.5, "monthly"],
   ["/downloads", 0.5, "weekly"],
@@ -195,6 +205,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
   for (const f of facilities) {
     if (f.category !== "academic" && f.category !== "amenities") continue;
+    if (f.slug === LIBRARY_FACILITY_SLUG) continue; // has its own page: /campus-life/central-library
     out.push(
       entry(`/campus-life/facilities/${f.category}/${f.slug}`, 0.5, "monthly", f.updated_at),
     );

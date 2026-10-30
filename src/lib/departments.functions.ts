@@ -10,6 +10,7 @@ export interface Department {
   head_of_department_id: string | null;
   logo_url: string | null;
   status: 'draft' | 'published' | 'archived';
+  show_in_menu: boolean;
   about: string | null;
   vision: string | null;
   mission: string | null;

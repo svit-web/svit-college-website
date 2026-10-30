@@ -84,6 +84,11 @@ export function getTopUtilityNavigation(): Promise<MenuTopItem[]> {
   return getMenuByCode("top_navigation");
 }
 
+/** Footer link columns: top-level items are the columns, their children the links. */
+export function getFooterNavigation(): Promise<MenuTopItem[]> {
+  return getMenuByCode("footer_navigation");
+}
+
 /** Groups a flat child list into columns by their metadata.group, preserving first-seen group order. */
 export function groupMenuChildren(
   children: MenuLink[],

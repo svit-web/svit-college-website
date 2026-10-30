@@ -24,6 +24,9 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/tables/principal_messages",
   "/admin/tables/accreditations",
   "/admin/tables/downloads",
+  "/admin/library",
+  "/admin/tables/library_resources",
+  "/admin/tables/library_info_items",
   "/admin/media",
   "/admin/tables/media_files",
   "/admin/tables/media_folders",
@@ -63,6 +66,7 @@ export function isGlobalOnlyRoute(pathname: string): boolean {
 export const COLLEGE_OR_ABOVE_ROUTE_PREFIXES = [
   "/admin/colleges",
   "/admin/tables/centers",
+  "/admin/tables/contact_numbers",
 ] as const;
 
 export function isCollegeOrAboveRoute(pathname: string): boolean {
@@ -109,6 +113,8 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "principal_messages",
   "accreditations",
   "downloads",
+  "library_resources",
+  "library_info_items",
   "gallery_albums",
   "gallery_media",
   "media_files",
@@ -156,6 +162,9 @@ export const ROUTE_SECTION_MAP: Record<string, string[]> = {
   "/admin/tables/gallery_media": ["campus_life"],
   "/admin/tables/student_clubs": ["campus_life"],
   "/admin/tables/downloads": ["library"],
+  "/admin/library": ["library"],
+  "/admin/tables/library_resources": ["library"],
+  "/admin/tables/library_info_items": ["library"],
 };
 
 // Longest-prefix match so a route like "/admin/tables/board_members/new"

@@ -202,7 +202,7 @@ export function DeptAboutView({ department, courses = [] }: Props) {
 }
 
 // -------- Staff --------
-function StaffCard({ member, featured = false }: { member: DeptStaffMember; featured?: boolean }) {
+export function StaffCard({ member, featured = false }: { member: DeptStaffMember; featured?: boolean }) {
   const linked = !!member.employeeCode;
   const cardClass = cn(
     "group flex gap-5 border",

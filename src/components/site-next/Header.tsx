@@ -91,6 +91,8 @@ export function Header({
   const departmentsByCollege = useMemo(() => {
     const map: Record<string, Department[]> = {};
     for (const d of allDepartments ?? []) {
+      // Strict `=== false`: rows read before the show_in_menu migration lack the column.
+      if (d.show_in_menu === false) continue;
       (map[d.college_slug] ??= []).push(d);
     }
     return map;

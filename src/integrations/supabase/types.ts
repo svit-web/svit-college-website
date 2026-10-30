@@ -761,6 +761,60 @@ export type Database = {
           },
         ]
       }
+      contact_numbers: {
+        Row: {
+          college_id: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          id: string
+          kind: string
+          label: string
+          metadata: Json
+          phone: string
+          show_in_footer: boolean
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          kind?: string
+          label: string
+          metadata?: Json
+          phone: string
+          show_in_footer?: boolean
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          college_id?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          id?: string
+          kind?: string
+          label?: string
+          metadata?: Json
+          phone?: string
+          show_in_footer?: boolean
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       content_categories: {
         Row: {
           created_at: string
@@ -969,6 +1023,7 @@ export type Database = {
           name: string
           overview: string | null
           short_name: string | null
+          show_in_menu: boolean
           status: Database["public"]["Enums"]["content_status"]
           theme_color: string | null
           updated_at: string
@@ -996,6 +1051,7 @@ export type Database = {
           name: string
           overview?: string | null
           short_name?: string | null
+          show_in_menu?: boolean
           status?: Database["public"]["Enums"]["content_status"]
           theme_color?: string | null
           updated_at?: string
@@ -1023,6 +1079,7 @@ export type Database = {
           name?: string
           overview?: string | null
           short_name?: string | null
+          show_in_menu?: boolean
           status?: Database["public"]["Enums"]["content_status"]
           theme_color?: string | null
           updated_at?: string
@@ -2079,6 +2136,117 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      library_info_items: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          kind: string
+          metadata: Json
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          kind: string
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          kind?: string
+          metadata?: Json
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: string | null
+        }
+        Relationships: []
+      }
+      library_resources: {
+        Row: {
+          access_note: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          logo_url: string | null
+          metadata: Json
+          name: string
+          publisher: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+          website_url: string | null
+        }
+        Insert: {
+          access_note?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name: string
+          publisher?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          access_note?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          metadata?: Json
+          name?: string
+          publisher?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
       }
       media_files: {
         Row: {
