@@ -113,6 +113,8 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Student Groups — Societies', to: '/admin/tables/centers' },
       { label: 'MOUs', to: '/admin/tables/mous' },
       { label: 'Central Library', to: '/admin/library' },
+      { label: 'Centre of Excellence', to: '/admin/coe' },
+      { label: 'NSS / NCC', to: '/admin/nss-ncc' },
     ],
   },
   {

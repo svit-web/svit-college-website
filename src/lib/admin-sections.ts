@@ -27,6 +27,11 @@ export const GLOBAL_ONLY_ROUTE_PREFIXES = [
   "/admin/library",
   "/admin/tables/library_resources",
   "/admin/tables/library_info_items",
+  "/admin/coe",
+  "/admin/nss-ncc",
+  "/admin/tables/center_equipment",
+  "/admin/tables/center_programs",
+  "/admin/tables/center_members",
   "/admin/media",
   "/admin/tables/media_files",
   "/admin/tables/media_folders",
@@ -77,7 +82,7 @@ export function isCollegeOrAboveRoute(pathname: string): boolean {
 
 // Role codes that carry the ordinary global/trust/institute/college/
 // department scope-tier semantics. Users whose roles are all outside this
-// list (currently only 'sports_secretary') are section-only users: they get
+// list ('sports_secretary', 'librarian') are section-only users: they get
 // scope level "section" and see only the routes their section grants
 // unlock. Keep in sync with the role-code lists hardcoded in the SQL RLS
 // helpers (is_global_admin / can_write_scoped_record / is_any_admin — see
@@ -115,6 +120,9 @@ export const GLOBAL_ONLY_TABLE_IDS = new Set([
   "downloads",
   "library_resources",
   "library_info_items",
+  "center_equipment",
+  "center_programs",
+  "center_members",
   "gallery_albums",
   "gallery_media",
   "media_files",
@@ -161,6 +169,11 @@ export const ROUTE_SECTION_MAP: Record<string, string[]> = {
   "/admin/tables/gallery_albums": ["campus_life"],
   "/admin/tables/gallery_media": ["campus_life"],
   "/admin/tables/student_clubs": ["campus_life"],
+  "/admin/coe": ["campus_life"],
+  "/admin/nss-ncc": ["campus_life"],
+  "/admin/tables/center_equipment": ["campus_life"],
+  "/admin/tables/center_programs": ["campus_life"],
+  "/admin/tables/center_members": ["campus_life"],
   "/admin/tables/downloads": ["library"],
   "/admin/library": ["library"],
   "/admin/tables/library_resources": ["library"],

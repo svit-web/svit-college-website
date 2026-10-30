@@ -95,6 +95,7 @@ export type Database = {
       }
       achievements: {
         Row: {
+          center_id: string | null
           album_id: string | null
           card_photo_url: string | null
           category: string
@@ -117,6 +118,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          center_id?: string | null
           album_id?: string | null
           card_photo_url?: string | null
           category: string
@@ -139,6 +141,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          center_id?: string | null
           album_id?: string | null
           card_photo_url?: string | null
           category?: string
@@ -409,6 +412,223 @@ export type Database = {
             columns: ["updated_by"]
             isOneToOne: false
             referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      center_equipment: {
+        Row: {
+          center_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          make_model: string | null
+          metadata: Json
+          name: string
+          quantity: number | null
+          sort_order: number
+          specifications: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          make_model?: string | null
+          metadata?: Json
+          name: string
+          quantity?: number | null
+          sort_order?: number
+          specifications?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          make_model?: string | null
+          metadata?: Json
+          name?: string
+          quantity?: number | null
+          sort_order?: number
+          specifications?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "center_equipment_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      center_members: {
+        Row: {
+          center_id: string
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          email: string | null
+          id: string
+          member_group: string
+          metadata: Json
+          name: string | null
+          photo_url: string | null
+          role: string
+          sort_order: number
+          staff_id: string | null
+          status: Database["public"]["Enums"]["content_status"]
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          center_id: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string | null
+          id?: string
+          member_group?: string
+          metadata?: Json
+          name?: string | null
+          photo_url?: string | null
+          role: string
+          sort_order?: number
+          staff_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          center_id?: string
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          email?: string | null
+          id?: string
+          member_group?: string
+          metadata?: Json
+          name?: string | null
+          photo_url?: string | null
+          role?: string
+          sort_order?: number
+          staff_id?: string | null
+          status?: Database["public"]["Enums"]["content_status"]
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "center_members_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "center_members_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "staff_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      center_programs: {
+        Row: {
+          center_id: string
+          certifying_body: string | null
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          deleted_by: string | null
+          description: string | null
+          duration: string | null
+          eligibility: string | null
+          id: string
+          metadata: Json
+          mode: string | null
+          program_type: string
+          registration_url: string | null
+          sort_order: number
+          status: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          center_id: string
+          certifying_body?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          duration?: string | null
+          eligibility?: string | null
+          id?: string
+          metadata?: Json
+          mode?: string | null
+          program_type?: string
+          registration_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          center_id?: string
+          certifying_body?: string | null
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          deleted_by?: string | null
+          description?: string | null
+          duration?: string | null
+          eligibility?: string | null
+          id?: string
+          metadata?: Json
+          mode?: string | null
+          program_type?: string
+          registration_url?: string | null
+          sort_order?: number
+          status?: Database["public"]["Enums"]["content_status"]
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "center_programs_center_id_fkey"
+            columns: ["center_id"]
+            isOneToOne: false
+            referencedRelation: "centers"
             referencedColumns: ["id"]
           },
         ]
@@ -1269,6 +1489,7 @@ export type Database = {
       }
       events: {
         Row: {
+          center_id: string | null
           accent_color: string | null
           album_id: string | null
           card_photo_url: string | null
@@ -1304,6 +1525,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          center_id?: string | null
           accent_color?: string | null
           album_id?: string | null
           card_photo_url?: string | null
@@ -1339,6 +1561,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          center_id?: string | null
           accent_color?: string | null
           album_id?: string | null
           card_photo_url?: string | null
@@ -2612,6 +2835,7 @@ export type Database = {
       }
       mous: {
         Row: {
+          center_id: string | null
           activities: string[] | null
           created_at: string
           created_by: string | null
@@ -2631,6 +2855,7 @@ export type Database = {
           updated_by: string | null
         }
         Insert: {
+          center_id?: string | null
           activities?: string[] | null
           created_at?: string
           created_by?: string | null
@@ -2650,6 +2875,7 @@ export type Database = {
           updated_by?: string | null
         }
         Update: {
+          center_id?: string | null
           activities?: string[] | null
           created_at?: string
           created_by?: string | null

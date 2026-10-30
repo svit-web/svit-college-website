@@ -2,7 +2,6 @@ import { clubBlurb } from "@/lib/club-blurb";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2 } from "lucide-react";
-import { PillTabs } from "@/components/site-next/PillTabs";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getAllStudentClubs } from "@/lib/clubs.functions";
@@ -23,12 +22,6 @@ export default async function StudentGroupsIndex() {
   return (
     <div className="space-y-12">
       <section>
-        <PillTabs
-          ariaLabel="Clubs"
-          items={clubs
-            .filter((c) => c.has_detail_page)
-            .map((c) => ({ label: c.name, to: `/campus-life/clubs/${c.slug}` }))}
-        />
         <SectionHeading eyebrow="Clubs" title="Find your tribe" />
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {clubs.map((c, i) => {
@@ -70,10 +63,6 @@ export default async function StudentGroupsIndex() {
       </section>
 
       <section>
-        <PillTabs
-          ariaLabel="Centres"
-          items={centers.map((c) => ({ label: c.name.split("(")[0].trim(), to: `/student-corner/${c.slug}` }))}
-        />
         <SectionHeading eyebrow="Societies" title="Where students grow beyond the syllabus" />
         <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {centers.map((c, i) => (

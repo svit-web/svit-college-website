@@ -13,6 +13,7 @@ import { getAllDepartments } from "@/lib/departments.functions";
 import { getAllFacilities } from "@/lib/facilities.functions";
 import { getFeaturedStudentClubs } from "@/lib/clubs.functions";
 import { getAllEvents } from "@/lib/events.functions";
+import { MENU_RECENT_EVENTS } from "@/lib/nav-limits";
 import { getSports } from "@/lib/sports.functions";
 import { getVisibleCenters } from "@/lib/centers.functions";
 import {
@@ -88,7 +89,8 @@ export default async function SiteLayout({
         departments={departments}
         facilities={facilities}
         featuredClubs={featuredClubs}
-        events={events}
+        // The menu shows only the newest few (getAllEvents is newest-first).
+        events={events.slice(0, MENU_RECENT_EVENTS)}
         sports={sports}
         centers={centers}
         logoUrl={logoUrl}

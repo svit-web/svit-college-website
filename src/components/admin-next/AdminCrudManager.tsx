@@ -18,6 +18,8 @@ import {
   FACILITY_CATEGORY_OPTIONS,
   GALLERY_MEDIA_TYPE_OPTIONS,
   LIBRARY_INFO_KIND_OPTIONS,
+  CENTER_MEMBER_GROUP_OPTIONS,
+  CENTER_PROGRAM_TYPE_OPTIONS,
   LIBRARY_RESOURCE_CATEGORY_OPTIONS,
   MENU_TYPE_OPTIONS,
   SPORT_CATEGORY_OPTIONS,
@@ -207,6 +209,11 @@ interface TableConfig {
   filters?: string[];
 }
 
+// center_id on events / achievements / MoUs: also show the row on that centre's
+// dedicated page (Centre of Excellence, NSS / NCC).
+const CENTER_LINK_HELP =
+  "Optional. Pick a centre (e.g. Centre of Excellence, NSS / NCC) to also show this on that centre's page.";
+
 // Everything AdminCrudManager needs to know about a specific table's quirks,
 // in one place, instead of scattered tableId === '...' checks throughout the
 // component body.
@@ -286,6 +293,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       // Every event happens on campus — not worth an admin field. The column
       // stays (a handful of old rows have a value), just not editable here.
       map_url: { hidden: true },
+      center_id: { helpText: CENTER_LINK_HELP },
       is_featured: {
         lockedForNonGlobal: true,
         booleanLabel: 'Feature on homepage (max 8 at once)',
@@ -356,6 +364,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
       college_id: { renderAfter: 'scope_type' },
       category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
+      center_id: { helpText: CENTER_LINK_HELP },
       department_id: {
         renderAfter: 'scope_type',
         helpText:
@@ -444,6 +453,27 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
         helpText:
           'Short right-hand text: hours ("9:00 AM – 6:00 PM"), a figure ("30,000+"), or an email/phone for contacts.',
       },
+    },
+  },
+  mous: {
+    fields: {
+      center_id: { helpText: CENTER_LINK_HELP },
+    },
+  },
+  center_equipment: {
+    filters: ['center_id', 'status'],
+  },
+  center_programs: {
+    filters: ['center_id', 'program_type', 'status'],
+    fields: {
+      program_type: { options: CENTER_PROGRAM_TYPE_OPTIONS },
+    },
+  },
+  center_members: {
+    filters: ['center_id', 'member_group', 'status'],
+    fields: {
+      member_group: { options: CENTER_MEMBER_GROUP_OPTIONS },
+      name: { helpText: 'Only needed when no staff profile is picked.' },
     },
   },
   menu_items: {

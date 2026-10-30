@@ -73,13 +73,13 @@ function isFullAccessRole(code: string) {
   return (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(code);
 }
 
-// Section-scoped roles (currently only sports_secretary) must never be
+// Section-scoped roles (sports_secretary, librarian) must never be
 // granted at global scope — a global user_roles row reads as a full global
 // admin in the scope-level logic, and even with the hardened RLS helpers it
 // would make no sense for a single-section role.
 function assertRoleScopeAllowed(roleCode: string, scopeType: string): string | null {
   if (!isFullAccessRole(roleCode) && scopeType !== 'college' && scopeType !== 'department') {
-    return 'Section-scoped roles (e.g. Sports Secretary) can only be granted at College or Department scope.';
+    return 'Section-scoped roles (e.g. Sports Secretary, Librarian) can only be granted at College or Department scope.';
   }
   return null;
 }

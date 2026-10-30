@@ -67,6 +67,22 @@ export const LIBRARY_INFO_KIND_OPTIONS: AdminOption[] = toOptions({
   contact: "Contact",
 });
 
+/** center_programs.program_type — CHECK constraint; the eyebrow on the programme card. */
+export const CENTER_PROGRAM_TYPE_OPTIONS: AdminOption[] = toOptions({
+  training: "Training",
+  certification: "Certification",
+  workshop: "Workshop",
+  internship: "Internship",
+  other: "Other",
+});
+
+/** center_members.member_group — CHECK constraint; groups the Coordinators & team section. */
+export const CENTER_MEMBER_GROUP_OPTIONS: AdminOption[] = toOptions({
+  faculty: "Faculty coordinator",
+  student: "Student team",
+  external: "Mentor / partner",
+});
+
 /** contact_numbers.kind — CHECK constraint; picks the footer icon and link (tel: / wa.me / none for fax). */
 export const CONTACT_NUMBER_KIND_OPTIONS: AdminOption[] = toOptions({
   phone: "Phone (landline)",

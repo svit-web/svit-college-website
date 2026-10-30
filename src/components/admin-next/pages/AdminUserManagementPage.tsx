@@ -96,6 +96,13 @@ function ScopeFields({
             unlocks the sports pages for them.
           </p>
         )}
+        {roleCode === 'librarian' && (
+          <p className="text-[11px] text-slate-500">
+            Librarian is granted at Department scope (e.g. the Library Department). After creating the account, use
+            &quot;Manage roles&quot; &rarr; Section Access to grant the <strong>Library</strong> section at{' '}
+            <strong>Global</strong> scope — that unlocks only the Central Library page (and Downloads) for them.
+          </p>
+        )}
       </div>
 
       {entityLabel && (

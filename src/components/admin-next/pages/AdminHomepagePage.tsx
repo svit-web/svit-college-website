@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
-import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone, ListOrdered } from 'lucide-react';
+import { Layout, Plus, Trash2, Edit2, Loader2, Grid, Palette, Megaphone, ListOrdered, School } from 'lucide-react';
 import { toast } from 'sonner';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { MetadataEditor } from '@/components/admin-next/MetadataEditor';
@@ -12,6 +12,7 @@ import type { HeroAppearance } from '@/lib/theme';
 import { HomePopupPanel } from '@/components/admin-next/pages/HomePopupPanel';
 import type { HomePopup } from '@/lib/home-popup';
 import { HomepageLayoutPanel } from '@/components/admin-next/pages/HomepageLayoutPanel';
+import { CollegePagesPanel } from '@/components/admin-next/pages/CollegePagesPanel';
 import type { HomepageLayoutEntry } from '@/lib/homepage-layout';
 
 export function AdminHomepagePage({
@@ -27,7 +28,7 @@ export function AdminHomepagePage({
   /** Only passed for global admins, like the popup. */
   initialLayout: HomepageLayoutEntry[] | null;
 }) {
-  const [activeTab, setActiveTab] = useState<'items' | 'appearance' | 'popup' | 'layout'>('items');
+  const [activeTab, setActiveTab] = useState<'items' | 'colleges' | 'appearance' | 'popup' | 'layout'>('items');
 
   return (
     <div className="space-y-6">
@@ -46,6 +47,13 @@ export function AdminHomepagePage({
         >
           <Grid className="h-4 w-4" />
           <span>Homepage Items</span>
+        </button>
+        <button
+          onClick={() => setActiveTab('colleges')}
+          className={`flex items-center gap-2 px-6 py-3 text-sm font-semibold border-b-2 transition ${activeTab === 'colleges' ? 'border-crimson text-navy' : 'border-transparent text-slate-600 hover:text-slate-900'}`}
+        >
+          <School className="h-4 w-4" />
+          <span>College Pages</span>
         </button>
         <button
           onClick={() => setActiveTab('appearance')}
@@ -76,6 +84,7 @@ export function AdminHomepagePage({
 
       <div>
         {activeTab === 'items' && <HomepageItemsManager userId={admin.id} />}
+        {activeTab === 'colleges' && <CollegePagesPanel />}
         {activeTab === 'appearance' && <HeroAppearancePanel initialAppearance={initialAppearance} />}
         {activeTab === 'layout' && initialLayout && <HomepageLayoutPanel initialLayout={initialLayout} userId={admin.id} />}
         {activeTab === 'popup' && initialPopup && <HomePopupPanel initialPopup={initialPopup} userId={admin.id} />}

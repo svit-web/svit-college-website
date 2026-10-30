@@ -104,7 +104,7 @@ const INFO_COPY: Record<string, { hint: string; valueLabel: string; titleLabel: 
   },
 };
 
-export function AdminLibraryPage() {
+export function AdminLibraryPage({ canManageStaff = true }: { canManageStaff?: boolean }) {
   const [tab, setTab] = useState<TabKey>('overview');
   const [facility, setFacility] = useState<LibraryFacilityRow | null>(null);
   const [loading, setLoading] = useState(true);
@@ -148,9 +148,11 @@ export function AdminLibraryPage() {
         </div>
       ) : !facility ? (
         <div className="rounded-xl border border-dashed border-slate-200 bg-white p-12 text-center text-sm text-slate-500">
-          No facility with slug <code>library</code> was found (or it is in Trash). Restore it from
-          Trash &amp; Recovery, or create a facility with slug <code>library</code> under Academics
-          → Facilities.
+          The Central Library record (facility slug <code>library</code>) could not be loaded. Either
+          your account can&apos;t read it — ask a site administrator to give you the{' '}
+          <strong>Library</strong> section at Global scope — or it is missing / in Trash: restore it
+          from Trash &amp; Recovery, or create a facility with slug <code>library</code> under
+          Academics → Facilities.
         </div>
       ) : (
         <>
@@ -177,7 +179,9 @@ export function AdminLibraryPage() {
           {tab === 'overview' && <OverviewTab facility={facility} onSaved={reloadFacility} />}
           {tab === 'highlights' && <HighlightsTab facility={facility} onSaved={reloadFacility} />}
           {tab === 'collection' && <CollectionTab facility={facility} onSaved={reloadFacility} />}
-          {tab === 'staff' && <StaffTab facility={facility} onSaved={reloadFacility} />}
+          {tab === 'staff' && (
+            <StaffTab facility={facility} onSaved={reloadFacility} canManageStaff={canManageStaff} />
+          )}
           {tab === 'resources' && <ResourcesTab />}
           {(tab === 'stat' ||
             tab === 'timing' ||
@@ -498,7 +502,15 @@ function CollectionTab({
 
 // -------- Staff (metadata.staff_department_id) --------
 
-function StaffTab({ facility, onSaved }: { facility: LibraryFacilityRow; onSaved: () => void }) {
+function StaffTab({
+  facility,
+  onSaved,
+  canManageStaff,
+}: {
+  facility: LibraryFacilityRow;
+  onSaved: () => void;
+  canManageStaff: boolean;
+}) {
   const [departments, setDepartments] = useState<(Option & { code: string | null })[] | null>(null);
   const [deptId, setDeptId] = useState<string>(facility.metadata?.staff_department_id ?? '');
   const [saving, setSaving] = useState(false);
@@ -527,11 +539,18 @@ function StaffTab({ facility, onSaved }: { facility: LibraryFacilityRow; onSaved
     <div className={card + ' space-y-4'}>
       <p className="text-sm text-slate-500">
         The “Library team” section lists every published staff member assigned to this department,
-        using their designation, photo and email from their staff profile. Add or edit people in{' '}
-        <Link href="/admin/staff-wizards" className="font-semibold text-crimson hover:underline">
-          Staff Profiles
-        </Link>
-        .
+        using their designation, photo and email from their staff profile.{' '}
+        {canManageStaff ? (
+          <>
+            Add or edit people in{' '}
+            <Link href="/admin/staff-wizards" className="font-semibold text-crimson hover:underline">
+              Staff Profiles
+            </Link>
+            .
+          </>
+        ) : (
+          'To add or edit people, ask a site administrator.'
+        )}
       </p>
       <div className="max-w-md space-y-1">
         <label className={label}>Staff come from department</label>

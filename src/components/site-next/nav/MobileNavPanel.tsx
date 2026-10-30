@@ -14,53 +14,66 @@ import type { Department } from "@/lib/departments.functions";
 
 type NavCollege = { id: string; shortCode: string; name: string };
 
-function CollegeAccordionRow({
-  college,
-  departments,
+// A second-level row inside an expanded top-level item: the label links to its
+// own page and, when it has sub-items, a chevron expands them in place (a
+// college's departments, a Campus Life category's items, a link group).
+function SubAccordionRow({
+  label,
+  href,
+  items,
   isOpen,
   onToggle,
   onNavigate,
+  heading = false,
 }: {
-  college: NavCollege;
-  departments: Department[];
+  label: string;
+  href?: string | null;
+  items: { key: string; label: string; href: string }[];
   isOpen: boolean;
   onToggle: () => void;
   onNavigate: () => void;
+  /** Small crimson uppercase label (Campus Life categories, link groups). */
+  heading?: boolean;
 }) {
-  const hasDepartments = departments.length > 0;
+  const hasItems = items.length > 0;
+  const labelClass = heading
+    ? "block flex-1 px-3 py-2.5 text-[11px] font-bold uppercase tracking-widest text-crimson"
+    : "block flex-1 px-3 py-2 text-sm text-ink-soft";
 
   return (
     <div>
       <div className="flex items-stretch">
-        <Link
-          href={`/colleges/${college.id}`}
-          onClick={onNavigate}
-          className="block flex-1 px-3 py-2 text-sm text-ink-soft"
-        >
-          {college.name}
-        </Link>
-        {hasDepartments && (
+        {href ? (
+          <Link href={href} onClick={onNavigate} className={labelClass}>
+            {label}
+          </Link>
+        ) : (
+          <button type="button" onClick={onToggle} className={cn(labelClass, "text-left")}>
+            {label}
+          </button>
+        )}
+        {hasItems && (
           <button
             type="button"
             onClick={onToggle}
             aria-expanded={isOpen}
-            aria-label={`${college.name} departments`}
+            aria-label={`${isOpen ? "Collapse" : "Expand"} ${label}`}
             className="px-3 py-2 text-crimson"
           >
             <ChevronDown className={cn("h-4 w-4 transition-transform", isOpen && "rotate-180")} />
           </button>
         )}
       </div>
-      {isOpen && hasDepartments && (
+      {isOpen && hasItems && (
         <div className="pb-2 pl-6">
-          {departments.map((d) => (
+          {items.map((it) => (
             <Link
-              key={d.id}
-              href={`/departments/${d.code}`}
+              key={it.key}
+              href={it.href}
               onClick={onNavigate}
               className="block px-3 py-1.5 text-[13px] text-ink-mute"
             >
-              {d.name}
+              {it.label}
             </Link>
           ))}
         </div>
@@ -98,28 +111,51 @@ function AccordionItem({
   );
 }
 
-function LinksAccordionBody({ item, onNavigate }: { item: MenuTopItem; onNavigate: () => void }) {
+// Ungrouped links list directly; each named group is its own expandable row.
+function LinksAccordionBody({
+  item,
+  openSubKey,
+  onToggleSub,
+  onNavigate,
+}: {
+  item: MenuTopItem;
+  openSubKey: string | null;
+  onToggleSub: (key: string) => void;
+  onNavigate: () => void;
+}) {
   return (
     <>
-      {groupMenuChildren(item.children).map((g) => (
-        <div key={g.group ?? "default"} className="mb-2">
-          {g.group && (
-            <div className="px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson">
-              {g.group}
-            </div>
-          )}
-          {g.items.map((link) => (
+      {groupMenuChildren(item.children).map((g) => {
+        const links = g.items.map((link) => ({
+          key: link.id,
+          label: link.title,
+          href: link.url ?? "#",
+        }));
+        if (!g.group) {
+          return links.map((l) => (
             <Link
-              key={link.id}
-              href={link.url ?? "#"}
+              key={l.key}
+              href={l.href}
               onClick={onNavigate}
               className="block px-3 py-2 text-sm text-ink-soft"
             >
-              {link.title}
+              {l.label}
             </Link>
-          ))}
-        </div>
-      ))}
+          ));
+        }
+        const key = `${item.id}:${g.group}`;
+        return (
+          <SubAccordionRow
+            key={key}
+            heading
+            label={g.group}
+            items={links}
+            isOpen={openSubKey === key}
+            onToggle={() => onToggleSub(key)}
+            onNavigate={onNavigate}
+          />
+        );
+      })}
     </>
   );
 }
@@ -144,9 +180,10 @@ export function MobileNavPanel({
   onNavigate: () => void;
 }) {
   const [openKey, setOpenKey] = useState<string | null>(null);
-  const [openCollegeId, setOpenCollegeId] = useState<string | null>(null);
+  // One open second-level row at a time (a college, a Campus Life category, a link group).
+  const [openSubKey, setOpenSubKey] = useState<string | null>(null);
   const toggle = (key: string) => setOpenKey((k) => (k === key ? null : key));
-  const toggleCollege = (id: string) => setOpenCollegeId((k) => (k === id ? null : id));
+  const toggleSub = (key: string) => setOpenSubKey((k) => (k === key ? null : key));
 
   if (!open) return null;
 
@@ -172,7 +209,12 @@ export function MobileNavPanel({
                 isOpen={openKey === item.id}
                 onToggle={() => toggle(item.id)}
               >
-                <LinksAccordionBody item={item} onNavigate={onNavigate} />
+                <LinksAccordionBody
+                  item={item}
+                  openSubKey={openSubKey}
+                  onToggleSub={toggleSub}
+                  onNavigate={onNavigate}
+                />
               </AccordionItem>
             );
           }
@@ -186,12 +228,17 @@ export function MobileNavPanel({
                 onToggle={() => toggle(item.id)}
               >
                 {colleges.map((c) => (
-                  <CollegeAccordionRow
+                  <SubAccordionRow
                     key={c.id}
-                    college={c}
-                    departments={departmentsByCollege[c.id] ?? []}
-                    isOpen={openCollegeId === c.id}
-                    onToggle={() => toggleCollege(c.id)}
+                    label={c.name}
+                    href={`/colleges/${c.id}`}
+                    items={(departmentsByCollege[c.id] ?? []).map((d) => ({
+                      key: d.id,
+                      label: d.name,
+                      href: `/departments/${d.code}`,
+                    }))}
+                    isOpen={openSubKey === `college:${c.id}`}
+                    onToggle={() => toggleSub(`college:${c.id}`)}
                     onNavigate={onNavigate}
                   />
                 ))}
@@ -208,26 +255,52 @@ export function MobileNavPanel({
                 onToggle={() => toggle(item.id)}
               >
                 {campusCategories.map((cat) => (
-                  <div key={cat.key} className="mb-2">
-                    <Link
-                      href={cat.allTo}
-                      onClick={onNavigate}
-                      className="block px-3 pb-1 pt-2 text-[10px] font-bold uppercase tracking-widest text-crimson"
-                    >
-                      {cat.title}
-                    </Link>
-                    {cat.items.map((it) => (
-                      <Link
-                        key={it.to}
-                        href={it.to}
-                        onClick={onNavigate}
-                        className="block px-3 py-1.5 text-sm text-ink-soft"
-                      >
-                        {it.label}
-                      </Link>
-                    ))}
-                  </div>
+                  <SubAccordionRow
+                    key={cat.key}
+                    heading
+                    label={cat.title}
+                    href={cat.allTo}
+                    items={[
+                      ...cat.items.map((it) => ({ key: it.to, label: it.label, href: it.to })),
+                      // The category shows only its newest items; keep a way to the rest.
+                      ...(cat.items.length > 0
+                        ? [{ key: `${cat.key}:all`, label: `${cat.allLabel} →`, href: cat.allTo }]
+                        : []),
+                    ]}
+                    isOpen={openSubKey === `campus:${cat.key}`}
+                    onToggle={() => toggleSub(`campus:${cat.key}`)}
+                    onNavigate={onNavigate}
+                  />
                 ))}
+              </AccordionItem>
+            );
+          }
+
+          // A plain item that has sub-items in Menus / Nav expands like the
+          // mega items instead of hiding them.
+          if (item.children.length > 0) {
+            return (
+              <AccordionItem
+                key={item.id}
+                label={item.title}
+                isOpen={openKey === item.id}
+                onToggle={() => toggle(item.id)}
+              >
+                {item.url && (
+                  <Link
+                    href={item.url}
+                    onClick={onNavigate}
+                    className="block px-3 py-2 text-sm font-semibold text-navy"
+                  >
+                    {item.title} overview
+                  </Link>
+                )}
+                <LinksAccordionBody
+                  item={item}
+                  openSubKey={openSubKey}
+                  onToggleSub={toggleSub}
+                  onNavigate={onNavigate}
+                />
               </AccordionItem>
             );
           }

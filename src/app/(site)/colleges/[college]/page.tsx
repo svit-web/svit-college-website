@@ -67,6 +67,20 @@ async function loadCollege(slug: string) {
 
   const heroItem = resolve("hero")[0];
 
+  // Per-college hero slideshow and vision/mission live on the college row's
+  // metadata (edited on /admin/homepage → College Pages). The hero falls back
+  // to the college/global "hero" homepage item's single image.
+  const meta = (dbCollege.metadata ?? {}) as {
+    hero_photos?: unknown;
+    vision?: unknown;
+    mission_points?: unknown;
+  };
+  const strings = (v: unknown) =>
+    Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim() !== "") : [];
+  const heroPhotos = strings(meta.hero_photos);
+  const vision = typeof meta.vision === "string" ? meta.vision.trim() : "";
+  const missionPoints = strings(meta.mission_points);
+
   const college: College = {
     id: dbCollege.slug,
     name: dbCollege.name,
@@ -77,8 +91,9 @@ async function loadCollege(slug: string) {
     hero: {
       kicker: dbCollege.hero_kicker ?? "",
       subhead: dbCollege.hero_subhead ?? "",
-      imageUrl: heroItem?.image_url ?? null,
+      photos: heroPhotos.length > 0 ? heroPhotos : heroItem?.image_url ? [heroItem.image_url] : [],
     },
+    visionMission: vision || missionPoints.length > 0 ? { vision, missionPoints } : null,
     stats: stats.length > 0 ? stats : null,
     whyChoose: whyChoose.length > 0 ? whyChoose : null,
     principal: dbCollege.principal_name

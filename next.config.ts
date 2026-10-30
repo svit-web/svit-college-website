@@ -84,7 +84,13 @@ const nextConfig: NextConfig = {
       // Clubs and Societies were combined into one Campus Life section.
       { source: "/campus-life/clubs", destination: "/campus-life/student-groups", permanent: true },
       { source: "/student-corner", destination: "/campus-life/student-groups", permanent: true },
-      { source: "/student-corner/coe", destination: "/coe", permanent: true },
+      // The CoE moved into Campus Life as its own tab.
+      {
+        source: "/student-corner/coe",
+        destination: "/campus-life/centre-of-excellence",
+        permanent: true,
+      },
+      { source: "/coe", destination: "/campus-life/centre-of-excellence", permanent: true },
       // Central Facilities moved out of About into Campus Life.
       { source: "/about/facilities", destination: "/campus-life/facilities", permanent: true },
       // Central Library got its own page; the generic facility leaf URL points there.
