@@ -15,6 +15,25 @@ export const metadata: Metadata = {
   alternates: { canonical: "/campus-life" },
 };
 
+// The overview shows only the latest few of each category; the full lists live on their own pages.
+const RECENT_EVENTS = 4;
+const RECENT_CLUBS = 8;
+const RECENT_CENTERS = 6;
+
+const byNewest = (a: { created_at: string }, b: { created_at: string }) =>
+  b.created_at.localeCompare(a.created_at);
+
+function ViewAll({ href, label }: { href: string; label: string }) {
+  return (
+    <Link
+      href={href}
+      className="mt-6 inline-flex items-center gap-1 text-xs font-bold uppercase tracking-widest text-crimson hover:underline"
+    >
+      {label} <ArrowRight className="h-3 w-3" />
+    </Link>
+  );
+}
+
 export default async function CampusLifeOverview() {
   const [clubs, facilities, events, centers] = await Promise.all([
     getAllStudentClubs().catch(() => []),
@@ -28,6 +47,11 @@ export default async function CampusLifeOverview() {
     { icon: Users, label: "Student Groups", count: clubs.length + centers.length, to: "/campus-life/student-groups" },
     { icon: CalendarDays, label: "Flagship Events", count: events.length, to: "/campus-life/events" },
   ] as const;
+
+  // Events already come back newest-first (start_date desc); clubs/centers are name-ordered.
+  const recentEvents = events.slice(0, RECENT_EVENTS);
+  const recentClubs = [...clubs].sort(byNewest).slice(0, RECENT_CLUBS);
+  const recentCenters = [...centers].sort(byNewest).slice(0, RECENT_CENTERS);
 
   return (
     <div className="space-y-12">
@@ -54,7 +78,7 @@ export default async function CampusLifeOverview() {
       <div>
         <SectionHeading eyebrow="Flagship Events" title="Signature moments each year" />
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {events.map((e, i) => (
+          {recentEvents.map((e, i) => (
             <Reveal key={e.slug} delay={i * 0.04}>
               <Link
                 href={`/campus-life/events/${e.slug}`}
@@ -67,12 +91,13 @@ export default async function CampusLifeOverview() {
             </Reveal>
           ))}
         </div>
+        <ViewAll href="/campus-life/events" label="View all events" />
       </div>
 
       <div>
         <SectionHeading eyebrow="Student Clubs" title="Find your tribe" />
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {clubs.map((c, i) => (
+          {recentClubs.map((c, i) => (
             <Reveal key={c.slug} delay={i * 0.04}>
               {c.has_detail_page ? (
                 <Link
@@ -91,12 +116,13 @@ export default async function CampusLifeOverview() {
             </Reveal>
           ))}
         </div>
+        <ViewAll href="/campus-life/student-groups" label="View all clubs" />
       </div>
 
       <div>
         <SectionHeading eyebrow="Societies" title="Centres, cells and chapters" />
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {centers.map((c, i) => (
+          {recentCenters.map((c, i) => (
             <Reveal key={c.slug} delay={i * 0.04}>
               <Link
                 href={`/student-corner/${c.slug}`}
@@ -111,6 +137,7 @@ export default async function CampusLifeOverview() {
             </Reveal>
           ))}
         </div>
+        <ViewAll href="/campus-life/student-groups" label="View all centres & cells" />
       </div>
     </div>
   );

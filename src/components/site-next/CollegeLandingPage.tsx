@@ -15,13 +15,14 @@ import {
 } from "lucide-react";
 import {
   heroFadeStyles,
-  heroOverlayStyles,
   heroTextVars,
+  HOMEPAGE_ROTATE_MS,
   DEFAULT_HERO_APPEARANCE,
   type HeroAppearance,
 } from "@/lib/theme";
 import { pillOutline, pillPrimary, sectionSpacing } from "@/components/site-next/site-styles";
 import { Reveal } from "@/components/site-next/Reveal";
+import { HeroPhotoLayer } from "@/components/site-next/HeroPhotoLayer";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { DeptBranchCard } from "@/components/site-next/DeptBranchCard";
 import { RecruitersMarquee } from "@/components/site-next/RecruitersMarquee";
@@ -42,7 +43,8 @@ export interface College {
   tagline: string;
   logo: string;
   route: string;
-  hero: { kicker: string; subhead: string; imageUrl?: string | null };
+  hero: { kicker: string; subhead: string; photos: string[] };
+  visionMission: { vision: string; missionPoints: string[] } | null;
   stats: { value: string; label: string }[] | null;
   whyChoose: { title: string; desc: string; icon: string }[] | null;
   trustBadges: { label: string; icon: string }[];
@@ -91,6 +93,7 @@ export function CollegeLandingPage({
       />
       <StatsStrip data={displayStats} />
       <ProgramsSection college={college} />
+      <VisionMissionSection college={college} />
       <WhySection college={college} data={displayWhy} />
       <PrincipalSection college={college} />
       <TrustBand items={college.trustBadges} />
@@ -100,9 +103,10 @@ export function CollegeLandingPage({
   );
 }
 
-// Photo hero in the homepage style: full-bleed college photo (Photo Visibility,
-// overlay tint and whole-photo Background Blur apply) with the shared paper
-// fade down the left for the text. No photo → a plain paper banner.
+// Photo hero in the homepage style: full-bleed college photo slideshow (Photo
+// Visibility, overlay tint and whole-photo Background Blur apply; several
+// photos crossfade like the homepage) with the shared paper fade down the left
+// for the text. No photo → a plain paper banner.
 function Hero({
   college,
   appearance,
@@ -112,8 +116,7 @@ function Hero({
   appearance: HeroAppearance;
   ctaLabel: string;
 }) {
-  const photo = college.hero.imageUrl;
-  const { imageStyle, overlayStyle } = heroOverlayStyles(appearance);
+  const photos = college.hero.photos;
   const fade = heroFadeStyles(appearance);
 
   return (
@@ -121,18 +124,13 @@ function Hero({
       className="relative overflow-hidden border-b border-line bg-paper"
       style={heroTextVars(appearance)}
     >
-      {photo && (
+      {photos.length > 0 && (
         <div className="absolute inset-0">
-          <Image
-            src={photo}
-            alt=""
-            fill
-            sizes="100vw"
-            priority
-            className="object-cover"
-            style={imageStyle}
+          <HeroPhotoLayer
+            photos={photos}
+            appearance={appearance}
+            rotateMs={appearance.heroSliderEnabled ? HOMEPAGE_ROTATE_MS : undefined}
           />
-          <div className="absolute inset-0" style={overlayStyle} />
           <div className="absolute inset-0" style={fade.sideBlur} />
           <div className="absolute inset-0" style={fade.sideGradient} />
           <div className="absolute inset-x-0 top-0 h-32 lg:h-40" style={fade.topBlur} />
@@ -173,6 +171,55 @@ function Hero({
               Explore Programmes
             </a>
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VisionMissionSection({ college }: { college: College }) {
+  const vm = college.visionMission;
+  if (!vm) return null;
+  return (
+    <section className="border-y border-line bg-paper-deep">
+      <div className={`container-page ${sectionSpacing}`}>
+        <SectionHeading
+          center
+          eyebrow="Our purpose"
+          title={`Vision & Mission of ${college.shortCode}`}
+        />
+        <div className="mt-12 grid gap-6 lg:grid-cols-2">
+          {vm.vision && (
+            <Reveal className={vm.missionPoints.length === 0 ? "lg:col-span-2" : undefined}>
+              <div className="h-full border border-line bg-surface p-8">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
+                  Vision
+                </div>
+                <blockquote className="mt-4 whitespace-pre-line text-justify font-display text-xl leading-snug text-navy md:text-2xl">
+                  &quot;{vm.vision}&quot;
+                </blockquote>
+              </div>
+            </Reveal>
+          )}
+          {vm.missionPoints.length > 0 && (
+            <Reveal delay={0.05} className={!vm.vision ? "lg:col-span-2" : undefined}>
+              <div className="h-full border border-line bg-surface p-8">
+                <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
+                  Mission
+                </div>
+                <ol className="mt-4 space-y-3">
+                  {vm.missionPoints.map((p, i) => (
+                    <li key={i} className="flex gap-3 text-sm leading-relaxed text-ink-soft">
+                      <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-line-strong text-xs font-semibold text-navy">
+                        {i + 1}
+                      </span>
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </Reveal>
+          )}
         </div>
       </div>
     </section>

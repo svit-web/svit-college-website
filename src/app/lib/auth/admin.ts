@@ -35,10 +35,10 @@ export interface AdminUser {
 // the ordinary scope-tier semantics; every scoped admin
 // (college/department/institute/trust) is granted the 'editor' code with a
 // scoped user_roles row. Section-scoped codes grant portal access limited
-// to the user's section grants: currently only 'sports_secretary' (Sports &
-// Athletics + sports-category achievements), which gets scope level
-// 'section' rather than a scope tier.
-const AUTHORIZED_ROLE_CODES = [...FULL_ACCESS_ROLE_CODES, 'sports_secretary'] as const;
+// to the user's section grants: 'sports_secretary' (Sports & Athletics +
+// sports-category achievements) and 'librarian' (Central Library +
+// Downloads), which get scope level 'section' rather than a scope tier.
+const AUTHORIZED_ROLE_CODES = [...FULL_ACCESS_ROLE_CODES, 'sports_secretary', 'librarian'] as const;
 
 /**
  * Get the current admin user with roles from server-side session.

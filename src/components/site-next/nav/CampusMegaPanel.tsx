@@ -20,6 +20,8 @@ import type { CampusEvent } from "@/lib/events.functions";
 import type { Sport } from "@/lib/sports.functions";
 import type { Center } from "@/lib/centers.functions";
 import { LIBRARY_FACILITY_SLUG, LIBRARY_PATH } from "@/lib/library-paths";
+import { COE_PATH, NSS_NCC_PATH } from "@/lib/center-paths";
+import { MENU_RECENT_EVENTS, MENU_RECENT_ITEMS } from "@/lib/nav-limits";
 
 type MegaItem = { label: string; to: string };
 export type CampusMegaCategory = {
@@ -30,6 +32,12 @@ export type CampusMegaCategory = {
   allTo: string;
   items: MegaItem[];
 };
+
+// The mega menu (and the mobile menu built from the same categories) shows only
+// the most recent few of each category; its "View all" link covers the rest.
+
+const newestFirst = (a: { created_at: string }, b: { created_at: string }) =>
+  (b.created_at ?? "").localeCompare(a.created_at ?? "");
 
 export function useCampusCategories({
   facilities,
@@ -58,6 +66,8 @@ export function useCampusCategories({
         allTo: "/campus-life/facilities",
         items: (facilities ?? [])
           .filter((f) => f.category !== "sports")
+          .sort(newestFirst)
+          .slice(0, MENU_RECENT_ITEMS)
           .map((f) => ({
             label: f.name,
             to: facilityHref(f),
@@ -77,10 +87,13 @@ export function useCampusCategories({
         icon: Trophy,
         allLabel: "Sports & Athletics",
         allTo: "/campus-life/sports-and-athletics",
-        items: (sports ?? []).map((s) => ({
-          label: s.name,
-          to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
-        })),
+        items: [...(sports ?? [])]
+          .sort(newestFirst)
+          .slice(0, MENU_RECENT_ITEMS)
+          .map((s) => ({
+            label: s.name,
+            to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
+          })),
       },
       {
         key: "student-groups",
@@ -94,12 +107,17 @@ export function useCampusCategories({
             .map((c) => ({
               label: c.name,
               to: `/campus-life/clubs/${c.slug}`,
+              created_at: c.created_at,
             })),
           ...(centers ?? []).map((c) => ({
             label: c.name.split("(")[0].trim(),
             to: `/student-corner/${c.slug}`,
+            created_at: c.created_at,
           })),
-        ],
+        ]
+          .sort(newestFirst)
+          .slice(0, MENU_RECENT_ITEMS)
+          .map(({ label, to }) => ({ label, to })),
       },
       {
         key: "events",
@@ -107,17 +125,21 @@ export function useCampusCategories({
         icon: CalendarDays,
         allLabel: "All events",
         allTo: "/campus-life/events",
-        items: (events ?? []).map((c) => ({
-          label: c.title.split("—")[0].trim(),
-          to: `/campus-life/events/${c.slug}`,
-        })),
+        // Newest first by start date (as getAllEvents returns them), then capped.
+        items: [...(events ?? [])]
+          .sort((a, b) => (b.start_date ?? "").localeCompare(a.start_date ?? ""))
+          .slice(0, MENU_RECENT_EVENTS)
+          .map((c) => ({
+            label: c.title.split("—")[0].trim(),
+            to: `/campus-life/events/${c.slug}`,
+          })),
       },
       {
         key: "coe",
         title: "Centre of Excellence",
         icon: Award,
         allLabel: "Centre of Excellence",
-        allTo: "/coe",
+        allTo: COE_PATH,
         items: [],
       },
       {
@@ -125,7 +147,7 @@ export function useCampusCategories({
         title: "NSS / NCC",
         icon: Shield,
         allLabel: "NSS / NCC",
-        allTo: "/campus-life/nss-ncc",
+        allTo: NSS_NCC_PATH,
         items: [],
       },
     ];
@@ -157,12 +179,11 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
           const Icon = c.icon;
           return (
             <li key={c.key}>
-              <button
-                type="button"
+              <Link
+                href={c.allTo}
                 onMouseEnter={() => scheduleActivate(c.key)}
                 onMouseLeave={cancelSchedule}
                 onFocus={() => setActiveKey(c.key)}
-                onClick={() => setActiveKey(c.key)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm font-semibold transition-colors",
@@ -177,7 +198,7 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
                     isActive ? "opacity-100" : "opacity-0",
                   )}
                 />
-              </button>
+              </Link>
             </li>
           );
         })}

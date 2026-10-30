@@ -1,11 +1,45 @@
 "use client";
 
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { PillLink } from "./PillLink";
 import { Reveal } from "./Reveal";
 import { CurtainImage } from "./CurtainImage";
 import { SplitHeading } from "./SplitHeading";
+import { pillLink } from "./site-styles";
 import type { EventRow, PostRow } from "@/lib/homepage";
+
+// The card's whole area is already a link (see CardLink below), so "Read
+// more" here is a decorative pill, not a nested <a> — a real link duplicates
+// it and nested <a> tags are invalid HTML.
+function ReadMorePill() {
+  return (
+    <span className={pillLink}>
+      Read more
+      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+    </span>
+  );
+}
+
+// Makes the whole card clickable, not just the "Read more" pill. Renders a
+// plain div when there's no href (e.g. an event without a Detail page).
+function CardLink({
+  href,
+  className,
+  children,
+}: {
+  href: string | null;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  if (!href) return <div className={className}>{children}</div>;
+  return (
+    <Link href={href} className={className}>
+      {children}
+    </Link>
+  );
+}
 
 function formatDate(dateStr: string): string {
   return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -107,9 +141,12 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
           {featured ? (
             newsItems.map((item, i) => (
               <Reveal key={item.id} delay={i * 0.05}>
-                <article className="grid gap-5 border-b border-border py-[clamp(1.8rem,3.5vw,2.6rem)] first:pt-0">
+                <CardLink
+                  href={`/news/${item.slug}`}
+                  className="group grid gap-5 border-b border-border py-[clamp(1.8rem,3.5vw,2.6rem)] first:pt-0"
+                >
                   <div className="flex flex-wrap items-baseline justify-between gap-4">
-                    <h3 className="max-w-[28ch] font-display text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold leading-[1.16] tracking-[-0.02em] text-navy">
+                    <h3 className="max-w-[28ch] font-display text-[clamp(1.25rem,2.2vw,1.75rem)] font-bold leading-[1.16] tracking-[-0.02em] text-navy transition-colors group-hover:text-crimson">
                       {item.title}
                     </h3>
                     {item.published_at && (
@@ -121,7 +158,7 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                   <div className="grid grid-cols-1 items-start gap-[clamp(1.2rem,2.5vw,2.2rem)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
                     <div className="grid content-start justify-items-start gap-5 text-[0.95rem] text-muted-foreground">
                       {item.summary && <p className="line-clamp-3">{item.summary}</p>}
-                      <PillLink href={`/news/${item.slug}`}>Read more</PillLink>
+                      <ReadMorePill />
                     </div>
                     {item.card_photo_url && (
                       <CurtainImage
@@ -131,14 +168,14 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                       />
                     )}
                   </div>
-                </article>
+                </CardLink>
               </Reveal>
             ))
           ) : (
             <div className="grid grid-cols-1 gap-x-10 gap-y-[clamp(1.8rem,3.5vw,2.6rem)] sm:grid-cols-2">
               {newsItems.map((item, i) => (
                 <Reveal key={item.id} delay={i * 0.05}>
-                  <article className="grid gap-4">
+                  <CardLink href={`/news/${item.slug}`} className="group grid gap-4">
                     {item.card_photo_url ? (
                       <CurtainImage
                         src={item.card_photo_url}
@@ -150,7 +187,7 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                     )}
                     <div className="grid gap-2.5">
                       <div className="flex flex-wrap items-baseline justify-between gap-3">
-                        <h3 className="font-display text-[1.2rem] font-bold leading-[1.2] tracking-[-0.02em] text-navy">
+                        <h3 className="font-display text-[1.2rem] font-bold leading-[1.2] tracking-[-0.02em] text-navy transition-colors group-hover:text-crimson">
                           {item.title}
                         </h3>
                         {item.published_at && (
@@ -164,9 +201,9 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                           {item.summary}
                         </p>
                       )}
-                      <PillLink href={`/news/${item.slug}`}>Read more</PillLink>
+                      <ReadMorePill />
                     </div>
-                  </article>
+                  </CardLink>
                 </Reveal>
               ))}
             </div>
@@ -181,7 +218,10 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
             </h3>
 
             <Reveal>
-              <article className="grid gap-3.5 border-b border-border pb-7">
+              <CardLink
+                href={eventHref(featured)}
+                className="group grid gap-3.5 border-b border-border pb-7"
+              >
                 {featured.card_photo_url ? (
                   <CurtainImage
                     src={featured.card_photo_url}
@@ -191,51 +231,55 @@ export function NewsEventsSection({ events, posts }: { events: EventRow[]; posts
                 ) : (
                   <div className="aspect-[4/3] w-full rounded-sm bg-paper-deep" aria-hidden />
                 )}
-                <h4 className="font-display text-[1.08rem] font-bold leading-[1.3] tracking-[-0.01em] text-navy">
+                <h4 className="font-display text-[1.08rem] font-bold leading-[1.3] tracking-[-0.01em] text-navy transition-colors group-hover:text-crimson">
                   {featured.title}
                 </h4>
                 <div className="flex items-center justify-between gap-4">
                   <time className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     {formatDateRange(featured.start_date, featured.end_date)}
                   </time>
-                  {eventHref(featured) && (
-                    <PillLink href={eventHref(featured)!}>Read more</PillLink>
-                  )}
+                  {eventHref(featured) && <ReadMorePill />}
                 </div>
                 {featured.description && (
                   <p className="line-clamp-3 text-[0.9rem] text-muted-foreground">
                     {featured.description}
                   </p>
                 )}
-              </article>
+              </CardLink>
             </Reveal>
 
             <ul>
               {restEvents.map((event, i) => (
                 <Reveal key={event.id} delay={0.05 + i * 0.05}>
-                  <li className="grid grid-cols-[4.5rem_1fr] items-center gap-3.5 border-b border-border py-5 last:border-b-0">
-                    {event.card_photo_url ? (
-                      <CurtainImage
-                        src={event.card_photo_url}
-                        alt={event.title}
-                        className="group aspect-square w-full"
-                      />
-                    ) : (
-                      <div className="aspect-square w-full rounded-sm bg-paper-deep" aria-hidden />
-                    )}
-                    <div className="grid gap-2.5">
-                      <h4 className="font-display text-[1.08rem] font-bold leading-[1.3] tracking-[-0.01em] text-navy">
-                        {event.title}
-                      </h4>
-                      <div className="flex items-center justify-between gap-4">
-                        <time className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                          {formatDate(event.start_date)}
-                        </time>
-                        {eventHref(event) && (
-                          <PillLink href={eventHref(event)!}>Read more</PillLink>
-                        )}
+                  <li className="border-b border-border py-5 last:border-b-0">
+                    <CardLink
+                      href={eventHref(event)}
+                      className="group grid grid-cols-[4.5rem_1fr] items-center gap-3.5"
+                    >
+                      {event.card_photo_url ? (
+                        <CurtainImage
+                          src={event.card_photo_url}
+                          alt={event.title}
+                          className="group aspect-square w-full"
+                        />
+                      ) : (
+                        <div
+                          className="aspect-square w-full rounded-sm bg-paper-deep"
+                          aria-hidden
+                        />
+                      )}
+                      <div className="grid gap-2.5">
+                        <h4 className="font-display text-[1.08rem] font-bold leading-[1.3] tracking-[-0.01em] text-navy transition-colors group-hover:text-crimson">
+                          {event.title}
+                        </h4>
+                        <div className="flex items-center justify-between gap-4">
+                          <time className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                            {formatDate(event.start_date)}
+                          </time>
+                          {eventHref(event) && <ReadMorePill />}
+                        </div>
                       </div>
-                    </div>
+                    </CardLink>
                   </li>
                 </Reveal>
               ))}

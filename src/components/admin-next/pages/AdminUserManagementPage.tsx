@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, UserX, Loader2, Eye, EyeOff, Power } from 'lucide-react';
 import {
-  listPortalUsers,
-  listScopeOptions,
-  listSectionOptions,
+  loadUserManagementData,
   createPortalUser,
   assignPortalUserRole,
   removePortalUserRole,
@@ -96,6 +94,13 @@ function ScopeFields({
             unlocks the sports pages for them.
           </p>
         )}
+        {roleCode === 'librarian' && (
+          <p className="text-[11px] text-slate-500">
+            Librarian is granted at Department scope (e.g. the Library Department). After creating the account, use
+            &quot;Manage roles&quot; &rarr; Section Access to grant the <strong>Library</strong> section at{' '}
+            <strong>Global</strong> scope — that unlocks only the Central Library page (and Downloads) for them.
+          </p>
+        )}
       </div>
 
       {entityLabel && (
@@ -130,10 +135,11 @@ export function AdminUserManagementPage({ currentUserId }: { currentUserId: stri
   const refresh = async () => {
     setLoading(true);
     try {
-      const [userList, options, sections] = await Promise.all([listPortalUsers(), listScopeOptions(), listSectionOptions()]);
-      setUsers(userList);
-      setScopeOptions(options as ScopeOptions);
-      setSectionOptions(sections);
+      const result = await loadUserManagementData();
+      if (result.error !== undefined) throw new Error(result.error);
+      setUsers(result.users);
+      setScopeOptions(result.scopeOptions as ScopeOptions);
+      setSectionOptions(result.sections);
     } catch (err: any) {
       toast.error(`Failed to load users: ${err.message}`);
     } finally {

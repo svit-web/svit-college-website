@@ -48,7 +48,7 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
     >
       <div className="container-page grid items-center gap-8 md:grid-cols-2 md:gap-12 lg:gap-16">
         <div
-          className="relative aspect-[4/3] overflow-hidden border border-line bg-paper-deep"
+          className="relative aspect-[4/3] overflow-hidden"
           onTouchStart={(e) => {
             touchX.current = e.touches[0].clientX;
           }}
@@ -75,7 +75,7 @@ export function HomeCarousel({ slides: slidesProp }: Props = {}) {
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
                   priority={index === 0}
-                  className="object-cover"
+                  className="object-contain"
                 />
               )}
             </motion.div>

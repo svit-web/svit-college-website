@@ -14,6 +14,11 @@ changed, the files touched, any migration to apply, and how to verify.
 | 05 | [Footer contact numbers (college-wise)](2026-10-29-05-footer-contact-numbers.md) | `20261029150000_contact_numbers.sql` |
 | 06 | [Footer links driven by Menus / Nav](2026-10-29-06-footer-navigation-menu.md) | `20261029160000_footer_navigation_menu.sql` |
 | 07 | [Column filters on admin tables (Menu Items)](2026-10-29-07-admin-table-column-filters.md) | — |
+| 08 | [Librarian role: Central Library admin only](2026-10-30-08-librarian-role.md) (2026-10-30) | `20261030120000_librarian_role.sql` |
+| 09 | [Library editors can read what /admin/library needs](2026-10-30-09-library-section-reads.md) (2026-10-30) | `20261030130000_library_section_reads.sql` |
+| 10 | [Centre of Excellence & NSS / NCC pages + admin](2026-10-30-10-centre-pages.md) (2026-10-30) | `20261030140000_centre_pages.sql` |
+| 11 | [Centre pages filled from existing content](2026-10-30-11-centre-pages-seed.md) (2026-10-30) | `20261030150000_centre_pages_seed.sql` (applied) |
+| 12 | [Per-college hero & vision/mission, mobile sub-menus, recent-only menus](2026-10-30-12-college-pages-mobile-menu.md) (2026-10-30) | — |
 
 **Apply migrations in the order above** on the self-hosted (production) Supabase,
 then run `NOTIFY pgrst, 'reload schema';` (see `docs/infra/SELF_HOSTED_SUPABASE.md`).

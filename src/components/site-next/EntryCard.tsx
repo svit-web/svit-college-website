@@ -50,9 +50,9 @@ type EntryCardProps = {
   sizes?: string;
 };
 
-const SHELL = "flex h-full w-full flex-col overflow-hidden border border-line bg-surface text-left";
+const SHELL = "flex h-full w-full flex-col overflow-hidden bg-surface text-left";
 const INTERACTIVE =
-  "group cursor-pointer transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-paper";
+  "group cursor-pointer transition-colors duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-paper-deep active:bg-paper-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-navy focus-visible:ring-offset-2 focus-visible:ring-offset-paper";
 
 export function EntryCard({
   entry,
@@ -66,14 +66,14 @@ export function EntryCard({
   // Always-visible affordance so tapping works without discovering a hover.
   const body = (action?: string): ReactNode => (
     <>
-      <div className="relative aspect-video w-full shrink-0 overflow-hidden bg-paper-deep">
+      <div className="relative aspect-video w-full shrink-0 overflow-hidden">
         {entry.cardPhotoUrl ? (
           <Image
             src={entry.cardPhotoUrl}
             alt={entry.title}
             fill
             sizes={sizes}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <EntryCardPlaceholder />

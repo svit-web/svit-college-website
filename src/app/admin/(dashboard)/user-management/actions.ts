@@ -73,15 +73,38 @@ function isFullAccessRole(code: string) {
   return (FULL_ACCESS_ROLE_CODES as readonly string[]).includes(code);
 }
 
-// Section-scoped roles (currently only sports_secretary) must never be
+// Section-scoped roles (sports_secretary, librarian) must never be
 // granted at global scope — a global user_roles row reads as a full global
 // admin in the scope-level logic, and even with the hardened RLS helpers it
 // would make no sense for a single-section role.
 function assertRoleScopeAllowed(roleCode: string, scopeType: string): string | null {
   if (!isFullAccessRole(roleCode) && scopeType !== 'college' && scopeType !== 'department') {
-    return 'Section-scoped roles (e.g. Sports Secretary) can only be granted at College or Department scope.';
+    return 'Section-scoped roles (e.g. Sports Secretary, Librarian) can only be granted at College or Department scope.';
   }
   return null;
+}
+
+// supabase-js turns a 5xx from the Auth server into an error whose message is
+// just the serialised response ({"url": ...}). Ask the Auth server again
+// directly so the admin sees what it actually said (e.g. "Database error
+// finding users", which on self-hosted means auth.users rows with NULL token
+// columns — see docs/infra/SELF_HOSTED_SUPABASE.md).
+async function describeAuthListError(err: { message: string; status?: number }) {
+  if (!err.message.startsWith('{')) return err.message;
+  try {
+    const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!url || !key) return err.message;
+    const res = await fetch(`${url}/auth/v1/admin/users?per_page=1000`, {
+      // New-style secret keys are not JWTs: send them as apikey only.
+      headers: key.startsWith('sb_') ? { apikey: key } : { apikey: key, Authorization: `Bearer ${key}` },
+      cache: 'no-store',
+    });
+    const body = (await res.text()).slice(0, 300);
+    return `Auth server returned HTTP ${res.status}: ${body}`;
+  } catch {
+    return `Auth server error (HTTP ${err.status ?? 'unknown'})`;
+  }
 }
 
 export async function listPortalUsers(): Promise<PortalUser[]> {
@@ -104,7 +127,7 @@ export async function listPortalUsers(): Promise<PortalUser[]> {
     supabaseAdmin.from('colleges').select('id, name'),
     supabaseAdmin.from('departments').select('id, name'),
   ]);
-  if (authErr) throw new Error(authErr.message);
+  if (authErr) throw new Error(await describeAuthListError(authErr));
   if (profErr) throw new Error(profErr.message);
   if (roleErr) throw new Error(roleErr.message);
   if (sectionGrantErr) throw new Error(sectionGrantErr.message);
@@ -244,6 +267,29 @@ export async function listScopeOptions() {
     departments: (departments ?? []) as ScopeOption[],
     roles: (roles ?? []) as { code: string; name: string }[],
   };
+}
+
+// One call for everything the page loads. Returns { error } instead of
+// throwing: a thrown error reaches the browser only as the generic React #441
+// message in production, which hides what actually failed.
+export async function loadUserManagementData(): Promise<
+  ActionResult<{
+    users: PortalUser[];
+    scopeOptions: Awaited<ReturnType<typeof listScopeOptions>>;
+    sections: SectionOption[];
+  }>
+> {
+  try {
+    const [users, scopeOptions, sections] = await Promise.all([
+      listPortalUsers(),
+      listScopeOptions(),
+      listSectionOptions(),
+    ]);
+    return { users, scopeOptions, sections };
+  } catch (err) {
+    console.error('[user-management] load failed:', err);
+    return { error: (err as { message?: string })?.message || 'Unknown error' };
+  }
 }
 
 interface CreatePortalUserInput {

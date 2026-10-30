@@ -54,7 +54,7 @@ export function entryHasMoreToShow(entry: Pick<EntryCardData, "album" | "descrip
 
 /**
  * How a Detail page shows its photos: `fill` crops to the stage (object-cover),
- * `fit` shows the whole photo (object-contain). Cards and grids always fill.
+ * `fit` shows the whole photo (object-contain).
  */
 export type EntryImageFit = "fill" | "fit";
 

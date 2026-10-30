@@ -19,14 +19,14 @@ export interface EventSlide {
 function Card({ slide }: { slide: EventSlide }) {
   const content = (
     <>
-      <div className="relative aspect-video w-full overflow-hidden bg-paper-deep">
+      <div className="relative aspect-video w-full overflow-hidden">
         {slide.imageUrl ? (
           <Image
             src={slide.imageUrl}
             alt={slide.title}
             fill
             sizes="(max-width: 768px) 100vw, 340px"
-            className="object-cover"
+            className="object-contain"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-ink-mute">
@@ -48,8 +48,8 @@ function Card({ slide }: { slide: EventSlide }) {
     </>
   );
 
-  const className = `group block h-full w-full border border-line bg-surface p-4 ${
-    slide.slug ? "transition-colors duration-300 hover:border-navy hover:bg-paper-deep" : ""
+  const className = `group block h-full w-full bg-surface p-4 ${
+    slide.slug ? "transition-colors duration-300 hover:bg-paper-deep" : ""
   }`;
 
   return slide.slug ? (

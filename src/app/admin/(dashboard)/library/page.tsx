@@ -17,5 +17,6 @@ export default async function LibraryPage() {
     redirect('/admin');
   }
 
-  return <AdminLibraryPage />;
+  // Section-only users (Librarian) can't open Staff Profiles — don't link them there.
+  return <AdminLibraryPage canManageStaff={level !== 'section'} />;
 }
