@@ -30,10 +30,10 @@ export default async function AntiRagging() {
 
           <h2 className="mt-10 font-display text-2xl font-medium text-navy">Our Policy</h2>
           <ul className="mt-4 space-y-3 text-sm text-ink-soft leading-relaxed">
-            <li>• 24×7 anti-ragging monitoring across hostels, classrooms and campus areas.</li>
+            <li>• 24×7 anti-ragging monitoring across classrooms and campus areas.</li>
             <li>• Every student signs an anti-ragging undertaking at the start of the academic year.</li>
             <li>• Confidential complaints handled by the Anti-Ragging Committee within 48 hours.</li>
-            <li>• Penalties range from suspension and hostel expulsion to police FIR.</li>
+            <li>• Penalties range from suspension to police FIR.</li>
           </ul>
 
           <div className="mt-12 border border-line bg-paper-deep p-6 md:p-8">

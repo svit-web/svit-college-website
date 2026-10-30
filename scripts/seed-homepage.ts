@@ -188,7 +188,7 @@ async function seedHomepage() {
     scope_type: "global",
     eyebrow: "Admissions Open",
     title: "Your future starts here",
-    body: "Join 5000+ students building careers with SVIT. Merit-based scholarships, hostel accommodation, and dedicated placement support.",
+    body: "Join 5000+ students building careers with SVIT. Merit-based scholarships and dedicated placement support.",
     link_label: "View Admissions",
     link_href: "/admissions",
     is_active: true,

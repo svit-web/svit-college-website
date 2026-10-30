@@ -32,7 +32,6 @@ const fallbackContent: AdmissionsPageData = {
   faqs: [
     { q: "When do admissions for {year} open?", a: "Applications open in January. Merit lists are declared as per GTU / ACPC schedule." },
     { q: "Are scholarships available?", a: "Yes — merit-based, need-based, and government scholarships (SC/ST/OBC/EBC) are offered." },
-    { q: "Is hostel accommodation available?", a: "Separate boys' and girls' hostels with mess, Wi-Fi and 24×7 security." },
     { q: "How do I get a fee breakdown?", a: "Contact the admissions office or download the fee structure from Downloads." },
   ],
 };

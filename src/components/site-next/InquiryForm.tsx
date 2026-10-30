@@ -134,7 +134,7 @@ export function InquiryForm({
               <li>&bull; AICTE approved programmes</li>
               {placementPct && <li>&bull; {placementPct}%+ placement record</li>}
               <li>&bull; Scholarships available</li>
-              <li>&bull; Modern hostels</li>
+              <li>&bull; 15+ acre green campus</li>
             </ul>
           </div>
           <div className="border border-line bg-surface p-6">

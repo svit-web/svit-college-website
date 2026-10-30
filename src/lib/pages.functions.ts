@@ -48,7 +48,6 @@ export interface AboutPageData {
     scholarships: { name: string; amount: string; eligibility: string }[];
     sports: { text: string; activities: { label: string; value: string }[] };
     nssNcc: { name: string; description: string }[];
-    hostelsTransport: { hostelText: string; transportText: string };
     itMedical: { label: string; description: string }[];
   };
   media: {

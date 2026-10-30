@@ -364,7 +364,7 @@ BEGIN
         'Develops a responsive and accountable attitude among students',
         'Maintains harmonious atmosphere in the college campus',
         'Resolves grievances with complete confidentiality',
-        'Handles: physical harassment, mental harassment, complaints against teaching/administrative staff, accommodation/hostel, and transportation issues'
+        'Handles: physical harassment, mental harassment, complaints against teaching/administrative staff, and transportation issues'
       )
     ),
     'published'
@@ -400,7 +400,7 @@ BEGIN
         'Awareness programs on dehumanizing effects of ragging',
         'Continuous watch and vigil across campus',
         'Stringent action against ragging incidents',
-        'Regular checks of hostels, buses, canteens, and classrooms',
+        'Regular checks of buses, canteens, and classrooms',
         'Follows Supreme Court guidelines — Civil Appeal No. 887 of 2009'
       )
     ),

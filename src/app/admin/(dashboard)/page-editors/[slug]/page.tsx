@@ -51,7 +51,7 @@ const EDITORS: Record<string, PageEditorConfig> = {
       },
       {
         title: "Facilities Section",
-        description: "Library, scholarships, sports, NSS/NCC, hostels, IT & medical.",
+        description: "Library, scholarships, sports, NSS/NCC, IT & medical.",
         keys: ["facilities"],
       },
       {

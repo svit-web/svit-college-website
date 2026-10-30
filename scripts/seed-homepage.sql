@@ -73,7 +73,7 @@ INSERT INTO homepage_items (
   'promo_card', 'global',
   'Admissions Open',
   'Your future starts here',
-  'Join 5000+ students building careers with SVIT. Merit-based scholarships, hostel accommodation, and dedicated placement support.',
+  'Join 5000+ students building careers with SVIT. Merit-based scholarships and dedicated placement support.',
   'View Admissions',
   '/admissions',
   true, 'published', 0,

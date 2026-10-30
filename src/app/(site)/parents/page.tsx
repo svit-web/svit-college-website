@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 export default async function Parents() {
   const misc = await getMiscSettings().catch(() => null);
   const feats = [
-    { icon: Shield, t: "Safety & Wellbeing", d: "24×7 campus security, medical centre and dedicated wardens in hostels." },
+    { icon: Shield, t: "Safety & Wellbeing", d: "24×7 campus security and an on-campus medical centre." },
     { icon: MessageCircle, t: "Regular Communication", d: "Term-wise progress updates, PTA meetings and open communication with faculty." },
     { icon: TrendingUp, t: "Career Growth", d: misc?.placement_percentage ? `Structured internships, industry mentors and ${misc.placement_percentage}% placement track record.` : "Structured internships, industry mentors and strong placement track record." },
     { icon: CalendarCheck, t: "Parent Portal", d: "Access attendance, marks, fees and calendars via the student portal." },
