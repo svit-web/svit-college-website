@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
-import { Reveal } from "@/components/site-next/Reveal";
+import { HistoryTimeline } from "@/components/site-next/HistoryTimeline";
 import { getAboutPage } from "@/lib/pages.functions";
 
 export const metadata: Metadata = {
   title: "History, Vision & Mission — SVIT Vasad",
-  description: "SVIT Vasad's history and milestones since 1997, our vision, mission and core values.",
+  description: "SVIT Vasad's history and milestones since 1997, our vision and mission.",
   alternates: { canonical: "/about/history-vision-mission" },
 };
 
@@ -16,33 +16,14 @@ export default async function HistoryVisionMissionPage() {
     <section className="bg-paper-deep py-16 md:py-20">
       <div className="container-page">
         <SectionHeading eyebrow="Our journey" title="History, Vision & Mission" variant="eyebrow" />
-        <p className="mt-6 max-w-4xl text-justify text-ink-soft leading-relaxed">
-          {c?.history?.introText}
-        </p>
-        <ol className="mt-10 space-y-4">
-          {(c?.history?.milestones ?? []).map((m, i) => (
-            <Reveal key={`${m.year}-${i}`} delay={i * 0.04}>
-              <li className="grid grid-cols-[88px_1fr] gap-4 border border-line bg-surface p-5 sm:grid-cols-[110px_1fr]">
-                <div className="font-display text-2xl font-medium text-crimson">{m.year}</div>
-                <div className="text-sm text-navy leading-relaxed">{m.milestone}</div>
-              </li>
-            </Reveal>
-          ))}
-        </ol>
-        {c?.history?.closingText && (
-          <p className="mt-8 max-w-4xl text-justify text-ink-soft leading-relaxed italic">
-            {c.history.closingText}
-          </p>
-        )}
-
-        <div className="mt-14 grid gap-6 lg:grid-cols-2">
+        <div className="mt-10 space-y-6">
           <div className="border border-line bg-surface p-8">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
               Vision
             </div>
-            <blockquote className="mt-4 text-justify font-display text-xl md:text-2xl text-navy leading-snug">
-              &quot;{c?.vision?.visionText}&quot;
-            </blockquote>
+            <p className="mt-4 text-justify text-sm text-ink-soft leading-relaxed">
+              {c?.vision?.visionText}
+            </p>
           </div>
           <div className="border border-line bg-surface p-8">
             <div className="text-xs font-semibold uppercase tracking-[0.2em] text-crimson">
@@ -61,21 +42,15 @@ export default async function HistoryVisionMissionPage() {
           </div>
         </div>
 
-        <div className="mt-14 border border-line bg-paper-deep p-8 text-center md:p-10">
-          <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
-            Core Values
-          </div>
-          <div className="mt-5 flex flex-wrap justify-center gap-3">
-            {(c?.coreValues ?? []).map((v) => (
-              <span
-                key={v}
-                className="rounded-full border border-line-strong px-5 py-2 text-sm font-medium tracking-wide text-navy"
-              >
-                {v}
-              </span>
-            ))}
-          </div>
-        </div>
+        <p className="mt-14 max-w-4xl text-justify text-ink-soft leading-relaxed">
+          {c?.history?.introText}
+        </p>
+        <HistoryTimeline milestones={c?.history?.milestones ?? []} />
+        {c?.history?.closingText && (
+          <p className="mt-8 max-w-4xl text-justify text-ink-soft leading-relaxed italic">
+            {c.history.closingText}
+          </p>
+        )}
       </div>
     </section>
   );
