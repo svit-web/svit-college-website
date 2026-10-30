@@ -37,16 +37,16 @@ export default async function GalleryIndex() {
               <Reveal key={album.id} delay={i * 0.05}>
                 <Link
                   href={`/gallery/${album.slug}`}
-                  className="group block overflow-hidden border border-line bg-surface transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
+                  className="group block overflow-hidden bg-surface transition-colors duration-300 hover:bg-paper-deep active:bg-paper-deep"
                 >
-                  <div className="relative aspect-video w-full overflow-hidden bg-paper-deep">
+                  <div className="relative aspect-video w-full overflow-hidden">
                     {album.cover_image_url ? (
                       <Image
                         src={album.cover_image_url}
                         alt={album.title}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain transition-transform duration-300 group-hover:scale-105"
                       />
                     ) : (
                       <div className="flex h-full items-center justify-center text-navy/20">

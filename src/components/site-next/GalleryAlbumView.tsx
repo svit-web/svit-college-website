@@ -35,7 +35,7 @@ export function GalleryAlbumView({ album }: { album: GalleryAlbumWithMedia }) {
             <Reveal key={img.id} delay={i * 0.015}>
               <button
                 aria-label={`View ${img.caption || `photo ${i + 1}`} full screen`}
-                className="group relative block aspect-square w-full overflow-hidden bg-paper-deep focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-navy"
+                className="group relative block aspect-square w-full overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-navy"
                 onClick={() => setLightboxIndex(i)}
               >
                 <Image
@@ -43,7 +43,7 @@ export function GalleryAlbumView({ album }: { album: GalleryAlbumWithMedia }) {
                   alt={img.caption || album.title}
                   fill
                   sizes="(max-width: 640px) 50vw, (max-width: 768px) 33vw, 25vw"
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain transition-transform duration-300 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-ink/0 transition-colors group-hover:bg-ink/15" />
               </button>

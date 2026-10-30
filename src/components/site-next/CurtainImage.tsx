@@ -67,7 +67,7 @@ export function CurtainImage({
         alt={alt}
         fill
         sizes={sizes ?? "(max-width: 768px) 100vw, 480px"}
-        className="object-cover transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
+        className="object-contain transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
       />
     </div>
   );

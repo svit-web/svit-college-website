@@ -87,10 +87,13 @@ export function useCampusCategories({
         icon: Trophy,
         allLabel: "Sports & Athletics",
         allTo: "/campus-life/sports-and-athletics",
-        items: [...(sports ?? [])].sort(newestFirst).slice(0, MENU_RECENT_ITEMS).map((s) => ({
-          label: s.name,
-          to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
-        })),
+        items: [...(sports ?? [])]
+          .sort(newestFirst)
+          .slice(0, MENU_RECENT_ITEMS)
+          .map((s) => ({
+            label: s.name,
+            to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
+          })),
       },
       {
         key: "student-groups",
@@ -127,9 +130,9 @@ export function useCampusCategories({
           .sort((a, b) => (b.start_date ?? "").localeCompare(a.start_date ?? ""))
           .slice(0, MENU_RECENT_EVENTS)
           .map((c) => ({
-          label: c.title.split("—")[0].trim(),
-          to: `/campus-life/events/${c.slug}`,
-        })),
+            label: c.title.split("—")[0].trim(),
+            to: `/campus-life/events/${c.slug}`,
+          })),
       },
       {
         key: "coe",
@@ -176,12 +179,11 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
           const Icon = c.icon;
           return (
             <li key={c.key}>
-              <button
-                type="button"
+              <Link
+                href={c.allTo}
                 onMouseEnter={() => scheduleActivate(c.key)}
                 onMouseLeave={cancelSchedule}
                 onFocus={() => setActiveKey(c.key)}
-                onClick={() => setActiveKey(c.key)}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
                   "flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm font-semibold transition-colors",
@@ -196,7 +198,7 @@ export function CampusMegaPanel({ categories }: { categories: CampusMegaCategory
                     isActive ? "opacity-100" : "opacity-0",
                   )}
                 />
-              </button>
+              </Link>
             </li>
           );
         })}

@@ -32,20 +32,18 @@ function ActivityCard({ item, i }: { item: DeptActivity; i: number }) {
   const linked = item.hasDetailPage;
   const body = (
     <div
-      className={`group flex h-full flex-col overflow-hidden border border-line bg-surface ${
-        linked
-          ? "transition-colors duration-300 hover:border-navy hover:bg-paper-deep active:border-navy active:bg-paper-deep"
-          : ""
+      className={`group flex h-full flex-col overflow-hidden bg-surface ${
+        linked ? "transition-colors duration-300 hover:bg-paper-deep active:bg-paper-deep" : ""
       }`}
     >
-      <div className="relative aspect-video w-full overflow-hidden bg-paper-deep">
+      <div className="relative aspect-video w-full overflow-hidden">
         {item.cardPhotoUrl ? (
           <Image
             src={item.cardPhotoUrl}
             alt={item.title}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover"
+            className="object-contain"
           />
         ) : (
           <EntryCardPlaceholder />

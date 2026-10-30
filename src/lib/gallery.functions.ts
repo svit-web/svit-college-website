@@ -38,7 +38,34 @@ export async function getAllGalleryAlbums() {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return data as unknown as GalleryAlbum[];
+  const albums = data as unknown as GalleryAlbum[];
+  if (albums.length === 0) return albums;
+
+  // cover_image_url on gallery_albums is unused by the admin's upload flow;
+  // the cover photo is instead whichever gallery_media row has is_cover set.
+  const { data: media, error: mediaError } = await supabase
+    .from('gallery_media')
+    .select('album_id, url, is_cover, sort_order')
+    .in(
+      'album_id',
+      albums.map((a) => a.id),
+    )
+    .eq('status', 'published')
+    .eq('media_type', 'image')
+    .is('deleted_at', null)
+    .order('is_cover', { ascending: false })
+    .order('sort_order', { ascending: true });
+  if (mediaError) throw mediaError;
+
+  const coverByAlbum = new Map<string, string>();
+  for (const m of media ?? []) {
+    if (!coverByAlbum.has(m.album_id)) coverByAlbum.set(m.album_id, m.url);
+  }
+
+  return albums.map((album) => ({
+    ...album,
+    cover_image_url: album.cover_image_url ?? coverByAlbum.get(album.id) ?? null,
+  }));
 }
 
 export async function getGalleryAlbumWithMedia(slug: string) {
