@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "sonner";
+import { NavigationSpinner } from "@/components/site-next/NavigationSpinner";
 import { getFontScaleInitScript } from "@/lib/font-scale";
 import {
   DEFAULT_MISC,
@@ -53,6 +54,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased" suppressHydrationWarning>
         {children}
+        <NavigationSpinner />
         <Toaster position="top-right" richColors />
         {GA4_ID && (
           <>

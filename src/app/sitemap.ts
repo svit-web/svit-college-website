@@ -1,9 +1,9 @@
+import { notExpiredFilter } from "@/lib/mous.functions";
 import type { MetadataRoute } from "next";
 import { publicSupabase } from "@/lib/supabase-public";
 import { SITE_URL } from "@/lib/seo";
 import { CENTERS_WITH_OWN_PAGE } from "@/lib/centers.functions";
 import { LIBRARY_FACILITY_SLUG } from "@/lib/library-paths";
-import { ACTIVITY_EVENT_TYPES } from "@/lib/department-content.functions";
 
 // Each query mirrors the filters of the page's own loader (published, not
 // deleted, has_detail_page where the route needs it) so the sitemap never
@@ -32,12 +32,12 @@ const STATIC_ROUTES: Array<[path: string, priority: number, changeFrequency: Cha
   ["/about/committees", 0.5, "yearly"],
   ["/about/media", 0.5, "monthly"],
   ["/admissions", 0.9, "weekly"],
-  ["/admissions/inquiry", 0.8, "monthly"],
   ["/admissions/intake-fees", 0.8, "monthly"],
   ["/admissions/scholarships", 0.7, "monthly"],
   ["/colleges", 0.9, "monthly"],
   ["/courses", 0.8, "monthly"],
   ["/placement", 0.8, "monthly"],
+  ["/placement/mous", 0.6, "monthly"],
   ["/news", 0.7, "daily"],
   ["/gallery", 0.5, "weekly"],
   ["/campus-life", 0.6, "monthly"],
@@ -99,6 +99,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     centers,
     achievements,
     activityDeptIds,
+    mouDeptIds,
   ] = await Promise.all([
     rows(published(sb.from("colleges").select("slug, updated_at")), "colleges"),
     rows(published(sb.from("departments").select("id, code, updated_at")), "departments"),
@@ -162,15 +163,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ),
     rows(
       published(sb.from("events").select("department_id"))
-        .in("event_type", ACTIVITY_EVENT_TYPES)
         .not("department_id", "is", null),
       "department activities",
+    ),
+    rows(
+      published(sb.from("mous").select("department_id"))
+        .or(notExpiredFilter())
+        .not("department_id", "is", null),
+      "department MoUs",
     ),
   ]);
 
   const deptCodeById = new Map(departments.map((d) => [d.id, d.code]));
   const deptsWithLabs = new Set(labs.map((l) => l.department_id));
   const deptsWithActivities = new Set(activityDeptIds.map((e) => e.department_id));
+  const deptsWithMous = new Set(mouDeptIds.map((m) => m.department_id));
   const deptsWithAchievements = new Set(achievements.map((a) => a.department_id).filter(Boolean));
 
   const out: MetadataRoute.Sitemap = STATIC_ROUTES.map(([path, priority, freq]) =>
@@ -186,6 +193,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     out.push(entry(`${base}/staff`, 0.6, "monthly"));
     if (deptsWithLabs.has(d.id)) out.push(entry(`${base}/labs`, 0.5, "monthly"));
     if (deptsWithActivities.has(d.id)) out.push(entry(`${base}/activities`, 0.5, "weekly"));
+    if (deptsWithMous.has(d.id)) out.push(entry(`${base}/mous`, 0.5, "monthly"));
     if (deptsWithAchievements.has(d.id)) out.push(entry(`${base}/achievements`, 0.5, "monthly"));
   }
 

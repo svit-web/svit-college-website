@@ -8,7 +8,6 @@ import {
   Building2,
   CalendarDays,
   ChevronRight,
-  LibraryBig,
   Shield,
   Trophy,
   Users,
@@ -72,14 +71,6 @@ export function useCampusCategories({
             label: f.name,
             to: facilityHref(f),
           })),
-      },
-      {
-        key: "central-library",
-        title: "Central Library",
-        icon: LibraryBig,
-        allLabel: "Central Library",
-        allTo: LIBRARY_PATH,
-        items: [],
       },
       {
         key: "sports",

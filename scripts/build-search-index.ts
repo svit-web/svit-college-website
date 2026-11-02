@@ -67,7 +67,7 @@ const staticEntries = (fullName: string): SearchEntry[] => [
     url: "/about/accreditation",
     type: "Page",
     college: null,
-    title: "Accreditation & Compliance",
+    title: "AICTE & Accreditation",
     description:
       "Accreditations, approvals, academic regulations, mandatory disclosures and industry MOUs.",
   },
@@ -252,6 +252,13 @@ const staticEntries = (fullName: string): SearchEntry[] => [
     college: null,
     title: "Placement",
     description: "Placement cell and recruitment activities.",
+  },
+  {
+    url: "/placement/mous",
+    type: "Page",
+    college: null,
+    title: "Industry Partners & MoUs",
+    description: "Memoranda of Understanding with industry partners, by department.",
   },
 ];
 

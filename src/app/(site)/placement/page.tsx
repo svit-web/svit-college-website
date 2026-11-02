@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PlacementPage } from "@/components/site-next/PlacementPage";
+import { getAllMOUs } from "@/lib/mous.functions";
 import { getPlacementContent } from "@/lib/placement.functions";
 
 export const metadata: Metadata = {
@@ -10,6 +11,6 @@ export const metadata: Metadata = {
 };
 
 export default async function PlacementIndexPage() {
-  const data = await getPlacementContent();
-  return <PlacementPage data={data} />;
+  const [data, mous] = await Promise.all([getPlacementContent(), getAllMOUs().catch(() => [])]);
+  return <PlacementPage data={data} mous={mous} />;
 }

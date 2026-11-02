@@ -2,10 +2,11 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { createClient } from '@/app/lib/supabase/client';
+import { publicSupabase } from '@/lib/supabase-public';
 import { MediaUploader } from './MediaUploader';
 import { SeoEditor } from './SeoEditor';
 import { EntryPhotosEditor } from './EntryPhotosEditor';
-import { MetadataEditor } from './MetadataEditor';
+import { MetadataEditor, MetadataListField } from './MetadataEditor';
 import { sendPasswordResetForUser } from '@/app/admin/actions';
 import { useUserScope, type ScopeLevel } from '@/hooks/useUserScope';
 import { GLOBAL_ONLY_TABLE_IDS, getRouteSections } from '@/lib/admin-sections';
@@ -109,6 +110,9 @@ interface TableFieldConfig {
   // Boolean/enum fields only: locks the control to global admins and, for
   // enums, narrows the option list to the acting admin's own scope level.
   lockedForNonGlobal?: boolean;
+  // With lockedForNonGlobal on scope_type: a college admin may still choose
+  // Department, so the record can appear on one of their departments' pages.
+  departmentScopeForCollege?: boolean;
   // Boolean fields only: label shown unlocked / locked (falls back to the
   // generic "Toggle Active State" when neither is set).
   booleanLabel?: string;
@@ -191,13 +195,11 @@ interface TableConfig {
     // only ever sees their own row, matched by primary key rather than a
     // foreign-key column.
     selfScopeLevel?: 'institute' | 'college' | 'department';
-    // Extra equality filter applied on top of the generic college_id match
-    // (e.g. a college admin only sees events they own directly, not ones
-    // inherited from a parent scope).
-    collegeScopeExtra?: { column: string; value: string };
   };
   // Overrides the generic column-based write-permission rule. Return
   // undefined for a given level to fall through to the generic rule.
+  // metadata keys that hold a list of short texts and get their own form fields.
+  metadataLists?: { key: string; label: string; helpText?: string }[];
   writePermissions?: {
     resolve: (level: ScopeLevel) => Partial<Record<'insert' | 'update' | 'delete', boolean>> | undefined;
   };
@@ -257,8 +259,29 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     },
   },
   courses: {
+    metadataLists: [
+      { key: 'highlights', label: 'Highlights', helpText: "Shown on this course's page. Leave empty to hide the section." },
+      { key: 'outcomes', label: 'Outcomes', helpText: "Shown on this course's page. Leave empty to hide the section." },
+    ],
     fields: {
       code: { autoGenerateFrom: { source: 'name', variant: 'code' } },
+      // Set automatically from the department in buildPayload.
+      is_programme: { hidden: true },
+      department_id: {
+        helpText:
+          'A course belongs to a department. Leave empty only for a Programme: a broad heading such as B.E. Engineering, listed on the Programmes page.',
+      },
+      // The degree_level enum's own names ('graduate', 'certificate') mean
+      // Postgraduate and Diploma here; this also decides the /courses sections.
+      degree_level: {
+        optionLabels: {
+          undergraduate: 'Undergraduate',
+          graduate: 'Postgraduate',
+          certificate: 'Diploma',
+          doctorate: 'Doctorate',
+        },
+        helpText: 'Decides which section this course appears under on the Programmes page.',
+      },
     },
   },
   committees: {
@@ -277,23 +300,24 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     },
   },
   events: {
-    scope: { collegeScopeExtra: { column: 'scope_type', value: 'college' } },
     fields: {
       ...ENTRY_PHOTO_FIELDS,
-      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true, departmentScopeForCollege: true },
       college_id: { renderAfter: 'scope_type' },
       department_id: { renderAfter: 'scope_type' },
       event_type: {
         optionLabels: EVENT_TYPE_LABELS,
         helpText:
-          'A department event only shows on that department\'s own Activities page for these types: ' +
-          'Expert Session, Industrial Visit, Seminar, Workshop, STTP, FDP. Other types (Fest, Cultural, ' +
-          'Technical, Sports, Competition, Other) still show on the sitewide Events page.',
+          "A department event shows on that department's Departmental Events page and on the sitewide Events page, whatever its type.",
       },
       // Every event happens on campus — not worth an admin field. The column
       // stays (a handful of old rows have a value), just not editable here.
       map_url: { hidden: true },
       center_id: { helpText: CENTER_LINK_HELP },
+      sort_order: {
+        helpText:
+          'Order on the department, club or centre page: lowest number first. Leave 0 to place it after numbered events, newest date first. The sitewide Events page always uses the date.',
+      },
       is_featured: {
         lockedForNonGlobal: true,
         booleanLabel: 'Feature on homepage (max 8 at once)',
@@ -360,7 +384,7 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     fields: {
       ...ENTRY_PHOTO_FIELDS,
       image_fit: { defaultValue: NEW_ENTRY_IMAGE_FIT },
-      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true },
+      scope_type: { lockedForNonGlobal: true, defaultsToScopeLevel: true, departmentScopeForCollege: true },
       college_id: { renderAfter: 'scope_type' },
       category: { options: ACHIEVEMENT_CATEGORY_OPTIONS },
       slug: { autoGenerateFrom: { source: 'title', variant: 'slug' } },
@@ -456,7 +480,25 @@ const TABLE_CONFIGS: Record<string, TableConfig> = {
     },
   },
   mous: {
+    // RLS lets trust/institute admins write MoUs of the departments under them,
+    // but this table has no trust_id/institute_id for the default rule to see.
+    writePermissions: {
+      resolve: (level) =>
+        level === 'trust' || level === 'institute' ? { insert: true, update: true, delete: true } : undefined,
+    },
     fields: {
+      department_id: {
+        helpText:
+          "Shows this MoU on the department's own MoUs tab and names the department on the Placement MoUs page. Leave empty only for an institute-wide MoU (global admins and Placement users).",
+      },
+      // Derived from department_id by the mous_before_write trigger.
+      college_id: { hidden: true },
+      // Free text from before department_id existed.
+      department_name: { hidden: true },
+      expiry_date: {
+        helpText:
+          'After this date the MoU disappears from the website automatically but stays listed here. Move the date forward to show it again. Leave empty if it has no expiry.',
+      },
       center_id: { helpText: CENTER_LINK_HELP },
     },
   },
@@ -542,6 +584,9 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
 
   const [fkCache, setFkCache] = useState<Record<string, Record<string, string>>>({});
   const [fkOptions, setFkOptions] = useState<Record<string, { value: string; label: string }[]>>({});
+  // Set when the user belongs to exactly one college: college_id is then
+  // preassigned and locked. Null means they pick from the list.
+  const [lockedCollegeId, setLockedCollegeId] = useState<string | null>(null);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -606,9 +651,25 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
   useEffect(() => {
     if (!schema?.foreign_keys || schema.foreign_keys.length === 0) return;
 
+    // The colleges a college- or department-level user belongs to; null for
+    // everyone else (global admins see every college, trust/institute admins
+    // whatever RLS shows them).
+    async function resolveOwnCollegeIds(): Promise<string[] | null> {
+      if (scopeDefaultLevel === 'college' && userScope.collegeIds.length > 0) return userScope.collegeIds;
+      if (scopeDefaultLevel !== 'department' || userScope.departmentIds.length === 0) return null;
+      const { data, error } = await publicSupabase()
+        .from('departments')
+        .select('college_id')
+        .in('id', userScope.departmentIds);
+      if (error) throw error;
+      return Array.from(new Set((data ?? []).map((d) => d.college_id)));
+    }
+
     async function loadFKOptions() {
       const cache: Record<string, Record<string, string>> = {};
       const options: Record<string, { value: string; label: string }[]> = {};
+      const hasCollegeFk = schema.foreign_keys.some((fk: any) => fk.foreign_table === 'colleges');
+      const ownCollegeIds = hasCollegeFk ? await resolveOwnCollegeIds().catch(() => null) : null;
 
       await Promise.all(
         schema.foreign_keys.map(async (fk: any) => {
@@ -629,7 +690,19 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
             // soft-deleted, archived row was showing up selectable in the
             // Club picker, and 155 of ~233 staff_profiles rows were showing
             // up in every staff picker.
-            let { data, error } = await supabaseClient
+            //
+            // "Scoped read colleges" RLS hides a department admin's own college
+            // from them (it only matches college-level grants and above), which
+            // left this required dropdown empty. College names are public, so
+            // scoped users read them anonymously, narrowed to their own below.
+            const narrowToOwn = fk.foreign_table === 'colleges' ? ownCollegeIds : null;
+            // Same for a Placement user tagging a MoU: their section grant gives
+            // them no department reads, and the MoU can belong to any department.
+            const readPublicly =
+              !!narrowToOwn ||
+              (tableId === 'mous' && fk.foreign_table === 'departments' && userScope.level === 'section');
+            const client = (readPublicly ? publicSupabase() : supabaseClient) as typeof supabaseClient;
+            let { data, error } = await client
               .from(fk.foreign_table)
               .select(selectCols)
               .is('deleted_at', null)
@@ -637,9 +710,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
               .order(labelCol, { ascending: true });
 
             if (error) {
-              ({ data, error } = await supabaseClient.from(fk.foreign_table).select(selectCols).order(labelCol, { ascending: true }));
+              ({ data, error } = await client.from(fk.foreign_table).select(selectCols).order(labelCol, { ascending: true }));
             }
             if (error) throw error;
+            if (data && narrowToOwn) data = data.filter((row: any) => narrowToOwn.includes(row.id));
 
             if (data) {
               cache[fk.foreign_table] = {};
@@ -660,6 +734,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
 
       setFkCache(cache);
       setFkOptions(options);
+      setLockedCollegeId(ownCollegeIds?.length === 1 ? ownCollegeIds[0] : null);
     }
 
     loadFKOptions();
@@ -695,9 +770,6 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
             query = query.in('id', userScope.collegeIds);
           } else if (cols.includes('college_id')) {
             query = query.in('college_id', userScope.collegeIds);
-            if (scope?.collegeScopeExtra) {
-              query = query.eq(scope.collegeScopeExtra.column, scope.collegeScopeExtra.value);
-            }
           }
         } else if (userScope.level === 'department' && userScope.departmentIds.length > 0) {
           if (TABLE_CONFIGS[tableId]?.scope?.selfScopeLevel === 'department') {
@@ -797,6 +869,8 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
       } else {
         if (col.name === 'college_id' && scopeDefaultLevel === 'college' && userScope.collegeId) {
           initialValues[col.name] = userScope.collegeId;
+        } else if (col.name === 'college_id' && !col.is_nullable && lockedCollegeId) {
+          initialValues[col.name] = lockedCollegeId;
         } else if (col.name === 'department_id' && scopeDefaultLevel === 'department' && userScope.departmentId) {
           initialValues[col.name] = userScope.departmentId;
         } else if (col.name === 'trust_id' && scopeDefaultLevel === 'trust' && userScope.trustId) {
@@ -955,6 +1029,17 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
         // an unrelated college in the first place.
         payload.college_id = null;
       }
+      // A department record switched back to College scope has no college_id
+      // of its own: that was derived from the department.
+      if (payload.scope_type === 'college' && !payload.college_id && lockedCollegeId) {
+        payload.college_id = lockedCollegeId;
+      }
+    }
+
+    // CONTEXT.md: a Course has a department, a Programme has none. Everything
+    // that lists either kind filters on this flag, so it's never hand-set.
+    if (tableId === 'courses') {
+      payload.is_programme = !payload.department_id;
     }
 
     for (const [col, cfg] of Object.entries(TABLE_CONFIGS[tableId]?.fields ?? {})) {
@@ -1278,7 +1363,8 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
           }
 
           if (typeof val === 'string') {
-            return <span className="truncate max-w-[180px] block">{val}</span>;
+            const label = TABLE_CONFIGS[tableId]?.fields?.[col.name]?.optionLabels?.[val] ?? val;
+            return <span className="truncate max-w-[180px] block">{label}</span>;
           }
 
           return <span>{String(val)}</span>;
@@ -1287,7 +1373,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
     });
 
     return canShowRowActions ? [selectionColumn, ...mappedColumns] : mappedColumns;
-  }, [schema, fkCache, canShowRowActions]);
+  }, [schema, fkCache, canShowRowActions, tableId]);
 
   const table = useReactTable({
     data: records,
@@ -1380,7 +1466,10 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
               : TABLE_CONFIGS[tableId]?.fields?.[column]?.options
               ? TABLE_CONFIGS[tableId]!.fields![column]!.options!
               : col.enum_values
-              ? col.enum_values.map((v: string) => ({ value: v, label: formatLabel(v) }))
+              ? col.enum_values.map((v: string) => ({
+                  value: v,
+                  label: TABLE_CONFIGS[tableId]?.fields?.[column]?.optionLabels?.[v] ?? formatLabel(v),
+                }))
               : col.type === 'boolean'
               ? [
                   { value: 'true', label: 'Yes' },
@@ -1601,12 +1690,27 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                 // jsonb columns (metadata and friends) get the typed key-by-key
                 // editor with a raw-JSON toggle, not a bare textarea.
                 if (col.name === 'metadata' || col.type === 'jsonb') {
+                  const raw = formValues[col.name];
+                  // A string here is a half-typed JSON draft: leave it to that view.
+                  const metadata = raw && typeof raw === 'object' ? raw : raw ? null : {};
+                  const lists = (col.name === 'metadata' && metadata ? TABLE_CONFIGS[tableId]?.metadataLists : undefined) ?? [];
                   return (
-                    <MetadataEditor
-                      key={col.name}
-                      value={formValues[col.name]}
-                      onChange={(v) => handleFieldChange(col.name, v)}
-                    />
+                    <div key={col.name} className="space-y-4">
+                      {lists.map((list) => (
+                        <MetadataListField
+                          key={list.key}
+                          label={list.label}
+                          helpText={list.helpText}
+                          value={metadata[list.key]}
+                          onChange={(items) => handleFieldChange(col.name, { ...metadata, [list.key]: items })}
+                        />
+                      ))}
+                      <MetadataEditor
+                        value={raw}
+                        onChange={(v) => handleFieldChange(col.name, v)}
+                        omitKeys={lists.map((list) => list.key)}
+                      />
+                    </div>
                   );
                 }
                 if (tableFields?.[col.name]?.render === 'entry-photos') {
@@ -1703,7 +1807,7 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                             required={!col.is_nullable || scopeRequiresField || !!tableFields?.[col.name]?.visibleWhen}
                             disabled={
                               (col.name === 'trust_id' && userScope.level === 'trust') ||
-                              (col.name === 'college_id' && userScope.level === 'college') ||
+                              (col.name === 'college_id' && !!lockedCollegeId) ||
                               (col.name === 'department_id' && userScope.level === 'department')
                             }
                             className="w-full rounded border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none focus:ring-1 focus:ring-crimson/50 disabled:opacity-60"
@@ -1724,11 +1828,15 @@ export function AdminCrudManager({ tableId, admin, routePath }: AdminCrudManager
                     ) : col.type === 'USER-DEFINED' && col.enum_values ? (
                       (() => {
                         const enumFieldConfig = TABLE_CONFIGS[tableId]?.fields?.[col.name];
-                        const lockedScope = !!enumFieldConfig?.lockedForNonGlobal && userScope.level !== 'global';
+                        const collegeScopeChoice = !!enumFieldConfig?.departmentScopeForCollege && userScope.level === 'college';
+                        const lockedScope =
+                          !!enumFieldConfig?.lockedForNonGlobal && userScope.level !== 'global' && !collegeScopeChoice;
                         const excluded = enumFieldConfig?.excludeOptions ?? [];
-                        const options = lockedScope
-                          ? [scopeDefaultLevel ?? userScope.level]
-                          : col.enum_values.filter((v: string) => !excluded.includes(v) || v === formValues[col.name]);
+                        const options = collegeScopeChoice
+                          ? ['college', 'department']
+                          : lockedScope
+                            ? [scopeDefaultLevel ?? userScope.level]
+                            : col.enum_values.filter((v: string) => !excluded.includes(v) || v === formValues[col.name]);
                         return (
                           <select
                             value={formValues[col.name] || ''}

@@ -68,13 +68,13 @@ export function defaultHomePopup(admissionYear: string): HomePopup {
     title: 'Begin your',
     title_accent: 'engineering journey',
     body: 'AICTE-approved programmes on a 15-acre campus in Vasad, Gujarat. Talk to our admissions team today.',
-    primary: { label: 'Enquire Now', href: '/admissions/inquiry' },
+    primary: { label: 'Enquire Now', href: '/admissions' },
     secondary: { label: 'Download Brochure', href: '/downloads' },
     image_url: null,
     image_alt: '',
     image_shape: 'portrait',
     image_focus: 'center',
-    poster_href: '/admissions/inquiry',
+    poster_href: '/admissions',
     minimized_label: `Admissions ${admissionYear}`,
   };
 }

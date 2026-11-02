@@ -25,6 +25,7 @@ interface Props {
   achievements?: DeptAchievement[];
   clubs?: DeptClub[];
   labs?: Facility[];
+  collegeFacilities?: Facility[];
   labAlbums?: Map<string, EntryAlbum>;
 }
 
@@ -363,12 +364,20 @@ export function DeptStaffView({ staff = [] }: Props) {
 }
 
 // -------- Achievements & Clubs --------
+const COLLEGE_WIDE_LABEL = "College-wide";
+
 function toAchievementCard(a: DeptAchievement): EntryCardData {
   return {
     id: a.id,
     slug: a.slug,
     title: a.title,
-    subtitle: `${achievementCategoryLabel(a.category)} · ${formatDate(a.date)}`,
+    subtitle: [
+      a.collegeWide && COLLEGE_WIDE_LABEL,
+      achievementCategoryLabel(a.category),
+      formatDate(a.date),
+    ]
+      .filter(Boolean)
+      .join(" · "),
     description: a.description,
     cardPhotoUrl: a.cardPhotoUrl,
     hasDetailPage: a.hasDetailPage,
@@ -378,7 +387,10 @@ function toAchievementCard(a: DeptAchievement): EntryCardData {
 }
 
 export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
-  const sorted = [...achievements].sort((a, b) => (a.date < b.date ? 1 : -1));
+  // Newest first, the department's own ahead of the college's.
+  const sorted = [...achievements].sort(
+    (a, b) => Number(!!a.collegeWide) - Number(!!b.collegeWide) || (a.date < b.date ? 1 : -1),
+  );
   return (
     <div>
       <div className="mt-8 grid gap-10 lg:grid-cols-3">
@@ -474,26 +486,41 @@ function toLabCard(lab: Facility, deptCode: string, album: EntryAlbum | null): E
   };
 }
 
-export function DeptLabsView({ department, labs = [], labAlbums }: Props) {
-  if (labs.length === 0) {
-    return (
-      <div>
-        <SectionHeading eyebrow="Labs & Facilities" title="Our Laboratories" />
-        <p className="mt-10 text-center text-ink-soft">
-          Lab information will be published soon.
-        </p>
-      </div>
-    );
-  }
+function toCollegeFacilityCard(facility: Facility, album: EntryAlbum | null): EntryCardData {
+  return {
+    id: facility.id,
+    slug: facility.slug,
+    title: facility.name,
+    subtitle: COLLEGE_WIDE_LABEL,
+    description: facility.description,
+    cardPhotoUrl: album?.coverUrl ?? null,
+    hasDetailPage: facility.has_detail_page,
+    detailHref: facility.has_detail_page
+      ? `/campus-life/facilities/${facility.category ?? "academic"}/${facility.slug}`
+      : null,
+    album,
+  };
+}
 
-  const entries = labs.map((lab) =>
-    toLabCard(lab, department.code, lab.album_id ? (labAlbums?.get(lab.album_id) ?? null) : null),
-  );
+export function DeptLabsView({ department, labs = [], collegeFacilities = [], labAlbums }: Props) {
+  const albumFor = (f: Facility) => (f.album_id ? (labAlbums?.get(f.album_id) ?? null) : null);
 
   return (
     <div>
       <SectionHeading eyebrow="Labs & Facilities" title="Our Laboratories" />
-      <EntryEventsGrid entries={entries} />
+      {labs.length > 0 ? (
+        <EntryEventsGrid entries={labs.map((lab) => toLabCard(lab, department.code, albumFor(lab)))} />
+      ) : (
+        <p className="mt-10 text-center text-ink-soft">Lab information will be published soon.</p>
+      )}
+      {collegeFacilities.length > 0 && (
+        <div className="mt-14">
+          <SectionHeading eyebrow="College-wide" title="College Facilities" />
+          <EntryEventsGrid
+            entries={collegeFacilities.map((f) => toCollegeFacilityCard(f, albumFor(f)))}
+          />
+        </div>
+      )}
     </div>
   );
 }

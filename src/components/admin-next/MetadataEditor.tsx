@@ -330,16 +330,42 @@ function ValueEditor({
   return <ObjectEditor value={value} onChange={onChange} depth={depth + 1} />;
 }
 
+/** A metadata key holding a list of short texts, edited as its own form field. */
+export function MetadataListField({
+  label,
+  helpText,
+  value,
+  onChange,
+}: {
+  label: string;
+  helpText?: string;
+  value: JsonValue;
+  onChange: (next: string[]) => void;
+}) {
+  const items = Array.isArray(value) ? value : [];
+
+  return (
+    <div className="space-y-1.5">
+      <label className="text-xs font-semibold uppercase tracking-wider text-slate-900">{label}</label>
+      {helpText && <p className="text-xs text-slate-500">{helpText}</p>}
+      <ArrayEditor value={items} onChange={(next) => onChange(next as string[])} depth={0} />
+    </div>
+  );
+}
+
 export function MetadataEditor({
   value,
   onChange,
   defaultOpen = false,
   groups,
+  omitKeys = [],
 }: {
   value: JsonValue;
   onChange: (next: JsonValue) => void;
   defaultOpen?: boolean;
   groups?: MetadataEditorGroup[];
+  /** Keys with their own form field: left out of the form view, kept on save. */
+  omitKeys?: string[];
 }) {
   // `value` is an object, except while the user is mid-edit in the JSON view
   // with unparseable text — then it's that raw string, kept so the draft
@@ -362,7 +388,12 @@ export function MetadataEditor({
   );
   const [parseError, setParseError] = useState<string | null>(null);
 
-  const keyCount = Object.keys(objectValue).length;
+  const formValue: JsonObject = {};
+  const omitted: JsonObject = {};
+  for (const [k, v] of Object.entries(objectValue)) {
+    (omitKeys.includes(k) ? omitted : formValue)[k] = v;
+  }
+  const keyCount = Object.keys(formValue).length;
 
   // Renders one titled section for a subset of keys. Removing a key inside
   // the subset must remove it from the whole object, so the merge deletes
@@ -482,7 +513,11 @@ export function MetadataEditor({
                   renderSection("Other Fields", undefined, ungroupedKeys)}
               </div>
             ) : (
-              <ObjectEditor value={objectValue} onChange={onChange} depth={0} />
+              <ObjectEditor
+                value={formValue}
+                onChange={(next) => onChange({ ...next, ...omitted })}
+                depth={0}
+              />
             )
           ) : (
             <div className="space-y-1">
