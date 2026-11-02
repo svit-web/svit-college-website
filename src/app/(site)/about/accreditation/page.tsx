@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
-import { ShieldCheck, FileText, ExternalLink } from "lucide-react";
+import { ArrowRight, ShieldCheck, FileText, ExternalLink } from "lucide-react";
 import { getAboutPage } from "@/lib/pages.functions";
 import { getAllAccreditations } from "@/lib/accreditations.functions";
 import { getAllMOUs } from "@/lib/mous.functions";
-import type { MOU } from "@/lib/mous.functions";
 
 export const metadata: Metadata = {
-  title: "Accreditation & Compliance — SVIT Vasad",
+  title: "AICTE & Accreditation — SVIT Vasad",
   description: "SVIT Vasad's accreditations, approvals, academic regulations, mandatory disclosures and industry MOUs.",
   alternates: { canonical: "/about/accreditation" },
 };
@@ -26,7 +26,7 @@ export default async function AccreditationPage() {
         <div className="container-page">
           <SectionHeading
             eyebrow="Standards & Compliance"
-            title="Accreditation & Compliance"
+            title="AICTE & Accreditation"
             variant="eyebrow"
           />
 
@@ -128,42 +128,19 @@ export default async function AccreditationPage() {
         </div>
       </section>
 
-      {/* MOUs - Dynamic from Supabase */}
+      {/* The full list lives with Placement; reviewers still get here from this page. */}
       <section className="py-16 md:py-20">
         <div className="container-page">
           <SectionHeading eyebrow="Industry Partnerships" title="Memoranda of Understanding" variant="eyebrow" />
           <p className="mt-4 max-w-3xl text-ink-soft">
-            SVIT has signed MOUs with leading industries and organizations to provide students with internships, expert lectures, and hands-on training opportunities.
+            SVIT has signed {mous.length > 0 ? `${mous.length} ` : ""}MOUs with leading industries and organizations to provide students with internships, expert lectures, and hands-on training opportunities.
           </p>
-          <div className="mt-8 overflow-hidden border border-line bg-surface">
-            <table className="w-full text-sm">
-              <thead className="border-b border-line bg-paper-deep text-[11px] uppercase tracking-[0.12em] text-navy">
-                <tr>
-                  <th className="px-4 py-3 text-left">Organization</th>
-                  <th className="px-4 py-3 text-left hidden sm:table-cell">Purpose</th>
-                  <th className="px-4 py-3 text-left hidden md:table-cell">Department</th>
-                  <th className="px-4 py-3 text-left hidden lg:table-cell">Signed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mous.map((mou: MOU, i: number) => (
-                  <tr key={mou.id} className={`border-t border-line ${i % 2 === 0 ? "" : "bg-paper-deep"}`}>
-                    <td className="px-4 py-3 font-medium text-navy">{mou.partner_organization}</td>
-                    <td className="px-4 py-3 text-ink-soft hidden sm:table-cell">{mou.purpose}</td>
-                    <td className="px-4 py-3 text-ink-soft hidden md:table-cell">
-                      {mou.department_name ?? "—"}
-                    </td>
-                    <td className="px-4 py-3 text-ink-soft hidden lg:table-cell">
-                      {mou.signed_date ? new Date(mou.signed_date).toLocaleDateString("en-IN", { year: "numeric", month: "short" }) : "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="mt-4 text-right text-xs text-ink-soft">
-            {mous.length} active MOUs
-          </div>
+          <Link
+            href="/placement/mous"
+            className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-crimson hover:underline"
+          >
+            View all MoUs <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     </>

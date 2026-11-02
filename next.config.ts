@@ -113,6 +113,8 @@ const nextConfig: NextConfig = {
       { source: "/Home", destination: "/", permanent: true },
       { source: "/Home/Index", destination: "/", permanent: true },
       { source: "/Home/Admissions", destination: "/admissions", permanent: true },
+      // The enquiry form was removed; homepage buttons, the popup and printed links may still use it.
+      { source: "/admissions/inquiry", destination: "/admissions", permanent: true },
       { source: "/Home/Career", destination: "/careers", permanent: true },
       { source: "/Home/Facilities", destination: "/campus-life/facilities", permanent: true },
       { source: "/Home/OnlineFees", destination: "/admissions/intake-fees", permanent: true },

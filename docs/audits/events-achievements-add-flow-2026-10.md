@@ -194,6 +194,8 @@ and `src/components/admin-next/AdminCrudManager.tsx` for the bulk of the work, p
   to be reachable anywhere on the public site.
 - **#4**: `events.event_type` now shows help text naming which values make the event appear on its own
   department's Activities page.
+  Superseded 2026-11-02: the `event_type` filter was removed, so every department event shows on its
+  department's page whatever its type, and the help text now says so (`change_log` entry 13).
 - **#5**: the save-success toast now names the actual slug when the DB's collision-renumbering trigger
   changed it from what was typed.
 - **#7**: the auto-insert triggered by dropping a photo on a new record now defaults to `status: draft`

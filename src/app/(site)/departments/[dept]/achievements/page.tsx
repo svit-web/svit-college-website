@@ -1,10 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DeptAchievementsView } from "@/components/site-next/DepartmentSections";
-import { getAllDepartments, getDepartmentByCode } from "@/lib/departments.functions";
+import {
+  getAllDepartments,
+  getDepartmentByCode,
+  getInheritedCollegeId,
+} from "@/lib/departments.functions";
 import {
   getAchievementsByDepartmentId,
   getClubsByDepartmentId,
+  getCollegeWideAchievements,
 } from "@/lib/department-content.functions";
 
 // ISR: this page reads from Supabase (not Next's fetch()), so without this
@@ -44,10 +49,18 @@ export default async function DeptAchievementsPage({
   const department = await getDepartmentByCode(dept.toUpperCase()).catch(() => null);
   if (!department) notFound();
 
-  const [achievements, clubs] = await Promise.all([
+  const collegeId = await getInheritedCollegeId(department.college_id).catch(() => null);
+  const [achievements, collegeAchievements, clubs] = await Promise.all([
     getAchievementsByDepartmentId(department.id).catch(() => []),
+    collegeId ? getCollegeWideAchievements(collegeId).catch(() => []) : [],
     getClubsByDepartmentId(department.id).catch(() => []),
   ]);
 
-  return <DeptAchievementsView department={department} achievements={achievements} clubs={clubs} />;
+  return (
+    <DeptAchievementsView
+      department={department}
+      achievements={[...achievements, ...collegeAchievements]}
+      clubs={clubs}
+    />
+  );
 }

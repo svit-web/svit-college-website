@@ -6,6 +6,7 @@ import { publicSupabase } from '@/lib/supabase-public';
 import { compareByMuster } from '@/lib/staff-order';
 import { getEntryAlbums } from '@/lib/gallery.functions';
 import type { EntryAlbum } from '@/lib/entry';
+import { compareEventsBySortOrder, type EventType } from '@/lib/event-types';
 import { STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds } from '@/lib/staff-posts';
 
 export interface DeptStaffMember {
@@ -113,17 +114,32 @@ export interface DeptAchievement {
   cardPhotoUrl: string | null;
   hasDetailPage: boolean;
   album: EntryAlbum | null;
+  /** A college record shown here through getInheritedCollegeId. */
+  collegeWide?: boolean;
 }
 
-export async function getAchievementsByDepartmentId(departmentId: string) {
-  const supabase = publicSupabase();
-  const { data, error } = await supabase
+function achievementsQuery() {
+  return publicSupabase()
     .from('achievements')
     .select('id, slug, title, date, category, description, card_photo_url, has_detail_page, album_id')
-    .eq('department_id', departmentId)
     .eq('status', 'published')
     .is('deleted_at', null)
     .order('date', { ascending: false });
+}
+
+export async function getAchievementsByDepartmentId(departmentId: string) {
+  return toDeptAchievements(achievementsQuery().eq('department_id', departmentId));
+}
+
+export async function getCollegeWideAchievements(collegeId: string) {
+  const achievements = await toDeptAchievements(
+    achievementsQuery().eq('college_id', collegeId).eq('scope_type', 'college').is('department_id', null),
+  );
+  return achievements.map((a) => ({ ...a, collegeWide: true }));
+}
+
+async function toDeptAchievements(query: ReturnType<typeof achievementsQuery>) {
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching department achievements:', error);
@@ -194,53 +210,49 @@ export async function getClubsByDepartmentId(departmentId: string) {
 }
 
 // department_activities was merged into events (see docs/adr/0002); an
-// "activity" is just a department-scoped event of one of these types.
-export type DeptActivityType =
-  | 'expert_session'
-  | 'industrial_visit'
-  | 'seminar'
-  | 'workshop'
-  | 'sttp'
-  | 'fdp';
-
-export const ACTIVITY_EVENT_TYPES: DeptActivityType[] = [
-  'expert_session',
-  'industrial_visit',
-  'seminar',
-  'workshop',
-  'sttp',
-  'fdp',
-];
-
+// "activity" is any event belonging to the department, whatever its type.
 export interface DeptActivity {
   id: string;
   slug: string;
-  type: DeptActivityType | null;
+  type: EventType | null;
   title: string;
   startDate: string;
   endDate: string | null;
   notes: string | null;
   cardPhotoUrl: string | null;
   hasDetailPage: boolean;
+  /** A college record shown here through getInheritedCollegeId. */
+  collegeWide?: boolean;
+}
+
+function activitiesQuery() {
+  return publicSupabase()
+    .from('events')
+    .select('id, slug, event_type, title, start_date, end_date, description, card_photo_url, has_detail_page, album_id, sort_order')
+    .eq('status', 'published')
+    .is('deleted_at', null);
 }
 
 export async function getDepartmentActivities(departmentId: string) {
-  const supabase = publicSupabase();
-  const { data, error } = await supabase
-    .from('events')
-    .select('id, slug, event_type, title, start_date, end_date, description, card_photo_url, has_detail_page, album_id')
-    .eq('department_id', departmentId)
-    .eq('status', 'published')
-    .is('deleted_at', null)
-    .in('event_type', ACTIVITY_EVENT_TYPES)
-    .order('start_date', { ascending: false });
+  return toDeptActivities(activitiesQuery().eq('department_id', departmentId));
+}
+
+export async function getCollegeWideActivities(collegeId: string) {
+  const activities = await toDeptActivities(
+    activitiesQuery().eq('college_id', collegeId).eq('scope_type', 'college').is('department_id', null),
+  );
+  return activities.map((a) => ({ ...a, collegeWide: true }));
+}
+
+async function toDeptActivities(query: ReturnType<typeof activitiesQuery>) {
+  const { data, error } = await query;
 
   if (error) {
     console.error('Error fetching department activities:', error);
     throw error;
   }
 
-  const rows = data ?? [];
+  const rows = [...(data ?? [])].sort(compareEventsBySortOrder);
   const albums = await getEntryAlbums(rows.map((r: any) => r.album_id)).catch(
     () => new Map<string, EntryAlbum>(),
   );

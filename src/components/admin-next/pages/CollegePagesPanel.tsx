@@ -6,12 +6,14 @@ import { toast } from 'sonner';
 import { createClient } from '@/app/lib/supabase/client';
 import { MediaUploader } from '@/components/admin-next/MediaUploader';
 import { HOMEPAGE_ROTATE_MS } from '@/lib/theme';
+import { COLLEGE_CONTENT_KEY, collegeContentDefault, showsCollegeContent } from '@/lib/college-content-setting';
 
 // Per-college landing page content that isn't a homepage item: the hero
 // slideshow photos and the Vision & Mission section. Stored on the college
 // row's metadata (hero_photos, vision, mission_points) and read by
 // src/app/(site)/colleges/[college]/page.tsx. The photo look (visibility, tint,
-// blur, fade) still comes from the shared Hero Appearance tab.
+// blur, fade) still comes from the shared Hero Appearance tab. Also holds the
+// switch for showing college content on department pages.
 
 interface CollegeRow {
   id: string;
@@ -25,14 +27,16 @@ interface Draft {
   heroPhotos: string[];
   vision: string;
   missionPoints: string[];
+  showOnDepartments: boolean;
 }
 
-function toDraft(meta: Record<string, unknown> | null): Draft {
+function toDraft(meta: Record<string, unknown> | null, departmentCount: number): Draft {
   const strings = (v: unknown) => (Array.isArray(v) ? v.filter((x): x is string => typeof x === 'string') : []);
   return {
     heroPhotos: strings(meta?.hero_photos),
     vision: typeof meta?.vision === 'string' ? meta.vision : '',
     missionPoints: strings(meta?.mission_points),
+    showOnDepartments: showsCollegeContent(meta, departmentCount),
   };
 }
 
@@ -49,29 +53,36 @@ export function CollegePagesPanel() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [saving, setSaving] = useState(false);
+  const [departmentCounts, setDepartmentCounts] = useState<Record<string, number>>({});
 
   useEffect(() => {
-    createClient()
-      .from('colleges')
-      .select('id, name, code, slug, metadata')
-      .is('deleted_at', null)
-      .order('sort_order', { ascending: true })
-      .then(({ data, error }) => {
-        if (error) toast.error(error.message);
-        const rows = (data ?? []) as CollegeRow[];
-        setColleges(rows);
-        if (rows[0]) {
-          setSelectedId(rows[0].id);
-          setDraft(toDraft(rows[0].metadata));
-        }
-      });
+    const supabase = createClient();
+    Promise.all([
+      supabase
+        .from('colleges')
+        .select('id, name, code, slug, metadata')
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true }),
+      supabase.from('departments').select('college_id').eq('status', 'published').is('deleted_at', null),
+    ]).then(([{ data, error }, { data: departments, error: departmentsError }]) => {
+      if (error || departmentsError) toast.error((error ?? departmentsError)!.message);
+      const counts: Record<string, number> = {};
+      for (const d of departments ?? []) counts[d.college_id] = (counts[d.college_id] ?? 0) + 1;
+      const rows = (data ?? []) as CollegeRow[];
+      setDepartmentCounts(counts);
+      setColleges(rows);
+      if (rows[0]) {
+        setSelectedId(rows[0].id);
+        setDraft(toDraft(rows[0].metadata, counts[rows[0].id] ?? 0));
+      }
+    });
   }, []);
 
   const selected = colleges?.find((c) => c.id === selectedId) ?? null;
 
   function select(c: CollegeRow) {
     setSelectedId(c.id);
-    setDraft(toDraft(c.metadata));
+    setDraft(toDraft(c.metadata, departmentCounts[c.id] ?? 0));
   }
 
   async function save() {
@@ -86,12 +97,19 @@ export function CollegePagesPanel() {
         .eq('id', selected.id)
         .single();
       if (readError) throw readError;
-      const metadata = {
+      const departmentCount = departmentCounts[selected.id] ?? 0;
+      const metadata: Record<string, unknown> = {
         ...((current?.metadata as Record<string, unknown>) ?? {}),
         hero_photos: draft.heroPhotos,
         vision: draft.vision.trim(),
         mission_points: draft.missionPoints.map((p) => p.trim()).filter(Boolean),
       };
+      // Only an actual override is stored, so the default keeps following the
+      // department count if departments are added or removed later.
+      delete metadata[COLLEGE_CONTENT_KEY];
+      if (draft.showOnDepartments !== collegeContentDefault(departmentCount)) {
+        metadata[COLLEGE_CONTENT_KEY] = draft.showOnDepartments;
+      }
       const { data, error } = await supabase
         .from('colleges')
         .update({ metadata, updated_at: new Date().toISOString() } as never)
@@ -101,7 +119,7 @@ export function CollegePagesPanel() {
       // RLS turns a denied UPDATE into "0 rows", not an error.
       if (!data || data.length === 0) throw new Error('Not saved: you do not have permission to edit this college');
       setColleges((prev) => (prev ?? []).map((c) => (c.id === selected.id ? { ...c, metadata } : c)));
-      setDraft(toDraft(metadata));
+      setDraft(toDraft(metadata, departmentCount));
       toast.success(`${selected.code} page saved — live on the site now.`);
     } catch (e) {
       toast.error((e as { message?: string })?.message || 'Save failed');
@@ -154,6 +172,23 @@ export function CollegePagesPanel() {
           {saving ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />} Save {selected.code}
         </button>
       </div>
+
+      <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+        <input
+          type="checkbox"
+          checked={draft.showOnDepartments}
+          onChange={(e) => setDraft({ ...draft, showOnDepartments: e.target.checked })}
+          className="mt-1 h-4 w-4 rounded border-slate-200 text-crimson focus:ring-crimson"
+        />
+        <span>
+          <span className="block text-base font-bold text-navy">Show college content on department pages</span>
+          <span className="mt-1 block text-xs text-slate-500">
+            This college&apos;s own achievements, events and facilities also appear on its department pages, labelled
+            College-wide. They stay college records. On by default for a college with one department; this college has{' '}
+            {departmentCounts[selected.id] ?? 0}. Click Save to apply.
+          </span>
+        </span>
+      </label>
 
       <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-base font-bold text-navy">Hero photos — {selected.name}</h2>

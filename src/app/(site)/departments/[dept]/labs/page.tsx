@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DeptLabsView } from "@/components/site-next/DepartmentSections";
-import { getAllDepartments, getDepartmentByCode } from "@/lib/departments.functions";
-import { getLabsByDepartmentId } from "@/lib/facilities.functions";
+import {
+  getAllDepartments,
+  getDepartmentByCode,
+  getInheritedCollegeId,
+} from "@/lib/departments.functions";
+import { getCollegeFacilities, getLabsByDepartmentId } from "@/lib/facilities.functions";
 import { getEntryAlbums } from "@/lib/gallery.functions";
 
 // ISR: this page reads from Supabase (not Next's fetch()), so without this
@@ -38,8 +42,19 @@ export default async function DeptLabsPage({ params }: { params: Promise<{ dept:
   const department = await getDepartmentByCode(dept.toUpperCase()).catch(() => null);
   if (!department) notFound();
 
-  const labs = await getLabsByDepartmentId(department.id).catch(() => []);
-  const labAlbums = await getEntryAlbums(labs.map((l) => l.album_id));
+  const collegeId = await getInheritedCollegeId(department.college_id).catch(() => null);
+  const [labs, collegeFacilities] = await Promise.all([
+    getLabsByDepartmentId(department.id).catch(() => []),
+    collegeId ? getCollegeFacilities(collegeId).catch(() => []) : [],
+  ]);
+  const labAlbums = await getEntryAlbums([...labs, ...collegeFacilities].map((l) => l.album_id));
 
-  return <DeptLabsView department={department} labs={labs} labAlbums={labAlbums} />;
+  return (
+    <DeptLabsView
+      department={department}
+      labs={labs}
+      collegeFacilities={collegeFacilities}
+      labAlbums={labAlbums}
+    />
+  );
 }

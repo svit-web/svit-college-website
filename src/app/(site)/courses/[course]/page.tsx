@@ -65,7 +65,8 @@ export default async function CoursePage({
   if (!result) notFound();
 
   const { course, recruiters, ctaLabel } = result;
-  const m = course.metadata;
+  const highlights = (course.metadata?.highlights ?? []).filter(Boolean);
+  const outcomes = (course.metadata?.outcomes ?? []).filter(Boolean);
 
   return (
     <>
@@ -74,28 +75,32 @@ export default async function CoursePage({
       <section className="container-page py-20">
         <div className="grid gap-10 lg:grid-cols-[1.6fr_1fr]">
           <div className="space-y-12">
-            <div>
-              <SectionHeading eyebrow="Programme Highlights" title="What makes it different" />
-              <ul className="mt-8 grid gap-3 sm:grid-cols-2">
-                {m.highlights.map((h: string) => (
-                  <li key={h} className="flex items-start gap-3 border border-line bg-surface p-4">
-                    <Check className="mt-0.5 h-4 w-4 text-gold shrink-0" />
-                    <span className="text-sm">{h}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <SectionHeading eyebrow="Outcomes" title="Learning outcomes" />
-              <ul className="mt-8 space-y-3">
-                {m.outcomes.map((o: string) => (
-                  <li key={o} className="flex items-start gap-3">
-                    <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson shrink-0" />
-                    <span className="text-sm text-ink-soft">{o}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+            {highlights.length > 0 && (
+              <div>
+                <SectionHeading eyebrow="Programme Highlights" title="What makes it different" />
+                <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                  {highlights.map((h: string) => (
+                    <li key={h} className="flex items-start gap-3 border border-line bg-surface p-4">
+                      <Check className="mt-0.5 h-4 w-4 text-gold shrink-0" />
+                      <span className="text-sm">{h}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {outcomes.length > 0 && (
+              <div>
+                <SectionHeading eyebrow="Outcomes" title="Learning outcomes" />
+                <ul className="mt-8 space-y-3">
+                  {outcomes.map((o: string) => (
+                    <li key={o} className="flex items-start gap-3">
+                      <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-crimson shrink-0" />
+                      <span className="text-sm text-ink-soft">{o}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <aside className="space-y-4">
@@ -104,10 +109,10 @@ export default async function CoursePage({
               <dl className="mt-4 divide-y divide-line border-y border-line text-sm text-navy">
                 <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Full Name</dt><dd>{course.full_name}</dd></div>
                 <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Duration</dt><dd>{course.duration}</dd></div>
-                <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Eligibility</dt><dd>{course.eligibility}</dd></div>
+                <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Eligibility</dt><dd>{course.eligibility ?? "—"}</dd></div>
                 <div className="py-2.5"><dt className="text-[10.5px] font-semibold uppercase tracking-[0.16em] text-ink-mute">Intake</dt><dd>{String(course.intake ?? "—")}</dd></div>
               </dl>
-              <Link href="/admissions/inquiry" className={`mt-5 w-full ${pillPrimary}`}>
+              <Link href="/admissions" className={`mt-5 w-full ${pillPrimary}`}>
                 {ctaLabel}
               </Link>
             </div>

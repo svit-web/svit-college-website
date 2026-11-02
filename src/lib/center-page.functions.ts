@@ -7,8 +7,9 @@ import { publicSupabase, unwrap } from "@/lib/supabase-public";
 import { getCenterBySlug, type Center } from "@/lib/centers.functions";
 import { getEntryAlbum, getEntryAlbums } from "@/lib/gallery.functions";
 import { achievementCategoryLabel, achievementDetailHref } from "@/lib/achievements.functions";
-import { formatEventDates } from "@/lib/event-types";
+import { compareEventsBySortOrder, formatEventDates } from "@/lib/event-types";
 import type { EntryAlbum, EntryCardData } from "@/lib/entry";
+import { notExpiredFilter } from "@/lib/mous.functions";
 import type { DeptStaffMember } from "@/lib/department-content.functions";
 
 export { COE_PATH, COE_SLUG, NSS_NCC_PATH, NSS_NCC_SLUG } from "@/lib/center-paths";
@@ -94,6 +95,7 @@ async function getCenterMous(centerId: string) {
     .eq("center_id", centerId)
     .eq("status", "published")
     .is("deleted_at", null)
+    .or(notExpiredFilter())
     .order("signed_date", { ascending: false });
   return unwrap(result, "centre MoUs") as CenterMou[];
 }
@@ -101,13 +103,13 @@ async function getCenterMous(centerId: string) {
 async function getCenterEvents(centerId: string): Promise<EntryCardData[]> {
   const result = await publicSupabase()
     .from("events")
-    .select("id, slug, title, description, start_date, end_date, has_detail_page, album_id")
+    .select("id, slug, title, description, start_date, end_date, has_detail_page, album_id, sort_order")
     .eq("center_id", centerId)
     .eq("status", "published")
-    .is("deleted_at", null)
-    .order("start_date", { ascending: false })
-    .limit(CENTER_RECENT_LIMIT);
-  const rows = unwrap(result, "centre events") ?? [];
+    .is("deleted_at", null);
+  const rows = [...(unwrap(result, "centre events") ?? [])]
+    .sort(compareEventsBySortOrder)
+    .slice(0, CENTER_RECENT_LIMIT);
   const albums = await getEntryAlbums(rows.map((r) => r.album_id)).catch(
     () => new Map<string, EntryAlbum>(),
   );

@@ -44,7 +44,7 @@ export default async function Parents() {
             <h3 className="font-display text-xl font-medium text-navy">Parent Relations Cell</h3>
             <p className="mt-1 text-sm text-ink-soft">Have a concern or feedback? Reach out to the Parent Relations team.</p>
           </div>
-          <Link href="/admissions/inquiry" className={`shrink-0 ${pillPrimary}`}>Get in Touch</Link>
+          <Link href="/admissions" className={`shrink-0 ${pillPrimary}`}>Get in Touch</Link>
         </div>
       </section>
     </>

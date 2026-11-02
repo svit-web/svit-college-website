@@ -26,6 +26,23 @@ export function eventTypeLabel(type: string | null | undefined): string | null {
   return EVENT_TYPE_LABELS[type as EventType] ?? null;
 }
 
+/**
+ * Order for one owner's events (a department, club or centre): events given a
+ * sort_order come first, lowest number first (negatives included), and the rest
+ * follow newest first. 0 is the column's default, so it means "not set". Not for
+ * sitewide lists: each department numbers its own events independently.
+ */
+export function compareEventsBySortOrder(
+  a: { sort_order: number; start_date: string },
+  b: { sort_order: number; start_date: string },
+): number {
+  const aSet = a.sort_order !== 0;
+  const bSet = b.sort_order !== 0;
+  if (aSet !== bSet) return aSet ? -1 : 1;
+  if (aSet && a.sort_order !== b.sort_order) return a.sort_order - b.sort_order;
+  return b.start_date.localeCompare(a.start_date);
+}
+
 const DATE_FORMAT: Intl.DateTimeFormatOptions = { day: "numeric", month: "short", year: "numeric" };
 
 function formatDate(iso: string): string {

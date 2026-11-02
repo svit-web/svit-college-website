@@ -151,7 +151,7 @@ export function HomePopupPanel({ initialPopup, userId }: { initialPopup: HomePop
               </>
             ) : (
               <Field label="Poster link (optional — where clicking the poster goes)">
-                <input value={popup.poster_href} onChange={(e) => patch({ poster_href: e.target.value })} placeholder="/admissions/inquiry or https://…" className={INPUT} />
+                <input value={popup.poster_href} onChange={(e) => patch({ poster_href: e.target.value })} placeholder="/admissions or https://…" className={INPUT} />
               </Field>
             )}
 
@@ -250,7 +250,7 @@ function LinkFields({ label, link, onChange }: { label: string; link: HomePopupL
       <span className={LABEL}>{label}</span>
       <div className="grid gap-2 sm:grid-cols-2">
         <input value={link.label} onChange={(e) => onChange({ label: e.target.value })} placeholder="Button text" aria-label={`${label} text`} className={INPUT} />
-        <input value={link.href} onChange={(e) => onChange({ href: e.target.value })} placeholder="/admissions/inquiry" aria-label={`${label} link`} className={INPUT} />
+        <input value={link.href} onChange={(e) => onChange({ href: e.target.value })} placeholder="/admissions" aria-label={`${label} link`} className={INPUT} />
       </div>
     </div>
   );

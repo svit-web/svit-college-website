@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { Info, Users, Award, Briefcase, FlaskConical } from "lucide-react";
+import { Info, Users, Award, Briefcase, FlaskConical, Handshake } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { SectionTabs } from "./SectionTabs";
 import type { Department } from "@/lib/departments.functions";
@@ -10,6 +10,7 @@ import type { CollegeRow } from "@/lib/homepage";
 interface Props {
   department: Department;
   college: CollegeRow | null;
+  hasMous: boolean;
   children: React.ReactNode;
 }
 
@@ -24,9 +25,15 @@ const NAV = [
     icon: Briefcase,
     exact: false,
   },
+  { href: "/mous", label: "MoUs", icon: Handshake, exact: false },
 ] as const;
 
-export function DepartmentLayout({ department, college: collegeRow, children }: Props) {
+export function DepartmentLayout({
+  department,
+  college: collegeRow,
+  hasMous,
+  children,
+}: Props) {
   const college = collegeRow
     ? {
         shortCode: collegeRow.code,
@@ -61,7 +68,7 @@ export function DepartmentLayout({ department, college: collegeRow, children }: 
           <div className="container-nav-aligned-inner">
             <SectionTabs
               ariaLabel="Department sections"
-              items={NAV.map((item) => {
+              items={NAV.filter((item) => hasMous || item.href !== "/mous").map((item) => {
                 const href = `${base}${item.href}`;
                 // Department routes resolve case-insensitively (/departments/ca
                 // and /departments/CA), so match the active tab the same way.

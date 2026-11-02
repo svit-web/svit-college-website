@@ -2836,11 +2836,13 @@ export type Database = {
       mous: {
         Row: {
           center_id: string | null
+          college_id: string | null
           activities: string[] | null
           created_at: string
           created_by: string | null
           deleted_at: string | null
           deleted_by: string | null
+          department_id: string | null
           department_name: string | null
           expiry_date: string | null
           id: string
@@ -2856,11 +2858,13 @@ export type Database = {
         }
         Insert: {
           center_id?: string | null
+          college_id?: string | null
           activities?: string[] | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           department_name?: string | null
           expiry_date?: string | null
           id?: string
@@ -2876,11 +2880,13 @@ export type Database = {
         }
         Update: {
           center_id?: string | null
+          college_id?: string | null
           activities?: string[] | null
           created_at?: string
           created_by?: string | null
           deleted_at?: string | null
           deleted_by?: string | null
+          department_id?: string | null
           department_name?: string | null
           expiry_date?: string | null
           id?: string
