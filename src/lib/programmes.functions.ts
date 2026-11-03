@@ -7,6 +7,7 @@ export interface Programme {
   name: string;
   status: "draft" | "published" | "archived";
   is_programme: boolean;
+  degree_level: "undergraduate" | "graduate" | "doctorate" | "certificate";
   tagline: string;
   short_name: string;
   full_name: string;

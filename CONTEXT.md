@@ -88,11 +88,11 @@ A person serving on a committee — a row in `committee_members` (committee, nam
 _Avoid_: committee JSON, members array
 
 **Course**:
-A `courses` row with `department_id` set — belongs to one department (and transitively one college). Every admissions-editable field (intake, fees, duration, eligibility, brochure) lives on this row. Distinct from a Programme, which is a different kind of `courses` row.
+A `courses` row with `department_id` set — belongs to one department (and transitively one college), with its own page at `/programs/[program]`. Every admissions-editable field (intake, fees, duration, eligibility, brochure) lives on this row. Distinct from a Programme, which is a different kind of `courses` row.
 _Avoid_: programme (only when `department_id` is set), subject
 
 **Programme**:
-A `courses` row with `is_programme = true` and `department_id` left NULL — a standalone landing page at `/programs/[program]`, not scoped to any department or college. Writable only by global admins today; excluded from the Admissions section grant and from the public intake/fees table, which lists Courses only.
+A `courses` row with `is_programme = true` and `department_id` left NULL — a standalone landing page at `/courses/[course]`, listed on `/courses` and not scoped to any department or college. `is_programme` is set on save from `department_id`, never by hand. Writable only by global admins today; excluded from the Admissions section grant and from the public intake/fees table, which lists Courses only.
 _Avoid_: course (the two are deliberately different kinds of row, despite sharing a table)
 
 **Admissions section**:

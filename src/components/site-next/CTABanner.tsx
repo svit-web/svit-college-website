@@ -22,7 +22,7 @@ export function CTABanner({
   title = "Ready to Shape Your Engineering & Architectural Career?",
   subtitle,
   primaryActionLabel = DEFAULT_MISC.cta_button_label,
-  primaryActionTo = "/admissions/inquiry",
+  primaryActionTo = "/admissions",
   secondaryActionLabel = "Download Brochure",
   secondaryActionTo = "/downloads",
 }: CTABannerProps) {

@@ -109,7 +109,7 @@ export default async function ScholarshipsPage() {
           <h2 className="font-display text-2xl font-medium text-navy md:text-3xl">Need Help Applying for a Scholarship?</h2>
           <p className="mt-3 text-sm text-ink-soft md:text-base">Our admissions team can guide you through the application and documentation process.</p>
           <Link
-            href="/admissions/inquiry"
+            href="/admissions"
             className={`mt-6 ${pillPrimary}`}
           >
             Contact Admissions Office

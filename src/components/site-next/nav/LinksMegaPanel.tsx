@@ -11,6 +11,9 @@ export function LinksMegaPanel({ item }: { item: MenuTopItem }) {
   // let 3 groups sit side-by-side instead of always wrapping at 2.
   const columnsClass =
     !quote && groups.length >= 3 ? "sm:grid-cols-3" : groups.length > 1 ? "sm:grid-cols-2" : "";
+  // A menu with no group headings is one list; flow it down two columns so it
+  // fills the panel the way grouped menus do, keeping its order.
+  const flatList = groups.length === 1 && !groups[0].group;
 
   return (
     <div className={cn("grid gap-x-10 gap-y-8 py-10", quote && "md:grid-cols-[1.2fr_.8fr]")}>
@@ -22,9 +25,9 @@ export function LinksMegaPanel({ item }: { item: MenuTopItem }) {
                 {g.group}
               </div>
             )}
-            <ul>
+            <ul className={cn(flatList && "sm:columns-2 sm:gap-x-8")}>
               {g.items.map((link) => (
-                <li key={link.id}>
+                <li key={link.id} className="break-inside-avoid">
                   <Link
                     href={link.url ?? "#"}
                     className="block py-1.5 text-[14.5px] text-ink/80 transition-colors hover:text-crimson"

@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Shield, Users as UsersIcon, Plus, X, KeyRound, Pencil, Trash2, UserX, Loader2, Eye, EyeOff, Power } from 'lucide-react';
 import {
-  listPortalUsers,
-  listScopeOptions,
-  listSectionOptions,
+  loadUserManagementData,
   createPortalUser,
   assignPortalUserRole,
   removePortalUserRole,
@@ -137,10 +135,11 @@ export function AdminUserManagementPage({ currentUserId }: { currentUserId: stri
   const refresh = async () => {
     setLoading(true);
     try {
-      const [userList, options, sections] = await Promise.all([listPortalUsers(), listScopeOptions(), listSectionOptions()]);
-      setUsers(userList);
-      setScopeOptions(options as ScopeOptions);
-      setSectionOptions(sections);
+      const result = await loadUserManagementData();
+      if (result.error !== undefined) throw new Error(result.error);
+      setUsers(result.users);
+      setScopeOptions(result.scopeOptions as ScopeOptions);
+      setSectionOptions(result.sections);
     } catch (err: any) {
       toast.error(`Failed to load users: ${err.message}`);
     } finally {

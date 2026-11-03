@@ -100,6 +100,24 @@ export async function getLabsByDepartmentId(departmentId: string) {
 }
 
 /**
+ * A college's own facilities, for department pages that also show college
+ * content. Sports facilities live on the Sports page instead.
+ */
+export async function getCollegeFacilities(collegeId: string) {
+  const result = await publicSupabase()
+    .from("facilities")
+    .select("*")
+    .eq("status", "published")
+    .eq("college_id", collegeId)
+    .is("department_id", null)
+    .is("deleted_at", null)
+    .or("category.is.null,category.neq.sports")
+    .order("name", { ascending: true });
+
+  return unwrap<Facility[]>(result as any, "college facilities");
+}
+
+/**
  * Fetch a single lab by department + slug — the counterpart to
  * `getFacilityBySlug` that only ever resolves laboratory rows, scoped to one
  * department so two departments can't collide on the same slug.

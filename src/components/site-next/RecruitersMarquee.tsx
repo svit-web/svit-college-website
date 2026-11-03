@@ -16,7 +16,7 @@ function RecruiterItem({ recruiter }: { recruiter: RecruiterRow }) {
     <img
       src={recruiter.logo_url}
       alt={recruiter.company_name}
-      className="h-8 w-auto object-contain grayscale transition-[filter] duration-300 group-hover:grayscale-0"
+      className="h-12 w-auto object-contain grayscale transition-[filter] duration-300 group-hover:grayscale-0"
     />
   ) : (
     recruiter.company_name
@@ -26,7 +26,7 @@ function RecruiterItem({ recruiter }: { recruiter: RecruiterRow }) {
   // — wire it up as the logo/name's link target when present, instead of
   // leaving it dead.
   return (
-    <span className="group inline-flex items-center whitespace-nowrap text-[1.05rem] font-semibold text-navy opacity-[0.42] transition-opacity hover:opacity-100 after:mx-[1.9rem] after:inline-block after:h-[5px] after:w-[5px] after:shrink-0 after:rounded-full after:bg-border after:align-middle">
+    <span className="group inline-flex items-center whitespace-nowrap text-[1.35rem] font-semibold text-navy opacity-[0.42] transition-opacity hover:opacity-100 after:mx-[2.25rem] after:inline-block after:h-[5px] after:w-[5px] after:shrink-0 after:rounded-full after:bg-border after:align-middle">
       {recruiter.website_url ? (
         <a
           href={recruiter.website_url}

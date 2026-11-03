@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { DeptActivitiesView } from "@/components/site-next/DeptActivitiesView";
-import { getAllDepartments, getDepartmentByCode } from "@/lib/departments.functions";
-import { getDepartmentActivities } from "@/lib/department-content.functions";
+import {
+  getAllDepartments,
+  getDepartmentByCode,
+  getInheritedCollegeId,
+} from "@/lib/departments.functions";
+import {
+  getCollegeWideActivities,
+  getDepartmentActivities,
+} from "@/lib/department-content.functions";
 
 // ISR: this page reads from Supabase (not Next's fetch()), so without this
 // it re-queries the DB on every single request. Caching the render for 5
@@ -41,7 +48,11 @@ export default async function DeptActivitiesPage({
   const department = await getDepartmentByCode(dept.toUpperCase()).catch(() => null);
   if (!department) notFound();
 
-  const activities = await getDepartmentActivities(department.id).catch(() => []);
+  const collegeId = await getInheritedCollegeId(department.college_id).catch(() => null);
+  const [activities, collegeActivities] = await Promise.all([
+    getDepartmentActivities(department.id).catch(() => []),
+    collegeId ? getCollegeWideActivities(collegeId).catch(() => []) : [],
+  ]);
 
-  return <DeptActivitiesView activities={activities} />;
+  return <DeptActivitiesView activities={[...activities, ...collegeActivities]} />;
 }

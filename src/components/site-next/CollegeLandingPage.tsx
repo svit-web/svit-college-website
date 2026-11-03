@@ -163,7 +163,7 @@ function Hero({
             </p>
           )}
           <div className="mt-8 flex flex-col gap-[0.7rem] sm:flex-row">
-            <Link href="/admissions/inquiry" className={pillPrimary}>
+            <Link href="/admissions" className={pillPrimary}>
               {ctaLabel}
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </Link>
@@ -419,7 +419,7 @@ function RecruitersStrip({ data }: { data: RecruiterRow[] }) {
   return (
     <section className="container-page pb-20">
       <Reveal>
-        <div className="text-center text-xs font-semibold uppercase tracking-widest text-ink-mute">
+        <div className="text-center text-sm font-semibold uppercase tracking-widest text-ink-mute">
           Our Recruiters
         </div>
         <RecruitersMarquee recruiters={data} />

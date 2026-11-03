@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import {
   Target,
   MessagesSquare,
@@ -24,12 +25,16 @@ import {
 } from "lucide-react";
 import { PageHero } from "./PageHero";
 import { Reveal } from "./Reveal";
+import { MouCard } from "./MouCard";
+import { mouDepartmentLabel } from "./MouBrowser";
 import { SectionHeading } from "./SectionHeading";
 import { eyebrow, pillOutline } from "./site-styles";
+import type { MOU } from "@/lib/mous.functions";
 import { type FullPlacementData, type PlacementHighlight } from "@/lib/placement.functions";
 
 const STUDENTS_PER_PAGE = 10;
 const RECRUITERS_PER_PAGE = 12;
+const MOUS_PREVIEW = 6;
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   Target,
@@ -54,9 +59,10 @@ function initials(name: string): string {
 
 export interface PlacementPageProps {
   data: FullPlacementData;
+  mous?: MOU[];
 }
 
-export function PlacementPage({ data }: PlacementPageProps) {
+export function PlacementPage({ data, mous = [] }: PlacementPageProps) {
   const [visibleStudentCount, setVisibleStudentCount] = useState(STUDENTS_PER_PAGE);
   const [visibleRecruiterCount, setVisibleRecruiterCount] = useState(RECRUITERS_PER_PAGE);
 
@@ -403,6 +409,32 @@ export function PlacementPage({ data }: PlacementPageProps) {
             )}
 
             {/* ── Section 7 — Officer card (#officer) ──────────── */}
+            {mous.length > 0 && (
+              <section id="mous" className="scroll-mt-24">
+                <SectionHeading
+                  eyebrow="Industry Partnerships"
+                  title="MoUs"
+                  variant="eyebrow"
+                />
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {mous.slice(0, MOUS_PREVIEW).map((mou, i) => (
+                    <MouCard
+                      key={mou.id}
+                      mou={mou}
+                      department={mouDepartmentLabel(mou)}
+                      delay={i * 0.03}
+                    />
+                  ))}
+                </div>
+                <div className="mt-8 text-center">
+                  <Link href="/placement/mous" className={pillOutline}>
+                    <span>View all {mous.length} MoUs</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
+              </section>
+            )}
+
             {sections.officer && (
               <section id="officer" className="scroll-mt-24">
                 <SectionHeading

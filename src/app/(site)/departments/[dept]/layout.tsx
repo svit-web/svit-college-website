@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { DepartmentLayout } from "@/components/site-next/DepartmentLayout";
 import { getDepartmentByCode } from "@/lib/departments.functions";
 import { getCollegesGrid } from "@/lib/homepage.functions";
+import { hasDepartmentMOUs } from "@/lib/mous.functions";
 
 export async function generateMetadata({
   params,
@@ -35,9 +36,10 @@ export default async function DeptLayout({
   if (!department) notFound();
 
   const college = colleges.find((c) => c.slug === department.college_slug) ?? null;
+  const hasMous = await hasDepartmentMOUs(department.id).catch(() => false);
 
   return (
-    <DepartmentLayout department={department} college={college}>
+    <DepartmentLayout department={department} college={college} hasMous={hasMous}>
       {children}
     </DepartmentLayout>
   );

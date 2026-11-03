@@ -467,7 +467,7 @@ function RecruitersSection({ recruiters }: { recruiters: RecruiterRow[] }) {
   return (
     <section className="container-page pb-20">
       <Reveal>
-        <div className="text-center text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+        <div className="text-center text-sm font-semibold uppercase tracking-widest text-muted-foreground">
           Our Recruiters
         </div>
         <RecruitersMarquee recruiters={recruiters} />

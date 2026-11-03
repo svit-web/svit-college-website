@@ -1,5 +1,6 @@
 // Server functions for departments data from Supabase
 import { publicSupabase } from '@/lib/supabase-public';
+import { showsCollegeContent } from '@/lib/college-content-setting';
 
 export interface Department {
   id: string;
@@ -100,6 +101,28 @@ export async function getDepartmentByCode(code: string) {
   }
 
   return data ? mapRow(data) as Department : null;
+}
+
+/**
+ * The college whose own content this department's pages should also show, or
+ * null when the college keeps it to its own page.
+ */
+export async function getInheritedCollegeId(collegeId: string) {
+  const supabase = publicSupabase();
+  const [{ data: college, error }, { count, error: countError }] = await Promise.all([
+    supabase.from('colleges').select('metadata').eq('id', collegeId).maybeSingle(),
+    supabase
+      .from('departments')
+      .select('id', { count: 'exact', head: true })
+      .eq('college_id', collegeId)
+      .eq('status', 'published')
+      .is('deleted_at', null),
+  ]);
+  if (error) throw error;
+  if (countError) throw countError;
+
+  const metadata = college?.metadata as Record<string, unknown> | null | undefined;
+  return showsCollegeContent(metadata, count ?? 0) ? collegeId : null;
 }
 
 export interface DeptCourse {

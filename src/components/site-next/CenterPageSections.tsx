@@ -3,16 +3,17 @@ import {
   Award,
   CalendarDays,
   Clock,
-  Handshake,
   MapPin,
   Users,
   Wrench,
+  Handshake,
 } from "lucide-react";
 import { StaffCard } from "@/components/site-next/DepartmentSections";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { AchievementsGrid } from "@/components/site-next/AchievementsGrid";
 import { EntryEventsGrid } from "@/components/site-next/EntryEventsGrid";
+import { MouCard } from "@/components/site-next/MouCard";
 import type { CenterPageData, CenterProgramType } from "@/lib/center-page.functions";
 
 // centers.metadata.lab — the single lab a centre runs (the CoE has one), edited
@@ -45,14 +46,6 @@ const TEAM_GROUPS = [
 // Admin-entered links: only render http(s) ones (never javascript: etc.).
 function safeHref(url: string | null | undefined): string | null {
   return url && /^https?:\/\//i.test(url.trim()) ? url.trim() : null;
-}
-
-function formatDate(iso: string | null) {
-  if (!iso) return null;
-  const d = new Date(iso);
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleDateString("en-GB", { month: "short", year: "numeric" });
 }
 
 /**
@@ -241,49 +234,9 @@ export function CenterPageSections({ data }: { data: CenterPageData }) {
             variant="eyebrow"
           />
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            {mous.map((m, i) => {
-              const signed = formatDate(m.signed_date);
-              const expires = formatDate(m.expiry_date);
-              return (
-                <Reveal key={m.id} delay={i * 0.03}>
-                  <div className="flex h-full items-start gap-4 border border-line bg-surface p-5">
-                    {m.logo_url ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={m.logo_url} alt="" className="h-12 w-12 shrink-0 object-contain" />
-                    ) : (
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center bg-paper-deep text-navy">
-                        <Handshake className="h-5 w-5" />
-                      </div>
-                    )}
-                    <div className="min-w-0 flex-1">
-                      <div className="font-display font-medium text-navy">
-                        {m.partner_organization}
-                      </div>
-                      {(signed || expires) && (
-                        <div className="mt-0.5 text-xs text-ink-soft">
-                          {signed && <>Signed {signed}</>}
-                          {signed && expires && " · "}
-                          {expires && <>Valid till {expires}</>}
-                        </div>
-                      )}
-                      {m.purpose && <p className="mt-2 text-sm text-ink-soft">{m.purpose}</p>}
-                      {m.activities && m.activities.length > 0 && (
-                        <ul className="mt-2 flex flex-wrap gap-1.5">
-                          {m.activities.map((a) => (
-                            <li
-                              key={a}
-                              className="rounded-full border border-line px-2.5 py-0.5 text-xs text-navy"
-                            >
-                              {a}
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-                </Reveal>
-              );
-            })}
+            {mous.map((m, i) => (
+              <MouCard key={m.id} mou={m} delay={i * 0.03} />
+            ))}
           </div>
         </div>
       )}

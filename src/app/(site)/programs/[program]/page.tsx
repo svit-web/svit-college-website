@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Check } from "lucide-react";
 import { PageHero } from "@/components/site-next/PageHero";
+import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getCourseWithDept } from "@/lib/departments.functions";
 
 // NOTE: `revalidate` alone does nothing on a dynamic-segment page — verified
@@ -52,6 +53,9 @@ export default async function ProgramPage({
   if (!course) notFound();
 
   const { dept } = course;
+  const metadata = (course.metadata ?? {}) as { highlights?: string[]; outcomes?: string[] };
+  const highlights = (metadata.highlights ?? []).filter(Boolean);
+  const outcomes = (metadata.outcomes ?? []).filter(Boolean);
   return (
     <>
       <PageHero
@@ -77,10 +81,38 @@ export default async function ProgramPage({
             </div>
           ))}
         </div>
-        <p className="mt-10 text-sm text-ink-soft">
-          Full program details — curriculum, eligibility, fees, career pathways and admission process — will be
-          published here.
-        </p>
+        {highlights.length > 0 && (
+          <div className="mt-12">
+            <SectionHeading eyebrow="Programme Highlights" title="What makes it different" />
+            <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+              {highlights.map((h) => (
+                <li key={h} className="flex items-start gap-3 border border-line bg-surface p-4">
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
+                  <span className="text-sm">{h}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {outcomes.length > 0 && (
+          <div className="mt-12">
+            <SectionHeading eyebrow="Outcomes" title="Learning outcomes" />
+            <ul className="mt-8 space-y-3">
+              {outcomes.map((o) => (
+                <li key={o} className="flex items-start gap-3">
+                  <div className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-crimson" />
+                  <span className="text-sm text-ink-soft">{o}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {highlights.length === 0 && outcomes.length === 0 && (
+          <p className="mt-10 text-sm text-ink-soft">
+            Full program details — curriculum, eligibility, fees, career pathways and admission process — will be
+            published here.
+          </p>
+        )}
         {dept && (
           <Link
             href={`/departments/${dept.code}`}

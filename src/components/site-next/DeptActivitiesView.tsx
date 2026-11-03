@@ -4,17 +4,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "./Reveal";
-import type { DeptActivity, DeptActivityType } from "@/lib/department-content.functions";
+import type { DeptActivity } from "@/lib/department-content.functions";
+import { eventTypeLabel } from "@/lib/event-types";
 import { EntryCardPlaceholder } from "./EntryCard";
-
-const TYPE_LABELS: Record<DeptActivityType, string> = {
-  expert_session: "Expert Session",
-  industrial_visit: "Industry Visit",
-  seminar: "Seminar",
-  workshop: "Workshop",
-  sttp: "STTP",
-  fdp: "FDP",
-};
 
 function formatDate(iso: string) {
   try {
@@ -51,7 +43,8 @@ function ActivityCard({ item, i }: { item: DeptActivity; i: number }) {
       </div>
       <div className="flex flex-1 flex-col p-5">
         <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-crimson">
-          {(item.type && TYPE_LABELS[item.type]) || "Event"}
+          {item.collegeWide && "College-wide · "}
+          {eventTypeLabel(item.type) || "Event"}
         </div>
         <h4 className="mt-1.5 font-display text-lg font-medium leading-tight text-navy">
           {item.title}
@@ -100,11 +93,9 @@ function ActivityGrid({ items }: { items: DeptActivity[] }) {
 }
 
 export function DeptActivitiesView({ activities = [] }: { activities?: DeptActivity[] }) {
-  const items = activities.sort((a, b) => (a.startDate < b.startDate ? 1 : -1));
-
   return (
     <div>
-      <ActivityGrid items={items} />
+      <ActivityGrid items={activities} />
     </div>
   );
 }

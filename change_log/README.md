@@ -19,10 +19,19 @@ changed, the files touched, any migration to apply, and how to verify.
 | 10 | [Centre of Excellence & NSS / NCC pages + admin](2026-10-30-10-centre-pages.md) (2026-10-30) | `20261030140000_centre_pages.sql` |
 | 11 | [Centre pages filled from existing content](2026-10-30-11-centre-pages-seed.md) (2026-10-30) | `20261030150000_centre_pages_seed.sql` (applied) |
 | 12 | [Per-college hero & vision/mission, mobile sub-menus, recent-only menus](2026-10-30-12-college-pages-mobile-menu.md) (2026-10-30) | — |
+| 13 | [All department events on Departmental Events pages](2026-11-02-13-department-events-all-types.md) (2026-11-02) | — |
+| 14 | [Page transitions, loading indicator, larger recruiter marquee](2026-11-02-14-page-transitions-loading.md) (2026-11-02) | — |
+| 15 | [Sort order for events on department, club and centre pages](2026-11-02-15-event-sort-order.md) (2026-11-02) | — |
+| 16 | [MoUs by department, Placement MoUs page, department MoUs tab](2026-11-02-16-mous-by-department.md) (2026-11-02) | `20261102120000_mous_department_scope.sql` |
+| 17 | [Programmes page, course fields, department scope, college content on departments](2026-11-02-17-programmes-scope-college-content.md) (2026-11-02) | `20261103120000_programme_entries.sql`, `20261103130000_achievements_college_backfill.sql` |
+| 18 | [Academics menu, enquiry form removed, accreditation rename](2026-11-02-18-academics-menu-enquiry-removal.md) (2026-11-02) | — |
 
 **Apply migrations in the order above** on the self-hosted (production) Supabase,
 then run `NOTIFY pgrst, 'reload schema';` (see `docs/infra/SELF_HOSTED_SUPABASE.md`).
 Status at time of writing: 02's migration applied by the site owner; 03–06 pending.
+On production as of 2026-11-02: 10–11, 16 and 17. For 16 the columns and backfill are confirmed;
+its write policy can only be confirmed by testing as a department or Placement user.
+The 2026-11-03 prefix on 17's migrations is a filename date only; they ran on 2026-11-02.
 
 `src/integrations/supabase/types.ts` was hand-edited to match the new tables and
 columns; regenerate it from the live schema when convenient.

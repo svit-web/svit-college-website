@@ -1,4 +1,5 @@
 // Server functions for student clubs data from Supabase
+import { compareEventsBySortOrder } from '@/lib/event-types';
 import { publicSupabase } from '@/lib/supabase-public';
 import { getEntryAlbums } from '@/lib/gallery.functions';
 
@@ -129,25 +130,25 @@ function mapClubEventRow(e: any, coverUrl: string | null): ClubEvent {
  */
 export async function getClubEvents(clubId: string) {
   const supabase = publicSupabase();
-  const { data, error, count } = await supabase
+  const { data, error } = await supabase
     .from('events')
-    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page, album_id', { count: 'exact' })
+    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page, album_id, sort_order')
     .eq('club_id', clubId)
     .eq('status', 'published')
-    .is('deleted_at', null)
-    .order('start_date', { ascending: false })
-    .limit(3);
+    .is('deleted_at', null);
 
   if (error) {
     console.error('Error fetching club events:', error);
     throw error;
   }
 
-  const rows = data ?? [];
+  // The order can't be expressed in the query ("0 last"), so the cap is applied here.
+  const all = [...(data ?? [])].sort(compareEventsBySortOrder);
+  const rows = all.slice(0, 3);
   const albums = await getEntryAlbums(rows.map((r) => r.album_id));
   return {
     events: rows.map((r) => mapClubEventRow(r, albums.get(r.album_id ?? '')?.coverUrl ?? null)),
-    total: count ?? 0,
+    total: all.length,
   };
 }
 
@@ -159,18 +160,17 @@ export async function getAllClubEvents(clubId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('events')
-    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page, album_id')
+    .select('id, slug, title, description, start_date, card_photo_url, has_detail_page, album_id, sort_order')
     .eq('club_id', clubId)
     .eq('status', 'published')
-    .is('deleted_at', null)
-    .order('start_date', { ascending: false });
+    .is('deleted_at', null);
 
   if (error) {
     console.error('Error fetching all club events:', error);
     throw error;
   }
 
-  const rows = data ?? [];
+  const rows = [...(data ?? [])].sort(compareEventsBySortOrder);
   const albums = await getEntryAlbums(rows.map((r) => r.album_id));
   return rows.map((r) => mapClubEventRow(r, albums.get(r.album_id ?? '')?.coverUrl ?? null));
 }
