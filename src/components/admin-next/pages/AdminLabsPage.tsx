@@ -30,11 +30,14 @@ interface Lab {
   };
 }
 
+const NON_ALPHANUMERIC_REGEX = /[^a-z0-9]+/g;
+const LEADING_TRAILING_HYPHEN_REGEX = /(^-|-$)/g;
+
 function slugify(s: string) {
   return s
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '');
+    .replace(NON_ALPHANUMERIC_REGEX, '-')
+    .replace(LEADING_TRAILING_HYPHEN_REGEX, '');
 }
 
 export function AdminLabsPage({ admin }: { admin: AdminUser }) {

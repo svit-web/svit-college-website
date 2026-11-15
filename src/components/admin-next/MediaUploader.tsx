@@ -6,6 +6,8 @@ import { toast } from 'sonner';
 import { uploadMediaFile } from '@/lib/upload-media-next';
 import { MediaLibraryPicker } from '@/components/admin-next/MediaLibraryPicker';
 
+const HTTP_URL_REGEX = /^https?:\/\//i;
+
 interface MediaUploaderProps {
   value: string;
   onChange: (url: string) => void;
@@ -124,7 +126,7 @@ export function MediaUploader({ value, onChange, type = 'image', bucketName = 'm
     e?.preventDefault();
     const trimmed = urlDraft.trim();
     if (!trimmed) return;
-    if (!/^https?:\/\//i.test(trimmed) && !trimmed.startsWith('data:')) {
+    if (!HTTP_URL_REGEX.test(trimmed) && !trimmed.startsWith('data:')) {
       toast.error('Enter a valid URL starting with http:// or https://');
       return;
     }

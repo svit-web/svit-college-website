@@ -13,11 +13,13 @@ import {
   Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { Facility } from "@/lib/facilities.functions";
+import type { FacilityListItem } from "@/lib/facilities.functions";
 import type { StudentClub } from "@/lib/clubs.functions";
 import type { CampusEvent } from "@/lib/events.functions";
 import type { Sport } from "@/lib/sports.functions";
-import type { Center } from "@/lib/centers.functions";
+import type { CenterListItem } from "@/lib/centers.functions";
+
+const WHITESPACE_REGEX = /\s+/g;
 import { LIBRARY_FACILITY_SLUG, LIBRARY_PATH } from "@/lib/library-paths";
 import { COE_PATH, NSS_NCC_PATH } from "@/lib/center-paths";
 import { MENU_RECENT_EVENTS, MENU_RECENT_ITEMS } from "@/lib/nav-limits";
@@ -45,14 +47,14 @@ export function useCampusCategories({
   sports,
   centers,
 }: {
-  facilities: Facility[];
+  facilities: FacilityListItem[];
   featuredClubs: StudentClub[];
   events: CampusEvent[];
   sports: Sport[];
-  centers: Center[];
+  centers: CenterListItem[];
 }): CampusMegaCategory[] {
   return useMemo(() => {
-    const facilityHref = (f: Facility) =>
+    const facilityHref = (f: FacilityListItem) =>
       f.slug === LIBRARY_FACILITY_SLUG
         ? LIBRARY_PATH
         : `/campus-life/facilities/${f.category ?? "academic"}/${f.slug}`;
@@ -83,7 +85,7 @@ export function useCampusCategories({
           .slice(0, MENU_RECENT_ITEMS)
           .map((s) => ({
             label: s.name,
-            to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(/\s+/g, "-")}`,
+            to: `/campus-life/sports-and-athletics#${s.slug ?? s.name.toLowerCase().replace(WHITESPACE_REGEX, "-")}`,
           })),
       },
       {

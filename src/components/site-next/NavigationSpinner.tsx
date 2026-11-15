@@ -13,6 +13,7 @@ import {
 // Fast navigations never show it; once shown it stays long enough not to flicker.
 const SHOW_DELAY_MS = 200;
 const MIN_VISIBLE_MS = 300;
+const EXTENSION_RE = /\.[a-z0-9]{2,5}$/i;
 
 /** True for a click that will move to another page in this tab. */
 function isPageNavigation(event: MouseEvent) {
@@ -23,14 +24,13 @@ function isPageNavigation(event: MouseEvent) {
   if (!link || link.hasAttribute("download")) return false;
   if (link.target && link.target !== "_self") return false;
 
-  const url = new URL(link.href, window.location.href);
-  if (url.origin !== window.location.origin) return false;
+  if (link.origin !== window.location.origin) return false;
   // Covers #section links and links to the current page.
-  if (url.pathname === window.location.pathname && url.search === window.location.search) {
+  if (link.pathname === window.location.pathname && link.search === window.location.search) {
     return false;
   }
   // Files served from /public open or download rather than navigate.
-  return !/\.[a-z0-9]{2,5}$/i.test(url.pathname);
+  return !EXTENSION_RE.test(link.pathname);
 }
 
 function NavigationWatcher() {

@@ -52,11 +52,15 @@ import {
 import { toast } from 'sonner';
 import { NEW_ENTRY_IMAGE_FIT } from '@/lib/entry';
 
+const TRAILING_ID_REGEX = /_id$/;
+const SEPARATOR_REGEX = /[_-]/g;
+const WORD_START_REGEX = /\b\w/g;
+
 function formatLabel(str: string): string {
   return str
-    .replace(/_id$/, '')
-    .replace(/[_-]/g, ' ')
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+    .replace(TRAILING_ID_REGEX, '')
+    .replace(SEPARATOR_REGEX, ' ')
+    .replace(WORD_START_REGEX, (char) => char.toUpperCase());
 }
 
 

@@ -5,6 +5,8 @@ import Link from "next/link";
 import { ChevronDown, Mail, Phone } from "lucide-react";
 import type { CommitteeMember } from "@/lib/committees.functions";
 
+const NON_DIGIT_PLUS_REGEX = /[^\d+]/g;
+
 export function CommitteeMembers({ members }: { members: CommitteeMember[] }) {
   const [open, setOpen] = useState(false);
 
@@ -66,7 +68,7 @@ export function CommitteeMembers({ members }: { members: CommitteeMember[] }) {
                   )}
                   {m.phone && (
                     <a
-                      href={`tel:${m.phone.replace(/[^\d+]/g, "")}`}
+                      href={`tel:${m.phone.replace(NON_DIGIT_PLUS_REGEX, "")}`}
                       className="flex items-center gap-1.5 py-1 text-xs text-ink-soft hover:text-crimson"
                     >
                       <Phone className="h-3.5 w-3.5 shrink-0" />

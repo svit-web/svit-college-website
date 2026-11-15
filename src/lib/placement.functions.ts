@@ -165,9 +165,11 @@ function readMeta(raw: unknown): OverviewMeta {
   return raw as OverviewMeta;
 }
 
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /** True for ids that came back from Postgres (as opposed to client-minted `s_123`). */
 export function isPersistedId(id: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+  return UUID_REGEX.test(id);
 }
 
 // ── Reads ───────────────────────────────────────────────────────────

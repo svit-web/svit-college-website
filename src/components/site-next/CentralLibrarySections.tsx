@@ -17,9 +17,11 @@ const CATEGORY_LABELS: Record<LibraryResourceCategory, string> = {
   opac: "Catalogue",
   remote_access: "Remote access",
 };
+const HTTP_URL_REGEX = /^https?:\/\//i;
+
 // Admin-entered links: only render http(s) ones (never javascript: etc.).
 function safeHref(url: string | null): string | null {
-  return url && /^https?:\/\//i.test(url.trim()) ? url.trim() : null;
+  return url && HTTP_URL_REGEX.test(url.trim()) ? url.trim() : null;
 }
 
 const GROUP_ORDER: LibraryResourceCategory[] = [
@@ -310,10 +312,14 @@ function ResourceCard({ resource: r }: { resource: LibraryResource }) {
   );
 }
 
+const EMAIL_REGEX = /^\S+@\S+\.\S+$/;
+const PHONE_LIKE_REGEX = /^\+?[\d\s()-]{7,}$/;
+const NON_DIGIT_PLUS_REGEX = /[^\d+]/g;
+
 // Contact values are free text; make the common shapes clickable.
 function ContactValue({ value }: { value: string }) {
   const v = value.trim();
-  if (/^\S+@\S+\.\S+$/.test(v)) {
+  if (EMAIL_REGEX.test(v)) {
     return (
       <a
         href={`mailto:${v}`}
@@ -323,10 +329,10 @@ function ContactValue({ value }: { value: string }) {
       </a>
     );
   }
-  if (/^\+?[\d\s()-]{7,}$/.test(v)) {
+  if (PHONE_LIKE_REGEX.test(v)) {
     return (
       <a
-        href={`tel:${v.replace(/[^\d+]/g, "")}`}
+        href={`tel:${v.replace(NON_DIGIT_PLUS_REGEX, "")}`}
         className="mt-1 flex items-center gap-2 text-sm font-semibold text-navy hover:text-crimson"
       >
         <Phone className="h-4 w-4 text-crimson" /> {v}

@@ -18,7 +18,14 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://svitvasad.
   /\/+$/,
   "",
 );
+export const SITE_URL_OBJ = new URL(SITE_URL);
 const DEFAULT_OG_IMAGE = "/og-image.jpg";
+const HTTP_URL_REGEX = /^https?:\/\//;
+const HTML_TAG_REGEX = /<[^>]*>/g;
+const MARKDOWN_MARKER_REGEX = /[#*_`>~]+/g;
+const MARKDOWN_LINK_REGEX = /\[([^\]]*)\]\([^)]*\)/g;
+const WHITESPACE_REGEX = /\s+/g;
+const TRAILING_PUNCTUATION_REGEX = /[\s,.;:–—-]+$/;
 
 /** "SVIT Vasad — {admin-set full institute name}" — full name comes from Settings → Contact Info. */
 export function siteName(fullName: string): string {
@@ -28,7 +35,7 @@ export function siteName(fullName: string): string {
 export const DEFAULT_SITE_NAME = siteName(DEFAULT_CONTACT.full_name);
 
 export function absoluteUrl(path: string): string {
-  if (/^https?:\/\//.test(path)) return path;
+  if (HTTP_URL_REGEX.test(path)) return path;
   return `${SITE_URL}${path.startsWith("/") ? "" : "/"}${path}`;
 }
 
@@ -60,16 +67,16 @@ export async function siteOpenGraph(
 export function metaDescription(text: string | null | undefined, max = 155): string | undefined {
   if (!text) return undefined;
   const plain = text
-    .replace(/<[^>]*>/g, " ")
-    .replace(/[#*_`>~]+/g, "")
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, "$1")
-    .replace(/\s+/g, " ")
+    .replace(HTML_TAG_REGEX, " ")
+    .replace(MARKDOWN_MARKER_REGEX, "")
+    .replace(MARKDOWN_LINK_REGEX, "$1")
+    .replace(WHITESPACE_REGEX, " ")
     .trim();
   if (!plain) return undefined;
   if (plain.length <= max) return plain;
   const cut = plain.slice(0, max);
   const lastSpace = cut.lastIndexOf(" ");
-  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(/[\s,.;:–—-]+$/, "")}…`;
+  return `${(lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut).replace(TRAILING_PUNCTUATION_REGEX, "")}…`;
 }
 
 /** Row shape of the `seo:seo_metadata(...)` embed on posts/events. */
@@ -114,7 +121,7 @@ export function organizationJsonLd({
   logoUrl,
   fullName,
 }: OrganizationInput) {
-  const sameAs = Object.values(socialLinks ?? {}).filter((u) => /^https?:\/\//.test(u));
+  const sameAs = Object.values(socialLinks ?? {}).filter((u) => HTTP_URL_REGEX.test(u));
   return {
     "@context": "https://schema.org",
     "@type": "CollegeOrUniversity",

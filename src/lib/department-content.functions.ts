@@ -9,6 +9,9 @@ import type { EntryAlbum } from '@/lib/entry';
 import { compareEventsBySortOrder, type EventType } from '@/lib/event-types';
 import { STAFF_POST_COLUMNS, formatDesignationWithPosts, postsForIds } from '@/lib/staff-posts';
 
+const HEAD_TITLE_REGEX = /head|hod/i;
+const TEACHING_TITLE_REGEX = /professor|lecturer|assistant/i;
+
 export interface DeptStaffMember {
   id: string;
   name: string;
@@ -80,10 +83,10 @@ export async function getStaffByDepartmentId(departmentId: string) {
       const designationTitle = a.designations?.title ?? 'Faculty';
       const heldPosts = postsForIds(a.post_ids, posts ?? []);
       // Legacy combined titles ("Professor & Head of Department") still mark the head.
-      const isHead = heldPosts.some((p) => p.is_department_head) || (a.is_primary && /head|hod/i.test(designationTitle));
+      const isHead = heldPosts.some((p) => p.is_department_head) || (a.is_primary && HEAD_TITLE_REGEX.test(designationTitle));
       const rankGroup: DeptStaffMember['rankGroup'] = isHead
         ? 'HOD'
-        : a.designations?.category === 'teaching' || /professor|lecturer|assistant/i.test(designationTitle)
+        : a.designations?.category === 'teaching' || TEACHING_TITLE_REGEX.test(designationTitle)
         ? 'Faculty'
         : 'Support';
       const years = yearsByStaff.get(s.id);

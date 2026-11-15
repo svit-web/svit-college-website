@@ -7,6 +7,9 @@ import { Fragment } from "react";
 const URL_PATTERN = /https?:\/\/[^\s<>"']+/g;
 // Punctuation that usually ends a sentence rather than belonging to the URL.
 const TRAILING_PUNCTUATION = /[.,;:!?)\]}'"]+$/;
+const FULL_URL_REGEX = /^https?:\/\/.+/;
+const CRLF_REGEX = /\r\n?/g;
+const BLANK_LINE_REGEX = /\n\s*\n/;
 
 type Segment = string | { href: string; text: string };
 
@@ -21,7 +24,7 @@ export function linkifyPlainText(text: string): Segment[] {
     if (trailing && !(trailing.startsWith(")") && url.includes("("))) {
       url = url.slice(0, -trailing.length);
     }
-    if (!url.match(/^https?:\/\/.+/)) continue;
+    if (!url.match(FULL_URL_REGEX)) continue;
     if (start > last) segments.push(text.slice(last, start));
     segments.push({ href: url, text: url });
     last = start + url.length;
@@ -66,8 +69,8 @@ export function PlainText({
   className?: string;
 }) {
   const paragraphs = (text ?? "")
-    .replace(/\r\n?/g, "\n")
-    .split(/\n\s*\n/)
+    .replace(CRLF_REGEX, "\n")
+    .split(BLANK_LINE_REGEX)
     .map((p) => p.trim())
     .filter(Boolean);
   if (!paragraphs.length) return null;

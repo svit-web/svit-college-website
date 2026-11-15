@@ -1,12 +1,11 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/app/lib/supabase/server';
-import { SITE_URL } from '@/lib/seo';
+import { SITE_URL, SITE_URL_OBJ } from '@/lib/seo';
 
-const TRUSTED_HOSTS = new Set([new URL(SITE_URL).hostname, 'localhost', '127.0.0.1']);
+const TRUSTED_HOSTS = new Set([SITE_URL_OBJ.hostname, 'localhost', '127.0.0.1']);
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get('code');
+export async function GET(request: NextRequest) {
+  const code = request.nextUrl.searchParams.get('code');
 
   // Behind the reverse proxy, request.url's Host is the internal container
   // address, not the public domain — prefer the forwarded headers so

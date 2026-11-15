@@ -29,8 +29,11 @@ const EMPTY_SPORT = {
   metadata: {} as Record<string, any>,
 };
 
+const WHITESPACE_REGEX = /\s+/g;
+const NON_SLUG_CHAR_REGEX = /[^a-z0-9-]/g;
+
 function toSlug(name: string) {
-  return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+  return name.toLowerCase().replace(WHITESPACE_REGEX, '-').replace(NON_SLUG_CHAR_REGEX, '');
 }
 
 // Sports achievements (level/position/date, one per sport) now live in the

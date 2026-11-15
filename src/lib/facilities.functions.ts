@@ -38,6 +38,23 @@ export interface Facility {
   updated_at: string;
 }
 
+const FACILITY_LIST_FIELDS =
+  "id, slug, name, subtitle, accent_color, description, category, has_detail_page, album_id, created_at";
+
+export type FacilityListItem = Pick<
+  Facility,
+  | "id"
+  | "slug"
+  | "name"
+  | "subtitle"
+  | "accent_color"
+  | "description"
+  | "category"
+  | "has_detail_page"
+  | "album_id"
+  | "created_at"
+>;
+
 /**
  * Fetch all published facilities
  */
@@ -45,13 +62,13 @@ export async function getAllFacilities() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("facilities")
-    .select("*")
+    .select(FACILITY_LIST_FIELDS)
     .eq("status", "published")
     .is("department_id", null)
     .is("deleted_at", null)
     .order("name", { ascending: true });
 
-  return unwrap<Facility[]>(result as any, "facilities");
+  return unwrap<FacilityListItem[]>(result as any, "facilities");
 }
 
 /**
@@ -65,7 +82,9 @@ export async function getFacilityBySlug(slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("facilities")
-    .select("*")
+    .select(
+      "slug, name, subtitle, accent_color, description, category, card_photo_url, has_detail_page, album_id, metadata",
+    )
     .eq("slug", slug)
     .eq("status", "published")
     .is("department_id", null)
@@ -84,7 +103,7 @@ export async function getLabsByDepartmentId(departmentId: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("facilities")
-    .select("*")
+    .select(FACILITY_LIST_FIELDS)
     .eq("status", "published")
     .eq("facility_type", "laboratory")
     .eq("department_id", departmentId)
@@ -96,7 +115,7 @@ export async function getLabsByDepartmentId(departmentId: string) {
     throw error;
   }
 
-  return (data ?? []) as Facility[];
+  return (data ?? []) as FacilityListItem[];
 }
 
 /**
@@ -106,7 +125,7 @@ export async function getLabsByDepartmentId(departmentId: string) {
 export async function getCollegeFacilities(collegeId: string) {
   const result = await publicSupabase()
     .from("facilities")
-    .select("*")
+    .select(FACILITY_LIST_FIELDS)
     .eq("status", "published")
     .eq("college_id", collegeId)
     .is("department_id", null)
@@ -114,7 +133,7 @@ export async function getCollegeFacilities(collegeId: string) {
     .or("category.is.null,category.neq.sports")
     .order("name", { ascending: true });
 
-  return unwrap<Facility[]>(result as any, "college facilities");
+  return unwrap<FacilityListItem[]>(result as any, "college facilities");
 }
 
 /**
@@ -126,7 +145,7 @@ export async function getLabBySlug(departmentId: string, slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("facilities")
-    .select("*")
+    .select("slug, name, subtitle, accent_color, description, has_detail_page, album_id, metadata")
     .eq("slug", slug)
     .eq("facility_type", "laboratory")
     .eq("department_id", departmentId)

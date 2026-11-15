@@ -281,11 +281,14 @@ function ProgramsSection({ college }: { college: College }) {
   );
 }
 
+const WHITESPACE_REGEX = /\s+/;
+const NON_LETTER_NUMBER_REGEX = /[^\p{L}\p{N}]/gu;
+
 // First letter of the first two words, skipping punctuation ("B.Sc. (IT)" → "BI").
 function initials(name: string): string {
   return name
-    .split(/\s+/)
-    .map((w) => w.replace(/[^\p{L}\p{N}]/gu, ""))
+    .split(WHITESPACE_REGEX)
+    .map((w) => w.replace(NON_LETTER_NUMBER_REGEX, ""))
     .filter(Boolean)
     .slice(0, 2)
     .map((w) => w[0].toUpperCase())

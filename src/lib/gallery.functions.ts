@@ -27,18 +27,29 @@ export interface GalleryAlbumWithMedia extends GalleryAlbum {
   media: GalleryMedia[];
 }
 
+export type GalleryAlbumListItem = Pick<
+  GalleryAlbum,
+  'id' | 'slug' | 'title' | 'description' | 'cover_image_url'
+>;
+
+export type GalleryMediaListItem = Pick<GalleryMedia, 'id' | 'url' | 'caption'>;
+
+export type GalleryAlbumDetail = Pick<GalleryAlbum, 'id' | 'slug' | 'title' | 'description'> & {
+  media: GalleryMediaListItem[];
+};
+
 export async function getAllGalleryAlbums() {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from('gallery_albums')
-    .select('*')
+    .select('id, slug, title, description, cover_image_url')
     .eq('status', 'published')
     .eq('show_in_public_gallery', true)
     .is('deleted_at', null)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  const albums = data as unknown as GalleryAlbum[];
+  const albums = data as unknown as GalleryAlbumListItem[];
   if (albums.length === 0) return albums;
 
   // cover_image_url on gallery_albums is unused by the admin's upload flow;
@@ -72,7 +83,7 @@ export async function getGalleryAlbumWithMedia(slug: string) {
   const supabase = publicSupabase();
   const { data: album, error: albumError } = await supabase
     .from('gallery_albums')
-    .select('*')
+    .select('id, slug, title, description')
     .eq('slug', slug)
     .eq('status', 'published')
     .eq('show_in_public_gallery', true)
@@ -84,7 +95,7 @@ export async function getGalleryAlbumWithMedia(slug: string) {
 
   const { data: media, error: mediaError } = await supabase
     .from('gallery_media')
-    .select('*')
+    .select('id, url, caption')
     .eq('album_id', album.id)
     .eq('status', 'published')
     .is('deleted_at', null)
@@ -93,9 +104,9 @@ export async function getGalleryAlbumWithMedia(slug: string) {
   if (mediaError) throw mediaError;
 
   return {
-    ...(album as unknown as GalleryAlbum),
-    media: (media ?? []) as unknown as GalleryMedia[],
-  } as GalleryAlbumWithMedia;
+    ...(album as unknown as Omit<GalleryAlbumDetail, 'media'>),
+    media: (media ?? []) as unknown as GalleryMediaListItem[],
+  } as GalleryAlbumDetail;
 }
 
 /**

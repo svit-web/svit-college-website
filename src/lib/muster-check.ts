@@ -32,10 +32,12 @@ export async function findMusterConflict(
   return sp ? `${sp.first_name} ${sp.last_name}`.trim() : null;
 }
 
+const DIGITS_ONLY_REGEX = /^\d+$/;
+
 /** Parses a muster number: blank -> null, otherwise a non-negative integer (0 is valid). */
 export function parseMusterNumber(value: unknown): number | null | undefined {
   const text = String(value ?? "").trim();
   if (text === "") return null;
-  if (!/^\d+$/.test(text)) return undefined;
+  if (!DIGITS_ONLY_REGEX.test(text)) return undefined;
   return Number(text);
 }

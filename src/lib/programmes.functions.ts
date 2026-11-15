@@ -30,7 +30,9 @@ export async function getAllProgrammes() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("courses")
-    .select("*")
+    .select(
+      "code, name, tagline, short_name, full_name, duration, eligibility, intake, color, degree_level, description",
+    )
     .eq("status", "published")
     .eq("is_programme", true)
     .is("department_id", null);
@@ -45,7 +47,7 @@ export async function getProgrammeBySlug(slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("courses")
-    .select("*")
+    .select("code, name, tagline, full_name, duration, eligibility, intake, description, metadata")
     .eq("status", "published")
     .eq("code", slug)
     .eq("is_programme", true)

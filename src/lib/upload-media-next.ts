@@ -6,6 +6,8 @@
 // behavior when no compression-mode setting has loaded yet.
 import { createClient } from '@/app/lib/supabase/client';
 
+const FILE_EXTENSION_REGEX = /\.[a-zA-Z0-9]+$/;
+
 export interface UploadMediaFileOptions {
   bucketName: string;
   folderPrefix: string;
@@ -37,7 +39,7 @@ async function uploadRawFile(file: File, bucketName: string, fileName: string): 
 async function uploadViaClientCompression(file: File, bucketName: string, fileName: string): Promise<UploadMediaFileResult> {
   const { compressImageFile } = await import('@/lib/image-compression');
   const compressed = await compressImageFile(file);
-  const finalName = fileName.replace(/\.[a-zA-Z0-9]+$/, `.${compressed.extension}`);
+  const finalName = fileName.replace(FILE_EXTENSION_REGEX, `.${compressed.extension}`);
 
   const supabase = createClient();
   const { data, error } = await supabase.storage.from(bucketName).upload(finalName, compressed.bytes, {
