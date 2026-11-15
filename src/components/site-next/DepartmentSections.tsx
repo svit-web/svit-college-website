@@ -9,7 +9,7 @@ import type {
   DeptAchievement,
   DeptClub,
 } from "@/lib/department-content.functions";
-import type { Facility } from "@/lib/facilities.functions";
+import type { FacilityListItem } from "@/lib/facilities.functions";
 import type { EntryCardData } from "@/lib/entry";
 import { achievementCategoryLabel, achievementDetailHref } from "@/lib/achievements.functions";
 import { AchievementsGrid } from "./AchievementsGrid";
@@ -24,14 +24,17 @@ interface Props {
   staff?: DeptStaffMember[];
   achievements?: DeptAchievement[];
   clubs?: DeptClub[];
-  labs?: Facility[];
-  collegeFacilities?: Facility[];
+  labs?: FacilityListItem[];
+  collegeFacilities?: FacilityListItem[];
   labAlbums?: Map<string, EntryAlbum>;
 }
 
+const TITLE_PREFIX_REGEX = /^(dr\.?|mr\.?|mrs\.?|ms\.?)\s+/i;
+const WHITESPACE_REGEX = /\s+/;
+
 export function initials(name: string): string {
-  const clean = name.replace(/^(dr\.?|mr\.?|mrs\.?|ms\.?)\s+/i, "").trim();
-  const parts = clean.split(/\s+/);
+  const clean = name.replace(TITLE_PREFIX_REGEX, "").trim();
+  const parts = clean.split(WHITESPACE_REGEX);
   return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
 }
 
@@ -472,7 +475,7 @@ export function DeptAchievementsView({ achievements = [], clubs = [] }: Props) {
 }
 
 // -------- Labs & Facilities --------
-function toLabCard(lab: Facility, deptCode: string, album: EntryAlbum | null): EntryCardData {
+function toLabCard(lab: FacilityListItem, deptCode: string, album: EntryAlbum | null): EntryCardData {
   return {
     id: lab.id,
     slug: lab.slug,
@@ -486,7 +489,7 @@ function toLabCard(lab: Facility, deptCode: string, album: EntryAlbum | null): E
   };
 }
 
-function toCollegeFacilityCard(facility: Facility, album: EntryAlbum | null): EntryCardData {
+function toCollegeFacilityCard(facility: FacilityListItem, album: EntryAlbum | null): EntryCardData {
   return {
     id: facility.id,
     slug: facility.slug,
@@ -503,7 +506,7 @@ function toCollegeFacilityCard(facility: Facility, album: EntryAlbum | null): En
 }
 
 export function DeptLabsView({ department, labs = [], collegeFacilities = [], labAlbums }: Props) {
-  const albumFor = (f: Facility) => (f.album_id ? (labAlbums?.get(f.album_id) ?? null) : null);
+  const albumFor = (f: FacilityListItem) => (f.album_id ? (labAlbums?.get(f.album_id) ?? null) : null);
 
   return (
     <div>

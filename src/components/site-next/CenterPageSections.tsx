@@ -43,9 +43,11 @@ const TEAM_GROUPS = [
   { key: "external", title: "Mentors & partners" },
 ] as const;
 
+const HTTP_URL_REGEX = /^https?:\/\//i;
+
 // Admin-entered links: only render http(s) ones (never javascript: etc.).
 function safeHref(url: string | null | undefined): string | null {
-  return url && /^https?:\/\//i.test(url.trim()) ? url.trim() : null;
+  return url && HTTP_URL_REGEX.test(url.trim()) ? url.trim() : null;
 }
 
 /**

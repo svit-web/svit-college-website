@@ -357,7 +357,7 @@ BEGIN
         'Awareness programs',
         'Continuous campus vigil',
         'Stringent action against ragging',
-        'Regular hostel and bus checks'
+        'Regular bus checks'
       )
     ),
     'published'

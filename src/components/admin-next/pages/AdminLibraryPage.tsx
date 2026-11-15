@@ -40,6 +40,8 @@ import {
 // the 'library' facilities row (overview, photos, highlights, book counts,
 // staff department); the lists live in library_resources / library_info_items.
 
+const HTTP_URL_REGEX = /^https?:\/\//i;
+
 const input =
   'w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none';
 const label = 'text-xs font-semibold text-slate-600 uppercase';
@@ -724,7 +726,7 @@ function ListManager<T extends { id?: string; sort_order: number; status: string
     for (const f of fields) {
       const v = (editing as Record<string, unknown>)[f.key];
       if (f.required && !String(v ?? '').trim()) return toast.error(`${f.label} is required`);
-      if (f.type === 'url' && v && !/^https?:\/\//i.test(String(v).trim()))
+      if (f.type === 'url' && v && !HTTP_URL_REGEX.test(String(v).trim()))
         return toast.error(`${f.label} must start with https:// or http://`);
     }
     const cleaned = Object.fromEntries(

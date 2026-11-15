@@ -25,12 +25,16 @@ const KEY_LABELS: Record<string, string> = {
   srNo: "Serial Number",
 };
 
+const UNDERSCORE_REGEX = /_/g;
+const CAMEL_CASE_BOUNDARY_REGEX = /([a-z0-9])([A-Z])/g;
+const WORD_START_REGEX = /\b\w/g;
+
 function humanizeKey(key: string): string {
   if (KEY_LABELS[key]) return KEY_LABELS[key];
   return key
-    .replace(/_/g, " ")
-    .replace(/([a-z0-9])([A-Z])/g, "$1 $2")
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+    .replace(UNDERSCORE_REGEX, " ")
+    .replace(CAMEL_CASE_BOUNDARY_REGEX, "$1 $2")
+    .replace(WORD_START_REGEX, (c) => c.toUpperCase());
 }
 
 function isJsonObject(value: JsonValue): value is JsonObject {

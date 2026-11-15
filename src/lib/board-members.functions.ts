@@ -11,6 +11,8 @@ export interface BoardMember {
   status: "draft" | "published" | "archived";
 }
 
+export type BoardMemberListItem = Pick<BoardMember, "id" | "name" | "designation" | "photo_url">;
+
 /**
  * Fetch all published board members, ordered for display
  */
@@ -18,10 +20,10 @@ export async function getAllBoardMembers() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("board_members")
-    .select("*")
+    .select("id, name, designation, photo_url")
     .eq("status", "published")
     .is("deleted_at", null)
     .order("sort_order", { ascending: true });
 
-  return unwrap<BoardMember[]>(result, "board members");
+  return unwrap<BoardMemberListItem[]>(result as any, "board members");
 }

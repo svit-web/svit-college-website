@@ -86,7 +86,6 @@ export function GrievanceForm() {
           <select name="category" required aria-label="Category" className={fieldInput}>
             <option value="">Category</option>
             <option value="Academic">Academic</option>
-            <option value="Hostel">Hostel</option>
             <option value="Administrative">Administrative</option>
             <option value="Other">Other</option>
           </select>

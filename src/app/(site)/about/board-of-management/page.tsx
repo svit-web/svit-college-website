@@ -4,7 +4,7 @@ import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { Reveal } from "@/components/site-next/Reveal";
 import { getAboutPage } from "@/lib/pages.functions";
 import { getAllBoardMembers } from "@/lib/board-members.functions";
-import type { BoardMember } from "@/lib/board-members.functions";
+import type { BoardMemberListItem } from "@/lib/board-members.functions";
 
 export const metadata: Metadata = {
   title: "Board of Management — SVIT Vasad",
@@ -12,9 +12,12 @@ export const metadata: Metadata = {
   alternates: { canonical: "/about/board-of-management" },
 };
 
+const TITLE_PREFIX_REGEX = /^(dr\.?|mr\.?|mrs\.?|ms\.?|shree|shri)\s+/i;
+const WHITESPACE_REGEX = /\s+/;
+
 function trusteeInitials(name: string): string {
-  const clean = name.replace(/^(dr\.?|mr\.?|mrs\.?|ms\.?|shree|shri)\s+/i, "").trim();
-  const parts = clean.split(/\s+/);
+  const clean = name.replace(TITLE_PREFIX_REGEX, "").trim();
+  const parts = clean.split(WHITESPACE_REGEX);
   return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
 }
 
@@ -31,7 +34,7 @@ export default async function BoardOfManagementPage() {
       <p className="mt-4 max-w-3xl text-ink-soft">{c?.leadership?.intro}</p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-        {boardMembers.map((b: BoardMember, i: number) => (
+        {boardMembers.map((b: BoardMemberListItem, i: number) => (
           <Reveal key={b.id} delay={i * 0.05}>
             <div className="flex h-full flex-col items-center border border-line bg-surface p-6 text-center">
               {b.photo_url ? (

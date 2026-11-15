@@ -22,7 +22,7 @@ export async function getAllScholarships() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("scholarships")
-    .select("*")
+    .select("id, name, type, description, eligibility, amount, provider")
     .eq("status", "published")
     .is("deleted_at", null)
     .order("sort_order", { ascending: true })

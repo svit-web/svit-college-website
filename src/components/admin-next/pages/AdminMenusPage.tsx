@@ -7,6 +7,8 @@ import { toast } from 'sonner';
 import type { AdminUser } from '@/app/lib/auth/admin';
 import { MENU_TYPE_OPTIONS } from '@/lib/admin-option-sets';
 
+const WHITESPACE_REGEX = /\s+/g;
+
 interface MenuItemNode {
   id: string;
   menu_id: string;
@@ -73,7 +75,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
   async function loadMenus() {
     setLoadingMenus(true);
     try {
-      const { data, error } = await supabase.from('menus').select('*').is('deleted_at', null).order('name', { ascending: true });
+      const { data, error } = await supabase.from('menus').select('id, name, code').is('deleted_at', null).order('name', { ascending: true });
 
       if (error) throw error;
       setMenusList(data || []);
@@ -463,7 +465,7 @@ export function AdminMenusPage({ admin }: { admin: AdminUser }) {
                   required
                   placeholder="e.g. main-header"
                   value={newMenuValues.code}
-                  onChange={(e) => setNewMenuValues((p) => ({ ...p, code: e.target.value.toLowerCase().replace(/\s+/g, '-') }))}
+                  onChange={(e) => setNewMenuValues((p) => ({ ...p, code: e.target.value.toLowerCase().replace(WHITESPACE_REGEX, '-') }))}
                   className="w-full rounded border border-slate-200 bg-white font-mono px-3 py-2 text-xs text-slate-800 focus:outline-none"
                 />
               </div>

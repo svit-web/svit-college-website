@@ -7,6 +7,9 @@ export interface NormalizedPhone {
   error?: string;
 }
 
+const PHONE_SEPARATOR_REGEX = /[\s-()]/g;
+const TEN_DIGIT_REGEX = /^\d{10}$/;
+
 /**
  * Strip spaces/dashes/parens and an optional `+91`/`91`/`0` prefix, then
  * require exactly 10 digits. An empty input is valid (phone is optional).
@@ -15,12 +18,12 @@ export function normalizePhone(raw: string | null | undefined): NormalizedPhone 
   const trimmed = (raw ?? "").trim();
   if (!trimmed) return { value: null };
 
-  let digits = trimmed.replace(/[\s-()]/g, "");
+  let digits = trimmed.replace(PHONE_SEPARATOR_REGEX, "");
   if (digits.startsWith("+91")) digits = digits.slice(3);
   else if (digits.startsWith("91") && digits.length === 12) digits = digits.slice(2);
   else if (digits.startsWith("0") && digits.length === 11) digits = digits.slice(1);
 
-  if (!/^\d{10}$/.test(digits)) {
+  if (!TEN_DIGIT_REGEX.test(digits)) {
     return {
       value: null,
       error:

@@ -147,7 +147,8 @@ export function isHomePopupLive(p: HomePopup, now: Date = new Date()): boolean {
   return true;
 }
 
-export const isExternalHref = (href: string) => /^https?:\/\//i.test(href.trim());
+const HTTP_URL_REGEX = /^https?:\/\//i;
+export const isExternalHref = (href: string) => HTTP_URL_REGEX.test(href.trim());
 
 export const SHAPE_ASPECT: Record<Exclude<HomePopupShape, 'original'>, string> = {
   portrait: '4 / 5',

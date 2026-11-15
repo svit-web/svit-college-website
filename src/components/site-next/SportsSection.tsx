@@ -18,8 +18,10 @@ const CATEGORY_LABEL: Record<string, string> = {
   combat: "Combat",
 };
 
+const WHITESPACE_REGEX = /\s+/g;
+
 function sportAnchor(sport: Sport): string {
-  return sport.slug ?? sport.name.toLowerCase().replace(/\s+/g, "-");
+  return sport.slug ?? sport.name.toLowerCase().replace(WHITESPACE_REGEX, "-");
 }
 
 /** Eyebrow: category, plus the squad size when one is set. */

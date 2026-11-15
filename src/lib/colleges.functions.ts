@@ -25,16 +25,21 @@ export interface College {
 /**
  * Fetch all published colleges ordered by sort_order
  */
+export type CollegeListItem = Pick<
+  College,
+  "id" | "name" | "slug" | "code" | "logo_url" | "tagline"
+>;
+
 export async function getAllColleges() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("colleges")
-    .select("*")
+    .select("id, name, slug, code, logo_url, tagline")
     .eq("status", "published")
     .is("deleted_at", null)
     .order("sort_order", { ascending: true });
 
-  return unwrap<College[]>(result as any, "colleges");
+  return unwrap<CollegeListItem[]>(result as any, "colleges");
 }
 
 /**
@@ -84,7 +89,9 @@ export async function getCollegeBySlug(slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("colleges")
-    .select("*")
+    .select(
+      "name, slug, code, logo_url, tagline, hero_kicker, hero_subhead, principal_name, principal_title, principal_message, principal_photo_url, metadata",
+    )
     .eq("slug", slug)
     .eq("status", "published")
     .is("deleted_at", null)

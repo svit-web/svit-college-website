@@ -10,7 +10,7 @@ import {
   getMiscSettings,
   getContactInfo,
 } from "@/lib/site-settings.functions";
-import { SITE_URL, siteOpenGraph, siteName } from "@/lib/seo";
+import { SITE_URL_OBJ, siteOpenGraph, siteName } from "@/lib/seo";
 import "./globals.css";
 
 const GA4_ID = process.env.NEXT_PUBLIC_GA4_ID;
@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
     getContactInfo().catch(() => DEFAULT_CONTACT),
   ]);
   return {
-    metadataBase: new URL(SITE_URL),
+    metadataBase: SITE_URL_OBJ,
     title: siteName(contactInfo.full_name),
     description: misc.meta_description || DEFAULT_MISC.meta_description,
     openGraph: await siteOpenGraph(misc, contactInfo.full_name),
@@ -50,7 +50,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }} />
+        <Script
+          id="font-scale-init"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: getFontScaleInitScript() }}
+        />
       </head>
       <body className="antialiased" suppressHydrationWarning>
         {children}

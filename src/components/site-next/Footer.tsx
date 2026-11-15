@@ -18,6 +18,10 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { Logo } from "./Logo";
+const HTTP_URL_REGEX = /^https?:\/\//i;
+const PHONE_WHITESPACE_REGEX = /\s/g;
+const NON_DIGIT_PLUS_REGEX = /[^\d+]/g;
+const LEADING_PLUS_REGEX = /^\+/;
 import type {
   MiscSettings,
   ContactInfo,
@@ -95,10 +99,10 @@ function columnsFromMenu(menu: MenuTopItem[]): FooterColumn[] {
       return {
         title: col.title,
         links: children
-          .filter((c) => !/^https?:\/\//i.test(c.url!))
+          .filter((c) => !HTTP_URL_REGEX.test(c.url!))
           .map((c) => ({ label: c.title, to: c.url! })),
         externalLinks: children
-          .filter((c) => /^https?:\/\//i.test(c.url!))
+          .filter((c) => HTTP_URL_REGEX.test(c.url!))
           .map((c) => ({ label: c.title, href: c.url! })),
       };
     })
@@ -144,7 +148,7 @@ export function Footer({ contactInfo, contactNumbers, footerNav, misc, logoUrl }
                     .map((n) => <ContactNumberLine key={n.id} number={n} />)
                 : site.phone && (
                     <a
-                      href={`tel:${site.phone.replace(/\s/g, "")}`}
+                      href={`tel:${site.phone.replace(PHONE_WHITESPACE_REGEX, "")}`}
                       className="flex items-center gap-2 py-1 hover:text-crimson"
                     >
                       <Phone className="h-4 w-4 text-navy" /> {site.phone}
@@ -211,7 +215,7 @@ const CONTACT_ICONS: Record<ContactNumber["kind"], typeof Phone> = {
 
 function ContactNumberLine({ number: n }: { number: ContactNumber }) {
   const Icon = CONTACT_ICONS[n.kind] ?? Phone;
-  const digits = n.phone.replace(/[^\d+]/g, "");
+  const digits = n.phone.replace(NON_DIGIT_PLUS_REGEX, "");
   const content = (
     <>
       <Icon className="h-4 w-4 shrink-0 text-navy" />
@@ -224,7 +228,7 @@ function ContactNumberLine({ number: n }: { number: ContactNumber }) {
   // Fax numbers aren't dialable from a browser — plain text.
   if (n.kind === "fax") return <div className="flex items-center gap-2 py-1">{content}</div>;
   const href =
-    n.kind === "whatsapp" ? `https://wa.me/${digits.replace(/^\+/, "")}` : `tel:${digits}`;
+    n.kind === "whatsapp" ? `https://wa.me/${digits.replace(LEADING_PLUS_REGEX, "")}` : `tel:${digits}`;
   return (
     <a
       href={href}

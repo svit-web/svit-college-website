@@ -22,6 +22,8 @@ type ChartContextProps = {
 
 const ChartContext = React.createContext<ChartContextProps | null>(null);
 
+const COLON_REGEX = /:/g;
+
 function useChart() {
   const context = React.useContext(ChartContext);
 
@@ -40,7 +42,7 @@ const ChartContainer = React.forwardRef<
   }
 >(({ id, className, children, config, ...props }, ref) => {
   const uniqueId = React.useId();
-  const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`;
+  const chartId = `chart-${id || uniqueId.replace(COLON_REGEX, "")}`;
 
   return (
     <ChartContext.Provider value={{ config }}>

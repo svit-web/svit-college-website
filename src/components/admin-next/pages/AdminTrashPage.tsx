@@ -61,8 +61,11 @@ const SOFT_DELETE_TABLES = [
 
 const PAGE_SIZE = 25;
 
+const SEPARATOR_REGEX = /[_-]/g;
+const WORD_START_REGEX = /\b\w/g;
+
 function formatTableName(str: string): string {
-  return str.replace(/[_-]/g, ' ').replace(/\b\w/g, (char) => char.toUpperCase());
+  return str.replace(SEPARATOR_REGEX, ' ').replace(WORD_START_REGEX, (char) => char.toUpperCase());
 }
 
 export function AdminTrashPage({ admin }: { admin: AdminUser }) {

@@ -23,12 +23,14 @@ export async function getAllAccreditations() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("accreditations")
-    .select("*")
+    .select("id, organization, value, accreditation_body, description")
     .eq("status", "published")
     .is("deleted_at", null)
     .order("organization", { ascending: true });
 
-  return unwrap<Accreditation[]>(result as any, "accreditations");
+  return unwrap<
+    Pick<Accreditation, "id" | "organization" | "value" | "accreditation_body" | "description">[]
+  >(result as any, "accreditations");
 }
 
 /**

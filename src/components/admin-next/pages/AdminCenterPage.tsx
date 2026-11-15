@@ -39,6 +39,8 @@ import {
 // in center_equipment / center_programs / center_members; MoUs, events and
 // achievements are existing rows tagged with center_id.
 
+const HTTP_URL_REGEX = /^https?:\/\//i;
+
 const input =
   "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 focus:border-crimson focus:outline-none";
 const label = "text-xs font-semibold text-slate-600 uppercase";
@@ -677,7 +679,7 @@ function ListManager({
     for (const f of fields) {
       const v = editing[f.key];
       if (f.required && !String(v ?? "").trim()) return toast.error(`${f.label} is required`);
-      if (f.type === "url" && v && !/^https?:\/\//i.test(String(v).trim()))
+      if (f.type === "url" && v && !HTTP_URL_REGEX.test(String(v).trim()))
         return toast.error(`${f.label} must start with https:// or http://`);
       if (f.type === "number" && v !== null && v !== "" && !Number.isFinite(Number(v)))
         return toast.error(`${f.label} must be a number`);

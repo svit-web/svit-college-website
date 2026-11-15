@@ -5,6 +5,8 @@ import { SmoothScrollToggle } from "../SmoothScrollToggle";
 import type { MenuTopItem } from "@/lib/menus.functions";
 import type { ContactInfo } from "@/lib/site-settings.functions";
 
+const PHONE_WHITESPACE_REGEX = /\s/g;
+
 export function LinkedinIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
@@ -40,7 +42,7 @@ export function DesktopUtilityBar({
           )}
           {contactInfo?.phone && (
             <a
-              href={`tel:${contactInfo.phone.replace(/\s/g, "")}`}
+              href={`tel:${contactInfo.phone.replace(PHONE_WHITESPACE_REGEX, "")}`}
               className="inline-flex items-center gap-1.5 text-xs tracking-[0.06em] transition-colors hover:text-crimson"
             >
               <Phone className="h-3 w-3" /> {contactInfo.phone}

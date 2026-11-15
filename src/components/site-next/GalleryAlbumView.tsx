@@ -6,9 +6,9 @@ import { AnimatePresence } from "framer-motion";
 import { PageHero } from "./PageHero";
 import { Reveal } from "./Reveal";
 import { PhotoLightbox } from "./PhotoLightbox";
-import type { GalleryAlbumWithMedia, GalleryMedia } from "@/lib/gallery.functions";
+import type { GalleryAlbumDetail, GalleryMediaListItem } from "@/lib/gallery.functions";
 
-export function GalleryAlbumView({ album }: { album: GalleryAlbumWithMedia }) {
+export function GalleryAlbumView({ album }: { album: GalleryAlbumDetail }) {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   return (
@@ -31,7 +31,7 @@ export function GalleryAlbumView({ album }: { album: GalleryAlbumWithMedia }) {
       {/* Photo grid */}
       <div className="container-page py-[clamp(48px,6vw,80px)]">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-          {album.media.map((img: GalleryMedia, i: number) => (
+          {album.media.map((img: GalleryMediaListItem, i: number) => (
             <Reveal key={img.id} delay={i * 0.015}>
               <button
                 aria-label={`View ${img.caption || `photo ${i + 1}`} full screen`}

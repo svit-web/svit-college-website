@@ -16,6 +16,10 @@ import type { AdminUser } from '@/app/lib/auth/admin';
 import { FontSizeControl } from '@/components/a11y/FontSizeControl';
 import { ChangePasswordModal } from './ChangePasswordModal';
 
+const UNDERSCORE_REGEX = /_/g;
+const HYPHEN_REGEX = /-/g;
+const FIRST_LETTER_REGEX = /^\w/;
+
 interface HeaderProps {
   admin: AdminUser;
   logout: () => void | Promise<void>;
@@ -31,9 +35,9 @@ export function AdminHeader({ admin, logout, onMobileMenuToggle }: HeaderProps) 
     return paths.map((path, index) => {
       const to = '/' + paths.slice(0, index + 1).join('/');
       const label = path
-        .replace(/_/g, ' ')
-        .replace(/-/g, ' ')
-        .replace(/^\w/, (c) => c.toUpperCase());
+        .replace(UNDERSCORE_REGEX, ' ')
+        .replace(HYPHEN_REGEX, ' ')
+        .replace(FIRST_LETTER_REGEX, (c) => c.toUpperCase());
       const isLast = index === paths.length - 1;
 
       return (

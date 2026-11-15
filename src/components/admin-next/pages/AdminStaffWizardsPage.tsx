@@ -16,6 +16,9 @@ import { PICKER_DESIGNATION_CATEGORIES, STAFF_POST_COLUMNS, formatDesignationWit
 import { parseAchievementsCsv, importAchievementsCsv, buildAchievementsTemplateCsv, type AchievementImportSummary } from '@/lib/staff-achievements-import';
 import { normalizePhone } from '@/lib/phone';
 
+const EMPLOYEE_CODE_REGEX = /^\d{1,4}-[A-Za-z]{2,6}$/;
+const WHITESPACE_REGEX = /\s+/g;
+
 type AchievementType = 'award' | 'patent' | 'publication' | 'research' | 'qualification' | 'activity';
 
 const ACHIEVEMENT_TYPES: { value: AchievementType; label: string }[] = [
@@ -316,7 +319,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     const employeeCode = newStaffForm.employee_code.trim();
-    if (!/^\d{1,4}-[A-Za-z]{2,6}$/.test(employeeCode)) {
+    if (!EMPLOYEE_CODE_REGEX.test(employeeCode)) {
       toast.error('Employee code is required, format: 1–4 digit number + hyphen + initials, e.g. 1265-NIC.');
       return;
     }
@@ -390,7 +393,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
     try {
       const currentMeta = (generalForm.metadata as Record<string, any>) ?? {};
       const employeeCode = (generalForm.employee_code || '').trim();
-      if (!/^\d{1,4}-[A-Za-z]{2,6}$/.test(employeeCode)) {
+      if (!EMPLOYEE_CODE_REGEX.test(employeeCode)) {
         toast.error('Employee code is required, format: 1–4 digit number + hyphen + initials, e.g. 1265-NIC.');
         return;
       }
@@ -978,7 +981,7 @@ export function AdminStaffWizardsPage({ admin }: { admin: AdminUser }) {
                 {isNewMode
                   ? 'New Faculty Profile'
                   : selectedId
-                    ? `${generalForm.title || ''} ${generalForm.first_name || ''} ${generalForm.middle_name || ''} ${generalForm.last_name || ''}`.replace(/\s+/g, ' ').trim() || 'Edit Profile'
+                    ? `${generalForm.title || ''} ${generalForm.first_name || ''} ${generalForm.middle_name || ''} ${generalForm.last_name || ''}`.replace(WHITESPACE_REGEX, ' ').trim() || 'Edit Profile'
                     : 'Edit Profile'}
               </h2>
               <button onClick={closePanel} className="rounded-md p-1.5 text-zinc-400 hover:bg-zinc-800 hover:text-white transition">

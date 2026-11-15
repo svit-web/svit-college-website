@@ -15,10 +15,10 @@ import type { Department } from "@/lib/departments.functions";
 import type { CollegeRow } from "@/lib/homepage";
 import type { CampusEvent } from "@/lib/events.functions";
 import type { ContactInfo } from "@/lib/site-settings.functions";
-import type { Facility } from "@/lib/facilities.functions";
+import type { FacilityListItem } from "@/lib/facilities.functions";
 import type { StudentClub } from "@/lib/clubs.functions";
 import type { Sport } from "@/lib/sports.functions";
-import type { Center } from "@/lib/centers.functions";
+import type { CenterListItem } from "@/lib/centers.functions";
 
 export interface HeaderProps {
   mainNav: MenuTopItem[];
@@ -26,11 +26,11 @@ export interface HeaderProps {
   colleges: CollegeRow[];
   contactInfo: ContactInfo | null;
   departments: Department[];
-  facilities: Facility[];
+  facilities: FacilityListItem[];
   featuredClubs: StudentClub[];
   events: CampusEvent[];
   sports: Sport[];
-  centers: Center[];
+  centers: CenterListItem[];
   logoUrl: string | null;
 }
 

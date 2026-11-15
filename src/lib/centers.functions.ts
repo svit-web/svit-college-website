@@ -34,16 +34,31 @@ export interface Center {
 /**
  * Fetch all published centers
  */
+const CENTER_LIST_FIELDS =
+  "id, slug, name, subtitle, accent_color, card_photo_url, has_detail_page, created_at";
+
+export type CenterListItem = Pick<
+  Center,
+  | "id"
+  | "slug"
+  | "name"
+  | "subtitle"
+  | "accent_color"
+  | "card_photo_url"
+  | "has_detail_page"
+  | "created_at"
+>;
+
 export async function getAllCenters() {
   const supabase = publicSupabase();
   const result = await supabase
     .from("centers")
-    .select("*")
+    .select(CENTER_LIST_FIELDS)
     .eq("status", "published")
     .is("deleted_at", null)
     .order("name", { ascending: true });
 
-  return unwrap<Center[]>(result as any, "centers");
+  return unwrap<CenterListItem[]>(result as any, "centers");
 }
 
 // Centers with their own top-level nav entry/page are excluded from the
@@ -67,7 +82,9 @@ export async function getCenterBySlug(slug: string) {
   const supabase = publicSupabase();
   const { data, error } = await supabase
     .from("centers")
-    .select("*")
+    .select(
+      "id, slug, name, subtitle, accent_color, description, card_photo_url, has_detail_page, album_id, metadata",
+    )
     .eq("slug", slug)
     .eq("status", "published")
     .is("deleted_at", null)

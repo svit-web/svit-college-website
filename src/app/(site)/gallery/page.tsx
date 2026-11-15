@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Reveal } from "@/components/site-next/Reveal";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { getAllGalleryAlbums } from "@/lib/gallery.functions";
-import type { GalleryAlbum } from "@/lib/gallery.functions";
+import type { GalleryAlbumListItem } from "@/lib/gallery.functions";
 import { PageHero } from "@/components/site-next/PageHero";
 import { Images } from "lucide-react";
 
@@ -33,7 +33,7 @@ export default async function GalleryIndex() {
           <p className="mt-8 text-ink-soft">No albums available yet.</p>
         ) : (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {albums.map((album: GalleryAlbum, i: number) => (
+            {albums.map((album: GalleryAlbumListItem, i: number) => (
               <Reveal key={album.id} delay={i * 0.05}>
                 <Link
                   href={`/gallery/${album.slug}`}

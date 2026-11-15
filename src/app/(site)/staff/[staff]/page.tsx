@@ -18,9 +18,12 @@ import { metaDescription } from "@/lib/seo";
 // not folded into this pass. See optimization_plan.md A3/A4.
 export const revalidate = 300; // seconds
 
+const TITLE_PREFIX_REGEX = /^(dr\.?|mr\.?|mrs\.?|ms\.?)\s+/i;
+const WHITESPACE_REGEX = /\s+/;
+
 function initials(name: string) {
-  const clean = name.replace(/^(dr\.?|mr\.?|mrs\.?|ms\.?)\s+/i, "").trim();
-  const parts = clean.split(/\s+/);
+  const clean = name.replace(TITLE_PREFIX_REGEX, "").trim();
+  const parts = clean.split(WHITESPACE_REGEX);
   return ((parts[0]?.[0] ?? "") + (parts[parts.length - 1]?.[0] ?? "")).toUpperCase();
 }
 

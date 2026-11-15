@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { SectionHeading } from "@/components/site-next/SectionHeading";
 import { EntryEventsGrid } from "@/components/site-next/EntryEventsGrid";
 import { getAllFacilities } from "@/lib/facilities.functions";
-import type { Facility } from "@/lib/facilities.functions";
+import type { FacilityListItem } from "@/lib/facilities.functions";
 import { getEntryAlbums } from "@/lib/gallery.functions";
 import type { EntryCardData } from "@/lib/entry";
 import { LIBRARY_FACILITY_SLUG, LIBRARY_PATH } from "@/lib/library-paths";
@@ -20,7 +20,7 @@ function pathFor(category: "academic" | "amenities", slug: string) {
 }
 
 function toCard(
-  facility: Facility,
+  facility: FacilityListItem,
   category: "academic" | "amenities",
   albums: Map<string, EntryCardData["album"]>,
 ): EntryCardData {

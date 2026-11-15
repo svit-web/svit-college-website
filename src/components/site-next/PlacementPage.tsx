@@ -27,6 +27,8 @@ import { PageHero } from "./PageHero";
 import { Reveal } from "./Reveal";
 import { MouCard } from "./MouCard";
 import { mouDepartmentLabel } from "./MouBrowser";
+
+const PHONE_WHITESPACE_REGEX = /\s/g;
 import { SectionHeading } from "./SectionHeading";
 import { eyebrow, pillOutline } from "./site-styles";
 import type { MOU } from "@/lib/mous.functions";
@@ -476,7 +478,7 @@ export function PlacementPage({ data, mous = [] }: PlacementPageProps) {
                       <div className="mt-5 flex flex-wrap gap-3">
                         {officer.phone && (
                           <a
-                            href={`tel:${officer.phone.replace(/\s/g, "")}`}
+                            href={`tel:${officer.phone.replace(PHONE_WHITESPACE_REGEX, "")}`}
                             className={pillOutline}
                           >
                             <Phone className="h-3.5 w-3.5" />

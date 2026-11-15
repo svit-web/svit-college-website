@@ -50,13 +50,17 @@ interface EntryPhotosEditorProps {
   onRequireSave: () => Promise<string>;
 }
 
+const DIACRITIC_REGEX = /[̀-ͯ]/g;
+const NON_ALPHANUMERIC_REGEX = /[^a-z0-9]+/g;
+const LEADING_TRAILING_HYPHEN_REGEX = /^-+|-+$/g;
+
 function slugify(text: string): string {
   return text
     .toLowerCase()
     .normalize('NFKD')
-    .replace(/[̀-ͯ]/g, '')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
+    .replace(DIACRITIC_REGEX, '')
+    .replace(NON_ALPHANUMERIC_REGEX, '-')
+    .replace(LEADING_TRAILING_HYPHEN_REGEX, '')
     .slice(0, 60);
 }
 

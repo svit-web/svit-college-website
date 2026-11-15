@@ -6,6 +6,10 @@ import { FileText, Download, Search, Plus, Trash2, Edit2, Loader2, Inbox, Settin
 import { toast } from 'sonner';
 import type { AdminUser } from '@/app/lib/auth/admin';
 
+const WHITESPACE_REGEX = /\s+/g;
+const DOUBLE_QUOTE_REGEX = /"/g;
+const UNDERSCORE_REGEX = /_/g;
+
 interface InquiryFormNode {
   id: string;
   form_name: string;
@@ -63,7 +67,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
   async function loadForms() {
     setLoadingForms(true);
     try {
-      const { data, error } = await supabase.from('inquiry_forms').select('*').is('deleted_at', null).order('form_name', { ascending: true });
+      const { data, error } = await supabase.from('inquiry_forms').select('id, form_name, slug, fields_config, recipient_emails, status').is('deleted_at', null).order('form_name', { ascending: true });
 
       if (error) throw error;
       setFormsList((data as any) || []);
@@ -80,7 +84,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
   async function loadSubmissions(formId: string) {
     setLoadingSubmissions(true);
     try {
-      const { data, error } = await supabase.from('inquiry_submissions').select('*').eq('form_id', formId).is('deleted_at', null).order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('inquiry_submissions').select('id, form_id, submitted_data, status, notes, created_at').eq('form_id', formId).is('deleted_at', null).order('created_at', { ascending: false });
 
       if (error) throw error;
       setSubmissions(data || []);
@@ -107,7 +111,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
 
       const payload = {
         form_name: formConfigFields.form_name,
-        slug: formConfigFields.slug.trim().toLowerCase().replace(/\s+/g, '-'),
+        slug: formConfigFields.slug.trim().toLowerCase().replace(WHITESPACE_REGEX, '-'),
         fields_config: parsedFields,
         recipient_emails: emailsArray,
         status: 'published',
@@ -209,7 +213,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
     const headers = ['Submission ID', 'Submitted Date', ...dataKeys, 'Notes'];
     const rows = submissions.map((sub) => [sub.id, new Date(sub.created_at).toLocaleString(), ...dataKeys.map((key) => sub.submitted_data?.[key] || ''), sub.notes || '']);
 
-    const csvContent = [headers, ...rows].map((row) => row.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const csvContent = [headers, ...rows].map((row) => row.map((val) => `"${String(val).replace(DOUBLE_QUOTE_REGEX, '""')}"`).join(',')).join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -217,7 +221,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
     link.href = url;
 
     const activeForm = formsList.find((f) => f.id === selectedFormId);
-    const filename = `submissions_${activeForm?.form_name?.toLowerCase().replace(/\s+/g, '_') || 'form'}_${new Date().toISOString().slice(0, 10)}.csv`;
+    const filename = `submissions_${activeForm?.form_name?.toLowerCase().replace(WHITESPACE_REGEX, '_') || 'form'}_${new Date().toISOString().slice(0, 10)}.csv`;
 
     link.setAttribute('download', filename);
     document.body.appendChild(link);
@@ -346,7 +350,7 @@ export function AdminInquiriesPage({ admin }: { admin: AdminUser }) {
                         <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Date Info</th>
                         {dataKeys.map((key) => (
                           <th key={key} className="px-6 py-4 text-xs font-bold uppercase text-slate-500">
-                            {key.replace(/_/g, ' ')}
+                            {key.replace(UNDERSCORE_REGEX, ' ')}
                           </th>
                         ))}
                         <th className="px-6 py-4 text-xs font-bold uppercase text-slate-500">Status</th>
